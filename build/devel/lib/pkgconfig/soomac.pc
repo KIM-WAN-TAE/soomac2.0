@@ -1,0 +1,8 @@
+prefix=/home/choiyoonji/catkin_ws/src/soomac/build/devel
+
+Name: soomac
+Description: Description of soomac
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

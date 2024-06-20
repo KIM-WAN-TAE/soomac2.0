@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: soomac
+Description: Description of soomac
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

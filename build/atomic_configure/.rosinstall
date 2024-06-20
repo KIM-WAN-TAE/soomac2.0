@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/choiyoonji/catkin_ws/src/soomac/build/devel/setup.sh

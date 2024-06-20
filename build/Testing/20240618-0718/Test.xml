@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="(empty)"
+	BuildStamp="20240618-0718-Experimental"
+	Name="choiyoonji-B150M-DS3H"
+	Generator="ctest-3.26.4"
+	CompilerName="/usr/bin/c++"
+	CompilerVersion="9.4.0"
+	OSName="Linux"
+	Hostname="choiyoonji-B150M-DS3H"
+	OSRelease="5.15.0-107-generic"
+	OSVersion="#117~20.04.1-Ubuntu SMP Tue Apr 30 10:35:57 UTC 2024"
+	OSPlatform="x86_64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="94"
+	ProcessorCacheSize="6144"
+	NumberOfLogicalCPU="4"
+	NumberOfPhysicalCPU="4"
+	TotalVirtualMemory="2047"
+	TotalPhysicalMemory="48126"
+	LogicalProcessorsPerPhysical="1"
+	ProcessorClockFrequency="3300"
+	>
+	<Testing>
+		<StartDateTime>Jun 18 21:39 KST</StartDateTime>
+		<StartTestTime>1718714388</StartTestTime>
+		<TestList/>
+		<EndDateTime>Jun 18 21:39 KST</EndDateTime>
+		<EndTestTime>1718714388</EndTestTime>
+		<ElapsedMinutes>0</ElapsedMinutes>
+	</Testing>
+</Site>

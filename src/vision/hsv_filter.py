@@ -19,7 +19,7 @@ def update(val=0):
     result = cv2.bitwise_and(frame, frame, mask=mask)
     cv2.imshow('Result', result)
 
-cap = cv2.VideoCapture(0)  # 웹캠을 사용하여 캡처 객체 생성
+cap = cv2.VideoCapture(4)  # 웹캠을 사용하여 캡처 객체 생성
 
 # 캡처 객체가 정상적으로 열렸는지 확인
 if not cap.isOpened():
