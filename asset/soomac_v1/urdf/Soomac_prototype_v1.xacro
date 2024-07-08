@@ -1,0 +1,168 @@
+<?xml version="1.0" ?>
+<robot name="Soomac_prototype_v1" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find Soomac_prototype_v1_description)/urdf/materials.xacro" />
+<xacro:include filename="$(find Soomac_prototype_v1_description)/urdf/Soomac_prototype_v1.trans" />
+<xacro:include filename="$(find Soomac_prototype_v1_description)/urdf/Soomac_prototype_v1.gazebo" />
+<link name="base_link">
+  <inertial>
+    <origin xyz="0.053370869107908454 0.05723396103289919 0.0477192334985633" rpy="0 0 0"/>
+    <mass value="1.5026706265949556"/>
+    <inertia ixx="0.000984" iyy="0.000985" izz="0.001544" ixy="0.0" iyz="-1e-06" ixz="-0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="Component6_1">
+  <inertial>
+    <origin xyz="-4.486291692307187e-08 0.0019207301234084873 -2.6093150795603037e-07" rpy="0 0 0"/>
+    <mass value="0.0076855496337067284"/>
+    <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.098229 -0.423523 -0.41125" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/Component6_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.098229 -0.423523 -0.41125" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/Component6_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="Component5_1">
+  <inertial>
+    <origin xyz="0.01952405976229392 0.020356428447258712 -0.0072841165377807715" rpy="0 0 0"/>
+    <mass value="0.5498301679211072"/>
+    <inertia ixx="0.000269" iyy="0.000137" izz="0.000218" ixy="-1.1e-05" iyz="5e-05" ixz="4e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.077729 -0.375023 -0.41125" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/Component5_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.077729 -0.375023 -0.41125" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/Component5_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="Component3_1">
+  <inertial>
+    <origin xyz="-0.01983511054136529 0.17517257532702352 4.360390627844435e-06" rpy="0 0 0"/>
+    <mass value="1.061596070256426"/>
+    <inertia ixx="0.015287" iyy="0.00019" izz="0.015309" ixy="8.8e-05" iyz="-1e-06" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.079229 -0.073273 -0.41125" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/Component3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.079229 -0.073273 -0.41125" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/Component3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="Component4_1">
+  <inertial>
+    <origin xyz="0.019835020815227575 4.825189634544147e-06 0.1751721105280159" rpy="0 0 0"/>
+    <mass value="1.061596070256426"/>
+    <inertia ixx="0.015287" iyy="0.015309" izz="0.00019" ixy="-0.0" iyz="-1e-06" ixz="-8.8e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.077729 -0.073273 -0.1095" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/Component4_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.077729 -0.073273 -0.1095" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/Component4_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="Component2_1">
+  <inertial>
+    <origin xyz="-0.004855540025184499 -1.6188546656387137e-05 0.03917767958937797" rpy="0 0 0"/>
+    <mass value="1.718809170564294"/>
+    <inertia ixx="0.001233" iyy="0.000991" izz="0.001466" ixy="-4e-06" iyz="-1e-06" ixz="5.4e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.053431 -0.057963 -0.065229" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/Component2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.053431 -0.057963 -0.065229" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://Soomac_prototype_v1_description/meshes/Component2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="회전 1" type="continuous">
+  <origin xyz="0.0205 0.0485 0.0" rpy="0 0 0"/>
+  <parent link="Component5_1"/>
+  <child link="Component6_1"/>
+  <axis xyz="0.0 1.0 -0.0"/>
+</joint>
+
+<joint name="회전 2" type="continuous">
+  <origin xyz="-0.0015 0.30175 0.0" rpy="0 0 0"/>
+  <parent link="Component3_1"/>
+  <child link="Component5_1"/>
+  <axis xyz="1.0 0.0 -0.0"/>
+</joint>
+
+<joint name="회전 3" type="continuous">
+  <origin xyz="0.0015 0.0 0.30175" rpy="0 0 0"/>
+  <parent link="Component4_1"/>
+  <child link="Component3_1"/>
+  <axis xyz="-1.0 -0.0 0.0"/>
+</joint>
+
+<joint name="회전 4" type="continuous">
+  <origin xyz="0.024298 0.01531 0.044271" rpy="0 0 0"/>
+  <parent link="Component2_1"/>
+  <child link="Component4_1"/>
+  <axis xyz="1.0 -0.0 -0.0"/>
+</joint>
+
+<joint name="회전 5" type="continuous">
+  <origin xyz="0.053431 0.057963 0.065229" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="Component2_1"/>
+  <axis xyz="-0.0 0.0 -1.0"/>
+</joint>
+
+</robot>
