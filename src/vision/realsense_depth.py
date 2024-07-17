@@ -14,7 +14,7 @@ class DepthCamera:
         depth_sensor = device.first_depth_sensor()
         # Get depth scale of the device
         self.depth_scale =  depth_sensor.get_depth_scale()
-            # Create an align object
+        # Create an align object
         align_to = rs.stream.color
 
         self.align = rs.align(align_to)
@@ -25,6 +25,10 @@ class DepthCamera:
 
         # Start streaming
         self.pipeline.start(config)
+
+        profile = self.pipeline.get_active_profile()
+        depth_profile = rs.video_stream_profile(profile.get_stream(rs.stream.depth))
+        self.depth_intrinsics = depth_profile.get_intrinsics()
        
     def get_frame(self):
     
@@ -57,6 +61,19 @@ class DepthCamera:
         Depth maps are typically stored in 16-bit unsigned integers at millimeter scale, thus to obtain Z value in meters, the depth map pixels need to be divided by 1000.
         """
         return self.depth_scale
+    
+    def get_camera_intrinsics(self):
+        camera_params = {}
+
+        camera_params['fx'] = self.depth_intrinsics.fx
+        camera_params['fy'] = self.depth_intrinsics.fy
+        camera_params['x_offset'] = self.depth_intrinsics.ppx
+        camera_params['y_offset'] = self.depth_intrinsics.ppy
+        camera_params['img_height'] = self.depth_intrinsics.height
+        camera_params['img_width'] = self.depth_intrinsics.width
+
+
+        return camera_params
 
     def release(self):
         self.pipeline.stop()
