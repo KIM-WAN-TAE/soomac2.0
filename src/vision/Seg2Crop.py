@@ -13,14 +13,42 @@ def extract_objects_from_image(rgb_image, segmask):
         mask = np.where(segmask == label, 255, 0).astype(np.uint8)
         
         # 객체의 바운딩 박스 추출
+        offset = 10
         x, y, w, h = cv2.boundingRect(mask)
         print(x, y, w, h)
         # RGB 이미지에서 객체 영역 크롭
-        cropped_img = rgb_image[y:y+h, x:x+w]
+        x0 = max(0, x-offset)
+        y0 = max(0, y-offset)
+        x1 = min(x+w+offset, 640)
+        y1 = min(y+h+offset, 480)
+        cropped_img = rgb_image[y0:y1, x0:x1]
+        cropped_img = add_padding(cropped_img, [100, 100])
+        cropped_img = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB)
         cropped_images.append((label, cropped_img))
         print(cropped_img.shape)
 
     return cropped_images
+
+def add_padding(image, target_size):
+    h, w, _ = image.shape
+    target_h, target_w = target_size
+    scale = min(target_w / w, target_h / h)
+    new_w = int(w * scale)
+    new_h = int(h * scale)
+    resized_image = cv2.resize(image, (new_w, new_h))
+    
+    pad_w = (target_w - new_w) // 2
+    pad_h = (target_h - new_h) // 2
+    
+    padded_image = cv2.copyMakeBorder(
+        resized_image, 
+        pad_h, target_h - new_h - pad_h, 
+        pad_w, target_w - new_w - pad_w, 
+        cv2.BORDER_CONSTANT, 
+        value=[0, 0, 0]
+    )
+    return padded_image
+
 
 # 예제 RGB 이미지와 segmask
 img_file = '/home/choiyj/catkin_ws/src/soomac/src/vision/uois/example_images/test_image_1.npy'
@@ -33,4 +61,4 @@ cropped_images = extract_objects_from_image(rgb_image, segmask)
 # print(cropped_images)
 # 결과 확인
 for idx, img in enumerate(cropped_images):
-    cv2.imwrite(f'cropped_object_{idx}.png', img[1])
+    cv2.imwrite(f'/home/choiyj/catkin_ws/src/soomac/src/vision/a/cropped/cropped_object_{idx}.png', img[1])
