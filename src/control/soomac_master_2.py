@@ -2,8 +2,34 @@
 
 import rospy
 import numpy as np
-from isaacgym.torch_utils import quat_from_angle_axis, quat_mul
 from std_msgs.msg import Float32MultiArray as fl
+from std_msgs.msg import Bool
+
+
+def quat_from_angle_axis(angle, axis):
+    axis = np.array(axis)
+    axis = axis / np.linalg.norm(axis)  # Normalize the axis
+    half_angle = angle / 2.0
+    sin_half_angle = np.sin(half_angle)
+    
+    w = np.cos(half_angle)
+    x = axis[0] * sin_half_angle
+    y = axis[1] * sin_half_angle
+    z = axis[2] * sin_half_angle
+    
+    return np.array([w, x, y, z])
+
+def quat_mul(q1, q2):
+    w1, x1, y1, z1 = q1
+    w2, x2, y2, z2 = q2
+    
+    w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2
+    x = w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2
+    y = w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2
+    z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2
+    
+    return np.array([w, x, y, z])
+
 
 class FSM:
     def __init__(self, sim_dt, obj_height):
@@ -21,7 +47,7 @@ class FSM:
 
         grab_angle = np.pi / 6.0
         grab_axis = [0, 0, 1]
-        grab_quat = quat_from_angle_axis(grab_angle, grab_axis).squeeze()
+        grab_quat = quat_from_angle_axis(grab_angle, grab_axis)
 
         self._obj_grab_quat = quat_mul(grab_quat, self._hand_down_quat)
         
@@ -73,7 +99,7 @@ class FSM:
         elif self._state == "grip":
             target_pose = obj_pose
             target_pose[:3] = target_pose[:3] + self._grip_offset
-            self.move(obj_pose)
+            self.move(target_pose)
             self.grip(self._gripper_close)
             self._state = "done"
         
@@ -89,7 +115,7 @@ def main():
     global soomac_fsm
     soomac_fsm = FSM(1/60, 0.1)
     rospy.Subscriber('object_pose', fl, callback)
-    rospy.Subscriber('state_done', bool, soomac_fsm.new_state)
+    rospy.Subscriber('state_done', Bool, soomac_fsm.new_state)
     
     rospy.spin()
 
