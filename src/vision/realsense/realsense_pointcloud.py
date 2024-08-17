@@ -2,8 +2,8 @@ import numpy as np
 import pyrealsense2 as rs
 from matplotlib import pyplot as plt
 import cv2
-from vision.realsense.realsense_depth import DepthCamera
-from uois.src.util.utilities import compute_xyz, save_as_npy
+from realsense_depth import DepthCamera
+from utilities import compute_xyz, save_as_npy
 
 resolution_width, resolution_height = (640, 480)
 
@@ -20,7 +20,9 @@ def main():
 
     i = 0
     image_root = "/home/choiyj/catkin_ws/src/soomac/src/vision/a/"
-    image_name = "test_image_"
+    color_name = "test_color_"
+    depth_name = "test_depth_"
+    npy_name = "test_image_"
 
     while True:
 
@@ -35,8 +37,8 @@ def main():
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord('a'):
-            color_path = image_root + image_name + str(i) + '.png'
-            depth_path = image_root + image_name + str(i) + '.png'
+            color_path = image_root + color_name + str(i) + '.png'
+            depth_path = image_root + depth_name + str(i) + '.png'
             cv2.imwrite(color_path, color_frame)
             plt.imsave(depth_path, depth_frame)
 
@@ -45,7 +47,7 @@ def main():
             label = k.item().get('label')
             data = save_as_npy(rgb, xyz, label)
 
-            np_path = image_root + image_name + str(i) + '.npy'
+            np_path = image_root + npy_name + str(i) + '.npy'
             np.save(np_path, data)
             i += 1
 
