@@ -2,42 +2,57 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from torchvision import models
 
-class Siamese(nn.Module):
-    def __init__(self):
-        super(Siamese, self).__init__()
-        self.conv = nn.Sequential(
-            nn.Conv2d(3, 64, 10),  # 64@96*96
-            nn.LeakyReLU(),
-            nn.MaxPool2d(2),  # 64@48*48
-            nn.Conv2d(64, 128, 7),
-            nn.LeakyReLU(),    # 128@42*42
-            nn.MaxPool2d(2),   # 128@21*21
-            nn.Conv2d(128, 128, 4),
-            nn.LeakyReLU(), # 128@18*18
-            nn.MaxPool2d(2), # 128@9*9
-            nn.Conv2d(128, 256, 4),
-            nn.LeakyReLU(),   # 256@6*6
+class SiameseNetwork(nn.Module):
+    def __init__(self, backbone="resnet18"):
+        super().__init__()
+        # Create a backbone network.
+        self.backbone = models.__dict__[backbone](pretrained=True, progress=True)
+
+        # Get the number of features that are outputted by the last layer of backbone network.
+        out_features = list(self.backbone.modules())[-1].out_features
+
+        # Create an MLP as the classification head. 
+        # Classifies if provided combined feature vector of the 2 images represent same object or different.
+        self.cls_head = nn.Sequential(
+            nn.Dropout(p=0.5),
+            nn.Linear(out_features, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
+
+            nn.Dropout(p=0.5),
+            nn.Linear(512, 64),
+            nn.BatchNorm1d(64),
+            nn.Sigmoid(),
+            nn.Dropout(p=0.5),
+
+            nn.Linear(64, 1),
+            nn.Sigmoid(),
         )
-        self.linear = nn.Sequential(nn.Linear(9216, 4096), nn.Sigmoid())
-        self.out = nn.Sequential(nn.Linear(4096, 1), nn.Sigmoid())
 
-    def forward_one(self, x):
-        x = self.conv(x)
-        x = x.view(x.size()[0], -1)
-        x = self.linear(x)
-        return x
+    def forward(self, img1, img2):
+        '''
+        Returns the similarity value between two images.
 
-    def forward(self, x1, x2):
-        out1 = self.forward_one(x1)
-        out2 = self.forward_one(x2)
-        dis = torch.abs(out1 - out2)
-        out = self.out(dis)
-        return out
+            Parameters:
+                    img1 (torch.Tensor): shape=[b, 3, 224, 224]
+                    img2 (torch.Tensor): shape=[b, 3, 224, 224]
 
+            where b = batch size
 
-# for test
-if __name__ == '__main__':
-    net = Siamese()
-    print(net)
-    print(list(net.parameters()))
+            Returns:
+                    output (torch.Tensor): shape=[b, 1], Similarity of each pair of images
+        '''
+
+        # Pass the both images through the backbone network to get their seperate feature vectors
+        feat1 = self.backbone(img1)
+        feat2 = self.backbone(img2)
+        
+        # Multiply (element-wise) the feature vectors of the two images together, 
+        # to generate a combined feature vector representing the similarity between the two.
+        combined_features = feat1 * feat2
+
+        # Pass the combined feature vector through classification head to get similarity value in the range of 0 to 1.
+        output = self.cls_head(combined_features)
+        return output

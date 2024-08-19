@@ -51,7 +51,7 @@ def add_padding(image, target_size):
 
 
 # 예제 RGB 이미지와 segmask
-img_file = '/home/choiyj/catkin_ws/src/soomac/src/vision/uois/example_images/test_image_1.npy'
+img_file = '/home/choiyj/catkin_ws/src/soomac/src/vision/uois/example_images/test_image_19.npy'
 d = np.load(img_file, allow_pickle=True, encoding='bytes').item()
 rgb_image = d['rgb']
 segmask = cv2.imread('/home/choiyj/catkin_ws/src/soomac/src/vision/uois/SegMask_6.png', cv2.IMREAD_GRAYSCALE)
