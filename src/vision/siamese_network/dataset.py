@@ -29,7 +29,7 @@ class Dataset(torch.utils.data.IterableDataset):
         '''
         self.path = path
 
-        self.feed_shape = [3, 224, 224]
+        self.feed_shape = [3, 100, 100]
         self.shuffle_pairs = shuffle_pairs
 
         self.augment = augment
@@ -44,7 +44,6 @@ class Dataset(torch.utils.data.IterableDataset):
                 transforms.Resize(self.feed_shape[1:])
             ])
         else:
-            # If no augmentation is needed then apply only the normalization and resizing operations.
             self.transform = transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
@@ -54,10 +53,6 @@ class Dataset(torch.utils.data.IterableDataset):
         self.create_pairs()
 
     def create_pairs(self):
-        '''
-        Creates two lists of indices that will form the pairs, to be fed for training or evaluation.
-        '''
-
         self.image_paths = glob.glob(os.path.join(self.path, "*/*.png"))
         self.image_classes = []
         self.class_indices = {}

@@ -32,27 +32,10 @@ class SiameseNetwork(nn.Module):
         )
 
     def forward(self, img1, img2):
-        '''
-        Returns the similarity value between two images.
-
-            Parameters:
-                    img1 (torch.Tensor): shape=[b, 3, 224, 224]
-                    img2 (torch.Tensor): shape=[b, 3, 224, 224]
-
-            where b = batch size
-
-            Returns:
-                    output (torch.Tensor): shape=[b, 1], Similarity of each pair of images
-        '''
-
-        # Pass the both images through the backbone network to get their seperate feature vectors
         feat1 = self.backbone(img1)
         feat2 = self.backbone(img2)
         
-        # Multiply (element-wise) the feature vectors of the two images together, 
-        # to generate a combined feature vector representing the similarity between the two.
         combined_features = feat1 * feat2
 
-        # Pass the combined feature vector through classification head to get similarity value in the range of 0 to 1.
         output = self.cls_head(combined_features)
         return output
