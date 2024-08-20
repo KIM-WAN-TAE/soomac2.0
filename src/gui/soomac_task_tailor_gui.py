@@ -3,13 +3,53 @@ from tkinter import filedialog
 import cv2
 import os
 from PIL import Image, ImageTk
+import rospy
+from std_msgs.msg import Float32MultiArray as fl
+from std_msgs.msg import Bool, String
+
+class Robot_control:
+    def __init__(self):
+        self.pub_vision = rospy.Publisher('vision', fl, queue_size=10) 
+        self.pub_gui = rospy.Publisher('task_type', String, queue_size=10)
+        # gui msg type 정의
+        self.gui_msg = String()
+        self.gui_msg.data = None
+        # vision test용 msg 
+        self.vision_msg = fl()
+        self.vision_msg.data = [300, 500, 50, 30, 50, # pick : (x, y, z, theta, grip_size) 
+                                -300, 500, 30, 60 ] # place : (x, y, z, theta)
+    def vision(self):
+        self.pub_vision.publish(self.vision_msg)
+        print('vision topic')
+
+    def start(self):
+        self.gui_msg.data = "gui_start"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - start')
+
+    def init_pos(self):
+        self.gui_msg.data = "gui_init_pos"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - init_pos')
+
+    def stop(self):
+        self.gui_msg.data = "gui_stop"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - stop')
+        
+    def pause(self):
+        self.gui_msg.data = "gui_pause"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - pause')
 
 # 메인 화면 설정
 def main_screen():
+    rospy.init_node('GUI', anonymous=True)
     root = Tk()
     root.title("Soomac Taylor")
     root.geometry("420x420")
     root.configure(bg="#e0f7da")  # 연한 초록색 배경
+    robot_arm = Robot_control() # 로봇 제어 클래스
 
     # 타이틀 레이블
     title_label = Label(root, text="Soomac Taylor", font=("Helvetica", 20, "bold"), bg="#a5d6a7", fg="#1b5e20")
@@ -43,11 +83,11 @@ def main_screen():
         ("새 Task 정의", open_task_definition),
         ("Task 불러오기", lambda: None),
         ("종료", confirm_exit),
-        ("초기 위치", lambda: None),
-        ("일시 정지", lambda: None),
-        ("로봇 정보", lambda: None),
-        ("개발자 정보", lambda: None),
-        ("긴급 정지", lambda: None),
+        ("초기 위치", robot_arm.init_pos),
+        ("일시 정지", robot_arm.pause),
+        ("start(로봇 정보)", robot_arm.start), # 테스트용
+        ("vision_data(개발자 정보)", robot_arm.vision), # 테스트용
+        ("긴급 정지", robot_arm.stop),
         # ("종료", confirm_exit),
     ]
 
@@ -206,10 +246,11 @@ def ask_to_execute():
             if isinstance(window, Toplevel):
                 window.destroy()
         execute_window.destroy()
+    def task_start():
+        pass
+        ####################### 코드 추가해야할 부분 ######################## 
 
-    ####################### 코드 추가해야할 부분 ########################
-    #예 버튼 클릭했을 때 로봇을 작동시키기 위해서 로봇을 작동시켜주는 함수를 추가하고 command=lambda 에서 lambda를 삭제 후 함수 추가. 
-    yes_button = Button(execute_window, text="예", command=lambda: print("예 버튼 기능을 구현하세요"), bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
+    yes_button = Button(execute_window, text="예", command=task_start, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
     yes_button.pack(side=LEFT, padx=10, pady=10)
 
     no_button = Button(execute_window, text="아니오", command=close_all_windows, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
