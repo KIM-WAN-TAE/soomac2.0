@@ -44,7 +44,7 @@ a = [0, 0, l[2], l[3], l[4]+l[5]]
 al = [0, dtr(90), 0, 0, dtr(90)]
 #####################################################################################################################################################################################
 # ikpy
-class Chain:
+class Make_chain:
     def __init__(self):
         self.make_chain()
 
@@ -84,7 +84,7 @@ class FSM:
         self.gripper_state = False
         self.state = "parking"
         self.last_state = "parking"
-        self.arm = Chain()
+        self.arm = Make_chain()
 
         # 고정된 위치
         self.parking = np.array([0, 200, 400, 0])
@@ -233,7 +233,7 @@ class FSM:
         self.update(self._current_obj_pose)
         rospy.loginfo('freeze for 10s')
 
-class callback:
+class Callback:
     def __init__(self):
         self.soomac_fsm = FSM()
         self.ros_sub()
@@ -284,7 +284,7 @@ class callback:
 # main
 def main():
     rospy.init_node('master', anonymous=True)
-    callback()
+    Callback()
 
 #####################################################################################################################################################################################
 
