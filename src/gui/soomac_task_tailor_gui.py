@@ -47,12 +47,12 @@ def main_screen():
     rospy.init_node('GUI', anonymous=True)
     root = Tk()
     root.title("Soomac Taylor")
-    root.geometry("420x420")
+    root.geometry("420x520")
     root.configure(bg="#e0f7da")  # 연한 초록색 배경
     robot_arm = Robot_control() # 로봇 제어 클래스
 
     # 타이틀 레이블
-    title_label = Label(root, text="Soomac Taylor", font=("Helvetica", 20, "bold"), bg="#a5d6a7", fg="#1b5e20")
+    title_label = Label(root, text="Soomac Task Taylor", font=("Helvetica", 20, "bold"), bg="#a5d6a7", fg="#1b5e20")
     title_label.grid(row=0, column=0, columnspan=2, pady=20)
 
     # 종료 버튼을 누를 때 확인 창을 띄우는 함수
@@ -80,35 +80,44 @@ def main_screen():
 
     # 메인 화면 버튼들 배치
     buttons = [
+        ("실 행", robot_arm.start),
         ("새 Task 정의", open_task_definition),
         ("Task 불러오기", lambda: None),
         ("종료", confirm_exit),
         ("초기 위치", robot_arm.init_pos),
         ("일시 정지", robot_arm.pause),
-        ("start(로봇 정보)", robot_arm.start), # 테스트용
+        ("로봇 정보", lambda: None),
         ("vision_data(개발자 정보)", robot_arm.vision), # 테스트용
         ("긴급 정지", robot_arm.stop),
         # ("종료", confirm_exit),
     ]
 
     positions = [
-        (1, 0),  # 새 Task 정의
-        (1, 1),  # Task 불러오기
-        (4, 1),  # 종료
-        (2, 0),  # 초기 위치
-        (2, 1),  # 일시 정지
-        (3, 0),  # 로봇 정보
-        (3, 1),  # 개발자 정보
-        (4, 0),  # 긴급 정지
-        (4, 1)   # 종료
+        (1, 0),  # 실행
+        (2, 0),  # 새 Task 정의
+        (2, 1),  # Task 불러오기
+        (5, 1),  # 종료
+        (3, 0),  # 초기 위치
+        (3, 1),  # 일시 정지
+        (4, 0),  # 로봇 정보
+        (4, 1),  # 개발자 정보
+        (5, 0),  # 긴급 정지
+        (5, 1)   # 종료
     ]
+    
 
     for i, (text, command) in enumerate(buttons):
-        row, col = positions[i]
-        button = Button(root, text=text, command=command, width=20, height=3, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white")
-        button.grid(row=row, column=col, padx=10, pady=10)
+        if i == 0:  # 실행 버튼
+            row, col = positions[i]
+            button = Button(root, text=text, command=command, width=46, height=3, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white")
+            button.grid(row=row, column=col, padx=0, pady=10, columnspan=2)  # columnspan=2 추가
+        else:  # 나머지 버튼
+            row, col = positions[i]
+            button = Button(root, text=text, command=command, width=20, height=3, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white")
+            button.grid(row=row, column=col, padx=10, pady=10)
 
     root.mainloop()
+
 
 # Task 정의 창 열기
 def open_task_definition():
