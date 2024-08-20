@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 import rospy
 from std_msgs.msg import Float32MultiArray as fl
 from std_msgs.msg import Bool, String
+import threading
 
 class Robot_control:
     def __init__(self):
@@ -42,9 +43,21 @@ class Robot_control:
         self.pub_gui.publish(self.gui_msg)
         print('gui - pause')
 
+class ros_subscribe:
+    def __init__(self) -> None:
+        pass
+
+    def ros_sub(self):
+        print('subscribing')
+        rospy.Subscriber('impact_to_gui', Bool, self.callback)
+        rospy.spin()  # ROS 이벤트 루프 실행    
+
+    def callback(self,data):
+        impact = data.data
+        if impact == True:
+            impact_screen()
 # 메인 화면 설정
 def main_screen():
-    rospy.init_node('GUI', anonymous=True)
     root = Tk()
     root.title("Soomac Taylor")
     root.geometry("420x520")
@@ -265,5 +278,34 @@ def ask_to_execute():
     no_button = Button(execute_window, text="아니오", command=close_all_windows, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
     no_button.pack(side=RIGHT, padx=10, pady=10)
 
+def impact_screen():
+    exit_window = Toplevel()
+    exit_window.title("충돌 감지")
+    exit_window.geometry("400x150")
+    exit_window.configure(bg="#e0f7da")
+
+    Label(exit_window, text="충돌이 감지되었습니다, 조치 후 계속하십시오.", bg="#e0f7da", fg="#1b5e20", font=("Helvetica", 14)).pack(pady=20)
+
+    ############### 코드 추가해야할 부분 ###################
+    # GUI를 종료하면서 로봇을 거치대로 이동하는 작업을 수행하기 위해서 exit_program 함수에 로봇이 거치대로 이동하는 코드를 추가해야함. 
+    def exit_program():
+        exit_window.destroy()
+
+    def close_exit_window():
+        pass
+
+    yes_button = Button(exit_window, text="계속", command=exit_program, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
+    yes_button.pack(side=LEFT, padx=(50,10), pady=10)
+
+    no_button = Button(exit_window, text="종료", command=close_exit_window, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
+    no_button.pack(side=RIGHT, padx=(10,50), pady=10)
+
+
+
 if __name__ == "__main__":
+    rospy.init_node('GUI', anonymous=True)
+    sub = ros_subscribe()
+    ros_thread = threading.Thread(target=sub.ros_sub)
+    ros_thread.daemon = True
+    ros_thread.start()
     main_screen()
