@@ -17,8 +17,8 @@ class Robot_control:
         self.gui_msg.data = None
         # vision test용 msg 
         self.vision_msg = fl()
-        self.vision_msg.data = [300, 500, 50, 30, 50, # pick : (x, y, z, theta, grip_size) 
-                                -300, 500, 30, 60 ] # place : (x, y, z, theta)
+        self.vision_msg.data = [250, 0, 10, 30, 20, # pick : (x, y, z, theta, grip_size) 
+                                400, 0, 10, 60 ] # place : (x, y, z, theta)
     def vision(self):
         self.pub_vision.publish(self.vision_msg)
         print('vision topic')
@@ -29,7 +29,7 @@ class Robot_control:
         print('gui - start')
 
     def init_pos(self):
-        self.gui_msg.data = "gui_init_pos"
+        self.gui_msg.data = "gui_init_pose"
         self.pub_gui.publish(self.gui_msg)
         print('gui - init_pos')
 
