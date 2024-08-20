@@ -13,7 +13,7 @@ from ikpy.link import OriginLink, URDFLink
 def dtr(dgree):
    return dgree*(np.pi/180)
 
-l = [67, 45, 338, 281, 82, 60]
+l = [50, 65.95, 332.5, 270.2, 81.75, 17.25+132.47]
 
 d = [l[0], l[1], 0, 0, 0]
 a = [0, 0, l[2], l[3], l[4]+l[5]]
@@ -32,7 +32,6 @@ class MakeChain:
             origin_orientation=[al, 0, th],
             rotation=[0, 0, 1],
         )
-    
     #4-DOF robot arm define
     def make_chain(self): 
             self.arm = Chain(name='arm', links=[
@@ -72,8 +71,8 @@ class FSM:
 
         # 고정된 위치
         self.parking = np.array([0, 200, 400, 0])
-        self.init_pose = np.array([200, 0, 300, 0])
-        self.camera_pose = np.array([200, 0, 300, 0])
+        self.init_pose = np.array([0, 100, 300, 0])
+        self.camera_pose = np.array([0, 100, 300, 0])
         
         # offset 관련 parameter
         self.above_offset = np.array([0, 0, 100, 0])
@@ -83,11 +82,12 @@ class FSM:
 
         # 초기 각도
         self.start_degree = self.arm.IK(self.parking)
+
         #print(self.start_degree)
 
         # 초기 위치
-        self.pick_pose = np.array([0, 0, 0, 0])  
-        self.place_pose = np.array([0, 0, 0, 0]) 
+        self.pick_pose = self.init_pose
+        self.place_pose = self.init_pose
         self.action_setting()
 
         ############################################################
@@ -102,8 +102,14 @@ class FSM:
         # ROS
         self.pub_goal_pose = rospy.Publisher('goal_pose', fl, queue_size=10)
         self.pub_grip_seperation = rospy.Publisher('grip_seperation', fl, queue_size=10)
-    
-    
+        self.pub_direct = rospy.Publisher('direct', fl, queue_size=10)
+
+    def init_action(self): ################################################################################################################################################################################################################################
+        print('a')
+        data = fl()
+        data.data = self.start_degree
+        self.pub_direct.publish(data)
+
     def action_setting(self): # vision으로 부터 각 동작 지점의 좌표 정보 제작
         
         # pick zone
@@ -226,7 +232,9 @@ class FSM:
 class Callback:
     def __init__(self):
         self.soomac_fsm = FSM()
+        self.soomac_fsm.init_action()
         self.ros_sub()
+        
 
     def ros_sub(self):
         rospy.Subscriber('vision', fl, self.vision)         
