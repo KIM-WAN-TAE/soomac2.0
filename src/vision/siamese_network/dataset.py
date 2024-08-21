@@ -53,7 +53,7 @@ class Dataset(torch.utils.data.IterableDataset):
         self.create_pairs()
 
     def create_pairs(self):
-        self.image_paths = glob.glob(os.path.join(self.path, "*/*.png"))
+        self.image_paths = glob.glob(os.path.join(self.path, "*/*.jpg"))
         self.image_classes = []
         self.class_indices = {}
 

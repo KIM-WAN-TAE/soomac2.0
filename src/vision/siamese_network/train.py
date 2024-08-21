@@ -13,13 +13,13 @@ from model import SiameseNetwork
 from dataset import Dataset
 
 if __name__ == "__main__":
-    train_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/a/dataset/train"
-    val_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/a/dataset/val"
-    out_path = "/home/choiyj/catkin_ws/src/soomac/src/vision"
+    train_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/data/train"
+    val_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/data/val"
+    out_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network"
     backbone = "resnet18"
     learning_rate = 1e-4
     epochs = 1000
-    save_after = 2
+    save_after = int(epochs/10)
 
     os.makedirs(out_path, exist_ok=True)
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
             losses.append(loss.item())
             correct += torch.count_nonzero(y == (prob > 0.5)).item()
             total += len(y)
-
+    
         writer.add_scalar('train_loss', sum(losses)/len(losses), epoch)
         writer.add_scalar('train_acc', correct / total, epoch)
 
