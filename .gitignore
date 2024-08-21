@@ -1,1 +1,10 @@
 /.vscode
+
+# PyTorch checkpoints
+*.pth.tar
+*.pth
+
+# dataset
+*.png
+*.png
+*.txt
