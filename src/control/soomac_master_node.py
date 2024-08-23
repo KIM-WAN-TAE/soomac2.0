@@ -98,10 +98,12 @@ class FSM:
         # ROS publish
         self.pub_goal_pose = rospy.Publisher('goal_pose', fl, queue_size=10) # 목표 pose에 대한 각도를 보낸다((,5)).
         self.pub_grip_seperation = rospy.Publisher('grip_seperation', Float32, queue_size=10) # fl -> Float32로 변경, 실수값 1개는 array로 못넘김
-
+        self.pub_start = rospy.Publisher('start', Bool, queue_size=10)
     def move_to_init(self): # init pose로 direct 이동, GUI에서 초기 위치 누르면 해당 메서드 동작
-        self.pub_pose(option=1) # option이라는 단어를 반드시 명시할 것.
-        print('move_to_init pub')
+        print('###start###')
+        msg = Bool()
+        msg.msg = True
+        self.pub_start(msg)
         self.state = "init_pose"
 
     def action_setting(self, print_op=False): # vision으로 부터 받은 정보를 바탕으로 way point의 좌표 정보 제작
@@ -115,59 +117,22 @@ class FSM:
         self.place_grip = self.place_pose + self.grip_offset
         self.place_lift = self.place_pose + self.lift_offset
         if print_op == True:
-            print('\nPick : ', self.pick_above, ' -> ', self.pick_grip, ' -> ', self.pick_lift)
-            print('\nPlace : ', self.place_above, ' -> ', self.place_grip, ' -> ', self.place_lift)
-
-    def rotate_x(self, vector, degree):
-        # Degree to Radian
-        rad = np.radians(degree)
-
-        # Rotation Matrix
-        rotation_matrix = np.array([
-            [1, 0, 0],
-            [0, np.cos(rad), -np.sin(rad)],
-            [0, np.sin(rad), np.cos(rad)]
-        ])
-
-        return np.dot(rotation_matrix, vector)
-
-
-    def translate(self, vector, translation):
-        return vector + translation      
-
-
-    def transformation(self, pose):
-
-        self.translate_vector = np.array([0, 0.2, 0.3])
-        self.rotate_degree = -30
-       
-        vector = pose[:3]
-
-        rotated_vector = self.rotate_x(vector, self.rotate_degree)
-
-        translated_vector = self.translate(rotated_vector, self.translate_vector)
-
-        print(translated_vector)
-
-        return np.r_[translated_vector, pose[3]]
+            print('Pick : ', self.pick_above, ' -> ', self.pick_grip, ' -> ', self.pick_lift)
+            print('Place : ', self.place_above, ' -> ', self.place_grip, ' -> ', self.place_lift)            
 
     # 비전으로터 받는 데이터 형식 {"pick": (x, y, z, theta, grip size), "place": (x, y, z, heading)}
     def get_data_from_vision(self,data): # vision으로 부터 받은 데이터를 가공해줌 -> 이후 action_setting 진행 -> 이후 new_state로 넘어가서 새로운 동작 진행
         vision_data = data
         self.object_size = np.array(vision_data[4])
-
         self.pick_pose = np.array(list(vision_data[:4]))
         self.place_pose = np.array(list(vision_data[5:]))
-        self.pick_pose = self.transformation(self.pick_pose)
-        self.place_pose = self.transformation(self.place_pose)
-
         self.action_setting(print_op=True) # vision data 기반으로 way point 설정, # print option은 vision data로 가공된 정보 확인하기 위함
         self.new_state() # init에서 vision 정보 받았으니 새로운 state로 이동 시 물체 위로 이동
 
     def update(self): #new_state로 부터 갱신된 동작을 진행해줌.
         # 초기화
         if self.state == "init_pose":            
-            self.pub_pose(option=1)
+            self.pub_pose(self.init_pose)
             print('updated to init_pose')
             
         # pick 
@@ -218,6 +183,7 @@ class FSM:
             self.last_state = self.state
             self.state = self.action_list[1] # init_pose로 이동
             print('-- next state:', self.state)
+            ## vision에 pub
             self.update()
 
         else:
@@ -290,8 +256,9 @@ class Callback:
             rospy.loginfo('gui_init_pose topic is subed')
             
     def state_done(self, data): # motor_control로 부터 state_done 받을 시 동작 메섣,
-        print('state_done\n')
+        print('test')
         if self.soomac_fsm.state != "init_pose": # init_pose로 이동 완료된 상황에서는 new_state안하고 vision 정보 기다림
+            print('state_done\n')
             self.soomac_fsm.new_state()
         
     def impact(self, data): # motor_control로 부터 impact 감지시 동작 메서드, 추후 제작 예정
