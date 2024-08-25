@@ -131,7 +131,7 @@ def main_screen():
         scrollbar.config(command=listbox_canvas.yview)
         listbox_canvas.config(yscrollcommand=scrollbar.set)
 
-        def load_selected_task():
+        def load_selected_task(): 
             task_name = selected_task.get()
             if task_name:
                 task_path = task_folder / task_name
