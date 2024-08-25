@@ -28,33 +28,30 @@ class Robot_control:
         self.pub_vision.publish(self.vision_msg)
         print('vision topic')
 
-    def vision(self,data):
-        if data.data == True:
-            print('vision data okay')
-
     def start(self):
-        self.gui_msg.data = "gui_start"
+        self.gui_msg.data = "start"
         self.pub_gui.publish(self.gui_msg)
         print('gui - start')
 
     def init_pos(self):
-        data = fl()
-        data.data = [-45, 50, 180, 0, 30]
-        self.goal_pose_test.publish(data)
-        print('goal_pos : ', data.data)
+        self.gui_msg.data = "init_pose"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - init_pose')
+        
         # self.gui_msg.data = "gui_init_pose"
         # self.pub_gui.publish(self.gui_msg)
         # print('gui - init_pos')
 
     def stop(self):
-        self.gui_msg.data = "gui_stop"
+        self.gui_msg.data = "stop"
         self.pub_gui.publish(self.gui_msg)
         print('gui - stop')
         
     def pause(self):
-        self.gui_msg.data = "gui_pause"
+        self.gui_msg.data = "pause"
         self.pub_gui.publish(self.gui_msg)
         print('gui - pause')
+        self.pause_screen()
 
     def impact_test(self):
         msg = Bool()
@@ -65,7 +62,69 @@ class Robot_control:
     def impact_cb(self,data):
         impact = data.data
         if impact == True:
-            impact_screen()
+            self.impact_screen()
+
+    def impact_screen(self):
+        exit_window = Toplevel()
+        exit_window.title("충돌 감지")
+        exit_window.geometry("400x150")
+        exit_window.configure(bg="#e0f7da")
+
+        Label(exit_window, text="충돌이 감지되었습니다, 조치 후 계속하십시오.", bg="#e0f7da", fg="#1b5e20", font=("Helvetica", 14)).pack(pady=20)
+
+        ############### 코드 추가해야할 부분 ###################
+        # GUI를 종료하면서 로봇을 거치대로 이동하는 작업을 수행하기 위해서 exit_program 함수에 로봇이 거치대로 이동하는 코드를 추가해야함. 
+        def exit_program():
+            exit_window.destroy()
+
+        def close_exit_window():
+            pass
+
+        yes_button = Button(exit_window, text="계속", command=exit_program, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
+        yes_button.pack(side=LEFT, padx=(50,10), pady=10)
+
+        no_button = Button(exit_window, text="종료", command=close_exit_window, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
+        no_button.pack(side=RIGHT, padx=(10,50), pady=10)
+
+    def pause_screen(self):
+        pause_window = Toplevel()
+        pause_window.title("Pause")
+        pause_window.geometry("400x150")
+        pause_window.configure(bg="#e0f7da")
+
+        Label(pause_window, text="Robot Pause. Please choice next action", bg="#e0f7da", fg="#1b5e20", font=("Helvetica", 14)).pack(pady=20)
+
+        def Continue():
+            print('continue')
+            self.gui_msg.data = "continue"
+            self.pub_gui.publish(self.gui_msg)
+            print('gui - continue')
+            pause_window.destroy()         
+
+        def Previous():
+            print('previous')
+            self.gui_msg.data = "previous"
+            self.pub_gui.publish(self.gui_msg)
+            print('gui - previous')
+            pause_window.destroy()
+
+        def Init_pose():
+            print('init_pose')
+            self.gui_msg.data = "init_pose"
+            self.pub_gui.publish(self.gui_msg)
+            print('gui - init_pose')
+            pause_window.destroy()
+
+
+        continue_button = Button(pause_window, text="계속 하기", command=Continue, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=8, height=2)
+        continue_button.pack(side=LEFT, padx=(30,30), pady=10)
+
+        previous_button = Button(pause_window, text="이전", command=Previous, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=8, height=2)
+        previous_button.pack(side=LEFT, padx=(0,30), pady=10)
+
+        init_pose_button = Button(pause_window, text="초기화", command=Init_pose, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=8, height=2)
+        init_pose_button.pack(side=LEFT, pady=10)
+
 
 
 # 메인 화면 설정
@@ -78,7 +137,7 @@ def main_screen():
 
     # ros
     rospy.Subscriber('impact_to_gui', Bool, robot_arm.impact_cb)
-    rospy.Subscriber('/vision_complete', Bool, robot_arm.vision)
+    rospy.Subscriber('/vision_complete', Bool, robot_arm.vision_test)
 
     # 타이틀 레이블
     title_label = Label(root, text="Soomac Task Taylor", font=("Helvetica", 20, "bold"), bg="#a5d6a7", fg="#1b5e20")
@@ -109,15 +168,15 @@ def main_screen():
 
     # 메인 화면 버튼들 배치
     buttons = [
-        ("실 행", robot_arm.start),
+        ("실 행", robot_arm.start), # okay
         ("새 Task 정의", open_task_definition),
         ("Task 불러오기", lambda: None),
         ("종료", confirm_exit),
-        ("초기 위치(goal_pos)", robot_arm.init_pos),
-        ("일시 정지", robot_arm.pause),
-        ("impact_test(로봇 정보)", robot_arm.impact_test),
+        ("초기 위치(goal_pos)", robot_arm.init_pos), # okay
+        ("일시 정지", robot_arm.pause), # okay
+        ("impact_test(로봇 정보)", robot_arm.impact_test), # 테스트용
         ("vision_data(개발자 정보)", robot_arm.vision_test), # 테스트용
-        ("긴급 정지", robot_arm.stop),
+        ("긴급 정지", robot_arm.stop), # okay
         # ("종료", confirm_exit),
     ]
 
@@ -293,28 +352,6 @@ def ask_to_execute():
 
     no_button = Button(execute_window, text="아니오", command=close_all_windows, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
     no_button.pack(side=RIGHT, padx=10, pady=10)
-
-def impact_screen():
-    exit_window = Toplevel()
-    exit_window.title("충돌 감지")
-    exit_window.geometry("400x150")
-    exit_window.configure(bg="#e0f7da")
-
-    Label(exit_window, text="충돌이 감지되었습니다, 조치 후 계속하십시오.", bg="#e0f7da", fg="#1b5e20", font=("Helvetica", 14)).pack(pady=20)
-
-    ############### 코드 추가해야할 부분 ###################
-    # GUI를 종료하면서 로봇을 거치대로 이동하는 작업을 수행하기 위해서 exit_program 함수에 로봇이 거치대로 이동하는 코드를 추가해야함. 
-    def exit_program():
-        exit_window.destroy()
-
-    def close_exit_window():
-        pass
-
-    yes_button = Button(exit_window, text="계속", command=exit_program, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
-    yes_button.pack(side=LEFT, padx=(50,10), pady=10)
-
-    no_button = Button(exit_window, text="종료", command=close_exit_window, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
-    no_button.pack(side=RIGHT, padx=(10,50), pady=10)
 
 
 
