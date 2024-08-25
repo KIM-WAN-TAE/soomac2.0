@@ -95,7 +95,8 @@ def main_screen():
 
         no_button = Button(exit_window, text="아니오", command=close_exit_window, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
         no_button.pack(side=RIGHT, padx=10, pady=10)
-    # Task 불러오기 창 열기
+
+    # Task 불러오기 창 열기   
     def open_task_loader():
         task_loader_window = Toplevel(root)
         task_loader_window.title("Task 불러오기")
@@ -117,7 +118,7 @@ def main_screen():
         task_frame_inner = Frame(listbox_canvas, bg="#e0f7da")
         listbox_canvas.create_window((0, 0), window=task_frame_inner, anchor="nw")
 
-        # Task 폴더 경로
+        # Task 폴더 경로 ----> 사용할 떄 각자의 경로에 맞게 수정 Path.home()은 home 디렉토리를 의미
         task_folder = Path.home() / "catkin_ws/src/soomac/src/gui/Task"
 
         # Task 폴더가 존재하지 않으면 생성
@@ -131,11 +132,11 @@ def main_screen():
         scrollbar.config(command=listbox_canvas.yview)
         listbox_canvas.config(yscrollcommand=scrollbar.set)
 
-        def load_selected_task(): 
+        def load_selected_task():
             task_name = selected_task.get()
             if task_name:
                 task_path = task_folder / task_name
-                print(f"Selected Task Path: {task_path}")
+                print(f"Selected Task Path: {task_path}") #불러오기 버튼을 클릭했을 때 사용자가 선택한 Task의 폴더 경로를 출력해주는 함수 
             else:
                 print("No Task selected")
 
@@ -206,8 +207,8 @@ def open_task_definition():
 
     # Task 정의 창의 버튼들
     def save_and_capture():
-        task_name = task_name_entry.get()
-        repeat_mode = repeat_mode_entry.get()
+        task_name = task_name_entry.get() #사용자가 지정한 task 이름
+        repeat_mode = repeat_mode_entry.get() #사용자가 지정한 반복 방식
 
         # 자동으로 경로 설정: catkin_ws/src/soomac/src/gui/Task/Task이름
         save_path = Path.home() / "catkin_ws/src/soomac/src/gui/Task" / task_name
