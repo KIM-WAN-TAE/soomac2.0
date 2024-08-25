@@ -69,8 +69,8 @@ class FSM:
         self.task_done = False
         self.grip_open = 49
         self.grip_seperation = self.grip_open
-        self.current_state = "parking"
-        self.last_state = "parking"
+        self.current_state = "init_pose"
+        self.last_state = "init_pose"
         self.arm = MakeChain()
 
         # fixed pose
@@ -89,7 +89,7 @@ class FSM:
         self.action_setting()
 
         # action 정의
-        self.action_list =["parking"    , "init_pose" ,                           # 고정된 위치 동작
+        self.action_list =["init_pose" ,                           # 고정된 위치 동작
                            "pick_above" , "pick_grip" , "grip_on" , "pick_lift",  # pick zone 동작 
                            "place_above", "place_grip", "grip_off", "place_lift", # place zone 동작
                            "init_pose"] 
@@ -97,10 +97,10 @@ class FSM:
 
         # ROS publish
         # master to motor_control
-        self.pub_goal_pose = rospy.Publisher('goal_pose', fl, queue_size=10) # pose 제어
+        self.pub_goal_pose = rospy.Publisher('goal_pose', fl, queue_size=10)                  # pose 제어
         self.pub_grip_seperation = rospy.Publisher('grip_seperation', Float32, queue_size=10) # grip 제어 
         self.pub_task_motor = rospy.Publisher('task_to_motor_control', String, queue_size=10) # GUI 명령 하달
-        self.pub_start = rospy.Publisher('start', Bool, queue_size=10) # GUI 명령 하달
+        self.pub_start = rospy.Publisher('start', Bool, queue_size=10)                        # GUI 명령 하달
         
         # master to GUI
         self.pub_task_gui = rospy.Publisher('input_task', String, queue_size=10)
@@ -119,9 +119,9 @@ class FSM:
         self.current_state = "init_pose"
 
     def move_to_init(self): # init pose로 direct 이동, GUI에서 초기 위치 누르면 해당 메서드 동작
-        print('\n---------------- Moving to initial pose ----------------')
+        print('\nMoving to initial pose')
         msg = String()
-        msg.data = "start"
+        msg.data = "initial"
         self.pub_task_motor.publish(msg)
         self.current_state = "init_pose"
 
@@ -196,7 +196,7 @@ class FSM:
         if current_state_index == self.action_num-1: # place_offset(마지막)인 경우 init_pos로 이동 // init_pos로 이동 시 state_done topic이 와도 다음 동작으로 넘어가지 않음. 다시 vision topic 올때 까지 기다림
             print("Pick and place 완료")
             self.last_state = self.current_state
-            self.current_state = self.action_list[1] # init_pose로 이동
+            self.current_state = self.action_list[0] # init_pose로 이동
             print(' --> Next state:', self.current_state)
             self.update()
 
@@ -309,13 +309,13 @@ class Callback:
     def task_type(self, data): # gui로 부터 task받을 시 동작 메서드
         #rospy.loginfo(f'Subscribed {data.data} topic')
 
-        if data.data == "gui_start" : # 주차(or 어디든) -> init # 초가 주차 상태일 때 누르면 init으로 옴
+        if data.data == "start" : # 주차(or 어디든) -> init # 초가 주차 상태일 때 누르면 init으로 옴
             self.soomac_fsm.start()
 
-        elif data.data == "gui_init_pose" :
+        elif data.data == "init_pose" :
             self.soomac_fsm.move_to_init()
 
-        elif data.data == "gui_stop" or data.data == "gui_pause" :
+        elif data.data == "stop" or data.data == "pause" :
             
             msg = String()
             msg.data = "stop"
@@ -323,12 +323,21 @@ class Callback:
             print(msg.data)
             while self.soomac_fsm.task_done == False :
                 time.sleep(0.1)
-
-            # 동작 이어서 하기
-            print('Continuing the operation after stop')
         
         elif data.data == "previous" :
-            self.soomac_fsm.move_to_init()
+
+            if self.soomac_fsm.current_state != self.soomac_fsm.last_state: 
+                print('moving to previous state\n')
+                self.soomac_fsm.current_state = self.soomac_fsm.last_state
+                self.soomac_fsm.update()
+            else :
+                print('already initial pose\n')
+
+        elif data.data == "continue" :
+            msg = String()
+            msg.data = "continue"
+            self.soomac_fsm.pub_task_motor.publish(msg)
+            print('Continuing the operation after stop')
 
     def state_done(self, data): # motor_control로 부터 state_done 받을 시 동작 메서드
         # print('test')
