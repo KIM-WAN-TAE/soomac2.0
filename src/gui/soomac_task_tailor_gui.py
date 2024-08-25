@@ -7,6 +7,7 @@ import rospy
 from std_msgs.msg import Float32MultiArray as fl
 from std_msgs.msg import Bool, String
 import threading
+from pathlib import Path
 
 class Robot_control:
     def __init__(self):
@@ -43,6 +44,11 @@ class Robot_control:
         self.pub_gui.publish(self.gui_msg)
         print('gui - pause')
 
+    def info(self):
+        self.gui_msg.data = "gui_info"
+        self.pub_gui.publish(self.gui_msg)
+        print("gui - info")
+
 class ros_subscribe:
     def __init__(self) -> None:
         pass
@@ -52,17 +58,18 @@ class ros_subscribe:
         rospy.Subscriber('impact_to_gui', Bool, self.callback)
         rospy.spin()  # ROS 이벤트 루프 실행    
 
-    def callback(self,data):
+    def callback(self, data):
         impact = data.data
         if impact == True:
             impact_screen()
+
 # 메인 화면 설정
 def main_screen():
     root = Tk()
     root.title("Soomac Taylor")
     root.geometry("420x520")
     root.configure(bg="#e0f7da")  # 연한 초록색 배경
-    robot_arm = Robot_control() # 로봇 제어 클래스
+    robot_arm = Robot_control()  # 로봇 제어 클래스
 
     # 타이틀 레이블
     title_label = Label(root, text="Soomac Task Taylor", font=("Helvetica", 20, "bold"), bg="#a5d6a7", fg="#1b5e20")
@@ -77,8 +84,6 @@ def main_screen():
 
         Label(exit_window, text="로봇의 전원 또한 종료됩니다.", bg="#e0f7da", fg="#1b5e20", font=("Helvetica", 14)).pack(pady=20)
 
-        ############### 코드 추가해야할 부분 ###################
-        # GUI를 종료하면서 로봇을 거치대로 이동하는 작업을 수행하기 위해서 exit_program 함수에 로봇이 거치대로 이동하는 코드를 추가해야함. 
         def exit_program():
             root.destroy()
 
@@ -90,19 +95,71 @@ def main_screen():
 
         no_button = Button(exit_window, text="아니오", command=close_exit_window, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
         no_button.pack(side=RIGHT, padx=10, pady=10)
+    # Task 불러오기 창 열기
+    def open_task_loader():
+        task_loader_window = Toplevel(root)
+        task_loader_window.title("Task 불러오기")
+        task_loader_window.geometry("400x350")
+        task_loader_window.configure(bg="#e0f7da")
+
+        selected_task = StringVar()  # 선택된 Task를 저장하는 변수
+
+        # 스크롤 가능한 리스트박스
+        task_frame = Frame(task_loader_window)
+        task_frame.pack(fill=BOTH, expand=True, padx=10, pady=10)
+
+        scrollbar = Scrollbar(task_frame)
+        scrollbar.pack(side=RIGHT, fill=Y)
+
+        listbox_canvas = Canvas(task_frame, width=350, height=200)  # 고정된 크기로 설정
+        listbox_canvas.pack(side=LEFT, fill=BOTH, expand=True)
+
+        task_frame_inner = Frame(listbox_canvas, bg="#e0f7da")
+        listbox_canvas.create_window((0, 0), window=task_frame_inner, anchor="nw")
+
+        # Task 폴더 경로
+        task_folder = Path.home() / "catkin_ws/src/soomac/src/gui/Task"
+
+        # Task 폴더가 존재하지 않으면 생성
+        task_folder.mkdir(parents=True, exist_ok=True)
+
+        # Task 폴더에서 Task 폴더 이름을 로드
+        task_dirs = [d.name for d in task_folder.iterdir() if d.is_dir()]
+        for task in task_dirs:
+            Radiobutton(task_frame_inner, text=task, variable=selected_task, value=task, bg="#e0f7da", fg="#1b5e20").pack(anchor=W)
+
+        scrollbar.config(command=listbox_canvas.yview)
+        listbox_canvas.config(yscrollcommand=scrollbar.set)
+
+        def load_selected_task():
+            task_name = selected_task.get()
+            if task_name:
+                task_path = task_folder / task_name
+                print(f"Selected Task Path: {task_path}")
+            else:
+                print("No Task selected")
+
+        # 버튼 프레임 추가
+        button_frame = Frame(task_loader_window, bg="#e0f7da")
+        button_frame.pack(pady=10)
+
+        load_button = Button(button_frame, text="불러오기", command=load_selected_task, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=15, height=2)
+        load_button.pack(side=LEFT, padx=10)
+
+        back_button = Button(button_frame, text="뒤로 가기", command=task_loader_window.destroy, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=15, height=2)
+        back_button.pack(side=RIGHT, padx=10)
 
     # 메인 화면 버튼들 배치
     buttons = [
         ("실 행", robot_arm.start),
         ("새 Task 정의", open_task_definition),
-        ("Task 불러오기", lambda: None),
+        ("Task 불러오기", open_task_loader),
         ("종료", confirm_exit),
         ("초기 위치", robot_arm.init_pos),
         ("일시 정지", robot_arm.pause),
-        ("로봇 정보", lambda: None),
-        ("vision_data(개발자 정보)", robot_arm.vision), # 테스트용
+        ("로봇 정보", robot_arm.info),
+        ("vision_data(개발자 정보)", robot_arm.vision),  # 테스트용
         ("긴급 정지", robot_arm.stop),
-        # ("종료", confirm_exit),
     ]
 
     positions = [
@@ -117,7 +174,6 @@ def main_screen():
         (5, 0),  # 긴급 정지
         (5, 1)   # 종료
     ]
-    
 
     for i, (text, command) in enumerate(buttons):
         if i == 0:  # 실행 버튼
@@ -131,12 +187,11 @@ def main_screen():
 
     root.mainloop()
 
-
 # Task 정의 창 열기
 def open_task_definition():
     task_window = Toplevel()
     task_window.title("새 Task 정의")
-    task_window.geometry("530x260")
+    task_window.geometry("530x200")
     task_window.configure(bg="#e0f7da")
 
     # Task 이름 입력란
@@ -149,40 +204,32 @@ def open_task_definition():
     repeat_mode_entry = Entry(task_window, width=30)
     repeat_mode_entry.grid(row=1, column=1, pady=10, padx=10)
 
-    # 저장 경로 입력란
-    Label(task_window, text="저장 경로:", bg="#e0f7da", fg="#1b5e20").grid(row=2, column=0, pady=10, padx=10, sticky=W)
-    save_path_entry = Entry(task_window, width=30)
-    save_path_entry.grid(row=2, column=1, pady=10, padx=10)
-
-    def browse_save_path():
-        path = filedialog.askdirectory()
-        save_path_entry.insert(0, path)
-
-    browse_button = Button(task_window, text="Browse", command=browse_save_path, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
-    browse_button.grid(row=2, column=2, pady=10, padx=10)
-
     # Task 정의 창의 버튼들
     def save_and_capture():
         task_name = task_name_entry.get()
         repeat_mode = repeat_mode_entry.get()
-        save_path = save_path_entry.get()
-        if task_name and repeat_mode and save_path:
+
+        # 자동으로 경로 설정: catkin_ws/src/soomac/src/gui/Task/Task이름
+        save_path = Path.home() / "catkin_ws/src/soomac/src/gui/Task" / task_name
+        save_path.mkdir(parents=True, exist_ok=True)
+
+        if task_name and repeat_mode:
             task_window.destroy()
             open_camera_window(save_path, task_name)
         else:
             print("모든 입력란을 채워주세요.")
 
-    save_button = Button(task_window, text="저장 및 촬영", command=save_and_capture, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
-    save_button.grid(row=3, column=0, pady=20, padx=10, sticky=W)
+    save_button = Button(task_window, text="저장 및 촬영", command=save_and_capture, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=15, height=2)
+    save_button.grid(row=2, column=0, pady=20, padx=10, sticky=W)
 
-    back_button = Button(task_window, text="뒤로 가기", command=task_window.destroy, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
-    back_button.grid(row=3, column=1, pady=20, padx=10, sticky=E)
+    back_button = Button(task_window, text="뒤로 가기", command=task_window.destroy, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=15, height=2)
+    back_button.grid(row=2, column=1, pady=20, padx=10, sticky=E)
 
 # 웹캠 창 열기
 def open_camera_window(save_path, task_name):
     camera_window = Toplevel()
     camera_window.title("촬영 화면")
-    camera_window.geometry("800x600")
+    camera_window.geometry("1400x850")
     camera_window.configure(bg="#a5d6a7")  # 초록색 배경
 
     last_image_path = None  # 마지막으로 촬영한 이미지 경로를 저장
@@ -268,9 +315,9 @@ def ask_to_execute():
             if isinstance(window, Toplevel):
                 window.destroy()
         execute_window.destroy()
+
     def task_start():
-        pass
-        ####################### 코드 추가해야할 부분 ######################## 
+        pass  # 이곳에 로봇을 실행시키는 코드를 추가합니다.
 
     yes_button = Button(execute_window, text="예", command=task_start, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
     yes_button.pack(side=LEFT, padx=10, pady=10)
@@ -286,8 +333,6 @@ def impact_screen():
 
     Label(exit_window, text="충돌이 감지되었습니다, 조치 후 계속하십시오.", bg="#e0f7da", fg="#1b5e20", font=("Helvetica", 14)).pack(pady=20)
 
-    ############### 코드 추가해야할 부분 ###################
-    # GUI를 종료하면서 로봇을 거치대로 이동하는 작업을 수행하기 위해서 exit_program 함수에 로봇이 거치대로 이동하는 코드를 추가해야함. 
     def exit_program():
         exit_window.destroy()
 
@@ -295,12 +340,10 @@ def impact_screen():
         pass
 
     yes_button = Button(exit_window, text="계속", command=exit_program, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
-    yes_button.pack(side=LEFT, padx=(50,10), pady=10)
+    yes_button.pack(side=LEFT, padx=(50, 10), pady=10)
 
     no_button = Button(exit_window, text="종료", command=close_exit_window, bg="#66bb6a", fg="white", activebackground="#388e3c", activeforeground="white", width=10, height=2)
-    no_button.pack(side=RIGHT, padx=(10,50), pady=10)
-
-
+    no_button.pack(side=RIGHT, padx=(10, 50), pady=10)
 
 if __name__ == "__main__":
     rospy.init_node('GUI', anonymous=True)
