@@ -91,24 +91,35 @@ class FSM:
         # action 정의
         self.action_list =["parking"    , "init_pose" ,                           # 고정된 위치 동작
                            "pick_above" , "pick_grip" , "grip_on" , "pick_lift",  # pick zone 동작 
-                           "place_above", "place_grip", "grip_off", "place_lift"] # place zone 동작
+                           "place_above", "place_grip", "grip_off", "place_lift", # place zone 동작
+                           "init_pose"] 
         self.action_num = len(self.action_list)
 
         # ROS publish
         # master to motor_control
-        self.pub_goal_pose = rospy.Publisher('goal_pose', fl, queue_size=10) 
-        self.pub_grip_seperation = rospy.Publisher('grip_seperation', Float32, queue_size=10) 
-        self.pub_task_motor = rospy.Publisher('task_to_motor_control', String, queue_size=10)
+        self.pub_goal_pose = rospy.Publisher('goal_pose', fl, queue_size=10) # pose 제어
+        self.pub_grip_seperation = rospy.Publisher('grip_seperation', Float32, queue_size=10) # grip 제어 
+        self.pub_task_motor = rospy.Publisher('task_to_motor_control', String, queue_size=10) # GUI 명령 하달
+        self.pub_start = rospy.Publisher('start', Bool, queue_size=10) # GUI 명령 하달
         
         # master to GUI
-        self.pub_pnp_done = rospy.Publisher('pnp_done', Bool, queue_size=10)
         self.pub_task_gui = rospy.Publisher('input_task', String, queue_size=10)
+
+        # master to vision
+        self.pub_pnp_done = rospy.Publisher('pnp_done', Bool, queue_size=10) 
+        
 
 
     ######################################################################################################
+    def start(self): # init pose로 direct 이동, GUI에서 초기 위치 누르면 해당 메서드 동작 ********************************************
+        print('\n---------------- Started! Moving to initial pose ----------------')
+        msg = Bool()
+        msg.data = True
+        self.pub_start.publish(msg)
+        self.current_state = "init_pose"
 
     def move_to_init(self): # init pose로 direct 이동, GUI에서 초기 위치 누르면 해당 메서드 동작
-        print('\n---------------- Started! Moving to initial pose ----------------')
+        print('\n---------------- Moving to initial pose ----------------')
         msg = String()
         msg.data = "start"
         self.pub_task_motor.publish(msg)
@@ -275,14 +286,16 @@ class FSM:
 class Callback:
     def __init__(self):
         self.soomac_fsm = FSM()
-        # self.soomac_fsm.move_to_init() #이거 풀면 master node 실행 시 자동으로 init_pos로 이동
         self.ros_sub()
 
     def ros_sub(self): # main_loop
 
-        # GUI to master
+        # vision to master
         rospy.Subscriber('vision', fl, self.vision)         
+
+        # GUI to master
         rospy.Subscriber('task_type', String, self.task_type)
+
         # motor_control to master
         rospy.Subscriber('state_done', Bool, self.state_done)
         rospy.Subscriber('task_done', Bool, self.task_done)
@@ -297,17 +310,17 @@ class Callback:
         #rospy.loginfo(f'Subscribed {data.data} topic')
 
         if data.data == "gui_start" : # 주차(or 어디든) -> init # 초가 주차 상태일 때 누르면 init으로 옴
-            self.soomac_fsm.move_to_init()
+            self.soomac_fsm.start()
 
         elif data.data == "gui_init_pose" :
             self.soomac_fsm.move_to_init()
 
         elif data.data == "gui_stop" or data.data == "gui_pause" :
-
+            
             msg = String()
             msg.data = "stop"
             self.soomac_fsm.pub_task_motor.publish(msg)
-
+            print(msg.data)
             while self.soomac_fsm.task_done == False :
                 time.sleep(0.1)
 
@@ -324,11 +337,11 @@ class Callback:
             self.soomac_fsm.new_state()
 
     # 추후 코드 수정 필요
-    def task_done(self):
+    def task_done(self): # motor_control에서 주어진 명령 수행 완료 시
         print('subscribed task_done topic')
         self.soomac_fsm.task_done = True
         
-    def impact(self, msg): 
+    def impact(self, msg): # impact 시 GUI로 알림
         print('Impact detected! Freezing for 10s')
         msg = String()
         msg.data = "impact"
