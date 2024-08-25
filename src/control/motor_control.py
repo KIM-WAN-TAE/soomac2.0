@@ -19,12 +19,12 @@ from dynamixel_sdk.packet_handler import PacketHandler
 from dynamixel_sdk.robotis_def import *
 
 from std_msgs.msg import Float32MultiArray as fl
-from std_msgs.msg import Float32, Bool
+from std_msgs.msg import Float32, Bool, String
 # import threading
 # import matplotlib.pyplot as plt
 # import matplotlib.animation as animation
 # import plotly.graph_objects as go
-DEVICENAME = '/dev/ttyUSB1'
+DEVICENAME = '/dev/ttyUSB0'
 
 
 #**********************XM430-W350-R(PROTOCOL_VERSION 2.0)**************************#
@@ -52,7 +52,7 @@ XM_PROTOCOL_VERSION = 2.0
 
 XM_DXL_ID = [0, 1, 2, 3, 4]
 gripper_DXL_ID = 5
-XM_BAUDRATE = 115200
+XM_BAUDRATE = 1000000
 
 XM_TORQUE_ENABLE = 1
 XM_TORQUE_DISABLE = 0
@@ -66,12 +66,34 @@ XM_TORQUE_DISABLE = 0
 ################################################################################################################################################
 # parameter
 N = 50 # link motor 경로 분활
-N_grip = 50 # gripper motor 경로 분활
+N_grip = 30 # gripper motor 경로 분활
 # timer = time.time()
 # repeat_time = 0.05
 # impact_num = 13
 
-def cubic_trajectory(th_i, th_f): # input : 시작각도, 나중각도, 분활 넘버 -> output : (n, N) 배열
+def degree_to_dynamixel_value(degree): # degree의 0~4번째 값을 dynamixel value로 바꾸고, 5번째 값(gripper dynamixel value)을 첨가
+    change_para = 1024/90
+    position_dynamixel = np.array(degree[:5])
+
+    position_dynamixel[0] = (position_dynamixel[0]+180)*change_para
+    position_dynamixel[1] = (position_dynamixel[1]+90)*change_para
+    position_dynamixel[2] = (position_dynamixel[2]+180)*change_para
+    position_dynamixel[3] = (position_dynamixel[3]+180)*change_para
+    position_dynamixel[4] = (position_dynamixel[4]+180)*change_para        
+    position_dynamixel = position_dynamixel.astype(int)
+    position_dynamixel = np.append(position_dynamixel, int(degree[5]))
+    return position_dynamixel
+
+def cubic_trajectory(th_i, th_f): # input : 시작각도, 나중각도, 분할 넘버 -> output : (n, N) 배열
+    # N 계산하는 식을 따로 만들면 좋을 거 같습니다
+
+    # N 계산 
+    delta_th = np.max(np.abs(th_f - th_i)) # 모터들의 변화량 계산 후, 모든 모터에서 발생할 수 있는 최대 변화량
+    min_n, max_n = 10, 50                  # 최소 및 최대 보간법 개수 설정
+    max_delta_th = 100                     # 모터에서 발생할 수 있는 최대 변화량
+    global N 
+    N = min_n + (delta_th / max_delta_th) * (max_n - min_n)    
+    N = int(N)
     t = np.linspace(0, 1, N)
     
     # 3차 다항식 계수: 초기 속도와 최종 속도를 0으로 설정 (s_curve)
@@ -81,74 +103,73 @@ def cubic_trajectory(th_i, th_f): # input : 시작각도, 나중각도, 분활 �
     a3 = -2 * (th_f - th_i)[:, np.newaxis]
     
     # 3차 다항식을 통해 각도를 계산 (각 행이 하나의 trajectory)
-    theta = a0 + a1 * t + a2 * t**2 + a3 * t**3
-    
-    return theta
+    theta = a0 + a1 * t + a2 * t**2 + a3 * t**3  
+    print('trajectory N : ',N)
+    return theta.T
 
-class main():
-    def __init__(self):
-        rospy.init_node('motor_control', anonymous=True)
-        self.control = DynamixelNode()
-        self.sub()
-
-    def sub(self): # main loop
-        rospy.Subscriber('goal_pose', fl, self.control.link)  # from IK solver
-        rospy.Subscriber('grip_seperation', Float32, self.control.gripper) # from master node
-        rospy.spin()
-
-class impact: # 작업 예정
+class Impact: # 작업 예정
     def __init__(self):
         self.last_torgue = np.array([])
-        self.diff_torques = np.array([]).reshape(0,4)
+        self.diff_torques = np.array([]).reshape(0,5)
         self.last_diff_2rd = np.array([])
+        self.diff_1rd = rospy.Publisher('diff_1rd', Float32, queue_size=10)
+        self.diff_2rd = rospy.Publisher('diff_2rd', Float32, queue_size=10)
 
     def diff(self, current_torque): # 입력 : 현재 토크 값, 출력은 없으며 전역 변수 diff_torques에 토크 변화량이 저장됨
         # print("#######미분#######")
-        if len(self.last_torgue)!=0: # last_torque 존재 시   
+        current_torque = np.array(current_torque)
+        diff_torque = np.zeros(5)
+        if len(self.last_torgue)!=0: # last_torque 존재 시  
             diff_torque = self.last_torgue - current_torque
             self.last_torgue = current_torque
             self.diff_torques = np.append(self.diff_torques,[np.abs(diff_torque)], axis = 0)
         else:
             self.last_torgue = current_torque
+
         if self.diff_torques.shape[0]>=10: # 10개 이상의 토크 미분값이 저장된 경우
             self.diff_torques[0] = self.diff_torques[8]
             self.diff_torques[1] = self.diff_torques[9]
             self.diff_torques = self.diff_torques[:2]
+        self.diff_1rd.publish(diff_torque[0])
 
     def impact_check(self):
         #print("#######충격 확인#######")
         diff_torques_num = self.diff_torques.shape[0] # 저장된 변화량의 개수
-        dof = self.diff_torques.shape[1] # 모터의 개수(4)
-        diff_2rd = np.zeros(dof) # 토크 변화량의 기울기가 급변할 때를 파악하기 위함.
-        result = 0
-        if self.diff_torques.shape[0] >= 2:
-            for i in range(dof):
+        # dof = self.diff_torques.shape[1] # 모터의 개수(5)
+        diff_2rd = np.zeros(5) # 토크 변화량의 기울기가 급변할 때를 파악하기 위함.
+
+        result = 0 # 충돌 결과
+        if self.diff_torques.shape[0] >= 2: # 1차 미분값이 2개 이상 모이면
+            for i in range(5):
                 diff_2rd[i] = self.diff_torques[diff_torques_num-1][i]-self.diff_torques[diff_torques_num-2][i]
             diff_2rd = np.abs(diff_2rd)
-            # print("diff_2rd : ", diff_2rd)
 
-            if len(self.last_diff_2rd)!=0:
+            print("diff_2rd : ", diff_2rd)
+
+            if len(self.last_diff_2rd)!=0: # 직전 2차 미분값 존재 시
                 key = 0
-                for i in range(dof):
-                    if abs(diff_2rd[i])>=0.1 and abs(self.last_diff_2rd[i])>=0.1: 
-                        if abs(diff_2rd[i]-self.last_diff_2rd[i])>impact_num*min(abs(diff_2rd[i]), abs(self.last_diff_2rd[i])):
-                            key = key + 1 
-                if key >= 1:
-                    rospy.loginfo("impact")
-                    result = 1     
-                    print("diff_2rd : ", diff_2rd)
-                    print("last_diff_2rd : ",self.last_diff_2rd)
+                # for i in range(dof):
+                #     if abs(diff_2rd[i])>=0.1 and abs(self.last_diff_2rd[i])>=0.1: 
+                #         if abs(diff_2rd[i]-self.last_diff_2rd[i])>impact_num*min(abs(diff_2rd[i]), abs(self.last_diff_2rd[i])):
+                #             key = key + 1 
+                # if key >= 1:
+                #     rospy.loginfo("impact")
+                #     result = 1     
+                #     print("diff_2rd : ", diff_2rd)
+                #     print("last_diff_2rd : ",self.last_diff_2rd)
                     
                 # else:
-                #     #print("Non-impact")
+                #     print("Non-impact")
                     
-                #     # print("diff_2rd : ", diff_2rd)
-                #     # print("last_diff_2rd : ",self.last_diff_2rd)
-                self.last_diff_2rd = diff_2rd
+                #     print("diff_2rd : ", diff_2rd)
+                #     print("last_diff_2rd : ",self.last_diff_2rd)
+                # self.last_diff_2rd = diff_2rd
             
             else:
                 print("Non-data")
                 self.last_diff_2rd = diff_2rd
+        self.diff_2rd.publish(diff_2rd[0])                
+
         return result
             
     def print_info(self, test_data):
@@ -156,28 +177,29 @@ class impact: # 작업 예정
         print("last_torque : ",self.last_torgue)
         print("diff_torques : ",self.diff_torques)
         print("last_diff_2rd : ",self.last_diff_2rd)
-        
+
+
 class DynamixelNode:
     def __init__(self): # 파라미터 설정
         # setting
+        self.impact = Impact()
         self.dynamixel_setting()
-        self.impact_check = impact()
         self.change_para = 1024/90
 
         # init_setting
-        self.gripper_open = 1800
-        self.gripper_close = 3100
+        self.gripper_open = 3500
+        self.gripper_close = 2236
 
-        self.gripper_open_mm = 72 #54
-        self.gripper_close_mm = 15.9 #0
-        self.current_grip_seperation = self.gripper_open 
+        self.gripper_open_mm = 49 #72
+        self.gripper_close_mm = 0 #15.9
+        self.current_grip_seperation = self.gripper_open
         self.seperation_per_mm = (self.gripper_close/(self.gripper_open_mm-self.gripper_close_mm))
         
         self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, gripper_DXL_ID, XM_ADDR_GOAL_POSITION, self.current_grip_seperation) #실행 시 그리퍼 open
 
         ## ROS
         # for state done
-        self.state_finish = rospy.Publisher('state_done', Bool, queue_size=10)
+
 
         # for plot_torque
         self.pub_data_1 = rospy.Publisher('XM_0', Float32, queue_size=10)
@@ -232,48 +254,44 @@ class DynamixelNode:
             rospy.loginfo("Torque enabled for XM Motor ID: {}".format(gripper_DXL_ID))        
         
         
-                
-        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, 84, 300) # XM540 p gain
+        # XM540 p gain 설정
+        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, 84, 300) 
 
     def read_motor_position(self, port_handler, packet_handler, dxl_id, addr_present_position): # 현재 모터 value 도출해주는 메서드
         # 모터의 현재 위치 읽기
         dxl_present_position, _, _ = packet_handler.read2ByteTxRx(port_handler, dxl_id, addr_present_position)
         return dxl_present_position
 
-    def link(self, data): # 현재 각도 읽고, 목표 각도 까지 trajectory 만들어서 제어, input : 목표 각도(출발 각도는 받지 않아도 모터 자체에서 현재 각도 확인 후 traj)
-        position_dynamixel = np.array(data.data)
-
-        position_dynamixel[0] = 1007 # base 수리 되면 변경 -> (position_dynamixel[0]+180)*self.change_para
-        position_dynamixel[1] = (position_dynamixel[1]+90)*self.change_para
-        position_dynamixel[2] = (position_dynamixel[2]+180+20)*self.change_para
-        position_dynamixel[3] = (position_dynamixel[3]+180)*self.change_para
-        position_dynamixel[4] = (position_dynamixel[4]+180)*self.change_para        
-        position_dynamixel = position_dynamixel.astype(int)
-        # print(position_dynamixel)        
+    def move_current_to_goal(self, goal_pose): # 현재 각도 읽고, 목표 각도 까지 trajectory 만들어서 제어, input : 목표 각도(출발 각도는 받지 않아도 모터 자체에서 현재 각도 확인 후 traj)
+        
+        goal_dynamixel = degree_to_dynamixel_value(goal_pose)
+        goal_dynamixel = goal_dynamixel[:5]
         present_position = np.zeros(5)
+        print('goal degree : ', goal_pose[:5])
 
         for dxl_id in XM_DXL_ID:
             present_position[dxl_id] = self.read_motor_position(self.port_handler_xm, self.packet_handler_xm, dxl_id, XM_ADDR_PRESENT_POSITION)
 
-        # print(present_position)
-
-        traj_arr = cubic_trajectory(present_position, position_dynamixel) # 각 모터마다의 각도를 trajectory, traj_arr는 (5,N)의 shape
+        print('현재 : ', present_position)
+        print('목표 : ', goal_dynamixel)
+        traj_arr = cubic_trajectory(present_position, goal_dynamixel) # 각 모터마다의 각도를 trajectory, traj_arr는 (5,N)의 shape
+        
         position_dynamixel = traj_arr        
         position_dynamixel = position_dynamixel.astype(int)
-        # print(position_dynamixel)
 
         for n in range(N):
             for dxl_id in XM_DXL_ID:
                 # print("Set Goal XM_Position of ID %s = %s" % (XM_DXL_ID[dxl_id], xm_position[dxl_id]))
-                self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, dxl_id, XM_ADDR_GOAL_POSITION, position_dynamixel[dxl_id][n])
-            rospy.loginfo("모터 제어 value : %d, %d, %d, %d, %d", *position_dynamixel.T[n])
-        self.state_done()
-        print("state_done")
+                self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, dxl_id, XM_ADDR_GOAL_POSITION, position_dynamixel[n][dxl_id])
+            
+            rospy.loginfo("모터 제어 value : %d, %d, %d, %d, %d", *position_dynamixel[n])
+        
+        print("move_currnet_to_goal is done")
        
     def gripper(self, data): # gripper 제어, 사물의 물체를 받고, 그에 따른 그리퍼 모터 value 도출 및 제어, 완료 시 state_done 토픽 발행
         # Assuming we get the desired angle in degrees from the message
         goal_grip_seperation_mm = data.data ## mm
-        goal_grip_seperation = 3100 - (goal_grip_seperation_mm-self.gripper_close_mm)*self.seperation_per_mm
+        goal_grip_seperation = self.gripper_close + (goal_grip_seperation_mm-self.gripper_close_mm)*self.seperation_per_mm
         
         # linear traj
         goal_grip_seperation = int(goal_grip_seperation)
@@ -290,44 +308,51 @@ class DynamixelNode:
         print('state_done')
         self.state_done()                          
 
-    def state_done(self): # link, gripper 제어 완료 시 state_done 토픽 발행해주는 메서드
-        state_msg = Bool()
-        state_msg.data = True
-        self.state_finish.publish(state_msg)
+    def shutdown(self): # 종료 시 포트 닫기
+        # 노드 종료 시 AX, XM 시리얼 포트 닫기
+        self.port_handler_xm.closePort()    
+        rospy.loginfo("Shutdown Dynamixel node.")
+        
+    def pub_pose(self, pose):
+        dynamixel_value = degree_to_dynamixel_value(pose) 
+        # print(dynamixel_value)
 
-#############################################   해야할 것   ####################################################                
-    def read_motor_torque_xm(self, dxl_id): # 모터 전류값 읽는 메서드, 충돌 피드백을 위한 것이므로 추후 수정 예정
+        for dxl_id in XM_DXL_ID:
+            # print("Set Goal XM_Position of ID %s = %s" % (XM_DXL_ID[dxl_id], xm_position[dxl_id]))
+            self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, dxl_id, XM_ADDR_GOAL_POSITION, dynamixel_value[dxl_id])
+        
+        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, gripper_DXL_ID, XM_ADDR_GOAL_POSITION, dynamixel_value[5]) ## 그리퍼 별도 제어
+        # rospy.loginfo("모터 제어 degree : %.2f, %.2f, %.2f, %.2f, %.2f // gripper : %.2f", *pose)
+        # rospy.loginfo("모터 제어 value : %d, %d, %d, %d, %d // gripper : %.2f", *dynamixel_value)
+
+    def read_motor_current(self, dxl_id): # 주어진 id의 모터에 대한 전류 값 반환
         # 모터의 현재 전류 값 읽기
         dxl_present_current, dxl_comm_result, dxl_error = self.packet_handler_xm.read2ByteTxRx(self.port_handler_xm, dxl_id, XM_CURRENT_ADDR)
         
         if dxl_comm_result != COMM_SUCCESS:
-            rospy.logerr("Failed to read current for XM Motor ID: {}".format(dxl_id))
+            # rospy.logerr("Failed to read current for XM Motor ID: {}".format(dxl_id))
             return None
         
         # 전류 값을 부호 있는 정수로 변환
         if dxl_present_current >= 32768:  # 음수 값 처리를 위한 부호 확장
             dxl_present_current -= 65536
         
-        # 방향 해석 (부호로 방향을 나타냄)
-        direction = "CW" if dxl_present_current >= 0 else "CCW"
+        return dxl_present_current
         
-        return dxl_present_current, direction
-        
-    def monitor_torque(self): # 모터 전류값 모니터링하는 메서드, 충돌 피드백을 위한 것이므로 추후 수정 예정
-        data_t = np.zeros(4)
+    def monitor_current(self): # 모터 전류값 모니터링하는 메서드, 충돌 피드백을 위한 것이므로 추후 수정 예정
+        data_t = np.zeros(5)
         result = 0
         for dxl_id in XM_DXL_ID:
-            torque_value = self.read_motor_torque_xm(dxl_id)
+            torque_value = self.read_motor_current(dxl_id)
             if torque_value is not None:
-                torque, direction = torque_value
                 # rospy.loginfo("XM Motor ID: {}, Current Torque: {:.2f}, Direction: {}".format(dxl_id, torque, direction))  
-                data_t[dxl_id] = torque
+                data_t[dxl_id] = torque_value
         
         self.plot_torque(data_t)
-        self.impact_check.diff(data_t)
-        result = self.impact_check.impact_check()
+        self.impact.diff(data_t)
+        result = self.impact.impact_check()
         return result
-        # self.torque_array(data)
+        
 
     def plot_torque(self, data_t): # 모터 전류값 Plot 해주는 메서드, 충돌 피드백을 위한 것이므로 추후 수정 예정
         msg_1 = Float32(data=data_t[0])
@@ -342,14 +367,134 @@ class DynamixelNode:
         self.pub_data_4.publish(msg_4)
         self.pub_data_4.publish(msg_5)
 
-    def shutdown(self): # 종료 시 포트 닫기
-        # 노드 종료 시 AX, XM 시리얼 포트 닫기
-        self.port_handler_xm.closePort()    
-        rospy.loginfo("Shutdown Dynamixel node.")
 
+class Pose:
+    def __init__(self):
+        self.goal_sub = rospy.Subscriber('goal_pose', fl, self.callback_goal)  # from IK solver
+        self.grip_sub = rospy.Subscriber('grip_seperation', Float32, self.callback_grip) # from master node
+        self.taks_sub = rospy.Subscriber('task_to_motor_control', String , self.callback_task) # from master node
+        self.stop_state = False
+        # init_setting
+
+        
+        self.gripper_open = 3500
+        self.gripper_close = 2236
+
+        self.gripper_open_mm = 49 #72
+        self.gripper_close_mm = 0 #15.9
+        self.current_grip_seperation = self.gripper_open 
+        self.seperation_per_mm = ((self.gripper_open-self.gripper_close)/(self.gripper_open_mm-self.gripper_close_mm))
+
+        self.goal_pose = None
+        self.grip_seperation = None
+        self.current_pose = None
+        self.init_pose = np.array([0, 150, -90, -110, 0])
+
+        self.last_pose = np.append(self.init_pose, self.gripper_open) #pose 초기값(그리퍼 포함)
+        self.trajectory = []
+        self.state_finish = rospy.Publisher('state_done', Bool, queue_size=10)
+        
+        self.change_para = 1024/90
+
+    def callback_task(self, data):
+        print('\n---------------- task callback ----------------')
+        if data.data == 'stop':
+            self.stop_state = True
+
+        if data.data == 'continue':
+            print('continue')
+            self.stop_state = False  
+
+        if data.data == 'previous':
+            print('previous')
+            self.trajectory = self.trajectory[:1, :]
+            self.trajectory[0] = self.last_pose
+            rospy.sleep(0.1) # trjectory 최신화 될때 까지 기달
+            self.stop_state = False
+             
+        if data.data == 'initial': # init
+            print("initial")
+            self.trajectory = [] # trajectory 대기열 삭제        
+            self.trajectory = cubic_trajectory(self.last_pose[:5], self.init_pose)
+            grip = self.last_pose[5]
+            # self.init_pose_with_grip = np.append(self.init_pose, grip) # init_pose로 설정            
+            grip_arr = np.full((self.trajectory.shape[0], 1), self.last_pose[5])
+            self.trajectory = np.hstack((self.trajectory, grip_arr))            
+            # print(self.last_pose)
+            self.stop_state = False
+
+    def callback_goal(self, msg):
+        self.goal_pose = np.array(msg.data)
+        # 원래 알고리즘 상 현재 pose 를 기준으로 계산을 하는 거라 current pose로 넣어두긴 했는데
+        # trajectory에 goal이 밀려 있는 상태에서 계산하면 문제가 발생할 수 있을 거 같습니다
+        # self.current_pose -> self.last_pose 로 바꿔서도 한 번 해보세용
+        print('### callback_goal ###')
+        print('현재 상태 : ', self.last_pose[:5])
+        print('목표 상태 : ', self.goal_pose)
+        self.trajectory = cubic_trajectory(self.last_pose[:5], self.goal_pose)
+        grip_arr = np.full((self.trajectory.shape[0], 1), self.last_pose[5])
+        self.trajectory = np.hstack((self.trajectory, grip_arr))
+        # print(self.trajectory)
+        # self.trajectory = np.append(self.trajectory, cubic_trajectory(self.last_pose, self.goal_pose))
+        
+    def callback_grip(self, msg):
+        self.grip_seperation = msg.data
+        goal_grip_seperation = self.gripper_close + (self.grip_seperation - self.gripper_close_mm) * self.seperation_per_mm
+
+        print('### callback_grip ###')
+        print('현재 상태 : ', self.last_pose[5])
+        print('목표 상태 : ', goal_grip_seperation)        
+        # linear traj
+        goal_grip_seperation = int(goal_grip_seperation)
+        grip_value_arr = np.linspace(self.current_grip_seperation, goal_grip_seperation, N_grip)
+        grip_value_arr = grip_value_arr.astype(int)
+        self.trajectory = np.tile(self.last_pose[:5], (N_grip, 1))
+        self.trajectory = np.column_stack((self.trajectory,grip_value_arr)) 
+
+    def state_done(self): # link, gripper 제어 완료 시 state_done 토픽 발행해주는 메서드
+        state_msg = Bool()
+        state_msg.data = True
+        self.state_finish.publish(state_msg)
+
+    def pose_update(self):
+        if len(self.trajectory) > 1: # trajectory 대기열에 2개 이상 존재 시 가장 앞 값을 last_pose에 넣고 해당 값을 삭제.
+            
+            self.last_pose = self.trajectory[0]
+            self.trajectory = np.delete(self.trajectory,0,0) # 대기열 첫번째 값 삭제
+        
+        elif len(self.trajectory) == 1: # 값이 1개라면 traj 모두 진행 후 목표 값에 도달해있다는 뜻임. 따라서 state_done 발행
+            self.last_pose = self.trajectory[0] # traj의 마지막 인자로 last_pose 설정
+            self.state_done() # state_done 토픽 발행 시, moster_node로 부터 goal_pose가 들어오고, trajectory 배열이 추가로 생성됨
+            # print("state_done\n\n")
+            
+        elif len(self.trajectory) == 0: # 값이 0이라면, 아직 한번도 trajectory를 진행하지 않은 상태임. 해당 경우는 초기 실행 상태임으로 pose update 없이 pass
+            pass
+
+def main():
+    print('motor_control_node is started')
+    rate = rospy.Rate(50)
+    dynamixel = DynamixelNode()
+    pose = Pose()
+    impact = Impact()
+    
+    dynamixel.move_current_to_goal(pose.last_pose) # 초기 실행 시, 임의의 자세에서 last_pose로 이동. 이때 last_pose는 초기 pose임
+
+    while not rospy.is_shutdown():
+        dynamixel.monitor_current()
+        dynamixel.pub_pose(pose.last_pose) # 계속 last_pose로 모터 작동
+        if pose.stop_state == False: # stop이 아니면 pose update
+            pose.pose_update()
+        rate.sleep()
+
+def start(data):
+    if data.data == True:
+        main()
 
 if __name__ == '__main__':
     try:
-        main()
+        rospy.init_node('motor_control', anonymous=True)
+        print("waiting for start")
+        start_sub = rospy.Subscriber('start', Bool, start)  # from IK solver
+        rospy.spin()
     except rospy.ROSInterruptException:
         pass
