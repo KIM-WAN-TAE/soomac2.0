@@ -33,7 +33,7 @@ folder_path = '/home/choiyj/catkin_ws/src/soomac/src/gui/Task/'
 
 class GUI:
     def __init__(self) -> None:
-        path_sub = rospy.Service('/task_name', DefineTask, self.path_callback)
+        path_sub = rospy.Service('task_name', DefineTask, self.path_callback)
         self.task_name = None
 
         self.uois = Uois()
