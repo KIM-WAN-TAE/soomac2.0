@@ -11,6 +11,32 @@ from torchvision import transforms
 from model import SiameseNetwork
 from dataset import Dataset
 
+class Siamese:
+    def __init__(self) -> None:
+        checkpoint = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/best.pth"
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+        checkpoint = torch.load(checkpoint)
+        self.model = SiameseNetwork(backbone=checkpoint['backbone'])
+        self.model.to(device)
+        self.model.load_state_dict(checkpoint['model_state_dict'])
+        self.model.eval()
+
+        self.transform = transforms.Compose([
+                                                transforms.ToTensor(),
+                                                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+                                                transforms.Resize(self.feed_shape[1:])
+                                            ])
+        
+    def eval(self, img1, img2):
+        img1 = self.transform(img1).float()
+        img2 = self.transform(img2).float()
+
+        prob = self.model(img1, img2)
+
+        return prob[0][0].item()
+
+
 if __name__ == "__main__":
     val_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/data/val"
     out_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/data"

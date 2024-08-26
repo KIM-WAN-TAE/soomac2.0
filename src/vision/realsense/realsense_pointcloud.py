@@ -7,7 +7,7 @@ from utilities import compute_xyz, save_as_npy
 
 resolution_width, resolution_height = (640, 480)
 
-clip_distance_max = 5.00  #remove from the depth image all values above a given value (meters).
+clip_distance_max = 10.00  #remove from the depth image all values above a given value (meters).
                           # Disable by giving negative value (default)
 
 def main():
