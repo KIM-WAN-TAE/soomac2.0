@@ -50,15 +50,15 @@ def add_padding(image, target_size):
     return padded_image
 
 
-# 예제 RGB 이미지와 segmask
-img_file = '/home/choiyj/catkin_ws/src/soomac/src/vision/uois/example_images/test_image_19.npy'
-d = np.load(img_file, allow_pickle=True, encoding='bytes').item()
-rgb_image = d['rgb']
-segmask = cv2.imread('/home/choiyj/catkin_ws/src/soomac/src/vision/uois/SegMask_6.png', cv2.IMREAD_GRAYSCALE)
+# # 예제 RGB 이미지와 segmask
+# img_file = '/home/choiyj/catkin_ws/src/soomac/src/vision/uois/example_images/test_image_19.npy'
+# d = np.load(img_file, allow_pickle=True, encoding='bytes').item()
+# rgb_image = d['rgb']
+# segmask = cv2.imread('/home/choiyj/catkin_ws/src/soomac/src/vision/uois/SegMask_6.png', cv2.IMREAD_GRAYSCALE)
 
-# 객체 크롭
-cropped_images = extract_objects_from_image(rgb_image, segmask)
-# print(cropped_images)
-# 결과 확인
-for idx, img in enumerate(cropped_images):
-    cv2.imwrite(f'/home/choiyj/catkin_ws/src/soomac/src/vision/a/cropped/cropped_object_{idx}.png', img[1])
+# # 객체 크롭
+# cropped_images = extract_objects_from_image(rgb_image, segmask)
+# # print(cropped_images)
+# # 결과 확인
+# for idx, img in enumerate(cropped_images):
+#     cv2.imwrite(f'/home/choiyj/catkin_ws/src/soomac/src/vision/a/cropped/cropped_object_{idx}.png', img[1])

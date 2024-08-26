@@ -18,7 +18,9 @@ import cv2
 from PIL import Image, ImageTk
 import pyrealsense2 as rs
 import numpy as np
+import matplotlib   
 from matplotlib import pyplot as plt
+matplotlib.use("TkAgg")
 
 from vision.realsense.realsense_depth import DepthCamera
 from vision.realsense.utilities import compute_xyz, save_as_npy
@@ -35,7 +37,7 @@ class Robot_control:
         self.vision_msg.data = [250, 0, 10, 30, 20, # pick : (x, y, z, theta, grip_size) 
                                 400, 0, 10, 60 ] # place : (x, y, z, theta)
         
-    def Tailor(self, task_name):
+    def tailor(self, task_name):
         rospy.wait_for_service('task_name')
         try:
             print("tailor topic")
@@ -332,9 +334,9 @@ def open_camera_window(save_path, task_name):
         image_count = 0
 
     def complete_task():
-        Realsensed435Cam.release()
+        # Realsensed435Cam.release()
         camera_window.destroy()
-        Robot_control.Tailor(task_name)
+        robot_arm.tailor(task_name=task_name)
         ask_to_execute()
 
     update_frame()
@@ -356,7 +358,7 @@ def open_camera_window(save_path, task_name):
     complete_button.grid(row=0, column=3, padx=10)
 
     def on_closing():
-        Realsensed435Cam.release()
+        # Realsensed435Cam.release()
         camera_window.destroy()
 
     camera_window.protocol("WM_DELETE_WINDOW", on_closing)

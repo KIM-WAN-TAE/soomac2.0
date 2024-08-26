@@ -1,4 +1,8 @@
+
 import os
+import sys
+sys.path.append(os.path.dirname(__file__))
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import cv2
 import numpy as np
@@ -24,8 +28,7 @@ class Siamese:
 
         self.transform = transforms.Compose([
                                                 transforms.ToTensor(),
-                                                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-                                                transforms.Resize(self.feed_shape[1:])
+                                                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                                             ])
         
     def eval(self, img1, img2):
