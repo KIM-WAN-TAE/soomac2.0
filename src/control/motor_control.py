@@ -112,9 +112,9 @@ class Impact: # 작업 예정
     def __init__(self):
         self.last_torgue = np.array([])
         self.diff_torques = np.array([]).reshape(0,5)
-        self.last_diff_2rd = np.array([])
-        self.diff_1rd = rospy.Publisher('diff_1rd', Float32, queue_size=10)
-        self.diff_2rd = rospy.Publisher('diff_2rd', Float32, queue_size=10)
+        self.last_diff_2nd = np.array([])
+        self.diff_1st = rospy.Publisher('diff_1st', Float32, queue_size=10)
+        self.diff_2nd = rospy.Publisher('diff_2nd', Float32, queue_size=10)
 
     def diff(self, current_torque): # 입력 : 현재 토크 값, 출력은 없으며 전역 변수 diff_torques에 토크 변화량이 저장됨
         # print("#######미분#######")
@@ -131,45 +131,63 @@ class Impact: # 작업 예정
             self.diff_torques[0] = self.diff_torques[8]
             self.diff_torques[1] = self.diff_torques[9]
             self.diff_torques = self.diff_torques[:2]
-        self.diff_1rd.publish(diff_torque[0])
+        self.diff_1st.publish(diff_torque[1])
 
     def impact_check(self):
         #print("#######충격 확인#######")
         diff_torques_num = self.diff_torques.shape[0] # 저장된 변화량의 개수
         # dof = self.diff_torques.shape[1] # 모터의 개수(5)
-        diff_2rd = np.zeros(5) # 토크 변화량의 기울기가 급변할 때를 파악하기 위함.
+        diff_2nd = np.zeros(5) # 토크 변화량의 기울기가 급변할 때를 파악하기 위함.
 
         result = 0 # 충돌 결과
         if self.diff_torques.shape[0] >= 2: # 1차 미분값이 2개 이상 모이면
             for i in range(5):
-                diff_2rd[i] = self.diff_torques[diff_torques_num-1][i]-self.diff_torques[diff_torques_num-2][i]
-            diff_2rd = np.abs(diff_2rd)
-
-            #print("diff_2rd : ", diff_2rd)
-
-            if len(self.last_diff_2rd)!=0: # 직전 2차 미분값 존재 시
-                key = 0
-                # for i in range(dof):
-                #     if abs(diff_2rd[i])>=0.1 and abs(self.last_diff_2rd[i])>=0.1: 
-                #         if abs(diff_2rd[i]-self.last_diff_2rd[i])>impact_num*min(abs(diff_2rd[i]), abs(self.last_diff_2rd[i])):
-                #             key = key + 1 
-                # if key >= 1:
-                #     rospy.loginfo("impact")
-                #     result = 1     
-                #     print("diff_2rd : ", diff_2rd)
-                #     print("last_diff_2rd : ",self.last_diff_2rd)
-                    
-                # else:
-                #     print("Non-impact")
-                    
-                #     print("diff_2rd : ", diff_2rd)
-                #     print("last_diff_2rd : ",self.last_diff_2rd)
-                # self.last_diff_2rd = diff_2rd
+                diff_2nd[i] = self.diff_torques[diff_torques_num-1][i]-self.diff_torques[diff_torques_num-2][i]
+            diff_2nd = np.abs(diff_2nd)
             
-            else:
-                print("Non-data")
-                self.last_diff_2rd = diff_2rd
-        self.diff_2rd.publish(diff_2rd[0])                
+            if diff_2nd[0] >= 70: # 수평 방향 충돌 감지
+                result = 1
+                rospy.logerr('########## impact 발생(수평) ')
+
+            if diff_2nd[1] >= 100: # XM_1 방향 충돌 감지
+                result = 1
+                rospy.logerr('########## impact 발생(XM_1) ')
+
+            if diff_2nd[2] >= 70: # 수직 방향 충돌 감지
+                result = 1
+                rospy.logerr('########## impact 발생(수직)')
+
+            if diff_2nd[0]/70 + diff_2nd[2]/70 >= 1.5: # 수직 방향 충돌 감지
+                result = 1
+                rospy.logerr('########## impact 발생(대각선)')
+
+
+            # print("diff_2nd : ", diff_2nd)
+
+            # if len(self.last_diff_2nd)!=0: # 직전 2차 미분값 존재 시
+            #     key = 0
+            #     for i in range(dof):
+            #         if abs(diff_2nd[i])>=0.1 and abs(self.last_diff_2nd[i])>=0.1: 
+            #             if abs(diff_2nd[i]-self.last_diff_2nd[i])>impact_num*min(abs(diff_2nd[i]), abs(self.last_diff_2nd[i])):
+            #                 key = key + 1 
+            #     if key >= 1:
+            #         rospy.loginfo("impact")
+            #         result = 1     
+            #         print("diff_2nd : ", diff_2nd)
+            #         print("last_diff_2nd : ",self.last_diff_2nd)
+                    
+            #     else:
+            #         print("Non-impact")
+                    
+            #         print("diff_2nd : ", diff_2nd)
+            #         print("last_diff_2nd : ",self.last_diff_2nd)
+            #     self.last_diff_2nd = diff_2nd
+            
+            # else: # 데이타 없을 때
+            #     print("Non-data")
+            #     self.last_diff_2nd = diff_2nd
+            
+        self.diff_2nd.publish(diff_2nd[1])                
 
         return result
             
@@ -177,7 +195,7 @@ class Impact: # 작업 예정
         print("input data : ",test_data)
         print("last_torque : ",self.last_torgue)
         print("diff_torques : ",self.diff_torques)
-        print("last_diff_2rd : ",self.last_diff_2rd)
+        print("last_diff_2nd : ",self.last_diff_2nd)
 
 
 class DynamixelNode:
@@ -488,7 +506,10 @@ def main():
     dynamixel.move_current_to_goal(pose.last_pose) # 초기 실행 시, 임의의 자세에서 last_pose로 이동. 이때 last_pose는 초기 pose임
 
     while not rospy.is_shutdown():
-        dynamixel.monitor_current()
+        impact_state = dynamixel.monitor_current()
+        if impact_state == 1:
+            pose.stop_state = True 
+
         dynamixel.pub_pose(pose.last_pose) # 계속 last_pose로 모터 작동
         if pose.stop_state == False: # stop이 아니면 pose update
             pose.pose_update()
