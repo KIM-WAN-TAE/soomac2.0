@@ -1,13 +1,27 @@
-from tkinter import *
-from tkinter import filedialog
-import cv2
-import os
-from PIL import Image, ImageTk
+#!/usr/bin/env python
+# -- coding: utf-8 --
+
 import rospy
 from std_msgs.msg import Float32MultiArray as fl
 from std_msgs.msg import Bool, String
+from soomac.srv import DefineTask, DefineTaskResponse
+
+import sys, os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
+from tkinter import *
+from tkinter import filedialog
 import threading
 from pathlib import Path
+
+import cv2
+from PIL import Image, ImageTk
+import pyrealsense2 as rs
+import numpy as np
+from matplotlib import pyplot as plt
+
+from vision.realsense.realsense_depth import DepthCamera
+from vision.realsense.utilities import compute_xyz, save_as_npy
 
 class Robot_control:
     def __init__(self):
@@ -20,6 +34,17 @@ class Robot_control:
         self.vision_msg = fl()
         self.vision_msg.data = [250, 0, 10, 30, 20, # pick : (x, y, z, theta, grip_size) 
                                 400, 0, 10, 60 ] # place : (x, y, z, theta)
+        
+    def Tailor(self, task_name):
+        rospy.wait_for_service('task_name')
+        try:
+            print("tailor topic")
+            task_definition = rospy.ServiceProxy('task_name', DefineTask)
+            done = task_definition(task_name)
+            return done
+        except rospy.ServiceException as e:
+            print("Service call failed: %s"%e)
+
     def vision(self):
         self.pub_vision.publish(self.vision_msg)
         print('vision topic')
@@ -63,13 +88,26 @@ class ros_subscribe:
         if impact == True:
             impact_screen()
 
+
+resolution_width, resolution_height = (640, 480)
+
+clip_distance_max = 10.00
+
+Realsensed435Cam = DepthCamera(resolution_width, resolution_height)
+depth_scale = Realsensed435Cam.get_depth_scale()
+
+image_count = 0
+
+robot_arm = Robot_control()
+
+
 # 메인 화면 설정
 def main_screen():
     root = Tk()
     root.title("Soomac Taylor")
     root.geometry("420x520")
     root.configure(bg="#e0f7da")  # 연한 초록색 배경
-    robot_arm = Robot_control()  # 로봇 제어 클래스
+      # 로봇 제어 클래스
 
     # 타이틀 레이블
     title_label = Label(root, text="Soomac Task Taylor", font=("Helvetica", 20, "bold"), bg="#a5d6a7", fg="#1b5e20")
@@ -207,6 +245,7 @@ def open_task_definition():
 
     # Task 정의 창의 버튼들
     def save_and_capture():
+        global image_count
         task_name = task_name_entry.get() #사용자가 지정한 task 이름
         repeat_mode = repeat_mode_entry.get() #사용자가 지정한 반복 방식
 
@@ -216,6 +255,7 @@ def open_task_definition():
 
         if task_name and repeat_mode:
             task_window.destroy()
+            image_count = 0
             open_camera_window(save_path, task_name)
         else:
             print("모든 입력란을 채워주세요.")
@@ -239,43 +279,62 @@ def open_camera_window(save_path, task_name):
     video_label = Label(camera_window, bg="#a5d6a7")
     video_label.pack()
 
-    # 카메라 캡처 객체 생성
-    vid = cv2.VideoCapture(0)
-
     def update_frame():
-        _, frame = vid.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-        img = Image.fromarray(frame)
+        ret, depth_raw_frame, color_raw_frame = Realsensed435Cam.get_raw_frame()
+        if not ret:
+            print("Unable to get a frame")
+
+        color_frame = np.asanyarray(color_raw_frame.get_data())
+        depth_frame = np.asanyarray(depth_raw_frame.get_data())
+
+        rgb = cv2.cvtColor(color_frame, cv2.COLOR_BGR2RGBA)
+        img = Image.fromarray(rgb)
         imgtk = ImageTk.PhotoImage(image=img)
         video_label.imgtk = imgtk
         video_label.configure(image=imgtk)
         video_label.after(10, update_frame)
 
     def capture_image():
-        nonlocal last_image_path
-        image_count = len([name for name in os.listdir(save_path) if name.startswith(task_name) and name.endswith(".png")])
-        last_image_path = os.path.join(save_path, f"{task_name}{image_count}.png")
-        _, frame = vid.read()
-        cv2.imwrite(last_image_path, frame)
-        print(f"Image saved at {last_image_path}")
+        global image_count
+        color_path = f"{save_path}/{task_name}_color_{image_count}.png"
+        depth_path = f"{save_path}/{task_name}_depth_{image_count}.png"
+        npy_path = f"{save_path}/{task_name}_npy_{image_count}.npy"
+
+        ret, depth_raw_frame, color_raw_frame = Realsensed435Cam.get_raw_frame()
+        if not ret:
+            print("Unable to get a frame")
+
+        color_frame = np.asanyarray(color_raw_frame.get_data())
+        depth_frame = np.asanyarray(depth_raw_frame.get_data())
+        
+        cv2.imwrite(color_path, color_frame)
+        plt.imsave(depth_path, depth_frame)
+
+        rgb = cv2.cvtColor(color_frame, cv2.COLOR_BGR2RGB)
+        xyz = compute_xyz(depth_frame * depth_scale, Realsensed435Cam.get_camera_intrinsics())
+        data = save_as_npy(rgb, xyz)
+        np.save(npy_path, data)
+
+        print(f"{image_count} Image saved at {color_path}")
+
+        image_count += 1
 
     def retake_image():
-        nonlocal last_image_path
-        if last_image_path and os.path.exists(last_image_path):
-            os.remove(last_image_path)
-            print(f"Deleted last image: {last_image_path}")
-            last_image_path = None
+        global image_count
+        image_count -= 1
+        print(f"{image_count} Image deleted.")
 
     def reset_task_images():
         for file in os.listdir(save_path):
-            if file.startswith(task_name) and file.endswith(".png"):
+            if file.startswith(task_name):
                 os.remove(os.path.join(save_path, file))
         print("모든 이미지를 삭제했습니다.")
-        last_image_path = None
+        image_count = 0
 
     def complete_task():
-        vid.release()
+        Realsensed435Cam.release()
         camera_window.destroy()
+        Robot_control.Tailor(task_name)
         ask_to_execute()
 
     update_frame()
@@ -297,7 +356,7 @@ def open_camera_window(save_path, task_name):
     complete_button.grid(row=0, column=3, padx=10)
 
     def on_closing():
-        vid.release()
+        Realsensed435Cam.release()
         camera_window.destroy()
 
     camera_window.protocol("WM_DELETE_WINDOW", on_closing)
