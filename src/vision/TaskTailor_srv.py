@@ -4,6 +4,7 @@
 import rospy
 
 from std_msgs.msg import String
+from soomac.srv import DefineTask, DefineTaskResponse
 
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = "0" # TODO: Change this if you have more than 1 GPU
@@ -32,15 +33,14 @@ folder_path = '/home/choiyj/catkin_ws/src/soomac/src/gui/Task/'
 
 class GUI:
     def __init__(self) -> None:
-        self.path_sub = rospy.Subscriber('/task_name', String, self.path_callback, queue_size=1)
-        self.done_pub = rospy.Publisher('/done', bool, queue_size=1)
+        path_sub = rospy.Service('/task_name', DefineTask, self.path_callback)
         self.task_name = None
 
         self.uois = Uois()
         self.siamese = Siamese()
 
-    def path_callback(self, msg):
-        self.task_name = msg.msg
+    def path_callback(self, req):
+        self.task_name = req.TaskName
         npy_files = sorted(glob.glob(os.path.join(folder_path+self.task_name, '*.png')))
 
         # rgb_list = []
@@ -87,20 +87,9 @@ class GUI:
         with open(folder_path+self.task_name+'.json', 'w') as json_file:
             json.dump(task_list, json_file, ensure_ascii=False, indent=4)
 
-        self.done_pub.publish(True)
+        return DefineTaskResponse(True)
 
-    def object_match(self, object_0, crop):
-        max = -1
-        coord = [0,0]
-        for img in crop:
-            similarity = self.uois(object_0, img[1])
-            if similarity > max:
-                max = similarity
-                coord = img[0]
 
-        return coord
-    
-        
 def main():
     rospy.init_node('task_tailor')
     gui_node = GUI()
