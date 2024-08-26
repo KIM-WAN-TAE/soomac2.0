@@ -65,8 +65,8 @@ XM_TORQUE_DISABLE = 0
 
 ################################################################################################################################################
 # parameter
-N = 50 # link motor 경로 분활
-N_grip = 30 # gripper motor 경로 분활
+N = 40 # link motor 경로 분활
+N_grip = 20 # gripper motor 경로 분활
 # timer = time.time()
 # repeat_time = 0.05
 # impact_num = 13
@@ -85,7 +85,6 @@ def degree_to_dynamixel_value(degree): # degree의 0~4번째 값을 dynamixel va
     return position_dynamixel
 
 def cubic_trajectory(th_i, th_f): # input : 시작각도, 나중각도, 분할 넘버 -> output : (n, N) 배열
-    # N 계산하는 식을 따로 만들면 좋을 거 같습니다
 
     # N 계산 
     delta_th = np.max(np.abs(th_f - th_i)) # 모터들의 변화량 계산 후, 모든 모터에서 발생할 수 있는 최대 변화량
@@ -94,6 +93,8 @@ def cubic_trajectory(th_i, th_f): # input : 시작각도, 나중각도, 분할 �
     global N 
     N = min_n + (delta_th / max_delta_th) * (max_n - min_n)    
     N = int(N)
+    if N > max_n:
+        N = max_n
     t = np.linspace(0, 1, N)
     
     # 3차 다항식 계수: 초기 속도와 최종 속도를 0으로 설정 (s_curve)
@@ -144,7 +145,7 @@ class Impact: # 작업 예정
                 diff_2rd[i] = self.diff_torques[diff_torques_num-1][i]-self.diff_torques[diff_torques_num-2][i]
             diff_2rd = np.abs(diff_2rd)
 
-            print("diff_2rd : ", diff_2rd)
+            #print("diff_2rd : ", diff_2rd)
 
             if len(self.last_diff_2rd)!=0: # 직전 2차 미분값 존재 시
                 key = 0
@@ -187,10 +188,10 @@ class DynamixelNode:
         self.change_para = 1024/90
 
         # init_setting
-        self.gripper_open = 3500
-        self.gripper_close = 2236
+        self.gripper_open = 3300 # 3500
+        self.gripper_close = 2924 #2236
 
-        self.gripper_open_mm = 49 #72
+        self.gripper_open_mm = 45 #49 -> 
         self.gripper_close_mm = 0 #15.9
         self.current_grip_seperation = self.gripper_open
         self.seperation_per_mm = (self.gripper_close/(self.gripper_open_mm-self.gripper_close_mm))
@@ -255,7 +256,13 @@ class DynamixelNode:
         
         
         # XM540 p gain 설정
-        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, 84, 300) 
+        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_POSITION_P_GAIN, 300) #800
+        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_POSITION_I_GAIN, 10) #0
+        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_POTISION_D_GAIN, 10) #0
+        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_VELOCITY_I_GAIN, 1920) #1920
+        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_VELOCITY_P_GAIN, 100) #100
+        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_FEEDFORWARD_1ST_GAIN, 20) #0
+        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_FEEDFORWARD_2ND_GAIN, 0) #0
 
     def read_motor_position(self, port_handler, packet_handler, dxl_id, addr_present_position): # 현재 모터 value 도출해주는 메서드
         # 모터의 현재 위치 읽기
@@ -264,6 +271,7 @@ class DynamixelNode:
 
     def move_current_to_goal(self, goal_pose): # 현재 각도 읽고, 목표 각도 까지 trajectory 만들어서 제어, input : 목표 각도(출발 각도는 받지 않아도 모터 자체에서 현재 각도 확인 후 traj)
         
+
         goal_dynamixel = degree_to_dynamixel_value(goal_pose)
         goal_dynamixel = goal_dynamixel[:5]
         present_position = np.zeros(5)
@@ -377,10 +385,10 @@ class Pose:
         # init_setting
 
         
-        self.gripper_open = 3500
+        self.gripper_open = 3300
         self.gripper_close = 2236
 
-        self.gripper_open_mm = 49 #72
+        self.gripper_open_mm = 45 #72
         self.gripper_close_mm = 0 #15.9
         self.current_grip_seperation = self.gripper_open 
         self.seperation_per_mm = ((self.gripper_open-self.gripper_close)/(self.gripper_open_mm-self.gripper_close_mm))
