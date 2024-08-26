@@ -89,6 +89,17 @@ class GUI:
 
         return DefineTaskResponse(True)
 
+    def object_match(self, object_0, crop):
+        max = -1
+        coord = [0,0]
+        for img in crop:
+            similarity = self.uois(object_0, img[1])
+            if similarity > max:
+                max = similarity
+                coord = img[0]
+
+        return coord
+
 
 def main():
     rospy.init_node('task_tailor')
