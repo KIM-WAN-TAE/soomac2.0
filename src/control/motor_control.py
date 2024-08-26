@@ -115,6 +115,7 @@ class Impact: # 작업 예정
         self.last_diff_2nd = np.array([])
         self.diff_1st = rospy.Publisher('diff_1st', Float32, queue_size=10)
         self.diff_2nd = rospy.Publisher('diff_2nd', Float32, queue_size=10)
+        self.impact_to_gui = rospy.Publisher('impact_to_gui', Bool, queue_size=10)
 
     def diff(self, current_torque): # 입력 : 현재 토크 값, 출력은 없으며 전역 변수 diff_torques에 토크 변화량이 저장됨
         # print("#######미분#######")
@@ -509,7 +510,7 @@ def main():
         impact_state = dynamixel.monitor_current()
         if impact_state == 1:
             pose.stop_state = True 
-
+            impact.impact_to_gui.publish(True)
         dynamixel.pub_pose(pose.last_pose) # 계속 last_pose로 모터 작동
         if pose.stop_state == False: # stop이 아니면 pose update
             pose.pose_update()
