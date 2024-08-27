@@ -9,7 +9,6 @@ from soomac.srv import DefineTask, DefineTaskResponse
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-import threading
 from pathlib import Path
 from PIL import Image, ImageTk
 import time
@@ -27,7 +26,7 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 
 # Pygame 초기화 및 사운드 로드
 pygame.mixer.init()
-click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+click_sound = pygame.mixer.Sound("/home/hyunwoo20/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 
 class Robot_control:
     def __init__(self):
@@ -69,7 +68,7 @@ class Robot_control:
         self.gui_msg.data = "pause"
         self.pub_gui.publish(self.gui_msg)
         print('gui - pause')
-        self.pause_screen()
+        self.open_pause_window()
 
     def impact_cb(self,data): # okay 
         impact = data.data
@@ -322,7 +321,7 @@ def main_screen():
         ("새 Task 정의하기", open_task_definition),
         ("Task 불러오기", open_task_loader),
         ("종료", confirm_exit),
-        ("일시 정지", robot_arm.open_pause_window), # okay
+        ("일시 정지", robot_arm.pause), # okay
         ("camera 자세", robot_arm.camera_pose_move_test), # ("로봇 정보", robot_arm.info), # test를 위해 임시 변경
         ("Vision Data (Dev Info)", robot_arm.vision_test),
     ]
