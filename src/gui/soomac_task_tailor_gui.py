@@ -335,7 +335,7 @@ def open_camera_window(save_path, task_name):
 
     last_image_path = None  
 
-    video_label = ctk.CTkLabel(camera_window)
+    video_label = ctk.CTkLabel(camera_window, text = "")
     video_label.pack()
 
     def update_frame():
@@ -393,7 +393,19 @@ def open_camera_window(save_path, task_name):
     def complete_task():
         camera_window.destroy()
         robot_arm.tailor(task_name=task_name)
-        ask_to_execute()
+
+        complete_window = ctk.CTkToplevel()
+        complete_window.title("Task Completed")
+        complete_window.geometry(f"{int(300*1.6)}x{int(150*1.6)}")
+
+        ctk.CTkLabel(complete_window, text="Task 정의가 완료되었습니다", font=ctk.CTkFont(size=int(14*1.6))).pack(pady=int(20*1.6))
+
+        def close_complete_window():
+            complete_window.destroy()
+            ask_to_execute()
+
+        confirm_button = ctk.CTkButton(complete_window, text="확인", command=close_complete_window, width=int(80*1.6))
+        confirm_button.pack(pady=int(10*1.6))
 
     update_frame()
 
