@@ -4,6 +4,7 @@
 import rospy
 
 from std_msgs.msg import Bool, String
+from std_msgs.msg import Float32MultiArray as fl
 from soomac.msg import PickPlace
 
 import os
@@ -30,7 +31,7 @@ clip_distance_max = 10.00
 
 class Vision:
     def __init__(self) -> None:
-        self.vision_pub = rospy.Publisher('/GraspPose', PickPlace)
+        self.vision_pub = rospy.Publisher('/vision', fl)
 
         self.rs = DepthCamera()
         self.depth_scale = self.rs.get_depth_scale()
@@ -172,9 +173,8 @@ class Vision:
         object2 = self.coords[0][current_step["Place"]]
         pick, place = self.calc_position(object1, object2)
 
-        coord = PickPlace()
-        coord.Pick = [pick["position"][0], pick["position"][1], pick["position"][2], pick["theta"]]
-        coord.Place = [place["position"][0], place["position"][1], place["position"][2], place["theta"]]
+        coord = fl()
+        coord.data = [pick["position"][0], pick["position"][1], pick["position"][2], pick["theta"],place["position"][0], place["position"][1], place["position"][2], place["theta"]]
 
     def reset(self):
         self.task_name = None
@@ -188,11 +188,11 @@ class Info:
     def __init__(self) -> None:
         self.vision = Vision()
 
-        name_sub = rospy.Subscriber('task_name', String, self.name_callback)
-        robot_sub = rospy.Subscriber('', Bool, self.robot_callback)
-        task_sub = rospy.Subscriber('', Bool, self.task_callback)
+        name_sub = rospy.Subscriber('/task_type', String, self.name_callback)
+        robot_sub = rospy.Subscriber('/camera_ready', Bool, self.robot_callback)
+        # task_sub = rospy.Subscriber('', Bool, self.task_callback)
 
-        self.robot_pub = rospy.Publisher('/PerformPose', Bool)
+        self.robot_pub = rospy.Publisher('/camera_pose', Bool)
 
         self.task_name = None
         self.robot_ready = False
