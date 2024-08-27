@@ -67,7 +67,7 @@ class FSM:
         # initial setting
         self.state_done = False
         self.task_done = False
-        self.grip_open = 49
+        self.grip_open = 49 + 12
         self.grip_seperation = self.grip_open
         self.current_state = "init_pose"
         self.last_state = "init_pose"
@@ -79,7 +79,7 @@ class FSM:
         
         # offset parameter
         self.above_offset = np.array([0, 0, 120, 0])
-        self.grip_offset = np.array([0, 0, 30, 0])
+        self.grip_offset = np.array([0, 0, 10, 0])
         self.lift_offset = np.array([0, 0, 150, 0])
         self.object_size = None
 
