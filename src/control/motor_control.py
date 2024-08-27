@@ -65,7 +65,7 @@ XM_TORQUE_DISABLE = 0
 
 ################################################################################################################################################
 # parameter
-N = 40 # link motor 경로 분활
+N = 50 # link motor 경로 분활
 N_grip = 20 # gripper motor 경로 분활
 # timer = time.time()
 # repeat_time = 0.05
@@ -273,9 +273,11 @@ class DynamixelNode:
         else:
             rospy.loginfo("Torque enabled for XM Motor ID: {}".format(gripper_DXL_ID))        
         
+        # p gain 설정
+        for i in range(0,5):
+            self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, i, XM_ADDR_POSITION_P_GAIN, 200) #800 -> 200``
         
-        # XM540 p gain 설정
-        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_POSITION_P_GAIN, 300) #800
+        
         #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_POSITION_I_GAIN, 10) #0
         #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_POTISION_D_GAIN, 10) #0
         #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_VELOCITY_I_GAIN, 1920) #1920
@@ -511,6 +513,7 @@ def main():
         if impact_state == 1:
             pose.stop_state = True 
             impact.impact_to_gui.publish(True)
+            
         dynamixel.pub_pose(pose.last_pose) # 계속 last_pose로 모터 작동
         if pose.stop_state == False: # stop이 아니면 pose update
             pose.pose_update()
