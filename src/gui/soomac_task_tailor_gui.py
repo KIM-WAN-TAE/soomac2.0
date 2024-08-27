@@ -178,6 +178,7 @@ def main_screen():
                                   command=with_sound(close_exit_window), height=int(40), width=int(110))
         no_button.pack(side=ctk.RIGHT, padx=int(10*1.4), pady=int(10*1.4))
 
+    # Task 불러오기 화면 함수
     def open_task_loader():
         task_loader_window = ctk.CTkToplevel(root)
         task_loader_window.title("Task 불러오기")
@@ -193,18 +194,16 @@ def main_screen():
 
         task_dirs = [d.name for d in task_folder.iterdir() if d.is_dir()]
         for task in task_dirs:
-            task_radio = ctk.CTkRadioButton(task_list_frame, text=task, variable=selected_task, value=task)
+            task_radio = ctk.CTkRadioButton(task_list_frame, text=task, variable=selected_task, value=task, command=play_click_sound)
             task_radio.pack(anchor=ctk.W, pady=int(5*1.4), padx=int(10*1.4))
 
         button_frame = ctk.CTkFrame(task_loader_window)
         button_frame.pack(pady=int(10*1.4))
 
-        load_button = ctk.CTkButton(button_frame, text="불러오기", font=ctk.CTkFont(size=int(20)),
-                                    command=with_sound(lambda: load_selected_task(selected_task.get())), width=int(120*1.4))
+        load_button = ctk.CTkButton(button_frame, text="불러오기", font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), load_selected_task(selected_task.get())], width=int(120*1.4))
         load_button.pack(side=ctk.LEFT, padx=int(10*1.4))
 
-        back_button = ctk.CTkButton(button_frame, text="뒤로가기", font=ctk.CTkFont(size=int(20)), 
-                                    command=with_sound(task_loader_window.destroy), width=int(120*1.4))
+        back_button = ctk.CTkButton(button_frame, text="뒤로가기", font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), task_loader_window.destroy()], width=int(120*1.4))
         back_button.pack(side=ctk.RIGHT, padx=int(10*1.4))
 
     def load_selected_task(task_name):
@@ -213,7 +212,7 @@ def main_screen():
             print(f"경로가 선택되었습니다: {task_path}") 
         else:
             print("Task가 선택되지 않았습니다")
-
+            
     def open_pause_window():
         pause_window = ctk.CTkToplevel(root)
         pause_window.title("Paused")
@@ -268,6 +267,7 @@ def main_screen():
 
     root.mainloop()
 
+# Task definition screen
 def open_task_definition():
     task_window = ctk.CTkToplevel()
     task_window.title("새 Task 정의하기")
@@ -291,10 +291,10 @@ def open_task_definition():
     repeat_mode_frame = ctk.CTkFrame(task_window)
     repeat_mode_frame.grid(row=1, column=1, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
     
-    repeat_mode_count = ctk.CTkRadioButton(repeat_mode_frame, text="개수 기반", variable=repeat_mode_var, value="개수 기반", font=ctk.CTkFont(size=int(14*1.4)))
+    repeat_mode_count = ctk.CTkRadioButton(repeat_mode_frame, text="개수 기반", variable=repeat_mode_var, value="개수 기반", font=ctk.CTkFont(size=int(14*1.4)), command=play_click_sound)
     repeat_mode_count.grid(row=0, column=0, padx=int(10*1.4))
     
-    repeat_mode_distribution = ctk.CTkRadioButton(repeat_mode_frame, text="분포 기반", variable=repeat_mode_var, value="분포 기반", font=ctk.CTkFont(size=int(14*1.4)))
+    repeat_mode_distribution = ctk.CTkRadioButton(repeat_mode_frame, text="분포 기반", variable=repeat_mode_var, value="분포 기반", font=ctk.CTkFont(size=int(14*1.4)), command=play_click_sound)
     repeat_mode_distribution.grid(row=0, column=1, padx=int(10*1.4))
 
     ctk.CTkLabel(task_window, text="그리퍼 종류:", font=ctk.CTkFont(size=int(14*1.4))).grid(row=2, column=0, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
@@ -304,15 +304,15 @@ def open_task_definition():
     gripper_type_frame.grid(row=2, column=1, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
 
     gripper_mechanical = ctk.CTkRadioButton(gripper_type_frame, text="기계식 그리퍼", 
-                                            variable=gripper_type_var, value="기계식 그리퍼", font=ctk.CTkFont(size=int(14*1.4)))
+                                            variable=gripper_type_var, value="기계식 그리퍼", font=ctk.CTkFont(size=int(14*1.4)), command=play_click_sound)
     gripper_mechanical.grid(row=0, column=0, padx=int(10*1.4))
     
     gripper_vacuum = ctk.CTkRadioButton(gripper_type_frame, text="진공 그리퍼", 
-                                        variable=gripper_type_var, value="진공 그리퍼", font=ctk.CTkFont(size=int(14*1.4)))
+                                        variable=gripper_type_var, value="진공 그리퍼", font=ctk.CTkFont(size=int(14*1.4)), command=play_click_sound)
     gripper_vacuum.grid(row=0, column=1, padx=int(10*1.4))
     
     gripper_soft = ctk.CTkRadioButton(gripper_type_frame, text="소프트 그리퍼", 
-                                      variable=gripper_type_var, value="소프트 그리퍼", font=ctk.CTkFont(size=int(14*1.4)))
+                                      variable=gripper_type_var, value="소프트 그리퍼", font=ctk.CTkFont(size=int(14*1.4)), command=play_click_sound)
     gripper_soft.grid(row=0, column=2, padx=int(10*1.4))
 
     def save_and_capture():
@@ -332,8 +332,8 @@ def open_task_definition():
                                           font=ctk.CTkFont(size=16), text_color="#FFFFFF")
             warning_label.pack(pady=20)
 
-            ok_button = ctk.CTkButton(warning_window, text="확인", fg_color="#FF0000", hover_color="#CC0000",
-                                      command=with_sound(warning_window.destroy), width=100, font=ctk.CTkFont(size=20))
+            ok_button = ctk.CTkButton(warning_window, text="확인",fg_color="#FF0000", hover_color="#CC0000",
+                                       command=warning_window.destroy, width=100, font=ctk.CTkFont(size=20))
             ok_button.pack(pady=10)
             return
 
@@ -349,10 +349,10 @@ def open_task_definition():
     button_frame = ctk.CTkFrame(task_window)
     button_frame.grid(row=3, column=0, columnspan=2, pady=int(20*1.4), padx=int(20*1.4), sticky=ctk.EW)
 
-    save_button = ctk.CTkButton(button_frame, text="저장 후 촬영", font=ctk.CTkFont(size=int(20)), command=with_sound(save_and_capture), width=int(120*1.4))
+    save_button = ctk.CTkButton(button_frame, text="저장 후 촬영",font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), save_and_capture()], width=int(120*1.4))
     save_button.grid(row=0, column=0, padx=int(10*1.4), pady=int(10*1.4), sticky=ctk.W)
 
-    back_button = ctk.CTkButton(button_frame, text="뒤로가기", font=ctk.CTkFont(size=int(20)), command=with_sound(task_window.destroy), width=int(120*1.4))
+    back_button = ctk.CTkButton(button_frame, text="뒤로가기",font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), task_window.destroy()], width=int(120*1.4))
     back_button.grid(row=0, column=1, padx=int(10*1.4), pady=int(10*1.4), sticky=ctk.E)
 
 def open_camera_window(save_path, task_name):
