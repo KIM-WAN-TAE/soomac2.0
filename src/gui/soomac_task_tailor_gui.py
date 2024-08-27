@@ -101,9 +101,9 @@ def show_image_animation(root):
 
     image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
 
-#     # 지정된 이미지 경로
-#     # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
-#     image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image.jpg"
+    # 지정된 이미지 경로
+    # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
+    # image_path = "/home/choiyj/catkin_ws/src/soomac/src/gui/start_image.jpg"
 
     try:
         image = Image.open(image_path)
@@ -404,11 +404,14 @@ def open_camera_window(save_path, task_name):
         print(f"{image_count} 사진이 삭제되었습니다")
 
     def reset_task_images():
+        global image_count
         for file in os.listdir(save_path):
             if file.startswith(task_name):
                 os.remove(os.path.join(save_path, file))
         print("모든 사진이 삭제되었습니다")
+
         image_count = 0
+        print("All images deleted.")
 
     def complete_task():
         camera_window.destroy()
