@@ -31,13 +31,24 @@ click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/clic
 
 class Robot_control:
     def __init__(self):
-        self.pub_vision = rospy.Publisher('vision', fl, queue_size=10)
-        self.pub_gui = rospy.Publisher('task_type', String, queue_size=10)
+        self.pub_vision = rospy.Publisher('/vision', fl, queue_size=10) 
+        self.pub_gui = rospy.Publisher('/task_type', String, queue_size=10)
+        self.goal_pose_test = rospy.Publisher('/goal_pose', fl, queue_size=10)
+        self.camera_pose = rospy.Publisher('/camera_pose', Bool, queue_size=10)
+
+        rospy.Subscriber('/impact_to_gui', Bool, self.impact_cb)
+        rospy.Subscriber('/define_ready', Bool, self.define_ready_test)
+        rospy.Subscriber('/camera_ready', Bool, self.camera_ready_test)
+        
+        # gui msg type 정의
         self.gui_msg = String()
         self.gui_msg.data = None
+        # vision test용 msg 
         self.vision_msg = fl()
-        self.vision_msg.data = [250, 0, 10, 30, 20,
-                                400, 0, 10, 60 ]
+        self.vision_msg.data = [250, 250, 0, 0, 15, # pick : (x, y, z, theta, grip_size) 
+                                -250, 250, 0, 30 ] # place : (x, y, z, theta)
+
+        self.impact_screen_exis = False
         
     def tailor(self, task_name):
         rospy.wait_for_service('task_name')
@@ -48,44 +59,136 @@ class Robot_control:
             return done
         except rospy.ServiceException as e:
             print("Service call failed: %s"%e)
-
-    def vision(self):
-        self.pub_vision.publish(self.vision_msg)
-        print('vision topic')
-
+ 
     def start(self):
-        self.gui_msg.data = "gui_start"
+        self.gui_msg.data = "start"
         self.pub_gui.publish(self.gui_msg)
         print('gui - start')
 
-    def stop(self):
-        self.gui_msg.data = "gui_stop"
-        self.pub_gui.publish(self.gui_msg)
-        print('gui - stop')
-        
-    def pause(self):
-        self.gui_msg.data = "gui_pause"
+    def pause(self): # okay
+        self.gui_msg.data = "pause"
         self.pub_gui.publish(self.gui_msg)
         print('gui - pause')
+        self.pause_screen()
+
+    def impact_cb(self,data): # okay 
+        impact = data.data
+        if impact == True: 
+            if self.impact_screen_exis == False:
+                self.impact_screen()
+                self.impact_screen_exis = True
 
     def info(self):
         self.gui_msg.data = "gui_info"
         self.pub_gui.publish(self.gui_msg)
         print("gui - info")
 
-class ros_subscribe:
-    def __init__(self) -> None:
-        pass
+################### screen for robot control ################### 
+    def impact_screen(self):
+        impact_window = ctk.CTkToplevel()
+        impact_window.title("Impact")
+        impact_window.geometry(f"{int(300*1.4)}x{int(200*1.4)}")
 
-    def ros_sub(self):
-        print('subscribing')
-        rospy.Subscriber('impact_to_gui', Bool, self.callback)
-        rospy.spin()    
+        ctk.CTkLabel(impact_window, text="충돌 감지", font=ctk.CTkFont(size=int(16*1.4))).pack(pady=int(20*1.4))
 
-    def callback(self, data):
-        impact = data.data
-        if impact == True:
-            impact_screen()
+        button_frame = ctk.CTkFrame(impact_window)
+        button_frame.pack(pady=int(10*1.4))
+
+        def Continue():
+            print('continue')
+            self.gui_msg.data = "continue"
+            self.pub_gui.publish(self.gui_msg)
+            print('gui - continue')
+            impact_window.destroy()     
+            self.impact_screen_exis = False    
+
+        def Previous():
+            print('previous')
+            self.gui_msg.data = "previous"
+            self.pub_gui.publish(self.gui_msg)
+            print('gui - previous')
+            impact_window.destroy()
+            self.impact_screen_exis = False
+
+        def Init_pose():
+            print('camera_pose')
+            self.gui_msg.data = "camera_pose"
+            self.pub_gui.publish(self.gui_msg)
+            print('gui - init_pose')
+            impact_window.destroy()
+            self.impact_screen_exis = False
+
+        continue_button = ctk.CTkButton(button_frame, text="계속하기", 
+                                        command=with_sound(Continue), width=int(80*1.4))
+        continue_button.grid(row=0, column=0, padx=int(10*1.4))
+
+        previous_action_button = ctk.CTkButton(button_frame, text="이전 동작", 
+                                               command=with_sound(Previous), width=int(80*1.4))
+        previous_action_button.grid(row=0, column=1, padx=int(10*1.4))
+
+        restart_button = ctk.CTkButton(button_frame, text="처음으로", 
+                                       command=with_sound(Init_pose), width=int(80*1.4))
+        restart_button.grid(row=0, column=2, padx=int(10*1.4))
+
+    def open_pause_window(self):
+        pause_window = ctk.CTkToplevel()
+        pause_window.title("Paused")
+        pause_window.geometry(f"{int(300*1.4)}x{int(200*1.4)}")
+
+        ctk.CTkLabel(pause_window, text="일시 정지 상태입니다", font=ctk.CTkFont(size=int(16*1.4))).pack(pady=int(20*1.4))
+
+        button_frame = ctk.CTkFrame(pause_window)
+        button_frame.pack(pady=int(10*1.4))
+
+        def Continue():
+            print('continue')
+            self.gui_msg.data = "continue"
+            self.pub_gui.publish(self.gui_msg)
+            print('gui - continue')
+            pause_window.destroy()         
+
+        def Previous():
+            print('previous')
+            self.gui_msg.data = "previous"
+            self.pub_gui.publish(self.gui_msg)
+            print('gui - previous')
+            pause_window.destroy()
+
+        def Init_pose():
+            print('init_pose')
+            self.gui_msg.data = "camera_pose"
+            self.pub_gui.publish(self.gui_msg)
+            print('gui - init_pose')
+            pause_window.destroy()
+            
+        continue_button = ctk.CTkButton(button_frame, text="계속하기", 
+                                        command=with_sound(Continue), width=int(80*1.4))
+        continue_button.grid(row=0, column=0, padx=int(10*1.4))
+
+        previous_action_button = ctk.CTkButton(button_frame, text="이전 동작", 
+                                               command=with_sound(Previous), width=int(80*1.4))
+        previous_action_button.grid(row=0, column=1, padx=int(10*1.4))
+
+        restart_button = ctk.CTkButton(button_frame, text="처음으로", 
+                                       command=with_sound(Init_pose), width=int(80*1.4))
+        restart_button.grid(row=0, column=2, padx=int(10*1.4))
+
+###################   for test   ###################
+    def define_ready_test(self, data): #
+        print("define ready")
+
+    def camera_ready_test(self, data):
+        print("camera ready")
+
+    def vision_test(self): 
+        self.pub_vision.publish(self.vision_msg)
+        print('vision topic')
+
+    def camera_pose_move_test(self):
+        msg = Bool()
+        msg.data = True
+        self.camera_pose.publish(msg)
+###############################################################
 
 resolution_width, resolution_height = (640, 480)
 clip_distance_max = 10.00
@@ -213,36 +316,15 @@ def main_screen():
         else:
             print("Task가 선택되지 않았습니다")
             
-    def open_pause_window():
-        pause_window = ctk.CTkToplevel(root)
-        pause_window.title("Paused")
-        pause_window.geometry(f"{int(300*1.4)}x{int(200*1.4)}")
-
-        ctk.CTkLabel(pause_window, text="일시 정지 상태입니다", font=ctk.CTkFont(size=int(16*1.4))).pack(pady=int(20*1.4))
-
-        button_frame = ctk.CTkFrame(pause_window)
-        button_frame.pack(pady=int(10*1.4))
-
-        continue_button = ctk.CTkButton(button_frame, text="계속하기", 
-                                        command=with_sound(pause_window.destroy), width=int(80*1.4))
-        continue_button.grid(row=0, column=0, padx=int(10*1.4))
-
-        previous_action_button = ctk.CTkButton(button_frame, text="이전 동작", 
-                                               command=with_sound(lambda: print("이전 동작 수행")), width=int(80*1.4))
-        previous_action_button.grid(row=0, column=1, padx=int(10*1.4))
-
-        restart_button = ctk.CTkButton(button_frame, text="처음으로", 
-                                       command=with_sound(lambda: print("처음으로 수행")), width=int(80*1.4))
-        restart_button.grid(row=0, column=2, padx=int(10*1.4))
 
     buttons = [
-        ("실행", robot_arm.start),
+        ("실행", robot_arm.start), # okay
         ("새 Task 정의하기", open_task_definition),
         ("Task 불러오기", open_task_loader),
         ("종료", confirm_exit),
-        ("일시 정지", open_pause_window),
-        ("로봇 정보", robot_arm.info),
-        ("Vision Data (Dev Info)", robot_arm.vision),
+        ("일시 정지", robot_arm.open_pause_window), # okay
+        ("camera 자세", robot_arm.camera_pose_move_test), # ("로봇 정보", robot_arm.info), # test를 위해 임시 변경
+        ("Vision Data (Dev Info)", robot_arm.vision_test),
     ]
 
     positions = [
@@ -506,9 +588,5 @@ def impact_screen():
     no_button.pack(side=ctk.RIGHT, padx=(int(10*1.4), int(50*1.4)), pady=int(10*1.4))
 
 if __name__ == "__main__":
-    rospy.init_node('GUI', anonymous=True)
-    sub = ros_subscribe()
-    ros_thread = threading.Thread(target=sub.ros_sub)
-    ros_thread.daemon = True
-    ros_thread.start()
+    rospy.init_node('soomac_task_tailor_gui', anonymous=True)
     main_screen()
