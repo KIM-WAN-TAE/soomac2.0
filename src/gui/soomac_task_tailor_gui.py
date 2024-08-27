@@ -17,6 +17,8 @@ import time
 
 import cv2
 from PIL import Image, ImageTk
+Image.ANTIALIAS = Image.LANCZOS
+
 import pyrealsense2 as rs
 import numpy as np
 import matplotlib
@@ -96,7 +98,13 @@ image_count = 0
 robot_arm = Robot_control()
 
 def show_image_animation(root):
+
     image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
+
+#     # 지정된 이미지 경로
+#     # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
+#     image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image.jpg"
+
     try:
         image = Image.open(image_path)
         original_width, original_height = image.size
