@@ -19,7 +19,7 @@ import cv2
 from PIL import Image, ImageTk
 import pyrealsense2 as rs
 import numpy as np
-import matplotlib   
+import matplotlib
 from matplotlib import pyplot as plt
 matplotlib.use("TkAgg")
 
@@ -28,12 +28,12 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 
 class Robot_control:
     def __init__(self):
-        self.pub_vision = rospy.Publisher('vision', fl, queue_size=10) 
+        self.pub_vision = rospy.Publisher('vision', fl, queue_size=10)
         self.pub_gui = rospy.Publisher('task_type', String, queue_size=10)
         self.gui_msg = String()
         self.gui_msg.data = None
         self.vision_msg = fl()
-        self.vision_msg.data = [250, 0, 10, 30, 20, 
+        self.vision_msg.data = [250, 0, 10, 30, 20,
                                 400, 0, 10, 60 ]
         
     def tailor(self, task_name):
@@ -54,11 +54,6 @@ class Robot_control:
         self.gui_msg.data = "gui_start"
         self.pub_gui.publish(self.gui_msg)
         print('gui - start')
-
-    def init_pos(self):
-        self.gui_msg.data = "gui_init_pose"
-        self.pub_gui.publish(self.gui_msg)
-        print('gui - init_pos')
 
     def stop(self):
         self.gui_msg.data = "gui_stop"
@@ -89,7 +84,6 @@ class ros_subscribe:
         if impact == True:
             impact_screen()
 
-
 resolution_width, resolution_height = (640, 480)
 
 clip_distance_max = 10.00
@@ -102,17 +96,14 @@ image_count = 0
 robot_arm = Robot_control()
 
 def show_image_animation(root):
-    # 지정된 이미지 경로
     image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
     try:
         image = Image.open(image_path)
         original_width, original_height = image.size
 
-        # 이미지 라벨 생성 (기본 텍스트 제거)
-        label = ctk.CTkLabel(root, text="")  # 초기 텍스트를 빈 문자열로 설정
+        label = ctk.CTkLabel(root, text="SOOMAC TASK TAILOR", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
         label.place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
 
-        # 이미지 중앙에 맞추기 위한 크기 조정 (비율 유지)
         screen_width = 800
         screen_height = 600
         ratio = min(screen_width/original_width, screen_height/original_height)
@@ -120,55 +111,47 @@ def show_image_animation(root):
         resized_image = image.resize(new_size, Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(resized_image)
 
-        # 페이드 인 애니메이션
-        for alpha in range(0, 100, 5):
+        for alpha in range(0, 70, 5):
             label.update()
             image_with_alpha = resized_image.copy()
-            image_with_alpha.putalpha(int(alpha * 2.55))
+            image_with_alpha.putalpha(int(alpha * 5))
             label.image = ImageTk.PhotoImage(image_with_alpha)
             label.configure(image=label.image)
-            time.sleep(0.05)
+            time.sleep(0.01)
 
-        # 이미지 표시 시간 (2초)
-        time.sleep(2)
-
-        # 페이드 아웃 애니메이션
-        for alpha in range(100, 0, -5):
+        for alpha in range(70, 0, -5):
             label.update()
             image_with_alpha = resized_image.copy()
-            image_with_alpha.putalpha(int(alpha * 2.55))
+            image_with_alpha.putalpha(int(alpha * 5))
             label.image = ImageTk.PhotoImage(image_with_alpha)
             label.configure(image=label.image)
-            time.sleep(0.05)
+            time.sleep(0.01)
 
-        label.place_forget()  # 애니메이션이 끝난 후 라벨 숨기기
+        label.place_forget()
 
     except FileNotFoundError:
         print(f"Error: Image file not found at {image_path}")
 
-# Main screen setup
 def main_screen():
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("green")
 
     root = ctk.CTk()
     root.title("Soomac Taylor")
-    root.geometry("402x520")
+    root.geometry(f"{int(402*1.4)}x{int(520*1.4)}")
 
     show_image_animation(root)
 
-    # Title label
-    title_label = ctk.CTkLabel(root, text="Soomac Task Taylor", font=ctk.CTkFont(size=20, weight="bold"))
-    title_label.grid(row=0, column=0, columnspan=2, pady=20)
+    title_label = ctk.CTkLabel(root, text="Soomac Task Taylor", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
+    title_label.grid(row=0, column=0, columnspan=2, pady=int(20*1.4))
 
-    # Confirm exit dialog
     def confirm_exit():
         exit_window = ctk.CTkToplevel(root)
         exit_window.title("Confirm")
-        exit_window.geometry("300x150")
+        exit_window.geometry(f"{int(300*1.4)}x{int(150*1.4)}")
 
-        label = ctk.CTkLabel(exit_window, text="Do you want to shut down the robot as well?", font=ctk.CTkFont(size=14))
-        label.pack(pady=20)
+        label = ctk.CTkLabel(exit_window, text="Do you want to shut down the robot as well?", font=ctk.CTkFont(size=int(20)))
+        label.pack(pady=int(30))
 
         def exit_program():
             root.destroy()
@@ -176,22 +159,22 @@ def main_screen():
         def close_exit_window():
             exit_window.destroy()
 
-        yes_button = ctk.CTkButton(exit_window, text="Yes", command=exit_program, width=80)
-        yes_button.pack(side=ctk.LEFT, padx=10, pady=10)
+        yes_button = ctk.CTkButton(exit_window, text="Yes",font=ctk.CTkFont(size=int(20)),
+                                    command=exit_program, height=int(40), width=int(110))
+        yes_button.pack(side=ctk.LEFT, padx=int(10*1.4), pady=int(10*1.4))
 
-        no_button = ctk.CTkButton(exit_window, text="No", command=close_exit_window, width=80)
-        no_button.pack(side=ctk.RIGHT, padx=10, pady=10)
-    # Open task loader
+        no_button = ctk.CTkButton(exit_window, text="No",font=ctk.CTkFont(size=int(20)), command=close_exit_window, height=int(40), width=int(110))
+        no_button.pack(side=ctk.RIGHT, padx=int(10*1.4), pady=int(10*1.4))
+    
     def open_task_loader():
         task_loader_window = ctk.CTkToplevel(root)
         task_loader_window.title("Load Task")
-        task_loader_window.geometry("400x350")
+        task_loader_window.geometry(f"{int(400*1.4)}x{int(350*1.4)}")
 
-        selected_task = ctk.StringVar()  
+        selected_task = ctk.StringVar()
 
-        # 스크롤 가능한 프레임 생성
-        task_list_frame = ctk.CTkScrollableFrame(task_loader_window, width=380, height=250)
-        task_list_frame.pack(pady=20, padx=10, fill=ctk.BOTH, expand=True)
+        task_list_frame = ctk.CTkScrollableFrame(task_loader_window, width=int(380*1.4), height=int(250*1.4))
+        task_list_frame.pack(pady=int(20*1.4), padx=int(10*1.4), fill=ctk.BOTH, expand=True)
 
         task_folder = Path.home() / "catkin_ws/src/soomac/src/gui/Task"
         task_folder.mkdir(parents=True, exist_ok=True)
@@ -199,17 +182,16 @@ def main_screen():
         task_dirs = [d.name for d in task_folder.iterdir() if d.is_dir()]
         for task in task_dirs:
             task_radio = ctk.CTkRadioButton(task_list_frame, text=task, variable=selected_task, value=task)
-            task_radio.pack(anchor=ctk.W, pady=5, padx=10)  # 라디오 버튼 간격 조정
+            task_radio.pack(anchor=ctk.W, pady=int(5*1.4), padx=int(10*1.4))
 
-        # Load and Back buttons
         button_frame = ctk.CTkFrame(task_loader_window)
-        button_frame.pack(pady=10)
+        button_frame.pack(pady=int(10*1.4))
 
-        load_button = ctk.CTkButton(button_frame, text="Load", command=lambda: load_selected_task(selected_task.get()), width=120)
-        load_button.pack(side=ctk.LEFT, padx=10)
+        load_button = ctk.CTkButton(button_frame, text="Load",font=ctk.CTkFont(size=int(20)), command=lambda: load_selected_task(selected_task.get()), width=int(120*1.4))
+        load_button.pack(side=ctk.LEFT, padx=int(10*1.4))
 
-        back_button = ctk.CTkButton(button_frame, text="Back", command=task_loader_window.destroy, width=120)
-        back_button.pack(side=ctk.RIGHT, padx=10)
+        back_button = ctk.CTkButton(button_frame, text="Back",font=ctk.CTkFont(size=int(20)), command=task_loader_window.destroy, width=int(120*1.4))
+        back_button.pack(side=ctk.RIGHT, padx=int(10*1.4))
 
     def load_selected_task(task_name):
         if task_name:
@@ -218,103 +200,107 @@ def main_screen():
         else:
             print("No Task selected")
 
-    # Main screen buttons layout
+    def open_pause_window():
+        pause_window = ctk.CTkToplevel(root)
+        pause_window.title("Paused")
+        pause_window.geometry(f"{int(300*1.4)}x{int(200*1.4)}")
+
+        ctk.CTkLabel(pause_window, text="일시 정지 상태입니다", font=ctk.CTkFont(size=int(16*1.4))).pack(pady=int(20*1.4))
+
+        button_frame = ctk.CTkFrame(pause_window)
+        button_frame.pack(pady=int(10*1.4))
+
+        continue_button = ctk.CTkButton(button_frame, text="계속하기", command=pause_window.destroy, width=int(80*1.4))
+        continue_button.grid(row=0, column=0, padx=int(10*1.4))
+
+        previous_action_button = ctk.CTkButton(button_frame, text="이전 동작", command=lambda: print("이전 동작 수행"), width=int(80*1.4))
+        previous_action_button.grid(row=0, column=1, padx=int(10*1.4))
+
+        restart_button = ctk.CTkButton(button_frame, text="처음으로", command=lambda: print("처음으로 수행"), width=int(80*1.4))
+        restart_button.grid(row=0, column=2, padx=int(10*1.4))
+
     buttons = [
         ("Execute", robot_arm.start),
         ("Define New Task", open_task_definition),
         ("Load Task", open_task_loader),
         ("Exit", confirm_exit),
-        ("Initial Position", robot_arm.init_pos),
-        ("Pause", robot_arm.pause),
+        ("Pause", open_pause_window),
         ("Robot Info", robot_arm.info),
-        ("Vision Data (Dev Info)", robot_arm.vision),  
-        ("Emergency Stop", robot_arm.stop),
+        ("Vision Data (Dev Info)", robot_arm.vision),
     ]
 
     positions = [
         (1, 0), 
         (2, 0), 
         (2, 1), 
-        (5, 1), 
-        (3, 0), 
-        (3, 1), 
-        (4, 0), 
         (4, 1), 
-        (5, 0), 
-        (5, 1)
+        (3, 0), 
+        (4, 0), 
+        (3, 1)
     ]
 
     for i, (text, command) in enumerate(buttons):
         if i == 0:  
             row, col = positions[i]
-            button = ctk.CTkButton(root, text=text, command=command, width=300, height=40)
-            button.grid(row=row, column=col, padx=0, pady=10, columnspan=2)
+            button = ctk.CTkButton(root, text=text, command=command, width=int(300*1.4), height=int(40*1.4),font=ctk.CTkFont(size=int(20)))
+            button.grid(row=row, column=col, padx=0, pady=int(10*1.4), columnspan=2)
         else:  
             row, col = positions[i]
-            button = ctk.CTkButton(root, text=text, command=command, width=180, height=40)
-            button.grid(row=row, column=col, padx=10, pady=10)
+            button = ctk.CTkButton(root, text=text, command=command, width=int(180*1.4), height=int(40*1.4),font=ctk.CTkFont(size=int(20)))
+            button.grid(row=row, column=col, padx=int(10*1.4), pady=int(10*1.4))
 
     root.mainloop()
 
-
-# Task definition screen
 def open_task_definition():
     task_window = ctk.CTkToplevel()
     task_window.title("Define New Task")
-    task_window.geometry("600x400")  # 창의 크기를 더 크게 설정
+    task_window.geometry(f"{int(600*1.4)}x{int(400*1.4)}")
 
-    # Task 이름 입력란
-    ctk.CTkLabel(task_window, text="Task Name:").grid(row=0, column=0, pady=10, padx=10, sticky=ctk.W)
-    task_name_entry = ctk.CTkEntry(task_window, width=200)
-    task_name_entry.grid(row=0, column=1, pady=10, padx=10, sticky=ctk.W)
+    ctk.CTkLabel(task_window, text="Task Name:", font=ctk.CTkFont(size=int(14*1.4))).grid(row=0, column=0, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
+    task_name_entry = ctk.CTkEntry(task_window, width=int(200*1.4))
+    task_name_entry.grid(row=0, column=1, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
 
-    # 입력할 때 공백을 언더바로 변환하는 함수
     def on_task_name_change(*args):
         current_text = task_name_var.get()
         task_name_var.set(current_text.replace(' ', '_'))
 
-    # StringVar로 관리하고, 변경 시 위 함수를 호출하도록 설정
     task_name_var = ctk.StringVar()
     task_name_var.trace("w", on_task_name_change)
-    task_name_entry.configure(textvariable=task_name_var)  # configure로 수정
+    task_name_entry.configure(textvariable=task_name_var)
 
-    # 반복 방식 선택란
-    ctk.CTkLabel(task_window, text="Repeat Mode:").grid(row=1, column=0, pady=10, padx=10, sticky=ctk.W)
+    ctk.CTkLabel(task_window, text="Repeat Mode:", font=ctk.CTkFont(size=int(14*1.4))).grid(row=1, column=0, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
     repeat_mode_var = ctk.StringVar(value="Count Based")
     
     repeat_mode_frame = ctk.CTkFrame(task_window)
-    repeat_mode_frame.grid(row=1, column=1, pady=10, padx=10, sticky=ctk.W)
+    repeat_mode_frame.grid(row=1, column=1, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
     
-    repeat_mode_count = ctk.CTkRadioButton(repeat_mode_frame, text="Count Based", variable=repeat_mode_var, value="Count Based")
-    repeat_mode_count.grid(row=0, column=0, padx=10)
+    repeat_mode_count = ctk.CTkRadioButton(repeat_mode_frame, text="Count Based", variable=repeat_mode_var, value="Count Based", font=ctk.CTkFont(size=int(14*1.4)))
+    repeat_mode_count.grid(row=0, column=0, padx=int(10*1.4))
     
-    repeat_mode_distribution = ctk.CTkRadioButton(repeat_mode_frame, text="Distribution Based", variable=repeat_mode_var, value="Distribution Based")
-    repeat_mode_distribution.grid(row=0, column=1, padx=10)
+    repeat_mode_distribution = ctk.CTkRadioButton(repeat_mode_frame, text="Distribution Based", variable=repeat_mode_var, value="Distribution Based", font=ctk.CTkFont(size=int(14*1.4)))
+    repeat_mode_distribution.grid(row=0, column=1, padx=int(10*1.4))
 
-    # 그리퍼 종류 선택란
-    ctk.CTkLabel(task_window, text="Gripper Type:").grid(row=2, column=0, pady=10, padx=10, sticky=ctk.W)
+    ctk.CTkLabel(task_window, text="Gripper Type:", font=ctk.CTkFont(size=int(14*1.4))).grid(row=2, column=0, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
     gripper_type_var = ctk.StringVar(value="Mechanical Gripper")
 
     gripper_type_frame = ctk.CTkFrame(task_window)
-    gripper_type_frame.grid(row=2, column=1, pady=10, padx=10, sticky=ctk.W)
+    gripper_type_frame.grid(row=2, column=1, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
 
-    gripper_mechanical = ctk.CTkRadioButton(gripper_type_frame, text="Mechanical Gripper", variable=gripper_type_var, value="Mechanical Gripper")
-    gripper_mechanical.grid(row=0, column=0, padx=10)
+    gripper_mechanical = ctk.CTkRadioButton(gripper_type_frame, text="Mechanical Gripper", variable=gripper_type_var, value="Mechanical Gripper", font=ctk.CTkFont(size=int(14*1.4)))
+    gripper_mechanical.grid(row=0, column=0, padx=int(10*1.4))
     
-    gripper_vacuum = ctk.CTkRadioButton(gripper_type_frame, text="Vacuum Gripper", variable=gripper_type_var, value="Vacuum Gripper")
-    gripper_vacuum.grid(row=0, column=1, padx=10)
+    gripper_vacuum = ctk.CTkRadioButton(gripper_type_frame, text="Vacuum Gripper", variable=gripper_type_var, value="Vacuum Gripper", font=ctk.CTkFont(size=int(14*1.4)))
+    gripper_vacuum.grid(row=0, column=1, padx=int(10*1.4))
     
-    gripper_soft = ctk.CTkRadioButton(gripper_type_frame, text="Soft Gripper", variable=gripper_type_var, value="Soft Gripper")
-    gripper_soft.grid(row=0, column=2, padx=10)
+    gripper_soft = ctk.CTkRadioButton(gripper_type_frame, text="Soft Gripper", variable=gripper_type_var, value="Soft Gripper", font=ctk.CTkFont(size=int(14*1.4)))
+    gripper_soft.grid(row=0, column=2, padx=int(10*1.4))
 
-    # Task 정의 창의 버튼들
     def save_and_capture():
         global image_count
         task_name = task_name_var.get()
         repeat_mode = repeat_mode_var.get()
         gripper_type = gripper_type_var.get()
 
-        # 자동으로 경로 설정: catkin_ws/src/soomac/src/gui/Task/Task이름
         save_path = Path.home() / "catkin_ws/src/soomac/src/gui/Task" / task_name
         save_path.mkdir(parents=True, exist_ok=True)
 
@@ -325,22 +311,19 @@ def open_task_definition():
         else:
             print("Please fill all fields.")
 
-    # 버튼을 포함할 프레임 생성
     button_frame = ctk.CTkFrame(task_window)
-    button_frame.grid(row=3, column=0, columnspan=2, pady=20, padx=20, sticky=ctk.EW)  # 전체 열을 차지하도록 조정
+    button_frame.grid(row=3, column=0, columnspan=2, pady=int(20*1.4), padx=int(20*1.4), sticky=ctk.EW)
 
-    save_button = ctk.CTkButton(button_frame, text="Save and Capture", command=save_and_capture, width=120)
-    save_button.grid(row=0, column=0, padx=10, pady=10, sticky=ctk.W)
+    save_button = ctk.CTkButton(button_frame, text="Save and Capture",font=ctk.CTkFont(size=int(20)), command=save_and_capture, width=int(120*1.4))
+    save_button.grid(row=0, column=0, padx=int(10*1.4), pady=int(10*1.4), sticky=ctk.W)
 
-    back_button = ctk.CTkButton(button_frame, text="Back", command=task_window.destroy, width=120)
-    back_button.grid(row=0, column=1, padx=10, pady=10, sticky=ctk.E)
+    back_button = ctk.CTkButton(button_frame, text="Back",font=ctk.CTkFont(size=int(20)), command=task_window.destroy, width=int(120*1.4))
+    back_button.grid(row=0, column=1, padx=int(10*1.4), pady=int(10*1.4), sticky=ctk.E)
 
-
-# Camera window
 def open_camera_window(save_path, task_name):
     camera_window = ctk.CTkToplevel()
     camera_window.title("Camera View")
-    camera_window.geometry("1400x850")
+    camera_window.geometry(f"{int(800)}x{int(600)}")
 
     last_image_path = None  
 
@@ -407,32 +390,31 @@ def open_camera_window(save_path, task_name):
     update_frame()
 
     button_frame = ctk.CTkFrame(camera_window)
-    button_frame.pack(side=ctk.BOTTOM, pady=20)
+    button_frame.pack(side=ctk.BOTTOM, pady=int(20*1.4))
 
-    capture_button = ctk.CTkButton(button_frame, text="Capture", command=capture_image, width=100)
-    capture_button.grid(row=0, column=0, padx=10)
+    capture_button = ctk.CTkButton(button_frame, text="Capture",font=ctk.CTkFont(size=int(20)), command=capture_image, width=int(100*1.4))
+    capture_button.grid(row=0, column=0, padx=int(10*1.4))
 
-    retake_button = ctk.CTkButton(button_frame, text="Retake", command=retake_image, width=100)
-    retake_button.grid(row=0, column=1, padx=10)
+    retake_button = ctk.CTkButton(button_frame, text="Retake",font=ctk.CTkFont(size=int(20)), command=retake_image, width=int(100*1.4))
+    retake_button.grid(row=0, column=1, padx=int(10*1.4))
 
-    reset_button = ctk.CTkButton(button_frame, text="Reset", command=reset_task_images, width=100)
-    reset_button.grid(row=0, column=2, padx=10)
+    reset_button = ctk.CTkButton(button_frame, text="Reset",font=ctk.CTkFont(size=int(20)), command=reset_task_images, width=int(100*1.4))
+    reset_button.grid(row=0, column=2, padx=int(10*1.4))
 
-    complete_button = ctk.CTkButton(button_frame, text="Complete", command=complete_task, width=100)
-    complete_button.grid(row=0, column=3, padx=10)
+    complete_button = ctk.CTkButton(button_frame, text="Complete",font=ctk.CTkFont(size=int(20)), command=complete_task, width=int(100*1.4))
+    complete_button.grid(row=0, column=3, padx=int(10*1.4))
 
     def on_closing():
         camera_window.destroy()
 
     camera_window.protocol("WM_DELETE_WINDOW", on_closing)
 
-# Ask to execute task
 def ask_to_execute():
     execute_window = ctk.CTkToplevel()
     execute_window.title("Confirm")
-    execute_window.geometry("300x150")
+    execute_window.geometry(f"{int(300*1.4)}x{int(150*1.4)}")
 
-    ctk.CTkLabel(execute_window, text="Do you want to execute the task now?", font=ctk.CTkFont(size=14)).pack(pady=20)
+    ctk.CTkLabel(execute_window, text="Do you want to execute the task now?", font=ctk.CTkFont(size=int(20))).pack(pady=int(20*1.4))
 
     def close_all_windows():
         for window in execute_window.winfo_children():
@@ -443,18 +425,18 @@ def ask_to_execute():
     def task_start():
         pass  
 
-    yes_button = ctk.CTkButton(execute_window, text="Yes", command=task_start, width=80)
-    yes_button.pack(side=ctk.LEFT, padx=10, pady=10)
+    yes_button = ctk.CTkButton(execute_window, text="Yes",font=ctk.CTkFont(size=int(20)), command=task_start, width=int(80*1.4))
+    yes_button.pack(side=ctk.LEFT, padx=int(10*1.4), pady=int(10*1.4))
 
-    no_button = ctk.CTkButton(execute_window, text="No", command=close_all_windows, width=80)
-    no_button.pack(side=ctk.RIGHT, padx=10, pady=10)
+    no_button = ctk.CTkButton(execute_window, text="No",font=ctk.CTkFont(size=int(20)), command=close_all_windows, width=int(80*1.4))
+    no_button.pack(side=ctk.RIGHT, padx=int(10*1.4), pady=int(10*1.4))
 
 def impact_screen():
     exit_window = ctk.CTkToplevel()
     exit_window.title("Collision Detected")
-    exit_window.geometry("400x150")
+    exit_window.geometry(f"{int(400*1.4)}x{int(150*1.4)}")
 
-    ctk.CTkLabel(exit_window, text="Collision detected. Please check and continue.", font=ctk.CTkFont(size=14)).pack(pady=20)
+    ctk.CTkLabel(exit_window, text="Collision detected. Please check and continue.", font=ctk.CTkFont(size=int(20))).pack(pady=int(20*1.4))
 
     def exit_program():
         exit_window.destroy()
@@ -462,11 +444,11 @@ def impact_screen():
     def close_exit_window():
         pass
 
-    yes_button = ctk.CTkButton(exit_window, text="Continue", command=exit_program, width=100)
-    yes_button.pack(side=ctk.LEFT, padx=(50, 10), pady=10)
+    yes_button = ctk.CTkButton(exit_window, text="Continue",font=ctk.CTkFont(size=int(20)), command=exit_program, width=int(100*1.4))
+    yes_button.pack(side=ctk.LEFT, padx=(int(50*1.4), int(10*1.4)), pady=int(10*1.4))
 
-    no_button = ctk.CTkButton(exit_window, text="Exit", command=close_exit_window, width=100)
-    no_button.pack(side=ctk.RIGHT, padx=(10, 50), pady=10)
+    no_button = ctk.CTkButton(exit_window, text="Exit",font=ctk.CTkFont(size=int(20)), command=close_exit_window, width=int(100*1.4))
+    no_button.pack(side=ctk.RIGHT, padx=(int(10*1.4), int(50*1.4)), pady=int(10*1.4))
 
 if __name__ == "__main__":
     rospy.init_node('GUI', anonymous=True)
