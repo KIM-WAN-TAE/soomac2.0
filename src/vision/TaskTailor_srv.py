@@ -33,7 +33,7 @@ folder_path = '/home/choiyj/catkin_ws/src/soomac/src/gui/Task/'
 
 class GUI:
     def __init__(self) -> None:
-        path_sub = rospy.Service('task_name', DefineTask, self.path_callback)
+        name_sub = rospy.Service('task_name', DefineTask, self.path_callback)
         self.task_name = None
 
         self.uois = Uois()
@@ -41,51 +41,65 @@ class GUI:
 
     def path_callback(self, req):
         self.task_name = req.TaskName
-        # npy_files = sorted(glob.glob(os.path.join(folder_path+self.task_name, '*.png')))
+        npy_files = sorted(glob.glob(os.path.join(folder_path+self.task_name, '_color_*.png')))
 
-        # # rgb_list = []
-        # # seg_list = []
-        # # crop_list = []
+        # rgb_list = []
+        # seg_list = []
+        # crop_list = []
 
-        # object_list = []
-        # coord_list = []
-        # task_list = []
-        # task = {'pick': 0, 'place': 0}
+        task = {}
+        task["name"] = self.task_name
 
-        # for i, img in enumerate(npy_files):
-        #     rgb, seg = self.uois.run(img, folder_path+self.task_name+'/segmask_'+str(i)+'.png')
-        #     seg = cv2.imread(folder_path+self.task_name+'/segmask_'+str(i)+'.png', cv2.IMREAD_GRAYSCALE)
-        #     cropped_images = extract_objects_from_image(rgb, seg)
-        #     coord = []
+        object_list = []
+        coord_list = []
+        task_list = []
+        step = {'pick': 0, 'place': 0}
 
-        #     if i == 0:
-        #         for idx, img in enumerate(cropped_images):
-        #             object_list[idx] = img
-        #             coord.append(img[0])
-        #             cv2.imwrite(folder_path+self.task_name+f'/object/object_{idx}.png', img[1])
+        print("load")
 
-        #     else:
-        #         object_img = cv2.imread(folder_path+self.task_name+f'/object/object_{idx}.png', cv2.IMREAD_COLOR)
-        #         for idx, img in enumerate(object_list):
-        #             coord.append(self.object_match(img,cropped_images))
+        for i, img in enumerate(npy_files):
+            rgb, seg = self.uois.run(img, folder_path+self.task_name+'/segmask_'+str(i)+'.png')
+            seg = cv2.imread(folder_path+self.task_name+'/segmask_'+str(i)+'.png', cv2.IMREAD_GRAYSCALE)
+            cropped_images = extract_objects_from_image(rgb, seg)
+            coord = []
 
-        #     coord_list.append(coord)
+            if i == 0:
+                for idx, img in enumerate(cropped_images):
+                    object_list[idx] = img
+                    coord.append(img[0])
+                    cv2.imwrite(folder_path+self.task_name+f'/object/object_{idx}.png', img[1])
 
-        # coord_list = np.array(coord_list)
+            else:
+                object_img = cv2.imread(folder_path+self.task_name+f'/object/object_{idx}.png', cv2.IMREAD_COLOR)
+                for idx, img in enumerate(object_list):
+                    coord.append(self.object_match(img,cropped_images))
 
-        # for i in len(npy_files-1):
-        #     dis = np.linalg.norm(coord_list[i] - coord_list[i+1], axis=1)
-        #     pick_ind = np.argmax(dis)
-        #     task['pick'] = pick_ind
+            coord_list.append(coord)
 
-        #     dis = np.linalg.norm(coord_list[i] - coord_list[i+1][pick_ind], axis=1)
-        #     place_ind = np.argmin(dis)
-        #     task['place'] = place_ind
+        print('match')
+        task["coords"] = coord_list
+        coord_list = np.array(coord_list)
 
-        #     task_list.append(task)
+        # task["objects"] = object_list
 
-        # with open(folder_path+self.task_name+'.json', 'w') as json_file:
-        #     json.dump(task_list, json_file, ensure_ascii=False, indent=4)
+        for i in range(len(npy_files)-1):
+            dis = np.linalg.norm(coord_list[i] - coord_list[i+1], axis=1)
+            pick_ind = np.argmax(dis)
+            step['pick'] = pick_ind
+
+            dis = np.linalg.norm(coord_list[i] - coord_list[i+1][pick_ind], axis=1)
+            place_ind = np.argmin(dis)
+            step['place'] = place_ind
+
+            task_list.append(step)
+
+        task["steps"] = task_list
+        print('define')
+
+        with open(folder_path+self.task_name+'/'+self.task_name+'.json', 'w') as json_file:
+            json.dump(task, json_file, ensure_ascii=False, indent=4)
+
+        print('json')
 
         return DefineTaskResponse(True)
 
