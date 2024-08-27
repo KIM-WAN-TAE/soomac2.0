@@ -14,7 +14,7 @@ from ikpy.link import OriginLink, URDFLink
 def dtr(dgree):
    return dgree*(np.pi/180)
 
-l = [50, 65.95, 332.5, 270.2, 81.75, 17.25+132.47]
+l = [50, 65.95, 332.5, 270.2, 81.75, 17.25+132.47-6]
 
 d = [l[0], l[1], 0, 0, 0]
 a = [0, 0, l[2], l[3], l[4]+l[5]]
@@ -78,9 +78,9 @@ class FSM:
         self.init_pose = np.array([0, 150, -90, -110, 0])# 초기 자세 # GUI에서 실행 버튼 및 초기 위치 버튼 누르면 여기로 이동함
         
         # offset parameter
-        self.above_offset = np.array([0, 0, 120, 0])
+        self.above_offset = np.array([0, 0, 50, 0])
         self.grip_offset = np.array([0, 0, 10, 0])
-        self.lift_offset = np.array([0, 0, 150, 0])
+        self.lift_offset = np.array([0, 0, 50, 0])
         self.object_size = None
 
         # 변수 사전 선언 // [0,0,0]으로 좌표 설정 시 해당 위치로 이동하라는 신호가 오면 base로 endpoint가 위치하려 하는 상황이 생기므로 초기값은 안전하게 설정함.
@@ -90,7 +90,7 @@ class FSM:
 
         # action 정의
         self.action_list =["init_pose" ,                           # 고정된 위치 동작
-                           "pick_above" , "pick_grip" , "grip_on" , "pick_lift",  # pick zone 동작 
+                           "pick_above" , "pick_grip", "grip_on" , "pick_lift",  # pick zone 동작 
                            "place_above", "place_grip", "grip_off", "place_lift", # place zone 동작
                            "init_pose"] 
         self.action_num = len(self.action_list)
