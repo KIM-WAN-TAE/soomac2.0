@@ -310,6 +310,20 @@ def open_task_definition():
         gripper_type = gripper_type_var.get()
 
         save_path = Path.home() / "catkin_ws/src/soomac/src/gui/Task" / task_name
+
+        if save_path.exists():
+            warning_window = ctk.CTkToplevel(task_window)
+            warning_window.title("Warning")
+            warning_window.geometry("300x150")
+
+            warning_label = ctk.CTkLabel(warning_window, text="The task name already exists!", font=ctk.CTkFont(size=16))
+            warning_label.pack(pady=20)
+
+            ok_button = ctk.CTkButton(warning_window, text="OK", command=warning_window.destroy, 
+                                      width=100, font=ctk.CTkFont(size=20))
+            ok_button.pack(pady=10)
+            return
+        
         save_path.mkdir(parents=True, exist_ok=True)
 
         if task_name and repeat_mode and gripper_type:
