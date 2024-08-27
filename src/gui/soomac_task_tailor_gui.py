@@ -34,7 +34,7 @@ class Robot_control:
         self.gui_msg.data = None
         self.vision_msg = fl()
         self.vision_msg.data = [250, 0, 10, 30, 20, 
-                                400, 0, 10, 60 ] 
+                                400, 0, 10, 60 ]
         
     def tailor(self, task_name):
         rospy.wait_for_service('task_name')
