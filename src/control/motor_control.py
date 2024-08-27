@@ -88,7 +88,7 @@ def cubic_trajectory(th_i, th_f): # input : 시작각도, 나중각도, 분할 �
 
     # N 계산 
     delta_th = np.max(np.abs(th_f - th_i)) # 모터들의 변화량 계산 후, 모든 모터에서 발생할 수 있는 최대 변화량
-    min_n, max_n = 10, 50                  # 최소 및 최대 보간법 개수 설정
+    min_n, max_n = 10, 40             # 최소 및 최대 보간법 개수 설정
     max_delta_th = 100                     # 모터에서 발생할 수 있는 최대 변화량
     global N 
     N = min_n + (delta_th / max_delta_th) * (max_n - min_n)    
@@ -207,7 +207,7 @@ class DynamixelNode:
         self.change_para = 1024/90
 
         # init_setting
-        self.gripper_open = 3300 # 3500
+        self.gripper_open = 3200 # 3500
         self.gripper_close = 2924 #2236
 
         self.gripper_open_mm = 45 #49 -> 
@@ -271,19 +271,28 @@ class DynamixelNode:
             rospy.signal_shutdown("Failed to enable torque for XM Motor ID: {}".format(gripper_DXL_ID))
             return
         else:
-            rospy.loginfo("Torque enabled for XM Motor ID: {}".format(gripper_DXL_ID))        
+            rospy.loginfo("Torque enabled for XM Motor ID: {}".format(gripper_DXL_ID)) 
+
+
+
+        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 0, XM_ADDR_POSITION_P_GAIN, 100) 
+        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_POSITION_P_GAIN, 200)
+        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 2, XM_ADDR_POSITION_P_GAIN, 100) 
+        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 3, XM_ADDR_POSITION_P_GAIN, 200) 
+        self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 4, XM_ADDR_POSITION_P_GAIN, 400) 
+
         
         # p gain 설정
         for i in range(0,5):
-            self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, i, XM_ADDR_POSITION_P_GAIN, 200) #800 -> 200``
+            #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, i, XM_ADDR_POSITION_P_GAIN, 400) #800 -> 200``
+            #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, i, XM_ADDR_POSITION_I_GAIN, 5) #0
+            self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, i, XM_ADDR_POTISION_D_GAIN, 10) #0
+            #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, i, XM_ADDR_VELOCITY_I_GAIN, 1920) #1920
+            #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, i, XM_ADDR_VELOCITY_P_GAIN, 200) #100
+            self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, i, XM_ADDR_FEEDFORWARD_1ST_GAIN, 10) #0
+            #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, i, XM_ADDR_FEEDFORWARD_2ND_GAIN, 20) #0
         
         
-        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_POSITION_I_GAIN, 10) #0
-        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_POTISION_D_GAIN, 10) #0
-        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_VELOCITY_I_GAIN, 1920) #1920
-        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_VELOCITY_P_GAIN, 100) #100
-        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_FEEDFORWARD_1ST_GAIN, 20) #0
-        #self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, 1, XM_ADDR_FEEDFORWARD_2ND_GAIN, 0) #0
 
     def read_motor_position(self, port_handler, packet_handler, dxl_id, addr_present_position): # 현재 모터 value 도출해주는 메서드
         # 모터의 현재 위치 읽기
@@ -517,7 +526,6 @@ def main():
         dynamixel.pub_pose(pose.last_pose) # 계속 last_pose로 모터 작동
         if pose.stop_state == False: # stop이 아니면 pose update
             pose.pose_update()
-        rate.sleep()
 
 def start(data):
     if data.data == True:
