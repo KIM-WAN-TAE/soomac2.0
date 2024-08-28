@@ -32,12 +32,13 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 # Pygame 초기화 및 사운드 로드
 pygame.mixer.init()
 # click_sound = pygame.mixer.Sound("/home/hyunwoo20/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-# click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 # click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-click_sound = pygame.mixer.Sound("/home/mataeeun/catkin_ws/src/soomac/src/gui/click_sound.mp3")
-# image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+# click_sound = pygame.mixer.Sound("/home/mataeeun/catkin_ws/src/soomac/src/gui/click_sound.mp3")
+
+image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
-image_path = "/home/mataeeun/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+# image_path = "/home/mataeeun/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 
 
 task_name = None #task_name 토픽 발행을 위한 전역 변수 설정
@@ -74,10 +75,10 @@ class Robot_control:
         rgb_frame = bridge.imgmsg_to_cv2(image, "bgr8")
 
     def tailor(self, task_name):
-        rospy.wait_for_service('task_name')
+        rospy.wait_for_service('define_task')
         try:
             print("tailor topic")
-            task_definition = rospy.ServiceProxy('task_name', DefineTask)
+            task_definition = rospy.ServiceProxy('define_task', DefineTask)
             done = task_definition(task_name)
             return done
         except rospy.ServiceException as e:
@@ -615,7 +616,7 @@ def open_camera_window(save_path, task_name):
     reset_button = ctk.CTkButton(button_frame, text="초기화", font=ctk.CTkFont(size=int(20)), command=with_sound(reset_task_images), width=int(100*1.4))
     reset_button.grid(row=0, column=2, padx=int(10*1.4))
 
-    complete_button = ctk.CTkButton(button_frame, text="완료", font=ctk.CTkFont(size=int(20)), command=lambda:[with_sound(ask_to_execute)(), camera_window.destroy()], width=int(100*1.4))
+    complete_button = ctk.CTkButton(button_frame, text="완료", font=ctk.CTkFont(size=int(20)), command=lambda:[robot_arm.tailor(task_name), with_sound(ask_to_execute)(), camera_window.destroy()], width=int(100*1.4))
     complete_button.grid(row=0, column=3, padx=int(10*1.4))
 
     def on_closing():
