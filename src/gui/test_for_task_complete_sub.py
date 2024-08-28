@@ -9,7 +9,7 @@ def callback(data):
 
 def listener():
     rospy.init_node('task_complete_sub', anonymous=True)
-    rospy.Subscriber('task_complete', String, callback)
+    rospy.Subscriber('task_name', String, callback)
     rospy.spin()
 
 if __name__ == '__main__':
