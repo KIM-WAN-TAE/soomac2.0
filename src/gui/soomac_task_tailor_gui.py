@@ -268,7 +268,7 @@ def show_image_animation(root, on_complete):
 
 def show_start_button(root, on_complete):
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("green")
+    ctk.set_default_color_theme("blue")
     start_button = ctk.CTkButton(root, text="실행", font=ctk.CTkFont(size=int(20*1.4)), 
                                  command=with_sound(on_complete), width=200, height=50)
     start_button.place(relx=0.5, rely=0.8, anchor=ctk.CENTER)
@@ -281,7 +281,7 @@ def on_start_button_click(root):
 def main_gui(root):
     # 기존의 main_screen 함수 내용을 main_gui로 이동
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("green")
+    ctk.set_default_color_theme("blue")
 
     root.title("Soomac Taylor")
     root.geometry(f"{int(558)}x{int(800)}x300x300")  # 창의 크기를 동일하게 유지
@@ -327,7 +327,7 @@ def main_gui(root):
 
         task_dirs = [d.name for d in task_folder.iterdir() if d.is_dir()]
         for task in task_dirs:
-            task_radio = ctk.CTkRadioButton(task_list_frame, text=task, variable=selected_task, value=task, command=play_click_sound)
+            task_radio = ctk.CTkRadioButton(task_list_frame, text=task, variable=selected_task, value=task, command=play_click_sound, font=ctk.CTkFont(size=int(20)))
             task_radio.pack(anchor=ctk.W, pady=int(5*1.4), padx=int(10*1.4))
 
         def load_selected_task():
@@ -347,13 +347,13 @@ def main_gui(root):
 
         back_button = ctk.CTkButton(button_frame, text="뒤로가기", font=ctk.CTkFont(size=int(20)), command=with_sound(task_loader_window.destroy), width=int(120*1.4))
         back_button.pack(side=ctk.RIGHT, padx=int(10*1.4))
-            
+
     buttons = [
         # ("실행", robot_arm.start),
         ("새 Task 정의하기", open_task_definition),
         ("Task 불러오기", open_task_loader),
-        ("종료", confirm_exit),
         ("camera 자세", robot_arm.camera_pose_move_test),
+        ("종료", confirm_exit),
         ("Vision Data (Dev Info)", robot_arm.vision_test),
     ]
 
@@ -374,7 +374,21 @@ def main_gui(root):
         else:  
             row, col = positions[i]
             button = ctk.CTkButton(root, text=text, command=with_sound(command), width=int(180*1.4), height=int(40*1.4), font=ctk.CTkFont(size=int(20)))
-            button.grid(row=row, column=col, padx=int(10*1.4), pady=int(10*1.4))
+            button.grid(row=row, column=col, padx=int(10*1.4), pady=int(16*1.4))
+
+    # label_text = "새 Task 정의하기 버튼을 통해서 나만의 Task를 만들어 작업을 수행해보세요!"
+    # label = ctk.CTkLabel(root, text=label_text, font=ctk.CTkFont(size=int(14*1.4)))
+    # label.grid(row=row, column=col, padx=int(10*1.4), pady=int(5*1.4))
+
+    info = ctk.CTkLabel(root, text="새 Task 정의하기 버튼을 눌러 나만의 Task를 만들어 작업을 수행해보세요!", font=ctk.CTkFont(size=int(15), weight="bold"))
+    info.grid(row=5, column=0, columnspan=2, pady=int(10))
+
+    info2 = ctk.CTkLabel(root, text="Task 불러오기 버튼을 눌러 저장해 두었던 Task를 수행해보세요!", font=ctk.CTkFont(size=int(15), weight="bold"))
+    info2.grid(row=6, column=0, columnspan=2, pady=int(10))
+
+    info3 = ctk.CTkLabel(root, text="카메라 자세 버튼을 눌러 Task를 만들어 수행해보세요!", font=ctk.CTkFont(size=int(15), weight="bold"))
+    info3.grid(row=7, column=0, columnspan=2, pady=int(10))
+
 
 def main_screen():
     root = ctk.CTk()
@@ -444,6 +458,9 @@ def open_task_definition():
                                       variable=gripper_type_var, value="소프트 그리퍼", font=ctk.CTkFont(size=int(14*1.4)), command=play_click_sound)
     gripper_soft.grid(row=0, column=2, padx=int(10*1.4))
 
+    info3 = ctk.CTkLabel(task_window, text="* 모든 입력란을 채운 후에 저장 및 촬영 버튼을 눌러주세요!", font=ctk.CTkFont(size=int(15), weight="bold"))
+    info3.grid(row=4, column=0, columnspan=2, pady=int(5))
+
     def save_and_capture():
         global image_count
         global task_name
@@ -456,7 +473,7 @@ def open_task_definition():
         if save_path.exists():
             warning_window = ctk.CTkToplevel(task_window)
             warning_window.title("경고")
-            warning_window.geometry("450x150")
+            warning_window.geometry("450x170")
 
             warning_label = ctk.CTkLabel(warning_window, text="이름이 이미 존재합니다. 다른 이름으로 Task를 정의해주세요",
                                           font=ctk.CTkFont(size=16), text_color="#FFFFFF")
@@ -480,10 +497,10 @@ def open_task_definition():
     button_frame.grid(row=3, column=0, columnspan=2, pady=int(20*1.4), padx=int(20*1.4), sticky=ctk.EW)
 
     save_button = ctk.CTkButton(button_frame, text="저장 후 촬영",font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), save_and_capture()], width=int(120*1.4))
-    save_button.grid(row=0, column=0, padx=int(10*1.4), pady=int(10*1.4), sticky=ctk.W)
+    save_button.grid(row=0, column=0, padx=int(10*1.4), pady=int(5), sticky=ctk.W)
 
     back_button = ctk.CTkButton(button_frame, text="뒤로가기",font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), task_window.destroy()], width=int(120*1.4))
-    back_button.grid(row=0, column=1, padx=int(10*1.4), pady=int(10*1.4), sticky=ctk.E)
+    back_button.grid(row=0, column=1, padx=int(10*1.4), pady=int(5), sticky=ctk.E)
 
 def open_camera_window(save_path, task_name):
     camera_window = ctk.CTkToplevel()
