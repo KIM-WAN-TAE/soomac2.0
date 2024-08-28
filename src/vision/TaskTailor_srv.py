@@ -41,8 +41,8 @@ class GUI:
 
     def path_callback(self, req):
         self.task_name = req.TaskName
-        npy_files = sorted(glob.glob(os.path.join(folder_path+self.task_name, '_color_*.png')))
-
+        npy_files = sorted(glob.glob(os.path.join(folder_path+self.task_name, '*.npy')))
+        print(npy_files)
         # rgb_list = []
         # seg_list = []
         # crop_list = []
@@ -65,14 +65,13 @@ class GUI:
 
             if i == 0:
                 for idx, img in enumerate(cropped_images):
-                    object_list[idx] = img
+                    object_list.append((img))
                     coord.append(img[0])
                     cv2.imwrite(folder_path+self.task_name+f'/object/object_{idx}.png', img[1])
 
             else:
-                object_img = cv2.imread(folder_path+self.task_name+f'/object/object_{idx}.png', cv2.IMREAD_COLOR)
                 for idx, img in enumerate(object_list):
-                    coord.append(self.object_match(img,cropped_images))
+                    coord.append(self.object_match(img[1],cropped_images))
 
             coord_list.append(coord)
 
@@ -85,11 +84,11 @@ class GUI:
         for i in range(len(npy_files)-1):
             dis = np.linalg.norm(coord_list[i] - coord_list[i+1], axis=1)
             pick_ind = np.argmax(dis)
-            step['pick'] = pick_ind
+            step['pick'] = int(pick_ind)
 
             dis = np.linalg.norm(coord_list[i] - coord_list[i+1][pick_ind], axis=1)
             place_ind = np.argmin(dis)
-            step['place'] = place_ind
+            step['place'] = int(place_ind)
 
             task_list.append(step)
 
@@ -107,11 +106,11 @@ class GUI:
         max = -1
         coord = [0,0]
         for img in crop:
-            similarity = self.uois(object_0, img[1])
+            similarity = self.siamese.eval(object_0, img[1])
             if similarity > max:
                 max = similarity
                 coord = img[0]
-
+  
         return coord
 
 

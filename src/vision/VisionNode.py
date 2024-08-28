@@ -77,8 +77,10 @@ class Vision:
     def load_json(self, task_name):
         self.task_name = task_name
 
-        with open('json file path or name') as json_file:
+        with open(folder_path+'/'+task_name+'/'+task_name+'.json') as json_file:
             json_data = json.load(json_file)
+
+            print(json_data)
 
             self.coords = json_data["coords"]
             self.task = json_data["steps"]
@@ -138,6 +140,9 @@ class Vision:
                 # PCA를 통해 Grasp Pose 계산
                 pca = PCA(n_components=3)
                 pca.fit(cluster_points.point.positions.numpy())
+                aabb = cluster_points.get_axis_aligned_bounding_box()
+                aabb_extent = aabb.get_extent()  # 각 축에 대한 길이 (폭, 높이, 깊이)
+                gripper_width = aabb_extent[0]  # Grasp 방향(주축)으로의 폭
                 
                 # PCA 주성분을 Grasp Pose로 사용
                 principal_axes = pca.components_
@@ -146,18 +151,22 @@ class Vision:
                     'principal_axis': principal_axes[0],  # 주축 (Grasp 방향)
                     'secondary_axis': principal_axes[1],  # 수평축 (회전 정의)
                     'normal_axis': principal_axes[2],      # 법선축
-                    'theta':  np.arctan2(principal_axes[0][1], principal_axes[0][0])
+                    'theta':  np.arctan2(principal_axes[0][1], principal_axes[0][0]),
+                    'grasp_width': gripper_width
                 }
                 grasp_poses.append(grasp_pose)
+
 
         # 결과 출력
         print(f"추출된 Grasp Pose 개수: {len(grasp_poses)}")
         for i, pose in enumerate(grasp_poses):
             print(f"Grasp Pose {i+1}:")
             print(f"  Position: {pose['position']}")
-            print(f"  Principal Axis (Grasp Direction): {pose['principal_axis']}")
-            print(f"  Secondary Axis: {pose['secondary_axis']}")
-            print(f"  Normal Axis: {pose['normal_axis']}")
+            # print(f"  Principal Axis (Grasp Direction): {pose['principal_axis']}")
+            # print(f"  Secondary Axis: {pose['secondary_axis']}")
+            # print(f"  Normal Axis: {pose['normal_axis']}")
+            print(f"  theta : {pose['theta']}")
+            print(f"  grasp_width : {pose['grasp_width']}")
 
         # 시각화를 위한 코드 (옵션)
         sphere_size = 0.01  # 중심점 크기 조절
@@ -201,12 +210,12 @@ class Vision:
         self.step %= self.len_step
         current_step = self.task[self.step]
     
-        object1 = self.coords[0][current_step["Pick"]]
-        object2 = self.coords[0][current_step["Place"]]
+        object1 = self.coords[0][current_step["pick"]]
+        object2 = self.coords[0][current_step["place"]]
         pick, place = self.calc_position(object1, object2)
 
         coord = fl()
-        coord.data = [pick["position"][0], pick["position"][1], pick["position"][2], pick["theta"],place["position"][0], place["position"][1], place["position"][2], place["theta"]]
+        coord.data = [pick["position"][0], pick["position"][1], pick["position"][2], pick["theta"], pick["grasp_width"], place["position"][0], place["position"][1], place["position"][2], place["theta"]]
 
     def reset(self):
         self.task_name = None
@@ -231,17 +240,17 @@ class Info:
         self.task_stop = False
 
     def name_callback(self, msg):
-        self.task_name = msg.msg
+        self.task_name = msg.data
         self.robot_pub.publish(True)
         self.vision.step += 1
-        self.vision.load_json()
+        self.vision.load_json(self.task_name)
 
     def robot_callback(self, msg):
-        self.task_name = msg.msg
+        self.task_name = msg.data
         self.vision.coord_pub()
 
     def task_callback(self, msg):
-        self.task_name = msg.msg
+        self.task_name = msg.data
         self.vision.reset()
 
     def image_pub(self):

@@ -7,6 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
 
 import torch
 from torch.utils.data import DataLoader
@@ -32,10 +33,14 @@ class Siamese:
                                             ])
         
     def eval(self, img1, img2):
-        img1 = self.transform(img1).float()
-        img2 = self.transform(img2).float()
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        img1 = Image.fromarray(img1)
+        img2 = Image.fromarray(img2)
 
-        prob = self.model(img1, img2)
+        img1 = self.transform(img1).float().unsqueeze(0)
+        img2 = self.transform(img2).float().unsqueeze(0)
+
+        prob = self.model(img1.to(device), img2.to(device))
 
         return prob[0][0].item()
 
@@ -75,6 +80,7 @@ if __name__ == "__main__":
         print("[{} / {}]".format(i, len(val_dataloader)))
 
         img1, img2, y = map(lambda x: x.to(device), [img1, img2, y])
+        print(img1.shape)
         class1 = class1[0]
         class2 = class2[0]
 
