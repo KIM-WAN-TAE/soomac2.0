@@ -29,7 +29,8 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 # Pygame 초기화 및 사운드 로드
 pygame.mixer.init()
 # click_sound = pygame.mixer.Sound("/home/hyunwoo20/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+# click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 
 task_name = None #task_name 토픽 발행을 위한 전역 변수 설정
 class Robot_control:
@@ -193,8 +194,6 @@ class Robot_control:
         self.camera_pose.publish(msg)
 ###############################################################
 
-
-
 image_count = 0
 robot_arm = Robot_control()
 
@@ -210,17 +209,17 @@ def with_sound(func):
     return wrapper
 
 def show_image_animation(root, on_complete):
-    image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image.jpg"
-    # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
+    # image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+    image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.png"
     try:
         image = Image.open(image_path)
         original_width, original_height = image.size
 
-        label = ctk.CTkLabel(root, text="SOOMAC TASK TAILOR", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
+        label = ctk.CTkLabel(root, text="", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
         label.place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
 
-        screen_width = 800
-        screen_height = 600
+        screen_width = 790
+        screen_height = 790
         ratio = min(screen_width/original_width, screen_height/original_height)
         new_size = (int(original_width * ratio), int(original_height * ratio))
         resized_image = image.resize(new_size, Image.ANTIALIAS)
@@ -246,6 +245,8 @@ def show_image_animation(root, on_complete):
         print(f"Error: Image file not found at {image_path}")
 
 def show_start_button(root, on_complete):
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme("green")
     start_button = ctk.CTkButton(root, text="실행", font=ctk.CTkFont(size=int(20*1.4)), 
                                  command=with_sound(on_complete), width=200, height=50)
     start_button.place(relx=0.5, rely=0.8, anchor=ctk.CENTER)
@@ -261,7 +262,7 @@ def main_gui(root):
     ctk.set_default_color_theme("green")
 
     root.title("Soomac Taylor")
-    root.geometry(f"{int(558)}x{int(600)}")  # 창의 크기를 동일하게 유지
+    root.geometry(f"{int(558)}x{int(800)}x300x300")  # 창의 크기를 동일하게 유지
 
     title_label = ctk.CTkLabel(root, text="Soomac Task Taylor", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
     title_label.grid(row=0, column=0, columnspan=2, pady=int(20*1.4))
@@ -292,7 +293,7 @@ def main_gui(root):
         global task_name
         task_loader_window = ctk.CTkToplevel(root)
         task_loader_window.title("Task 불러오기")
-        task_loader_window.geometry(f"{int(400*1.4)}x{int(350*1.4)}")
+        task_loader_window.geometry(f"{int(400*1.4)}x{int(350*1.4)}x300x300")
 
         selected_task = ctk.StringVar()
 
@@ -326,7 +327,7 @@ def main_gui(root):
         back_button.pack(side=ctk.RIGHT, padx=int(10*1.4))
             
     buttons = [
-        ("실행", robot_arm.start),
+        # ("실행", robot_arm.start),
         ("새 Task 정의하기", open_task_definition),
         ("Task 불러오기", open_task_loader),
         ("종료", confirm_exit),
@@ -361,7 +362,7 @@ def main_screen():
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     window_width = 558
-    window_height = 600
+    window_height = 800
     position_top = int(screen_height/2 - window_height/2)
     position_right = int(screen_width/2 - window_width/2)
 
