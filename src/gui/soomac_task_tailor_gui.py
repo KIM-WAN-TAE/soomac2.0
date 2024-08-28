@@ -11,7 +11,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from pathlib import Path
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageEnhance
 Image.ANTIALIAS = Image.LANCZOS
 
 import time
@@ -237,11 +237,21 @@ def show_image_animation(root, on_complete):
         image = Image.open(image_path)
         original_width, original_height = image.size
 
+        window_width = 558
+        window_height = int((original_height / original_width) * window_width)
+
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+        position_top = int(screen_height/2 - window_height/2)
+        position_right = int(screen_width/2 - window_width/2)
+
+        root.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
+
         label = ctk.CTkLabel(root, text="", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
         label.place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
 
-        screen_width = 790
-        screen_height = 790
+        screen_width = window_width
+        screen_height = window_height
         ratio = min(screen_width/original_width, screen_height/original_height)
         new_size = (int(original_width * ratio), int(original_height * ratio))
         resized_image = image.resize(new_size, Image.ANTIALIAS)
@@ -268,7 +278,7 @@ def show_image_animation(root, on_complete):
 
 def show_start_button(root, on_complete):
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("green")
+    ctk.set_default_color_theme("blue")
     start_button = ctk.CTkButton(root, text="실행", font=ctk.CTkFont(size=int(20*1.4)), 
                                  command=with_sound(on_complete), width=200, height=50)
     start_button.place(relx=0.5, rely=0.8, anchor=ctk.CENTER)
@@ -279,12 +289,26 @@ def on_start_button_click(root):
     main_gui(root)
 
 def main_gui(root):
-    # 기존의 main_screen 함수 내용을 main_gui로 이동
+    global image_path
+
     ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("green")
+    ctk.set_default_color_theme("blue")
 
     root.title("Soomac Taylor")
-    root.geometry(f"{int(558)}x{int(800)}x300x300")  # 창의 크기를 동일하게 유지
+
+    image = Image.open(image_path)
+    original_width, original_height = image.size
+
+    window_width = 558
+    window_height = int((original_height / original_width) * window_width)
+
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    position_top = int(screen_height/2 - window_height/2)
+    position_right = int(screen_width/2 - window_width/2)
+
+    root.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
+
 
     title_label = ctk.CTkLabel(root, text="Soomac Task Taylor", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
     title_label.grid(row=0, column=0, columnspan=2, pady=int(20*1.4))
@@ -327,7 +351,7 @@ def main_gui(root):
 
         task_dirs = [d.name for d in task_folder.iterdir() if d.is_dir()]
         for task in task_dirs:
-            task_radio = ctk.CTkRadioButton(task_list_frame, text=task, variable=selected_task, value=task, command=play_click_sound)
+            task_radio = ctk.CTkRadioButton(task_list_frame, text=task, variable=selected_task, value=task, command=play_click_sound, font=ctk.CTkFont(size=int(20)))
             task_radio.pack(anchor=ctk.W, pady=int(5*1.4), padx=int(10*1.4))
 
         def load_selected_task():
@@ -347,14 +371,15 @@ def main_gui(root):
 
         back_button = ctk.CTkButton(button_frame, text="뒤로가기", font=ctk.CTkFont(size=int(20)), command=with_sound(task_loader_window.destroy), width=int(120*1.4))
         back_button.pack(side=ctk.RIGHT, padx=int(10*1.4))
-            
+
     buttons = [
         # ("실행", robot_arm.start),
         ("새 Task 정의하기", open_task_definition),
         ("Task 불러오기", open_task_loader),
-        ("종료", confirm_exit),
         ("camera 자세", robot_arm.camera_pose_move_test),
-        ("Vision Data (Dev Info)", robot_arm.vision_test),
+        ("종료", confirm_exit),
+        # ("Vision Data (Dev Info)", robot_arm.vision_test),
+        ("Vision Data (Dev Info)", dev_info)
     ]
 
     positions = [
@@ -374,13 +399,26 @@ def main_gui(root):
         else:  
             row, col = positions[i]
             button = ctk.CTkButton(root, text=text, command=with_sound(command), width=int(180*1.4), height=int(40*1.4), font=ctk.CTkFont(size=int(20)))
-            button.grid(row=row, column=col, padx=int(10*1.4), pady=int(10*1.4))
+            button.grid(row=row, column=col, padx=int(10*1.4), pady=int(16*1.4))
+
+    # label_text = "새 Task 정의하기 버튼을 통해서 나만의 Task를 만들어 작업을 수행해보세요!"
+    # label = ctk.CTkLabel(root, text=label_text, font=ctk.CTkFont(size=int(14*1.4)))
+    # label.grid(row=row, column=col, padx=int(10*1.4), pady=int(5*1.4))
+
+    info = ctk.CTkLabel(root, text="새 Task 정의하기 버튼을 눌러 나만의 Task를 만들어 작업을 수행해보세요!", font=ctk.CTkFont(size=int(15), weight="bold"))
+    info.grid(row=5, column=0, columnspan=2, pady=int(10))
+
+    info2 = ctk.CTkLabel(root, text="Task 불러오기 버튼을 눌러 저장해 두었던 Task를 수행해보세요!", font=ctk.CTkFont(size=int(15), weight="bold"))
+    info2.grid(row=6, column=0, columnspan=2, pady=int(10))
+
+    info3 = ctk.CTkLabel(root, text="카메라 자세 버튼을 눌러 Task를 만들어 수행해보세요!", font=ctk.CTkFont(size=int(15), weight="bold"))
+    info3.grid(row=7, column=0, columnspan=2, pady=int(10))
+
 
 def main_screen():
     root = ctk.CTk()
     root.title("Soomac Task Tailor")
 
-    # 창을 중앙에 위치시키기 위해 스크린 크기와 창 크기를 가져옴
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     window_width = 558
@@ -393,6 +431,20 @@ def main_screen():
     show_image_animation(root, on_complete=lambda: on_start_button_click(root))
 
     root.mainloop()
+
+def dev_info():
+    root = ctk.CTk()
+    root.title("Developer Information")
+
+    root.geometry('300x400')
+    info1 = ctk.CTkLabel(root, text="[Vision]\n 최윤지 \n오희민", font=ctk.CTkFont(size=int(20), weight="bold"))
+    info1.grid(row=0, column=0, columnspan=2, padx=int(20), pady=int(20))
+
+    info2 = ctk.CTkLabel(root, text="[Control]\n 노현우 \n 조준현 \n 마태은 ", font=ctk.CTkFont(size=int(20), weight="bold"))
+    info2.grid(row=1, column=0, columnspan=2, padx=int(20), pady=int(20))
+
+    info3 = ctk.CTkLabel(root, text="[Design]\n 최유진 \n 김도윤 \n정서진", font=ctk.CTkFont(size=int(20), weight="bold"))
+    info3.grid(row=2, column=0, columnspan=2, padx=int(20), pady=int(20))
 
 def open_task_definition():
     global task_name
@@ -444,6 +496,9 @@ def open_task_definition():
                                       variable=gripper_type_var, value="소프트 그리퍼", font=ctk.CTkFont(size=int(14*1.4)), command=play_click_sound)
     gripper_soft.grid(row=0, column=2, padx=int(10*1.4))
 
+    info3 = ctk.CTkLabel(task_window, text="* 모든 입력란을 채운 후에 저장 및 촬영 버튼을 눌러주세요!", font=ctk.CTkFont(size=int(15), weight="bold"))
+    info3.grid(row=4, column=0, columnspan=2, pady=int(5))
+
     def save_and_capture():
         global image_count
         global task_name
@@ -456,7 +511,7 @@ def open_task_definition():
         if save_path.exists():
             warning_window = ctk.CTkToplevel(task_window)
             warning_window.title("경고")
-            warning_window.geometry("450x150")
+            warning_window.geometry("450x170")
 
             warning_label = ctk.CTkLabel(warning_window, text="이름이 이미 존재합니다. 다른 이름으로 Task를 정의해주세요",
                                           font=ctk.CTkFont(size=16), text_color="#FFFFFF")
@@ -480,10 +535,10 @@ def open_task_definition():
     button_frame.grid(row=3, column=0, columnspan=2, pady=int(20*1.4), padx=int(20*1.4), sticky=ctk.EW)
 
     save_button = ctk.CTkButton(button_frame, text="저장 후 촬영",font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), save_and_capture()], width=int(120*1.4))
-    save_button.grid(row=0, column=0, padx=int(10*1.4), pady=int(10*1.4), sticky=ctk.W)
+    save_button.grid(row=0, column=0, padx=int(10*1.4), pady=int(5), sticky=ctk.W)
 
     back_button = ctk.CTkButton(button_frame, text="뒤로가기",font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), task_window.destroy()], width=int(120*1.4))
-    back_button.grid(row=0, column=1, padx=int(10*1.4), pady=int(10*1.4), sticky=ctk.E)
+    back_button.grid(row=0, column=1, padx=int(10*1.4), pady=int(5), sticky=ctk.E)
 
 def open_camera_window(save_path, task_name):
     camera_window = ctk.CTkToplevel()
