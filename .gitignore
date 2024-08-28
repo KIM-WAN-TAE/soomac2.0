@@ -10,4 +10,4 @@
 *.txt
 
 # pycache
-.pyc
+*.pyc
