@@ -31,8 +31,11 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 # Pygame 초기화 및 사운드 로드
 pygame.mixer.init()
 # click_sound = pygame.mixer.Sound("/home/hyunwoo20/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-# click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+# click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+
+# image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.png"
 
 task_name = None #task_name 토픽 발행을 위한 전역 변수 설정
 rgb_frame = None
@@ -229,8 +232,7 @@ def with_sound(func):
     return wrapper
 
 def show_image_animation(root, on_complete):
-    image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
-    # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.png"
+    global image_path
     try:
         image = Image.open(image_path)
         original_width, original_height = image.size
