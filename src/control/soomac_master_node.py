@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -- coding: utf-8 --
+
 import rospy
 import numpy as np
 import math
@@ -75,7 +78,7 @@ class FSM:
 
         # fixed pose(degree)
         self.parking = np.array([0, 150, -90, -110, 0])# parking 자세 설계팀과 상의 필요 # 각도값 조절 필요, 일단 카메라 포즈랑 동일하게 해둠
-        self.define_pose = np.array([0, 150, -90, -110, 0])# task 정의 자세 # GUI에서 실행 버튼 및 초기 위치 버튼 누르면 여기로 이동함
+        self.define_pose = np.array([0, 175, -125, -80, 0])# task 정의 자세 # GUI에서 실행 버튼 및 초기 위치 버튼 누르면 여기로 이동함
         self.camera_pose = np.array([0, 200, 120, 0])
 
         # offset parameter

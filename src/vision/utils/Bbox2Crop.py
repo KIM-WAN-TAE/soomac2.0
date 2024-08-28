@@ -3,9 +3,9 @@ import cv2
 import glob
 
 # 이미지와 라벨 경로 설정
-image_path = '/home/choiyj/Downloads/e/train/images'  # 이미지가 있는 폴더 경로
-label_path = '/home/choiyj/Downloads/e/train/labels'  # 라벨이 있는 폴더 경로
-output_path = '/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/data'  # 크롭된 이미지가 저장될 폴더 경로
+image_path = '/home/choiyoonji/Downloads/e/train/images'  # 이미지가 있는 폴더 경로
+label_path = '/home/choiyoonji/Downloads/e/train/labels'  # 라벨이 있는 폴더 경로
+output_path = '/home/choiyoonji/catkin_ws/src/soomac/src/vision/siamese_network/data'  # 크롭된 이미지가 저장될 폴더 경로
 
 
 def add_padding(image, target_size):

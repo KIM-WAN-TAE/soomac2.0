@@ -24,7 +24,7 @@ from realsense.realsense_depth import DepthCamera
 from realsense.utilities import compute_xyz
 
 
-folder_path = '/home/choiyj/catkin_ws/src/soomac/src/gui/Task/'
+folder_path = '/home/choiyoonji/catkin_ws/src/soomac/src/gui/Task/'
 resolution_width, resolution_height = (640, 480)
 clip_distance_max = 10.00
 
@@ -33,7 +33,7 @@ class Vision:
     def __init__(self) -> None:
         self.vision_pub = rospy.Publisher('/vision', fl)
 
-        self.rs = DepthCamera()
+        self.rs = DepthCamera(resolution_width, resolution_height)
         self.depth_scale = self.rs.get_depth_scale()
 
         self.task_name = None
@@ -188,7 +188,7 @@ class Info:
     def __init__(self) -> None:
         self.vision = Vision()
 
-        name_sub = rospy.Subscriber('/task_type', String, self.name_callback)
+        name_sub = rospy.Subscriber('/task_name', String, self.name_callback)
         robot_sub = rospy.Subscriber('/camera_ready', Bool, self.robot_callback)
         # task_sub = rospy.Subscriber('', Bool, self.task_callback)
 
@@ -216,8 +216,6 @@ class Info:
 
 def main():
     rospy.init_node("vision_node")
-
-    vision = Vision()
 
     info = Info()
 

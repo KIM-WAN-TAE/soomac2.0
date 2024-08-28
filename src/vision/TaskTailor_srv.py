@@ -28,12 +28,12 @@ from utils.Seg2Crop import extract_objects_from_image
 from siamese_network.eval import Siamese
 
 
-folder_path = '/home/choiyj/catkin_ws/src/soomac/src/gui/Task/'
+folder_path = '/home/choiyoonji/catkin_ws/src/soomac/src/gui/Task/'
 
 
 class GUI:
     def __init__(self) -> None:
-        name_sub = rospy.Service('task_name', DefineTask, self.path_callback)
+        name_sub = rospy.Service('define_task', DefineTask, self.path_callback)
         self.task_name = None
 
         self.uois = Uois()

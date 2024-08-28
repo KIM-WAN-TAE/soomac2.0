@@ -14,12 +14,12 @@ def main():
 
     Realsensed435Cam = DepthCamera(resolution_width, resolution_height)
     depth_scale = Realsensed435Cam.get_depth_scale()
-    k = np.load("/home/choiyj/catkin_ws/src/soomac/src/vision/uois/example_images/OCID_image_0.npy", allow_pickle=True)
+    k = np.load("/home/choiyoonji/catkin_ws/src/soomac/src/vision/uois/example_images/OCID_image_0.npy", allow_pickle=True)
     # print(k.shape)
     # print(k.item().get('label'))
 
     i = 0
-    image_root = "/home/choiyj/catkin_ws/src/soomac/src/vision/a/"
+    image_root = "/home/choiyoonji/catkin_ws/src/soomac/src/vision/a/"
     color_name = "test_color_"
     depth_name = "test_depth_"
     npy_name = "test_image_"

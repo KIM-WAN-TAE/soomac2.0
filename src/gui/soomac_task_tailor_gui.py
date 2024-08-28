@@ -11,6 +11,8 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from pathlib import Path
 from PIL import Image, ImageTk
+Image.ANTIALIAS = Image.LANCZOS
+
 import time
 import pygame  # pygame 라이브러리 추가
 import customtkinter as ctk
@@ -27,7 +29,7 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 # Pygame 초기화 및 사운드 로드
 pygame.mixer.init()
 # click_sound = pygame.mixer.Sound("/home/hyunwoo20/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 
 task_name = None #task_name 토픽 발행을 위한 전역 변수 설정
 class Robot_control:
@@ -191,10 +193,7 @@ class Robot_control:
         self.camera_pose.publish(msg)
 ###############################################################
 
-resolution_width, resolution_height = (640, 480)
-clip_distance_max = 10.00
-Realsensed435Cam = DepthCamera(resolution_width, resolution_height)
-depth_scale = Realsensed435Cam.get_depth_scale()
+
 
 image_count = 0
 robot_arm = Robot_control()
@@ -211,7 +210,8 @@ def with_sound(func):
     return wrapper
 
 def show_image_animation(root, on_complete):
-    image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
+    image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image.jpg"
+    # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
     try:
         image = Image.open(image_path)
         original_width, original_height = image.size
@@ -468,6 +468,10 @@ def open_camera_window(save_path, task_name):
     camera_window.geometry(f"{int(800)}x{int(600)}")
 
     print("카메라 윈도우 열림")
+    resolution_width, resolution_height = (640, 480)
+    clip_distance_max = 10.00
+    Realsensed435Cam = DepthCamera(resolution_width, resolution_height)
+    depth_scale = Realsensed435Cam.get_depth_scale()
 
     last_image_path = None  
 
@@ -550,6 +554,7 @@ def open_camera_window(save_path, task_name):
 
     def on_closing():
         camera_window.destroy()
+        Realsensed435Cam.release()
 
     camera_window.protocol("WM_DELETE_WINDOW", on_closing)
 
