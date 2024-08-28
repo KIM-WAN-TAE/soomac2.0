@@ -210,7 +210,7 @@ def with_sound(func):
     return wrapper
 
 def show_image_animation(root, on_complete):
-    image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image.jpg"
+    image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
     # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
     try:
         image = Image.open(image_path)
