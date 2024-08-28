@@ -210,7 +210,7 @@ def with_sound(func):
         return func(*args, **kwargs)
     return wrapper
 
-def show_image_animation(root):
+def show_image_animation(root, on_complete):
     image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
     try:
         image = Image.open(image_path)
@@ -226,36 +226,42 @@ def show_image_animation(root):
         resized_image = image.resize(new_size, Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(resized_image)
 
-        for alpha in range(0, 70, 5):
-            label.update()
-            image_with_alpha = resized_image.copy()
-            image_with_alpha.putalpha(int(alpha * 5))
-            label.image = ImageTk.PhotoImage(image_with_alpha)
-            label.configure(image=label.image)
-            time.sleep(0.01)
+        label.image = photo
+        label.configure(image=photo)
 
-        for alpha in range(70, 0, -5):
-            label.update()
-            image_with_alpha = resized_image.copy()
-            image_with_alpha.putalpha(int(alpha * 5))
-            label.image = ImageTk.PhotoImage(image_with_alpha)
-            label.configure(image=label.image)
-            time.sleep(0.01)
+        def fade_in():
+            alpha = 0
+            while alpha < 1.0:
+                label.image = ImageTk.PhotoImage(resized_image)
+                label.configure(image=label.image)
+                label.update()
+                time.sleep(0.01)
+                alpha += 0.05
 
-        label.place_forget()
+            show_start_button(root, on_complete)  # 페이드 인이 완료되면 시작 버튼 표시
+
+        root.after(0, fade_in)
 
     except FileNotFoundError:
         print(f"Error: Image file not found at {image_path}")
 
-def main_screen():
+def show_start_button(root, on_complete):
+    start_button = ctk.CTkButton(root, text="실행", font=ctk.CTkFont(size=int(20*1.4)), 
+                                 command=with_sound(on_complete), width=200, height=50)
+    start_button.place(relx=0.5, rely=0.8, anchor=ctk.CENTER)
+
+def on_start_button_click(root):
+    for widget in root.winfo_children():
+        widget.destroy()
+    main_gui(root)
+
+def main_gui(root):
+    # 기존의 main_screen 함수 내용을 main_gui로 이동
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("green")
 
-    root = ctk.CTk()
     root.title("Soomac Taylor")
-    root.geometry(f"{int(402*1.4)}x{int(520*1.4)}")
-
-    show_image_animation(root)
+    root.geometry(f"{int(558)}x{int(600)}")  # 창의 크기를 동일하게 유지
 
     title_label = ctk.CTkLabel(root, text="Soomac Task Taylor", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
     title_label.grid(row=0, column=0, columnspan=2, pady=int(20*1.4))
@@ -282,11 +288,8 @@ def main_screen():
                                   command=with_sound(close_exit_window), height=int(40), width=int(110))
         no_button.pack(side=ctk.RIGHT, padx=int(10*1.4), pady=int(10*1.4))
 
-    # Task 불러오기 화면 함수
     def open_task_loader():
         global task_name
-        print("Task 불러오기 윈도우 열림")
-
         task_loader_window = ctk.CTkToplevel(root)
         task_loader_window.title("Task 불러오기")
         task_loader_window.geometry(f"{int(400*1.4)}x{int(350*1.4)}")
@@ -316,20 +319,18 @@ def main_screen():
         button_frame = ctk.CTkFrame(task_loader_window)
         button_frame.pack(pady=int(10*1.4))
 
-        load_button = ctk.CTkButton(button_frame, text="불러오기", font=ctk.CTkFont(size=int(20)), command=lambda:[with_sound(load_selected_task)(),task_loader_window.destroy()], width=int(120*1.4))
+        load_button = ctk.CTkButton(button_frame, text="불러오기", font=ctk.CTkFont(size=int(20)), command=lambda:[with_sound(load_selected_task)(), task_loader_window.destroy()], width=int(120*1.4))
         load_button.pack(side=ctk.LEFT, padx=int(10*1.4))
 
         back_button = ctk.CTkButton(button_frame, text="뒤로가기", font=ctk.CTkFont(size=int(20)), command=with_sound(task_loader_window.destroy), width=int(120*1.4))
         back_button.pack(side=ctk.RIGHT, padx=int(10*1.4))
             
-
     buttons = [
-        ("실행", robot_arm.start), # okay
+        ("실행", robot_arm.start),
         ("새 Task 정의하기", open_task_definition),
         ("Task 불러오기", open_task_loader),
         ("종료", confirm_exit),
-        # ("일시 정지", robot_arm.pause), # okay
-        ("camera 자세", robot_arm.camera_pose_move_test), # ("로봇 정보", robot_arm.info), # test를 위해 임시 변경
+        ("camera 자세", robot_arm.camera_pose_move_test),
         ("Vision Data (Dev Info)", robot_arm.vision_test),
     ]
 
@@ -338,7 +339,6 @@ def main_screen():
         (2, 0), 
         (2, 1), 
         (4, 1), 
-        # (3, 0), 
         (4, 0), 
         (3, 1)
     ]
@@ -353,9 +353,24 @@ def main_screen():
             button = ctk.CTkButton(root, text=text, command=with_sound(command), width=int(180*1.4), height=int(40*1.4), font=ctk.CTkFont(size=int(20)))
             button.grid(row=row, column=col, padx=int(10*1.4), pady=int(10*1.4))
 
+def main_screen():
+    root = ctk.CTk()
+    root.title("Soomac Task Tailor")
+
+    # 창을 중앙에 위치시키기 위해 스크린 크기와 창 크기를 가져옴
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    window_width = 558
+    window_height = 600
+    position_top = int(screen_height/2 - window_height/2)
+    position_right = int(screen_width/2 - window_width/2)
+
+    root.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
+
+    show_image_animation(root, on_complete=lambda: on_start_button_click(root))
+
     root.mainloop()
 
-# Task definition screen
 def open_task_definition():
     global task_name
     print("새 Task 정의하기 윈도우 열림")
@@ -604,11 +619,8 @@ def impact_screen():
     exit_window.title("충돌 감지")
     exit_window.geometry(f"{int(400*1.4)}x{int(150*1.4)}")
 
-    # ctk.CTkLabel(exit_window, text="추돌이 감지되었으니 확인 후 진행해주세요", font=ctk.CTkFont(size=int(20))).pack(pady=int(20*1.4))
-
     ctk.CTkLabel(exit_window, text="충돌이 감지되었으니 확인 후 진행해주세요",
                                           font=ctk.CTkFont(size=int(20))).pack(pady=int(20*1.4))
-    
     
     def exit_program():
         exit_window.destroy()
