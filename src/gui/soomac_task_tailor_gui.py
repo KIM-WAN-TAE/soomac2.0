@@ -11,7 +11,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from pathlib import Path
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageEnhance
 Image.ANTIALIAS = Image.LANCZOS
 
 import time
@@ -237,11 +237,21 @@ def show_image_animation(root, on_complete):
         image = Image.open(image_path)
         original_width, original_height = image.size
 
+        window_width = 558
+        window_height = int((original_height / original_width) * window_width)
+
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+        position_top = int(screen_height/2 - window_height/2)
+        position_right = int(screen_width/2 - window_width/2)
+
+        root.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
+
         label = ctk.CTkLabel(root, text="", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
         label.place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
 
-        screen_width = 790
-        screen_height = 790
+        screen_width = window_width
+        screen_height = window_height
         ratio = min(screen_width/original_width, screen_height/original_height)
         new_size = (int(original_width * ratio), int(original_height * ratio))
         resized_image = image.resize(new_size, Image.ANTIALIAS)
@@ -279,12 +289,26 @@ def on_start_button_click(root):
     main_gui(root)
 
 def main_gui(root):
-    # 기존의 main_screen 함수 내용을 main_gui로 이동
+    global image_path
+
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("blue")
 
     root.title("Soomac Taylor")
-    root.geometry(f"{int(558)}x{int(800)}x300x300")  # 창의 크기를 동일하게 유지
+
+    image = Image.open(image_path)
+    original_width, original_height = image.size
+
+    window_width = 558
+    window_height = int((original_height / original_width) * window_width)
+
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    position_top = int(screen_height/2 - window_height/2)
+    position_right = int(screen_width/2 - window_width/2)
+
+    root.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
+
 
     title_label = ctk.CTkLabel(root, text="Soomac Task Taylor", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
     title_label.grid(row=0, column=0, columnspan=2, pady=int(20*1.4))
@@ -354,7 +378,8 @@ def main_gui(root):
         ("Task 불러오기", open_task_loader),
         ("camera 자세", robot_arm.camera_pose_move_test),
         ("종료", confirm_exit),
-        ("Vision Data (Dev Info)", robot_arm.vision_test),
+        # ("Vision Data (Dev Info)", robot_arm.vision_test),
+        ("Vision Data (Dev Info)", dev_info)
     ]
 
     positions = [
@@ -394,7 +419,6 @@ def main_screen():
     root = ctk.CTk()
     root.title("Soomac Task Tailor")
 
-    # 창을 중앙에 위치시키기 위해 스크린 크기와 창 크기를 가져옴
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     window_width = 558
@@ -407,6 +431,20 @@ def main_screen():
     show_image_animation(root, on_complete=lambda: on_start_button_click(root))
 
     root.mainloop()
+
+def dev_info():
+    root = ctk.CTk()
+    root.title("Developer Information")
+
+    root.geometry('300x400')
+    info1 = ctk.CTkLabel(root, text="[Vision]\n 최윤지 \n오희민", font=ctk.CTkFont(size=int(20), weight="bold"))
+    info1.grid(row=0, column=0, columnspan=2, padx=int(20), pady=int(20))
+
+    info2 = ctk.CTkLabel(root, text="[Control]\n 노현우 \n 조준현 \n 마태은 ", font=ctk.CTkFont(size=int(20), weight="bold"))
+    info2.grid(row=1, column=0, columnspan=2, padx=int(20), pady=int(20))
+
+    info3 = ctk.CTkLabel(root, text="[Design]\n 최유진 \n 김도윤 \n정서진", font=ctk.CTkFont(size=int(20), weight="bold"))
+    info3.grid(row=2, column=0, columnspan=2, padx=int(20), pady=int(20))
 
 def open_task_definition():
     global task_name
