@@ -4,6 +4,7 @@
 import rospy
 from std_msgs.msg import Float32MultiArray as fl
 from std_msgs.msg import Bool, String
+from sensor_msgs.msg import Image as Im
 from soomac.srv import DefineTask, DefineTaskResponse
 
 import sys, os
@@ -17,6 +18,7 @@ import time
 import pygame  # pygame 라이브러리 추가
 import customtkinter as ctk
 import cv2
+from cv_bridge import CvBridge
 import pyrealsense2 as rs
 import numpy as np
 import matplotlib
@@ -29,10 +31,13 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 # Pygame 초기화 및 사운드 로드
 pygame.mixer.init()
 # click_sound = pygame.mixer.Sound("/home/hyunwoo20/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-# click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+# click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 
 task_name = None #task_name 토픽 발행을 위한 전역 변수 설정
+rgb_frame = None
+depth_frame = None
+
 class Robot_control:
     def __init__(self):
         self.pub_vision = rospy.Publisher('/vision', fl, queue_size=10) 
@@ -43,6 +48,8 @@ class Robot_control:
         rospy.Subscriber('/impact_to_gui', Bool, self.impact_cb)
         rospy.Subscriber('/define_ready', Bool, self.define_ready_test)
         rospy.Subscriber('/camera_ready', Bool, self.camera_ready_test)
+        rospy.Subscriber('/rgb_frame', Im, self.rgb_callback)
+        rospy.Subscriber('/depth_frame', Im, self.depth_callback)
         
         # gui msg type 정의
         self.gui_msg = String()
@@ -53,7 +60,20 @@ class Robot_control:
                                 -250, 250, 0, 30 ] # place : (x, y, z, theta)
 
         self.impact_screen_exis = False
+
+    def rgb_callback(self, image):
+        global rgb_frame
+        image.encoding = 'rgb8'
+        bridge = CvBridge()
+        # Convert ROS Image message to OpenCV image
+        rgb_frame = bridge.imgmsg_to_cv2(image, "bgr8")
         
+    def depth_callback(self, image):
+        global depth_frame
+        bridge = CvBridge()
+        # Convert ROS Image message to OpenCV image
+        depth_frame = bridge.imgmsg_to_cv2(image, "16UC1")
+
     def tailor(self, task_name):
         rospy.wait_for_service('task_name')
         try:
@@ -209,8 +229,8 @@ def with_sound(func):
     return wrapper
 
 def show_image_animation(root, on_complete):
-    # image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
-    image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.png"
+    image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+    # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.png"
     try:
         image = Image.open(image_path)
         original_width, original_height = image.size
@@ -469,10 +489,10 @@ def open_camera_window(save_path, task_name):
     camera_window.geometry(f"{int(800)}x{int(600)}")
 
     print("카메라 윈도우 열림")
-    resolution_width, resolution_height = (640, 480)
-    clip_distance_max = 10.00
-    Realsensed435Cam = DepthCamera(resolution_width, resolution_height)
-    depth_scale = Realsensed435Cam.get_depth_scale()
+    # resolution_width, resolution_height = (640, 480)
+    # clip_distance_max = 10.00
+    # Realsensed435Cam = DepthCamera(resolution_width, resolution_height)
+    # depth_scale = Realsensed435Cam.get_depth_scale()
 
     last_image_path = None  
 
@@ -480,14 +500,14 @@ def open_camera_window(save_path, task_name):
     video_label.pack()
 
     def update_frame():
-        ret, depth_raw_frame, color_raw_frame = Realsensed435Cam.get_raw_frame()
-        if not ret:
-            print("Unable to get a frame")
+        # ret, depth_raw_frame, color_raw_frame = Realsensed435Cam.get_raw_frame()
+        # if not ret:
+        #     print("Unable to get a frame")
 
-        color_frame = np.asanyarray(color_raw_frame.get_data())
-        depth_frame = np.asanyarray(depth_raw_frame.get_data())
+        # color_frame = np.asanyarray(color_raw_frame.get_data())
+        # depth_frame = np.asanyarray(depth_raw_frame.get_data())
 
-        rgb = cv2.cvtColor(color_frame, cv2.COLOR_BGR2RGBA)
+        rgb = cv2.cvtColor(rgb_frame, cv2.COLOR_BGR2RGBA)
         img = Image.fromarray(rgb)
         imgtk = ImageTk.PhotoImage(image=img)
         video_label.imgtk = imgtk
@@ -500,18 +520,21 @@ def open_camera_window(save_path, task_name):
         depth_path = f"{save_path}/{task_name}_depth_{image_count}.png"
         npy_path = f"{save_path}/{task_name}_npy_{image_count}.npy"
 
-        ret, depth_raw_frame, color_raw_frame = Realsensed435Cam.get_raw_frame()
-        if not ret:
-            print("Unable to get a frame")
+        # ret, depth_raw_frame, color_raw_frame = Realsensed435Cam.get_raw_frame()
+        # if not ret:
+        #     print("Unable to get a frame")
 
-        color_frame = np.asanyarray(color_raw_frame.get_data())
-        depth_frame = np.asanyarray(depth_raw_frame.get_data())
+        # color_frame = np.asanyarray(color_raw_frame.get_data())
+        # depth_frame = np.asanyarray(depth_raw_frame.get_data())
         
-        cv2.imwrite(color_path, color_frame)
+        cv2.imwrite(color_path, rgb_frame)
         plt.imsave(depth_path, depth_frame)
 
-        rgb = cv2.cvtColor(color_frame, cv2.COLOR_BGR2RGB)
-        xyz = compute_xyz(depth_frame * depth_scale, Realsensed435Cam.get_camera_intrinsics())
+        depth_scale = 0.0010000000474974513
+        intrinsics = {'fx': 387.5052185058594, 'fy': 387.5052185058594, 'x_offset': 324.73431396484375, 'y_offset': 238.08770751953125, 'img_height': 480, 'img_width': 640}
+
+        rgb = cv2.cvtColor(rgb_frame, cv2.COLOR_BGR2RGB)
+        xyz = compute_xyz(depth_frame * depth_scale, intrinsics)
         data = save_as_npy(rgb, xyz)
         np.save(npy_path, data)
 
@@ -555,7 +578,7 @@ def open_camera_window(save_path, task_name):
 
     def on_closing():
         camera_window.destroy()
-        Realsensed435Cam.release()
+        # Realsensed435Cam.release()
 
     camera_window.protocol("WM_DELETE_WINDOW", on_closing)
 
