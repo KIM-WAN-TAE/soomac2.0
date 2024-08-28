@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -- coding: utf-8 --
+
 ## angle -> move motort / angle(0,0,0,0) -> end point will be located in (396, 0, 102.5)
 
 import os
@@ -372,7 +375,7 @@ class Pose:
         self.goal_pose = None
         self.grip_seperation = None
         self.current_pose = None
-        self.init_pose = np.array([0, 150, -90, -110, 0])
+        self.init_pose = np.array([0, 160, -90, -110, 0])
 
         self.last_pose = np.append(self.init_pose, self.gripper_open) #pose 초기값(그리퍼 포함)
         self.trajectory = []
@@ -471,10 +474,10 @@ def main(data):
     pose.state_done()
 
     while not rospy.is_shutdown():
-        impact_state = dynamixel.monitor_current()
-        if impact_state == 1:
-            pose.stop_state = True 
-            impact.impact_to_gui.publish(True)
+        # impact_state = dynamixel.monitor_current()
+        # if impact_state == 1:
+        #     pose.stop_state = True 
+        #     impact.impact_to_gui.publish(True)
             
         dynamixel.pub_pose(pose.last_pose) # 계속 last_pose로 모터 작동
         if pose.stop_state == False: # stop이 아니면 pose update

@@ -17,7 +17,7 @@ from dataset import Dataset
 
 class Siamese:
     def __init__(self) -> None:
-        checkpoint = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/best.pth"
+        checkpoint = "/home/choiyoonji/catkin_ws/src/soomac/src/vision/siamese_network/best.pth"
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         checkpoint = torch.load(checkpoint)
@@ -41,9 +41,9 @@ class Siamese:
 
 
 if __name__ == "__main__":
-    val_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/data/val"
-    out_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/data"
-    checkpoint = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/best.pth"
+    val_path = "/home/choiyoonji/catkin_ws/src/soomac/src/vision/siamese_network/data/val"
+    out_path = "/home/choiyoonji/catkin_ws/src/soomac/src/vision/siamese_network/data"
+    checkpoint = "/home/choiyoonji/catkin_ws/src/soomac/src/vision/siamese_network/best.pth"
 
     os.makedirs(out_path, exist_ok=True)
 

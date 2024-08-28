@@ -13,9 +13,9 @@ from model import SiameseNetwork
 from dataset import Dataset
 
 if __name__ == "__main__":
-    train_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/data/train"
-    val_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network/data/val"
-    out_path = "/home/choiyj/catkin_ws/src/soomac/src/vision/siamese_network"
+    train_path = "/home/choiyoonji/catkin_ws/src/soomac/src/vision/siamese_network/data/train"
+    val_path = "/home/choiyoonji/catkin_ws/src/soomac/src/vision/siamese_network/data/val"
+    out_path = "/home/choiyoonji/catkin_ws/src/soomac/src/vision/siamese_network"
     backbone = "resnet18"
     learning_rate = 1e-4
     epochs = 1000

@@ -4,7 +4,7 @@ import open3d.core as o3c
 from sklearn.decomposition import PCA
 
 # 기존 코드
-img_file = '/home/choiyj/catkin_ws/src/soomac/src/vision/a/test_image_4.npy'
+img_file = '/home/choiyoonji/catkin_ws/src/soomac/src/vision/a/test_image_4.npy'
 d = np.load(img_file, allow_pickle=True, encoding='bytes').item()
 
 rgb_image = d['rgb']
@@ -136,7 +136,7 @@ print(place_ind+1, grasp_poses[place_ind]["position"], grasp_poses[pick_ind]["th
 # # voxel -> ransac -> dbscan
 
 
-# img_file = '/home/choiyj/catkin_ws/src/soomac/src/vision/a/test_image_4.npy'
+# img_file = '/home/choiyoonji/catkin_ws/src/soomac/src/vision/a/test_image_4.npy'
 # d = np.load(img_file, allow_pickle=True, encoding='bytes').item()
 
 # rgb_image = d['rgb']

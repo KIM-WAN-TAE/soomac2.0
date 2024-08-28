@@ -11,6 +11,8 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from pathlib import Path
 from PIL import Image, ImageTk
+Image.ANTIALIAS = Image.LANCZOS
+
 import time
 import pygame  # pygame 라이브러리 추가
 import customtkinter as ctk
@@ -26,7 +28,8 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 
 # Pygame 초기화 및 사운드 로드
 pygame.mixer.init()
-click_sound = pygame.mixer.Sound("/home/hyunwoo20/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+# click_sound = pygame.mixer.Sound("/home/hyunwoo20/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 
 class Robot_control:
     def __init__(self):
@@ -209,7 +212,8 @@ def with_sound(func):
     return wrapper
 
 def show_image_animation(root):
-    image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
+    image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image.jpg"
+    # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
     try:
         image = Image.open(image_path)
         original_width, original_height = image.size
