@@ -29,8 +29,8 @@ class DepthCamera:
         profile = self.pipeline.get_active_profile()
         depth_profile = rs.video_stream_profile(profile.get_stream(rs.stream.depth))
         self.depth_intrinsics = depth_profile.get_intrinsics()
-        print(self.get_camera_intrinsics())
-        print(self.depth_intrinsics)
+        # print(self.get_camera_intrinsics)
+        # print(self.depth_intrinsics)
        
     def get_frame(self):
     
