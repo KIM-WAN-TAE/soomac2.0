@@ -1,10 +1,8 @@
-#!/usr/bin/env python
-# -- coding: utf-8 --
-
 import rospy
 import numpy as np
 import math
 import time
+import camera_transformation as ct
 from std_msgs.msg import Float32MultiArray as fl
 from std_msgs.msg import Bool, Float32
 from std_msgs.msg import String
@@ -17,7 +15,8 @@ from ikpy.link import OriginLink, URDFLink
 def dtr(dgree):
    return dgree*(np.pi/180)
 
-l = [50, 65.95, 332.5, 270.2, 81.75, 17.25+132.47-6]
+l = [50, 65.95, 332.5, 270.1, 81.75, 17.25+132.47-6]
+# l = [50, 65.95, 332.5, 270.2, 81.75, 17.25+132.47-6]
 
 d = [l[0], l[1], 0, 0, 0]
 a = [0, 0, l[2], l[3], l[4]+l[5]]
@@ -54,10 +53,17 @@ class MakeChain:
         # orientation mode 를 "X"로 설정하기. EE의 green axis가 x축 이므로
         self.angles = np.round(np.rad2deg(angle), 3)
         self.angles = self.angles[1:5] #[0,n,n,n,n,0]
-        
-        wrist_angle_radians = math.atan(target_pose[1]/(target_pose[0]))
-        wrist_angle_degrees = - math.degrees(wrist_angle_radians) - target_pose[3] #atan로 구한 wrist의 각도를 빼서 0으로 맞춰주고, 목표 각도를 다시 더해주기
 
+        if target_pose[0] > 0:
+            wrist_angle_radians = math.atan(target_pose[1]/(target_pose[0]))
+            wrist_angle_degrees = - (90 -math.degrees(wrist_angle_radians)) - target_pose[3] #atan로 구한 wrist의 각도를 빼서 0으로 맞춰주고, 목표 각도를 다시 더해주기
+            print(wrist_angle_degrees)
+        elif target_pose[0] < 0:
+            wrist_angle_radians = math.atan(target_pose[1]/(target_pose[0]))
+            wrist_angle_degrees = - (90 -math.degrees(wrist_angle_radians)) - target_pose[3] + 180 #atan로 구한 wrist의 각도를 빼서 0으로 맞춰주고, 목표 각도를 다시 더해주기
+            print(wrist_angle_degrees)
+        else:
+            wrist_angle_degrees = 0
 
         self.angles = np.r_[self.angles, wrist_angle_degrees]
         return self.angles
@@ -75,16 +81,15 @@ class FSM:
         self.current_state = "define_pose"
         self.last_state = "define_pose"
         self.arm = MakeChain()
-
         # fixed pose(degree)
-        self.parking = np.array([0, 150, -90, -110, 0])# parking 자세 설계팀과 상의 필요 # 각도값 조절 필요, 일단 카메라 포즈랑 동일하게 해둠
-        self.define_pose = np.array([0, 175, -125, -80, 0])# task 정의 자세 # GUI에서 실행 버튼 및 초기 위치 버튼 누르면 여기로 이동함
+        self.parking = np.array([0, 180, -130, -100, 0])# parking 자세 설계팀과 상의 필요 # 각도값 조절 필요, 일단 카메라 포즈랑 동일하게 해둠
+        self.define_pose = np.array([0, 180, -130, -100, 0])# task 정의 자세 # GUI에서 실행 버튼 및 초기 위치 버튼 누르면 여기로 이동함
         self.camera_pose = np.array([0, 200, 120, 0])
 
         # offset parameter
-        self.above_offset = np.array([0, 0, 120, 0])
-        self.grip_offset = np.array([0, 0, 10, 0])
-        self.lift_offset = np.array([0, 0, 150, 0])
+        self.above_offset = np.array([0, 0, 100, 0])
+        self.grip_offset = np.array([0, 0, 20, 0])
+        self.lift_offset = np.array([0, 0, 50, 0])
         self.object_size = None
 
 
@@ -96,7 +101,11 @@ class FSM:
         # action 정의
         self.action_list =["define_pose" , "camera_pose",                         # 고정된 위치 동작
                            "pick_above" , "pick_grip" , "grip_on" , "pick_lift",  # pick zone 동작 
-                           "place_above", "place_grip", "grip_off", "place_lift"] # place zone 동작
+                           "place_lift", "place_grip", "grip_off", "place_above"] # place zone 동작
+        # action 정의
+        # self.action_list =["define_pose" , "camera_pose",                         # 고정된 위치 동작
+        #                    "pick_grip" , "grip_on" , "middle_lift", 
+        #                    "place_grip", "grip_off"] # place zone 동작
                             
         self.action_num = len(self.action_list)
 
@@ -127,7 +136,14 @@ class FSM:
         msg = String()
         msg.data = "camera"
         self.pub_task_motor.publish(msg)
+
         # self.current_state = "camera_pose"
+    def move_to_define(self): # camera pose로 direct 이동, GUI에서 camera 위치 누르면 해당 메서드 동작
+        print('\nMoving to camera pose')
+        msg = String()
+        msg.data = "define"
+        self.pub_task_motor.publish(msg)
+        # self.current_state = "camera_pose"        
 
     def action_setting(self, print_op=False): # vision으로 부터 받은 정보를 바탕으로 way point의 좌표 정보 제작
         # pick zone
@@ -139,6 +155,8 @@ class FSM:
         self.place_above = self.place_pose + self.above_offset
         self.place_grip = self.place_pose + self.grip_offset
         self.place_lift = self.place_pose + self.lift_offset
+
+        self.middle_lift = (self.pick_lift + self.place_lift)/2
         if print_op == True:
             print('\nSpecific position data ---------------')
             print(f'-Pick Above:  [{self.pick_above[0]:.1f}, {self.pick_above[1]:.1f}, {self.pick_above[2]:.1f}, {self.pick_above[3]:.1f}]')
@@ -150,43 +168,15 @@ class FSM:
             #print('pick_above:',self.pick_above, '\npick_grip:', self.pick_grip, '\npick_lift:', self.pick_lift)
             #print('place_above', self.place_above, '\nplace_grip', self.place_grip, '\nplace_lift', self.place_lift)    
 
-    def rotate_x(self, vector, degree):
-        # Degree to Radian
-        rad = np.radians(degree)
-
-        # Rotation Matrix
-        rotation_matrix = np.array([
-            [1, 0, 0],
-            [0, np.cos(rad), -np.sin(rad)],
-            [0, np.sin(rad), np.cos(rad)]
-        ])
-
-        return np.dot(rotation_matrix, vector)
-
-    def translate(self, vector, translation):
-        return vector + translation      
-
-    def transformation(self, pose):
-
-        self.translate_vector = np.array([0, 0.2, 0.3])
-        self.rotate_degree = -30
-
-        vector = pose[:3]
-        rotated_vector = self.rotate_x(vector, self.rotate_degree)
-        translated_vector = self.translate(rotated_vector, self.translate_vector)
-
-        print(translated_vector)
-
-        return np.r_[translated_vector, pose[3]]
-    
+       
     # 비전으로터 받는 데이터 형식 {"pick": (x, y, z, theta, grip size), "place": (x, y, z, heading)}
     def get_data_from_vision(self,data): # vision으로 부터 받은 데이터를 가공해줌 -> 이후 action_setting 진행 -> 이후 new_state로 넘어가서 새로운 동작 진행
         vision_data = data
         self.object_size = np.array(vision_data[4])
         self.pick_pose = np.array(list(vision_data[:4]))
         self.place_pose = np.array(list(vision_data[5:]))
-        #self.pick_pose = self.transformation(self.pick_pose)
-        #self.place_pose = self.transformation(self.place_pose)
+        #self.pick_pose = ct.transformation_init(self.pick_pose)
+        #elf.place_pose = ct.transformation_init(self.place_pose)
         self.action_setting(print_op=True) # vision data 기반으로 way point 설정, # print option은 vision data로 가공된 정보 확인하기 위함
         self.new_state() # init에서 vision 정보 받았으니 새로운 state로 이동 시 물체 위로 이동
 
@@ -259,6 +249,10 @@ class FSM:
             self.pub_pose(self.place_lift)
             print("updated to place_lift")
 
+        elif self.current_state == "middle_lift":
+            self.pub_pose(self.middle_lift)
+            print("updated to middle_lift")
+
         print('------------------------------------------------------------------')
 
     
@@ -267,10 +261,10 @@ class FSM:
         if option == 0 : #IK 계산
             self.goal_degree = self.arm.IK(goal_pose)
             print('-- goal pose (%.1f %.1f %.1f %.1f)' % (goal_pose[0], goal_pose[1], goal_pose[2], goal_pose[3]))
-        
+
         elif option == 1 : # define Pose(init_pose)
             self.goal_degree = self.define_pose
-
+                
         elif option == 2 : #거치대 Pose
             self.goal_degree = self.parking
 
@@ -283,6 +277,7 @@ class FSM:
         goal_msg.data = self.goal_degree
         self.pub_goal_pose.publish(goal_msg)
         print('-- goal axis (%.1f %.1f %.1f %.1f %.1f)' % (self.goal_degree[0], self.goal_degree[1], self.goal_degree[2], self.goal_degree[3], self.goal_degree[4]))
+
 
     def pub_grip(self, grip_seperation):
         grip_msg = Float32()
@@ -298,13 +293,15 @@ class FSM:
 class Callback:
     def __init__(self):
         self.soomac_fsm = FSM()
+        self.camera_pose_grip_state = True
         self.ros_sub()
+        
 
     def ros_sub(self): # main_loop
 
         # vision to master
         rospy.Subscriber('/vision', fl, self.vision)         
-        rospy.Subscriber('/camera_pose', Bool, self.move_to_camera_cb)
+        rospy.Subscriber('/camera_pose', Bool, self.move_to_camera_for_vision) # vision -> control
 
         # GUI to master
         rospy.Subscriber('/task_type', String, self.task_type)
@@ -321,9 +318,10 @@ class Callback:
         else:
             print("잘못된 자세입니다.")
 
-    def move_to_camera_cb(self, data):
+    def move_to_camera_for_vision(self, data):
         self.soomac_fsm.current_state = "camera_pose"
         self.soomac_fsm.update()
+
 
     def task_type(self, data): # gui로 부터 task받을 시 동작 메서드
         #rospy.loginfo(f'Subscribed {data.data} topic')
@@ -333,9 +331,15 @@ class Callback:
 
         elif data.data == "camera_pose" :
             print('******* camera_pose')
+            self.soomac_fsm.move_to_camera() # gui pause 해제용
+            self.soomac_fsm.current_state = "camera_pose"
+            self.soomac_fsm.update()
 
-            self.soomac_fsm.move_to_camera()
-            self.move_to_camera_cb(None)
+        elif data.data == "define_pose" : ##############***
+            print('******* define_pose')
+            self.soomac_fsm.move_to_define() # gui pause 해제용
+            self.soomac_fsm.current_state = "define_pose"
+            self.soomac_fsm.update()
 
         elif data.data == "stop" or data.data == "pause" :
             
@@ -371,18 +375,25 @@ class Callback:
         if self.soomac_fsm.current_state != "camera_pose" and self.soomac_fsm.current_state != "define_pose": # init_pose로 이동 완료된 상황에서는 new_state안하고 vision 정보 기다림
             print('state_done\n')
             self.soomac_fsm.new_state()
+            self.camera_pose_grip_state = False
 
         elif self.soomac_fsm.current_state == "camera_pose": # camera pose로 이동 완료 시
             print('ready to camera')
             msg = Bool()
             msg.data = True
             self.soomac_fsm.camera_ready.publish(msg) # to vision
+            if self.camera_pose_grip_state == False:
+                self.soomac_fsm.pub_grip(self.soomac_fsm.grip_open)
+                self.camera_pose_grip_state = True
 
         elif self.soomac_fsm.current_state == "define_pose":
             print('ready to define')
             msg = Bool()
             msg.data = True
             self.soomac_fsm.define_ready.publish(msg) # to GUI
+            if self.camera_pose_grip_state == False:
+                self.soomac_fsm.pub_grip(self.soomac_fsm.grip_open)   
+                self.camera_pose_grip_state = True         
 
     # 추후 코드 수정 필요
     def task_done(self): # motor_control에서 주어진 명령 수행 완료 시
