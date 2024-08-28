@@ -33,7 +33,7 @@ class Vision:
     def __init__(self) -> None:
         self.vision_pub = rospy.Publisher('/vision', fl)
 
-        self.rs = DepthCamera()
+        self.rs = DepthCamera(resolution_width, resolution_height)
         self.depth_scale = self.rs.get_depth_scale()
 
         self.task_name = None
@@ -216,8 +216,6 @@ class Info:
 
 def main():
     rospy.init_node("vision_node")
-
-    vision = Vision()
 
     info = Info()
 

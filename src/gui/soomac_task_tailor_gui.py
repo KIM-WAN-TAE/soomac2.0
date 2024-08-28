@@ -193,10 +193,7 @@ class Robot_control:
         self.camera_pose.publish(msg)
 ###############################################################
 
-resolution_width, resolution_height = (640, 480)
-clip_distance_max = 10.00
-Realsensed435Cam = DepthCamera(resolution_width, resolution_height)
-depth_scale = Realsensed435Cam.get_depth_scale()
+
 
 image_count = 0
 robot_arm = Robot_control()
@@ -212,7 +209,7 @@ def with_sound(func):
         return func(*args, **kwargs)
     return wrapper
 
-def show_image_animation(root):
+def show_image_animation(root, on_complete):
     image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image.jpg"
     # image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image.jpg"
     try:
@@ -471,6 +468,10 @@ def open_camera_window(save_path, task_name):
     camera_window.geometry(f"{int(800)}x{int(600)}")
 
     print("카메라 윈도우 열림")
+    resolution_width, resolution_height = (640, 480)
+    clip_distance_max = 10.00
+    Realsensed435Cam = DepthCamera(resolution_width, resolution_height)
+    depth_scale = Realsensed435Cam.get_depth_scale()
 
     last_image_path = None  
 
@@ -553,6 +554,7 @@ def open_camera_window(save_path, task_name):
 
     def on_closing():
         camera_window.destroy()
+        Realsensed435Cam.release()
 
     camera_window.protocol("WM_DELETE_WINDOW", on_closing)
 
