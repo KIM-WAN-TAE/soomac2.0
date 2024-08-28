@@ -261,7 +261,7 @@ def main_gui(root):
     ctk.set_default_color_theme("green")
 
     root.title("Soomac Taylor")
-    root.geometry(f"{int(558)}x{int(600)}")  # 창의 크기를 동일하게 유지
+    root.geometry(f"{int(558)}x{int(600)}x300x300")  # 창의 크기를 동일하게 유지
 
     title_label = ctk.CTkLabel(root, text="Soomac Task Taylor", font=ctk.CTkFont(size=int(20*1.4), weight="bold"))
     title_label.grid(row=0, column=0, columnspan=2, pady=int(20*1.4))
@@ -292,7 +292,7 @@ def main_gui(root):
         global task_name
         task_loader_window = ctk.CTkToplevel(root)
         task_loader_window.title("Task 불러오기")
-        task_loader_window.geometry(f"{int(400*1.4)}x{int(350*1.4)}")
+        task_loader_window.geometry(f"{int(400*1.4)}x{int(350*1.4)}x300x300")
 
         selected_task = ctk.StringVar()
 
@@ -326,7 +326,7 @@ def main_gui(root):
         back_button.pack(side=ctk.RIGHT, padx=int(10*1.4))
             
     buttons = [
-        ("실행", robot_arm.start),
+        # ("실행", robot_arm.start),
         ("새 Task 정의하기", open_task_definition),
         ("Task 불러오기", open_task_loader),
         ("종료", confirm_exit),
