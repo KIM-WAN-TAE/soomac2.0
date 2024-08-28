@@ -8,3 +8,6 @@
 *.png
 *.png
 *.txt
+
+# pycache
+.pyc
