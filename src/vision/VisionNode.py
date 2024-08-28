@@ -5,6 +5,7 @@ import rospy
 
 from std_msgs.msg import Bool, String
 from std_msgs.msg import Float32MultiArray as fl
+from sensor_msgs.msg import Image
 from soomac.msg import PickPlace
 
 import os
@@ -19,6 +20,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import copy
 import json
+from cv_bridge import CvBridge
 
 from realsense.realsense_depth import DepthCamera
 from realsense.utilities import compute_xyz
@@ -32,6 +34,8 @@ clip_distance_max = 10.00
 class Vision:
     def __init__(self) -> None:
         self.vision_pub = rospy.Publisher('/vision', fl)
+        self.rgb_pub = rospy.Publisher('/rgb_frame', Image)
+        self.depth_pub = rospy.Publisher('/depth_frame', Image)
 
         self.rs = DepthCamera(resolution_width, resolution_height)
         self.depth_scale = self.rs.get_depth_scale()
@@ -41,6 +45,22 @@ class Vision:
         self.task = []
         self.step = -1
         self.len_step = -1
+
+    def image_pub(self):
+        bridge = CvBridge()
+        ret, depth_raw_frame, color_raw_frame = self.rs.get_raw_frame()
+        if not ret:
+            print("Unable to get a frame")
+            return
+
+        color_frame = np.asanyarray(color_raw_frame.get_data())
+        depth_frame = np.asanyarray(depth_raw_frame.get_data())
+
+        rgb_image = bridge.cv2_to_imgmsg(color_frame)
+        depth_image = bridge.cv2_to_imgmsg(depth_frame)
+        
+        self.rgb_pub.publish(rgb_image)
+        self.depth_pub.publish(depth_image)
 
     def load_json(self, task_name):
         self.task_name = task_name
@@ -212,14 +232,19 @@ class Info:
         self.task_name = msg.msg
         self.vision.reset()
 
+    def image_pub(self):
+        self.vision.image_pub()
+
 
 
 def main():
     rospy.init_node("vision_node")
-
+    rate = rospy.Rate(30)
     info = Info()
 
-    rospy.spin()
+    while not rospy.is_shutdown():
+        info.image_pub()
+        rate.sleep()
 
 if __name__ == "__main__":
     main()
