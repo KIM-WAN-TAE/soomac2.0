@@ -30,7 +30,6 @@ pygame.mixer.init()
 click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 
 task_name = None #task_name 토픽 발행을 위한 전역 변수 설정
-selected_task_name = None
 class Robot_control:
     def __init__(self):
         self.pub_vision = rospy.Publisher('/vision', fl, queue_size=10) 
@@ -286,6 +285,7 @@ def main_screen():
     # Task 불러오기 화면 함수
     def open_task_loader():
         global task_name
+        print("Task 불러오기 윈도우 열림")
 
         task_loader_window = ctk.CTkToplevel(root)
         task_loader_window.title("Task 불러오기")
@@ -358,9 +358,11 @@ def main_screen():
 # Task definition screen
 def open_task_definition():
     global task_name
+    print("새 Task 정의하기 윈도우 열림")
+
     task_window = ctk.CTkToplevel()
     task_window.title("새 Task 정의하기")
-    task_window.geometry(f"{int(600*1.4)}x{int(400*1.4)}")
+    task_window.geometry(f"{int(650)}x{int(300)}")
 
     ctk.CTkLabel(task_window, text="Task 이름:", font=ctk.CTkFont(size=int(14*1.4))).grid(row=0, column=0, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
     task_name_entry = ctk.CTkEntry(task_window, width=int(200*1.4))
@@ -416,7 +418,7 @@ def open_task_definition():
         if save_path.exists():
             warning_window = ctk.CTkToplevel(task_window)
             warning_window.title("경고")
-            warning_window.geometry("300x150")
+            warning_window.geometry("450x150")
 
             warning_label = ctk.CTkLabel(warning_window, text="이름이 이미 존재합니다. 다른 이름으로 Task를 정의해주세요",
                                           font=ctk.CTkFont(size=16), text_color="#FFFFFF")
@@ -449,6 +451,8 @@ def open_camera_window(save_path, task_name):
     camera_window = ctk.CTkToplevel()
     camera_window.title("카메라 뷰")
     camera_window.geometry(f"{int(800)}x{int(600)}")
+
+    print("카메라 윈도우 열림")
 
     last_image_path = None  
 
@@ -536,6 +540,7 @@ def open_camera_window(save_path, task_name):
 
 def processing():
     global task_name
+    print("Task 수행 중 윈도우 열림")
     task_name_pub = rospy.Publisher('task_name', String, queue_size=10)
 
     rospy.sleep(1)
@@ -563,6 +568,7 @@ def processing():
     pause_button.pack(side=ctk.RIGHT, padx=int(10*1.4), pady=int(10*1.4))
 
 def ask_to_execute():
+    print("Task 실행 여부 윈도우 열림")
     task_complete_pub = rospy.Publisher('define_task', String, queue_size=10)
     
     complete_msg = String()
