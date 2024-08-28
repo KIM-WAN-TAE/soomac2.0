@@ -6,7 +6,7 @@ import rospy
 from std_msgs.msg import Bool, String
 from std_msgs.msg import Float32MultiArray as fl
 from sensor_msgs.msg import Image
-from soomac.msg import PickPlace
+from soomac.msg import PickPlace, image
 
 import os
 import sys
@@ -15,6 +15,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import open3d as o3d
 import open3d.core as o3c
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
@@ -23,7 +24,7 @@ import json
 from cv_bridge import CvBridge
 
 from realsense.realsense_depth import DepthCamera
-from realsense.utilities import compute_xyz
+from realsense.utilities import compute_xyz, save_as_npy
 
 
 folder_path = '/home/choiyoonji/catkin_ws/src/soomac/src/gui/Task/'
@@ -35,7 +36,7 @@ class Vision:
     def __init__(self) -> None:
         self.vision_pub = rospy.Publisher('/vision', fl)
         self.rgb_pub = rospy.Publisher('/rgb_frame', Image)
-        self.depth_pub = rospy.Publisher('/depth_frame', Image)
+        self.save_sub = rospy.Subscriber('/save_img', image, self.save_callback)
 
         self.rs = DepthCamera(resolution_width, resolution_height)
         self.depth_scale = self.rs.get_depth_scale()
@@ -46,6 +47,21 @@ class Vision:
         self.step = -1
         self.len_step = -1
 
+    def save_callback(self, msg):
+        ret, depth_raw_frame, color_raw_frame = self.rs.get_raw_frame()
+        color_frame = np.asanyarray(color_raw_frame.get_data())
+        depth_frame = np.asanyarray(depth_raw_frame.get_data())
+        cv2.imwrite(msg.color, color_frame)
+        plt.imsave(msg.depth, depth_frame)
+
+
+        rgb = cv2.cvtColor(color_frame, cv2.COLOR_BGR2RGB)
+        xyz = compute_xyz(depth_frame * self.depth_scale, self.rs.get_camera_intrinsics())
+
+        data = save_as_npy(rgb, xyz)
+
+        np.save(msg.npy, data)
+
     def image_pub(self):
         bridge = CvBridge()
         ret, depth_raw_frame, color_raw_frame = self.rs.get_raw_frame()
@@ -54,13 +70,9 @@ class Vision:
             return
 
         color_frame = np.asanyarray(color_raw_frame.get_data())
-        depth_frame = np.asanyarray(depth_raw_frame.get_data())
 
         rgb_image = bridge.cv2_to_imgmsg(color_frame)
-        depth_image = bridge.cv2_to_imgmsg(depth_frame)
-        
         self.rgb_pub.publish(rgb_image)
-        self.depth_pub.publish(depth_image)
 
     def load_json(self, task_name):
         self.task_name = task_name

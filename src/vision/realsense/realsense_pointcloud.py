@@ -32,6 +32,7 @@ def main():
 
         color_frame = np.asanyarray(color_raw_frame.get_data())
         depth_frame = np.asanyarray(depth_raw_frame.get_data())
+        print(depth_frame)
         # print("frame shape:", depth_frame.shape)
         cv2.imshow("Frame",  color_frame )
 
