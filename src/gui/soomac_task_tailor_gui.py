@@ -32,10 +32,12 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 pygame.mixer.init()
 # click_sound = pygame.mixer.Sound("/home/hyunwoo20/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 # click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-
+# click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+click_sound = pygame.mixer.Sound("/home/mataeeun/catkin_ws/src/soomac/src/gui/click_sound.mp3")
 # image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
-image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+# image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+image_path = "/home/mataeeun/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+
 
 task_name = None #task_name 토픽 발행을 위한 전역 변수 설정
 rgb_frame = None
@@ -98,6 +100,16 @@ class Robot_control:
         print('gui - pause')
         self.open_pause_window()
 
+    def camera(self): # okay
+        self.gui_msg.data = "camera_pose"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - camera_pose')
+
+    def define(self): # okay
+        self.gui_msg.data = "define_pose"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - define_pose')
+
     def impact_cb(self,data): # okay 
         impact = data.data
         if impact == True: 
@@ -141,7 +153,7 @@ class Robot_control:
             print('camera_pose')
             self.gui_msg.data = "camera_pose"
             self.pub_gui.publish(self.gui_msg)
-            print('gui - init_pose')
+            print('gui - camera_pose')
             impact_window.destroy()
             self.impact_screen_exis = False
 
@@ -280,7 +292,7 @@ def show_start_button(root, on_complete):
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("blue")
     start_button = ctk.CTkButton(root, text="실행", font=ctk.CTkFont(size=int(20*1.4)), 
-                                 command=with_sound(on_complete), width=200, height=50)
+                                 command=lambda:[on_complete(), robot_arm.start()], width=200, height=50)
     start_button.place(relx=0.5, rely=0.8, anchor=ctk.CENTER)
 
 def on_start_button_click(root):
@@ -366,7 +378,7 @@ def main_gui(root):
         button_frame = ctk.CTkFrame(task_loader_window)
         button_frame.pack(pady=int(10*1.4))
 
-        load_button = ctk.CTkButton(button_frame, text="불러오기", font=ctk.CTkFont(size=int(20)), command=lambda:[with_sound(load_selected_task)(), task_loader_window.destroy()], width=int(120*1.4))
+        load_button = ctk.CTkButton(button_frame, text="불러오기", font=ctk.CTkFont(size=int(20)), command=lambda:[with_sound(load_selected_task)(), task_loader_window.destroy(), robot_arm.camera()], width=int(120*1.4))
         load_button.pack(side=ctk.LEFT, padx=int(10*1.4))
 
         back_button = ctk.CTkButton(button_frame, text="뒤로가기", font=ctk.CTkFont(size=int(20)), command=with_sound(task_loader_window.destroy), width=int(120*1.4))
@@ -378,8 +390,8 @@ def main_gui(root):
         ("Task 불러오기", open_task_loader),
         ("camera 자세", robot_arm.camera_pose_move_test),
         ("종료", confirm_exit),
-        # ("Vision Data (Dev Info)", robot_arm.vision_test),
-        ("Vision Data (Dev Info)", dev_info)
+        ("Vision Data (Dev Info)", robot_arm.vision_test),
+        # ("Vision Data (Dev Info)", dev_info)
     ]
 
     positions = [
@@ -534,7 +546,7 @@ def open_task_definition():
     button_frame = ctk.CTkFrame(task_window)
     button_frame.grid(row=3, column=0, columnspan=2, pady=int(20*1.4), padx=int(20*1.4), sticky=ctk.EW)
 
-    save_button = ctk.CTkButton(button_frame, text="저장 후 촬영",font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), save_and_capture()], width=int(120*1.4))
+    save_button = ctk.CTkButton(button_frame, text="저장 후 촬영",font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), save_and_capture(), robot_arm.define()], width=int(120*1.4))
     save_button.grid(row=0, column=0, padx=int(10*1.4), pady=int(5), sticky=ctk.W)
 
     back_button = ctk.CTkButton(button_frame, text="뒤로가기",font=ctk.CTkFont(size=int(20)), command=lambda:[play_click_sound(), task_window.destroy()], width=int(120*1.4))
@@ -662,7 +674,7 @@ def processing():
                 window.destroy()
         execute_window.destroy()
 
-    stop_button = ctk.CTkButton(execute_window, text="그만하기", font=ctk.CTkFont(size=int(20)), command=with_sound(close_all_windows), width=int(80*1.4))
+    stop_button = ctk.CTkButton(execute_window, text="그만하기", font=ctk.CTkFont(size=int(20)), command=lambda:[with_sound(close_all_windows)(), robot_arm.define()], width=int(80*1.4))
     stop_button.pack(side=ctk.LEFT, padx=int(10*1.4), pady=int(10*1.4))
 
     pause_button = ctk.CTkButton(execute_window, text="일시정지", font=ctk.CTkFont(size=int(20)), command=with_sound(robot_arm.pause), width=int(80*1.4))
