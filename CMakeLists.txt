@@ -203,3 +203,15 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+catkin_install_python(PROGRAMS 
+  src/control/motor_control.py 
+  src/control/pub_test.py 
+  src/control/soomac_master_node.py
+  src/control/camera_transformation.py
+  src/gui/soomac_task_tailor_gui.py src/gui/GUI.py 
+  src/gui/test_for_task_complete_sub.py 
+  src/vision/VisionNode.py
+
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
