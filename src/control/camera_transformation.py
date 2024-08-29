@@ -33,13 +33,13 @@ def transformation_define(pose):
     return pose[:3] 
 
 
-# 수정 필요
-def transformation_camera(pose):
-
-    translate_vector = np.array([0, 0.2, 0.3])
-    rotate_degree = -30
-
-    vector = pose[:3]
+# 수정 필요 
+def transformation_camera(camera_pose):
+    pose = np.zeros(3)
+    pose[0] = -camera_pose[0]
+    pose[1] = camera_pose[1] + 350
+    pose[2] = 455 - camera_pose[2]
+    return pose
     # rotated_vector = rotate_x(vector, rotate_degree)
     # translated_vector = translate(rotated_vector, translate_vector)
 
