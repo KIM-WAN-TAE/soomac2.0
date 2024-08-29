@@ -52,6 +52,7 @@ class Robot_control:
         self.goal_pose_test = rospy.Publisher('/goal_pose', fl, queue_size=10)
         self.camera_pose = rospy.Publisher('/camera_pose', Bool, queue_size=10)
         self.complete_pub = rospy.Publisher('/task_complete', Bool, queue_size=10)
+        self.pub_end = rospy.Publisher('/end', Bool, queue_size=10)
 
         rospy.Subscriber('/impact_to_gui', Bool, self.impact_cb)
         rospy.Subscriber('/define_ready', Bool, self.define_ready_test)
@@ -124,6 +125,12 @@ class Robot_control:
         self.gui_msg.data = "gui_info"
         self.pub_gui.publish(self.gui_msg)
         print("gui - info")
+
+    def end(self):
+        msg = Bool()
+        msg.data = True
+        self.pub_end.publish(msg)
+        print('gui - end')
 
 ################### screen for robot control ################### 
     def impact_screen(self):
@@ -347,6 +354,7 @@ def main_gui(root):
 
         def exit_program():
             root.destroy()
+            robot_arm.end()
 
         def close_exit_window():
             exit_window.destroy()
