@@ -269,19 +269,18 @@ def show_image_animation(root, on_complete):
         ratio = min(screen_width/original_width, screen_height/original_height)
         new_size = (int(original_width * ratio), int(original_height * ratio))
         resized_image = image.resize(new_size, Image.ANTIALIAS)
-        photo = ImageTk.PhotoImage(resized_image)
-
-        label.image = photo
-        label.configure(image=photo)
 
         def fade_in():
             alpha = 0
-            while alpha < 1.0:
-                label.image = ImageTk.PhotoImage(resized_image)
-                label.configure(image=label.image)
+            enhancer = ImageEnhance.Brightness(resized_image)
+            while alpha < 1:
+                brightened_image = enhancer.enhance(alpha)
+                photo = ImageTk.PhotoImage(brightened_image)
+                label.image = photo
+                label.configure(image=photo)
                 label.update()
-                time.sleep(0.01)
-                alpha += 0.05
+                time.sleep(0.005)  # 페이드 인 속도 조절
+                alpha += 0.02
 
             show_start_button(root, on_complete)  # 페이드 인이 완료되면 시작 버튼 표시
 
@@ -293,9 +292,18 @@ def show_image_animation(root, on_complete):
 def show_start_button(root, on_complete):
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("blue")
-    start_button = ctk.CTkButton(root, text="실행", font=ctk.CTkFont(size=int(35)), 
-                                 command=lambda:[on_complete(), robot_arm.start()], width=200, height=50)
+    
+    start_button = ctk.CTkButton(root, 
+                                 text="start", 
+                                 font=ctk.CTkFont(size=int(35)), 
+                                 command=lambda: [on_complete(), robot_arm.start()], 
+                                 width=200, 
+                                 height=50,
+                                 fg_color="#4f4f4f",  # 버튼 배경색을 어두운 회색으로 설정
+                                 text_color="white",  # 텍스트 색상을 흰색으로 설정
+                                 hover_color="#e0e0e0")  # 마우스를 올렸을 때 색상을 밝은 회색으로 설정
     start_button.place(relx=0.5, rely=0.8, anchor=ctk.CENTER)
+
 
 def on_start_button_click(root):
     for widget in root.winfo_children():
@@ -484,7 +492,7 @@ def open_task_definition():
     task_window.geometry(f"{int(900)}x{int(350)}")
 
     ctk.CTkLabel(task_window, text="Task 이름:", font=ctk.CTkFont(size=int(30))).grid(row=0, column=0, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
-    task_name_entry = ctk.CTkEntry(task_window, width=int(200*1.4))
+    task_name_entry = ctk.CTkEntry(task_window, width=int(200*1.4), height=40)
     task_name_entry.grid(row=0, column=1, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
 
     def on_task_name_change(*args):
