@@ -159,15 +159,15 @@ class Robot_control:
             impact_window.destroy()
             self.impact_screen_exis = False
 
-        continue_button = ctk.CTkButton(button_frame, text="계속하기", 
+        continue_button = ctk.CTkButton(button_frame, text="계속하기",fg_color="#FF0000", hover_color="#CC0000", 
                                         command=with_sound(Continue), width=int(80*1.4))
         continue_button.grid(row=0, column=0, padx=int(10*1.4))
 
-        previous_action_button = ctk.CTkButton(button_frame, text="이전 동작", 
+        previous_action_button = ctk.CTkButton(button_frame, text="이전 동작",fg_color="#FF0000", hover_color="#CC0000", 
                                                command=with_sound(Previous), width=int(80*1.4))
         previous_action_button.grid(row=0, column=1, padx=int(10*1.4))
 
-        restart_button = ctk.CTkButton(button_frame, text="처음으로", 
+        restart_button = ctk.CTkButton(button_frame, text="처음으로",fg_color="#FF0000", hover_color="#CC0000", 
                                        command=with_sound(Init_pose), width=int(80*1.4))
         restart_button.grid(row=0, column=2, padx=int(10*1.4))
 
@@ -365,7 +365,7 @@ def main_gui(root):
 
         selected_task = ctk.StringVar()
 
-        task_list_frame = ctk.CTkScrollableFrame(task_loader_window, width=int(380*1.4), height=int(250*1.4))
+        task_list_frame = ctk.CTkScrollableFrame(task_loader_window, width=int(380), height=int(250*1.4))
         task_list_frame.pack(pady=int(20*1.4), padx=int(10*1.4), fill=ctk.BOTH, expand=True)
 
         task_folder = Path.home() / "catkin_ws/src/soomac/src/gui/Task"
