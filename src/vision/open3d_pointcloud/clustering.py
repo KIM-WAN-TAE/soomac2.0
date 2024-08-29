@@ -4,7 +4,7 @@ import open3d.core as o3c
 from sklearn.decomposition import PCA
 
 # 기존 코드
-img_file = '/home/choiyoonji/catkin_ws/src/soomac/src/vision/a/test_image_4.npy'
+img_file = '/home/choiyoonji/catkin_ws/src/soomac/src/vision/a/test_image_2.npy'
 d = np.load(img_file, allow_pickle=True, encoding='bytes').item()
 
 rgb_image = d['rgb']
@@ -12,6 +12,7 @@ depth_image = d['xyz'].reshape((-1, 3))
 
 pcd = o3d.t.geometry.PointCloud(o3c.Tensor(depth_image, o3c.float32))
 downpcd = pcd.voxel_down_sample(voxel_size=0.005)
+o3d.visualization.draw(downpcd)
 
 plane_model, inliers = downpcd.segment_plane(distance_threshold=0.01,
                                              ransac_n=3,
@@ -20,11 +21,12 @@ plane_model, inliers = downpcd.segment_plane(distance_threshold=0.01,
 inlier_cloud = downpcd.select_by_index(inliers)
 outlier_cloud = downpcd.select_by_index(inliers, invert=True)
 
+o3d.visualization.draw(outlier_cloud)
 labels = outlier_cloud.cluster_dbscan(eps=0.01, min_points=10, print_progress=True)
 
 # 새로운 코드: 군집 크기 필터링 및 중심점 추출
 min_cluster_size = 50  # 최소 군집 크기
-max_cluster_size = 1000  # 최대 군집 크기
+max_cluster_size = 50000  # 최대 군집 크기
 
 # 군집 레이블별 포인트 개수를 계산
 unique_labels, counts = np.unique(labels, return_counts=True)
