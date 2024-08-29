@@ -35,6 +35,7 @@ def main():
         depth_frame = np.asanyarray(depth_raw_frame.get_data())
         # print(depth_frame)
         # print("frame shape:", depth_frame.shape)
+        cv2.circle(color_frame, (320,240),2, (0,0,255))
         cv2.imshow("Frame",  color_frame )
 
         key = cv2.waitKey(1) & 0xFF

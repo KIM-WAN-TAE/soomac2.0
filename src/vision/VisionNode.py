@@ -26,7 +26,7 @@ from cv_bridge import CvBridge
 from realsense.realsense_depth import DepthCamera
 from realsense.utilities import compute_xyz, save_as_npy
 
-from control.camera_transformation import transformation_define
+from control.camera_transformation import transformation_camera
 
 
 folder_path = '/home/choiyoonji/catkin_ws/src/soomac/src/gui/Task/'
@@ -38,6 +38,7 @@ class Vision:
     def __init__(self) -> None:
         self.vision_pub = rospy.Publisher('/vision', fl)
         self.rgb_pub = rospy.Publisher('/rgb_frame', Image)
+        self.depth_pub = rospy.Publisher('/depth_frame', Image)
         self.save_sub = rospy.Subscriber('/save_img', image, self.save_callback)
 
         self.rs = DepthCamera(resolution_width, resolution_height)
@@ -72,9 +73,12 @@ class Vision:
             return
 
         color_frame = np.asanyarray(color_raw_frame.get_data())
+        depth_frame = np.asanyarray(depth_raw_frame.get_data())
 
         rgb_image = bridge.cv2_to_imgmsg(color_frame)
+        depth_image = bridge.cv2_to_imgmsg(depth_frame)
         self.rgb_pub.publish(rgb_image)
+        self.depth_pub.publish(depth_image)
 
     def load_json(self, task_name):
         self.task_name = task_name
@@ -91,6 +95,8 @@ class Vision:
     def calc_position(self, object1, object2):
         ret, depth_raw_frame, color_raw_frame = self.rs.get_raw_frame()
         depth_frame = np.asanyarray(depth_raw_frame.get_data())
+        plt.imsave(folder_path+'test.png', depth_frame)
+        
         camera_intrinsics = self.rs.get_camera_intrinsics()  # 카메라 내부 파라미터 가져오기
         fx = camera_intrinsics['fx']
         fy = camera_intrinsics['fy']
@@ -231,8 +237,8 @@ class Vision:
         pick_position = np.array(pick["position"], dtype=float)*1000
         place_position = np.array(place["position"], dtype=float)*1000
 
-        pick_position = transformation_define(pick_position)
-        place_position = transformation_define(place_position)
+        pick_position = transformation_camera(pick_position)
+        place_position = transformation_camera(place_position)
 
         print(pick_position)
         print(place_position)
@@ -240,9 +246,9 @@ class Vision:
         coord = fl()
         coord.data = [pick_position[0], pick_position[1], pick_position[2],
                       float(pick["theta"]), np.float32(pick["grasp_width"].numpy()),
-                      place_position[0], place_position[1], place_position[2],
+                      -place_position[0], place_position[1], place_position[2],
                       float(place["theta"])]
-        # self.vision_pub.publish(coord)
+        self.vision_pub.publish(coord)
 
     def reset(self):
         self.task_name = None
@@ -258,7 +264,7 @@ class Info:
 
         name_sub = rospy.Subscriber('/task_name', String, self.name_callback)
         robot_sub = rospy.Subscriber('/camera_ready', Bool, self.robot_callback)
-        # task_sub = rospy.Subscriber('', Bool, self.task_callback)
+        task_sub = rospy.Subscriber('/task_complete', Bool, self.task_callback)
 
         self.robot_pub = rospy.Publisher('/camera_pose', Bool)
 
@@ -274,6 +280,7 @@ class Info:
 
     def robot_callback(self, msg):
         self.task_name = msg.data
+        rospy.sleep(5)
         self.vision.coord_pub()
 
     def task_callback(self, msg):

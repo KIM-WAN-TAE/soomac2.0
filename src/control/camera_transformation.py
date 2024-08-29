@@ -36,8 +36,11 @@ def transformation_define(pose):
 # 수정 필요 
 def transformation_camera(camera_pose):
     pose = np.zeros(3)
-    pose[0] = -camera_pose[0]
-    pose[1] = camera_pose[1] + 350
+    # pose[0] = camera_pose[0] - 11  +18.6 +135
+    # pose[1] = -camera_pose[1] + 350 +1 -519.9 +396
+    # pose[2] = 455 - camera_pose[2] -23 +27
+    pose[0] = camera_pose[0] 
+    pose[1] = -camera_pose[1] + 350
     pose[2] = 455 - camera_pose[2]
     return pose
     # rotated_vector = rotate_x(vector, rotate_degree)

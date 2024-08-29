@@ -50,6 +50,7 @@ class Robot_control:
         self.pub_gui = rospy.Publisher('/task_type', String, queue_size=10)
         self.goal_pose_test = rospy.Publisher('/goal_pose', fl, queue_size=10)
         self.camera_pose = rospy.Publisher('/camera_pose', Bool, queue_size=10)
+        self.complete_pub = rospy.Publisher('/task_complete', Bool, queue_size=10)
 
         rospy.Subscriber('/impact_to_gui', Bool, self.impact_cb)
         rospy.Subscriber('/define_ready', Bool, self.define_ready_test)
@@ -104,6 +105,12 @@ class Robot_control:
         self.gui_msg.data = "define_pose"
         self.pub_gui.publish(self.gui_msg)
         print('gui - define_pose')
+
+    def complete(self): # okay
+        complete = Bool()
+        complete.data = True
+        self.complete_pub.publish(complete)
+        print('gui - Task_complete')
 
     def impact_cb(self,data): # okay 
         impact = data.data
@@ -628,7 +635,7 @@ def open_camera_window(save_path, task_name):
 def processing():
     global task_name
     print("Task 수행 중 윈도우 열림")
-    task_name_pub = rospy.Publisher('task_name', String, queue_size=10)
+    task_name_pub = rospy.Publisher('/task_name', String, queue_size=10)
 
     rospy.sleep(1)
     
@@ -648,7 +655,7 @@ def processing():
                 window.destroy()
         execute_window.destroy()
 
-    stop_button = ctk.CTkButton(execute_window, text="그만하기", font=ctk.CTkFont(size=int(20)), command=lambda:[with_sound(close_all_windows)(), robot_arm.define()], width=int(80*1.4))
+    stop_button = ctk.CTkButton(execute_window, text="그만하기", font=ctk.CTkFont(size=int(20)), command=lambda:[with_sound(close_all_windows)(), robot_arm.define(), robot_arm.complete()], width=int(80*1.4))
     stop_button.pack(side=ctk.LEFT, padx=int(10*1.4), pady=int(10*1.4))
 
     pause_button = ctk.CTkButton(execute_window, text="일시정지", font=ctk.CTkFont(size=int(20)), command=with_sound(robot_arm.pause), width=int(80*1.4))
@@ -656,11 +663,11 @@ def processing():
 
 def ask_to_execute():
     print("Task 실행 여부 윈도우 열림")
-    task_complete_pub = rospy.Publisher('define_task', String, queue_size=10)
+    # task_complete_pub = rospy.Publisher('define_task', String, queue_size=10)
     
-    complete_msg = String()
-    complete_msg.data = "task complete"
-    task_complete_pub.publish(complete_msg)
+    # complete_msg = String()
+    # complete_msg.data = "task complete"
+    # task_complete_pub.publish(complete_msg)
 
     execute_window = ctk.CTkToplevel()
     execute_window.title("확인")

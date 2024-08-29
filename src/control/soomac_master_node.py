@@ -76,7 +76,7 @@ class FSM:
         # initial setting
         self.state_done = False
         self.task_done = False
-        self.grip_open = 45
+        self.grip_open = 72
         self.grip_seperation = self.grip_open
         self.current_state = "define_pose"
         self.last_state = "define_pose"
@@ -84,12 +84,13 @@ class FSM:
         # fixed pose(degree)
         self.parking = np.array([0, 180, -130, -100, 0])# parking 자세 설계팀과 상의 필요 # 각도값 조절 필요, 일단 카메라 포즈랑 동일하게 해둠
         self.define_pose = np.array([0, 170, -120, -90, 0])# task 정의 자세 # GUI에서 실행 버튼 및 초기 위치 버튼 누르면 여기로 이동함
-        self.camera_pose = np.array([0, 210, 380 , 0])
+        self.camera_pose = np.array([0, 210, 370 , 0])
+        # self.camera_pose = np.array([-20, 90, -70, 0, 0])
 
         # offset parameter
         self.above_offset = np.array([0, 0, 100, 0])
         self.grip_offset = np.array([0, 0, 20, 0])
-        self.lift_offset = np.array([0, 0, 50, 0])
+        self.lift_offset = np.array([0, 0, 150, 0])
         self.object_size = None
 
 
@@ -381,10 +382,11 @@ class Callback:
             print('ready to camera')
             msg = Bool()
             msg.data = True
-            self.soomac_fsm.camera_ready.publish(msg) # to vision
             if self.camera_pose_grip_state == False:
                 self.soomac_fsm.pub_grip(self.soomac_fsm.grip_open)
                 self.camera_pose_grip_state = True
+            else:
+                self.soomac_fsm.camera_ready.publish(msg) # to vision                
 
         elif self.soomac_fsm.current_state == "define_pose":
             print('ready to define')
