@@ -17,6 +17,7 @@ def main():
     k = np.load("/home/choiyoonji/catkin_ws/src/soomac/src/vision/uois/example_images/OCID_image_0.npy", allow_pickle=True)
     # print(k.shape)
     # print(k.item().get('label'))
+    print(Realsensed435Cam.get_camera_intrinsics())
 
     i = 0
     image_root = "/home/choiyoonji/catkin_ws/src/soomac/src/vision/a/"
@@ -32,7 +33,7 @@ def main():
 
         color_frame = np.asanyarray(color_raw_frame.get_data())
         depth_frame = np.asanyarray(depth_raw_frame.get_data())
-        print(depth_frame)
+        # print(depth_frame)
         # print("frame shape:", depth_frame.shape)
         cv2.imshow("Frame",  color_frame )
 

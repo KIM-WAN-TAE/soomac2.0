@@ -25,7 +25,7 @@ def extract_objects_from_image(rgb_image, segmask):
         cropped_img = add_padding(cropped_img, [100, 100])
         cropped_img = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB)
         cropped_images.append(([x, y], cropped_img))
-        print(cropped_img.shape)
+        # print(cropped_img.shape)
 
     return cropped_images
 

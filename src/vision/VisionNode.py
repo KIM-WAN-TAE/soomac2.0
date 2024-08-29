@@ -89,7 +89,12 @@ class Vision:
     def calc_position(self, object1, object2):
         ret, depth_raw_frame, color_raw_frame = self.rs.get_raw_frame()
         depth_frame = np.asanyarray(depth_raw_frame.get_data())
-        xyz = compute_xyz(depth_frame * self.depth_scale, self.rs.get_camera_intrinsics()).reshape((-1,3))
+        camera_intrinsics = self.rs.get_camera_intrinsics()  # 카메라 내부 파라미터 가져오기
+        fx = camera_intrinsics['fx']
+        fy = camera_intrinsics['fy']
+        cx = camera_intrinsics['x_offset']
+        cy = camera_intrinsics['y_offset']
+        xyz = compute_xyz(depth_frame * self.depth_scale, camera_intrinsics).reshape((-1,3))
 
         pcd = o3d.t.geometry.PointCloud(o3c.Tensor(xyz, o3c.float32))
         downpcd = pcd.voxel_down_sample(voxel_size=0.005)
@@ -127,12 +132,19 @@ class Vision:
                 centroid = np.mean(cluster_points.point.positions.numpy(), axis=0)
                 centroids.append(centroid)
 
-                dis = np.linalg.norm(centroid-object1)
+                X, Y, Z = centroid
+                u = (X * fx) / Z + cx
+                v = (Y * fy) / Z + cy
+
+                pixel = np.array([u,v])
+                print(pixel, object1, object2)
+
+                dis = np.linalg.norm(pixel-object1)
                 if dis < pick_min:
                     pick_ind = len(centroids)-1
                     pick_min = dis
 
-                dis = np.linalg.norm(centroid-object2)
+                dis = np.linalg.norm(pixel-object2)
                 if dis < place_min:
                     place_ind = len(centroids)-1
                     place_min = dis
@@ -152,7 +164,7 @@ class Vision:
                     'secondary_axis': principal_axes[1],  # 수평축 (회전 정의)
                     'normal_axis': principal_axes[2],      # 법선축
                     'theta':  np.arctan2(principal_axes[0][1], principal_axes[0][0]),
-                    'grasp_width': gripper_width
+                    'grasp_width': gripper_width*1000
                 }
                 grasp_poses.append(grasp_pose)
 
@@ -166,42 +178,42 @@ class Vision:
             # print(f"  Secondary Axis: {pose['secondary_axis']}")
             # print(f"  Normal Axis: {pose['normal_axis']}")
             print(f"  theta : {pose['theta']}")
-            print(f"  grasp_width : {pose['grasp_width']}")
+            # print(f"  grasp_width : {pose['grasp_width']}")
 
         # 시각화를 위한 코드 (옵션)
-        sphere_size = 0.01  # 중심점 크기 조절
-        centroid_spheres = []
+        # sphere_size = 0.01  # 중심점 크기 조절
+        # centroid_spheres = []
 
-        for centroid in centroids:
-            sphere = o3d.geometry.TriangleMesh.create_sphere(radius=sphere_size)
-            sphere.translate(centroid)  # 중심점을 구 위치로 이동
-            sphere.paint_uniform_color([0, 1, 0])  # 초록색으로 색칠
-            centroid_spheres.append(sphere)
+        # for centroid in centroids:
+        #     sphere = o3d.geometry.TriangleMesh.create_sphere(radius=sphere_size)
+        #     sphere.translate(centroid)  # 중심점을 구 위치로 이동
+        #     sphere.paint_uniform_color([0, 1, 0])  # 초록색으로 색칠
+        #     centroid_spheres.append(sphere)
 
-        # Grasp Pose의 주축을 화살표로 시각화
-        arrows = []
-        for pose in grasp_poses:
-            start_point = pose['position']
-            end_point = start_point + pose['principal_axis'] * 0.1  # 화살표 길이 조절
-            direction = pose['principal_axis']
+        # # Grasp Pose의 주축을 화살표로 시각화
+        # arrows = []
+        # for pose in grasp_poses:
+        #     start_point = pose['position']
+        #     end_point = start_point + pose['principal_axis'] * 0.1  # 화살표 길이 조절
+        #     direction = pose['principal_axis']
             
-            # 회전 행렬을 생성하여 화살표 회전
-            z_axis = np.array([0, 0, 1])
-            rotation_matrix = np.eye(3)
+        #     # 회전 행렬을 생성하여 화살표 회전
+        #     z_axis = np.array([0, 0, 1])
+        #     rotation_matrix = np.eye(3)
             
-            if not np.allclose(direction, z_axis):
-                axis = np.cross(z_axis, direction)
-                angle = np.arccos(np.dot(z_axis, direction))
-                rotation_matrix = o3d.geometry.get_rotation_matrix_from_axis_angle(axis * angle)
+        #     if not np.allclose(direction, z_axis):
+        #         axis = np.cross(z_axis, direction)
+        #         angle = np.arccos(np.dot(z_axis, direction))
+        #         rotation_matrix = o3d.geometry.get_rotation_matrix_from_axis_angle(axis * angle)
             
-            arrow = o3d.geometry.TriangleMesh.create_arrow(
-                cylinder_radius=0.01, cone_radius=0.02, cylinder_height=0.1, cone_height=0.02
-            )
-            arrow.translate(start_point)
-            arrow.rotate(rotation_matrix, center=start_point)
-            arrow.paint_uniform_color([1, 0, 0])  # 빨간색으로 색칠
+        #     arrow = o3d.geometry.TriangleMesh.create_arrow(
+        #         cylinder_radius=0.01, cone_radius=0.02, cylinder_height=0.1, cone_height=0.02
+        #     )
+        #     arrow.translate(start_point)
+        #     arrow.rotate(rotation_matrix, center=start_point)
+        #     arrow.paint_uniform_color([1, 0, 0])  # 빨간색으로 색칠
             
-            arrows.append(arrow)
+        #     arrows.append(arrow)
 
         return grasp_poses[pick_ind], grasp_poses[place_ind]
 
@@ -214,8 +226,15 @@ class Vision:
         object2 = self.coords[0][current_step["place"]]
         pick, place = self.calc_position(object1, object2)
 
+        pick_position = np.array(pick["position"], dtype=float)*1000
+        place_position = np.array(place["position"], dtype=float)*1000
+
         coord = fl()
-        coord.data = [pick["position"][0], pick["position"][1], pick["position"][2], pick["theta"], pick["grasp_width"], place["position"][0], place["position"][1], place["position"][2], place["theta"]]
+        coord.data = [pick_position[0], pick_position[1], pick_position[2],
+                      float(pick["theta"]), np.float32(pick["grasp_width"].numpy()),
+                      place_position[0], place_position[1], place_position[2],
+                      float(place["theta"])]
+        self.vision_pub.publish(coord)
 
     def reset(self):
         self.task_name = None
