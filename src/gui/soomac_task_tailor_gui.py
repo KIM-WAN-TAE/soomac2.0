@@ -30,14 +30,14 @@ from vision.realsense.realsense_depth import DepthCamera
 from vision.realsense.utilities import compute_xyz, save_as_npy
 
 # Pygame 초기화 및 사운드 로드
-pygame.mixer.init()
+# pygame.mixer.init()
 # click_sound = pygame.mixer.Sound("/home/hyunwoo20/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 # click_sound = pygame.mixer.Sound("/home/choiyoonji/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
-click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
+# click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 # click_sound = pygame.mixer.Sound("/home/mataeeun/catkin_ws/src/soomac/src/gui/click_sound.mp3")
 
-# image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
-image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+# image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 # image_path = "/home/mataeeun/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 
 
@@ -163,11 +163,11 @@ class Robot_control:
                                         command=with_sound(Continue), width=int(80*1.4))
         continue_button.grid(row=0, column=0, padx=int(10*1.4))
 
-        previous_action_button = ctk.CTkButton(button_frame, text="이전 동작",fg_color="#FF0000", hover_color="#CC0000", 
+        previous_action_button = ctk.CTkButton(button_frame, text="이전 동작", fg_color="#FF0000", hover_color="#CC0000",
                                                command=with_sound(Previous), width=int(80*1.4))
         previous_action_button.grid(row=0, column=1, padx=int(10*1.4))
 
-        restart_button = ctk.CTkButton(button_frame, text="처음으로",fg_color="#FF0000", hover_color="#CC0000", 
+        restart_button = ctk.CTkButton(button_frame, text="처음으로", fg_color="#FF0000", hover_color="#CC0000",
                                        command=with_sound(Init_pose), width=int(80*1.4))
         restart_button.grid(row=0, column=2, padx=int(10*1.4))
 
@@ -236,7 +236,8 @@ robot_arm = Robot_control()
 
 # 사운드 재생 함수
 def play_click_sound():
-    click_sound.play()
+    # click_sound.play()
+    pass
 
 # GUI에서 버튼의 기능과 사운드를 결합하는 함수
 def with_sound(func):
@@ -295,7 +296,7 @@ def show_start_button(root, on_complete):
     
     start_button = ctk.CTkButton(root, 
                                  text="start", 
-                                 font=("Cosmic Sans MS", 35), 
+                                 font=ctk.CTkFont(size=int(35)), 
                                  command=lambda: [on_complete(), robot_arm.start()], 
                                  width=200, 
                                  height=50,
@@ -332,7 +333,7 @@ def main_gui(root):
     root.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
 
 
-    title_label = ctk.CTkLabel(root, text="Soomac Task Tailor", font=("Cosmic Sans MS", 35))
+    title_label = ctk.CTkLabel(root, text="Soomac Task Tailor", font=ctk.CTkFont(size=int(50), weight="bold"))
     title_label.grid(row=0, column=0, columnspan=2, pady=int(40))
 
     def confirm_exit():
@@ -442,7 +443,7 @@ def main_gui(root):
     # label = ctk.CTkLabel(root, text=label_text, font=ctk.CTkFont(size=int(14*1.4)))
     # label.grid(row=row, column=col, padx=int(10*1.4), pady=int(5*1.4))
 
-    info = ctk.CTkLabel(root, text="새 Task 정의하기 버튼을 눌러 나만의 Task를 만들어 작업을 수행해보세요!", font=("Cosmic Sans MS", 20))
+    info = ctk.CTkLabel(root, text="새 Task 정의하기 버튼을 눌러 나만의 Task를 만들어 작업을 수행해보세요!", font=ctk.CTkFont(size=int(20), weight="bold"))
     info.grid(row=5, column=0, columnspan=2, pady=int(20))
 
     info2 = ctk.CTkLabel(root, text="Task 불러오기 버튼을 눌러 저장해 두었던 Task를 수행해보세요!", font=ctk.CTkFont(size=int(20), weight="bold"))
