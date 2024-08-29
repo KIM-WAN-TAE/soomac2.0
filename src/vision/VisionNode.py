@@ -26,6 +26,8 @@ from cv_bridge import CvBridge
 from realsense.realsense_depth import DepthCamera
 from realsense.utilities import compute_xyz, save_as_npy
 
+from control.camera_transformation import transformation_define
+
 
 folder_path = '/home/choiyoonji/catkin_ws/src/soomac/src/gui/Task/'
 resolution_width, resolution_height = (640, 480)
@@ -229,12 +231,18 @@ class Vision:
         pick_position = np.array(pick["position"], dtype=float)*1000
         place_position = np.array(place["position"], dtype=float)*1000
 
+        pick_position = transformation_define(pick_position)
+        place_position = transformation_define(place_position)
+
+        print(pick_position)
+        print(place_position)
+
         coord = fl()
         coord.data = [pick_position[0], pick_position[1], pick_position[2],
                       float(pick["theta"]), np.float32(pick["grasp_width"].numpy()),
                       place_position[0], place_position[1], place_position[2],
                       float(place["theta"])]
-        self.vision_pub.publish(coord)
+        # self.vision_pub.publish(coord)
 
     def reset(self):
         self.task_name = None
