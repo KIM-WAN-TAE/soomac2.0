@@ -18,6 +18,7 @@ Image.ANTIALIAS = Image.LANCZOS
 import time
 import pygame  # pygame 라이브러리 추가
 import customtkinter as ctk
+import tkinter as tk
 import cv2
 from cv_bridge import CvBridge
 import pyrealsense2 as rs
@@ -36,8 +37,8 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 # click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 # click_sound = pygame.mixer.Sound("/home/mataeeun/catkin_ws/src/soomac/src/gui/click_sound.mp3")
 
-image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
-# image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+# image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 # image_path = "/home/mataeeun/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 
 
@@ -629,9 +630,6 @@ def open_camera_window(save_path, task_name):
         print("모든 사진이 삭제되었습니다")
 
         image_count = 0
-
-        confirm_button = ctk.CTkButton(ask_to_execute, text="확인", command=with_sound(ask_to_execute), width=int(80*1.6))
-        confirm_button.pack(pady=int(10*1.6))
 
     update_frame()
 
