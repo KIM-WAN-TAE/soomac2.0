@@ -129,7 +129,7 @@ class Robot_control:
     def impact_screen(self):
         impact_window = ctk.CTkToplevel()
         impact_window.title("Impact")
-        impact_window.geometry(f"{int(300*1.4)}x{int(200*1.4)}")
+        impact_window.geometry(f"{int(300*1.4)}x{int(200*1.4)}+650+200")
 
         ctk.CTkLabel(impact_window, text="충돌 감지", font=ctk.CTkFont(size=int(16*1.4))).pack(pady=int(20*1.4))
 
@@ -175,7 +175,7 @@ class Robot_control:
     def open_pause_window(self):
         pause_window = ctk.CTkToplevel()
         pause_window.title("Paused")
-        pause_window.geometry(f"{int(300*1.4)}x{int(200*1.4)}")
+        pause_window.geometry(f"{int(300*1.4)}x{int(200*1.4)}+650+200")
 
         ctk.CTkLabel(pause_window, text="일시 정지 상태입니다", font=ctk.CTkFont(size=int(16*1.4))).pack(pady=int(20*1.4))
 
@@ -340,7 +340,7 @@ def main_gui(root):
     def confirm_exit():
         exit_window = ctk.CTkToplevel(root)
         exit_window.title("확인")
-        exit_window.geometry(f"{int(500)}x{int(250)}")
+        exit_window.geometry(f"{int(500)}x{int(250)}+650+200")
 
         label = ctk.CTkLabel(exit_window, text="종료 시 로봇도 함께 종료됩니다", font=ctk.CTkFont(size=int(30)))
         label.pack(pady=int(30))
@@ -363,7 +363,7 @@ def main_gui(root):
         global task_name
         task_loader_window = ctk.CTkToplevel(root)
         task_loader_window.title("Task 불러오기")
-        task_loader_window.geometry(f"{int(400*1.4)}x{int(350*1.4)}x300x300")
+        task_loader_window.geometry(f"{int(400*1.4)}x{int(350*1.4)}+650+200")
 
         selected_task = ctk.StringVar()
 
@@ -381,7 +381,7 @@ def main_gui(root):
         def warning():
             warn_window = ctk.CTkToplevel(root)
             warn_window.title("확인")
-            warn_window.geometry(f"{int(500)}x{int(160)}")
+            warn_window.geometry(f"{int(500)}x{int(160)}+650+200")
 
             label = ctk.CTkLabel(warn_window, text="Task가 선택되지 않았습니다!", font=ctk.CTkFont(size=int(30)))
             label.pack(pady=int(30))
@@ -475,7 +475,7 @@ def dev_info():
     root = ctk.CTk()
     root.title("Developer Information")
 
-    root.geometry('300x400')
+    root.geometry('300x400+650+200')
     info1 = ctk.CTkLabel(root, text="[Vision]\n 최윤지 \n오희민", font=ctk.CTkFont(size=int(20), weight="bold"))
     info1.grid(row=0, column=0, columnspan=2, padx=int(20), pady=int(20))
 
@@ -491,7 +491,7 @@ def open_task_definition():
 
     task_window = ctk.CTkToplevel()
     task_window.title("새 Task 정의하기")
-    task_window.geometry(f"{int(900)}x{int(350)}")
+    task_window.geometry(f"{int(900)}x{int(350)}+650+200")
 
     ctk.CTkLabel(task_window, text="Task 이름:", font=ctk.CTkFont(size=int(30))).grid(row=0, column=0, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
     task_name_entry = ctk.CTkEntry(task_window, width=int(200*1.4), height=40)
@@ -550,7 +550,7 @@ def open_task_definition():
         if save_path.exists():
             warning_window = ctk.CTkToplevel(task_window)
             warning_window.title("경고")
-            warning_window.geometry("600x170")
+            warning_window.geometry("600x170+650+200")
 
             warning_label = ctk.CTkLabel(warning_window, text="이름이 이미 존재합니다. 다른 이름으로 Task를 정의해주세요",
                                           font=ctk.CTkFont(size=20), text_color="#FFFFFF")
@@ -583,7 +583,7 @@ def open_camera_window(save_path, task_name):
     save_img_pub = rospy.Publisher('/save_img', image, queue_size=10)
     camera_window = ctk.CTkToplevel()
     camera_window.title("카메라 뷰")
-    camera_window.geometry(f"{int(800)}x{int(600)}")
+    camera_window.geometry(f"{int(800)}x{int(600)}+650+200")
 
     print("카메라 윈도우 열림")
 
@@ -667,7 +667,7 @@ def processing():
 
     execute_window = ctk.CTkToplevel()
     execute_window.title("Task 수행 중")
-    execute_window.geometry(f"{int(300*1.4)}x{int(150*1.4)}")
+    execute_window.geometry(f"{int(300*1.4)}x{int(150*1.4)}+650+200")
 
     ctk.CTkLabel(execute_window, text="Task 수행 중 ", font=ctk.CTkFont(size=int(30))).pack(pady=int(20*1.4))
 
@@ -693,7 +693,7 @@ def ask_to_execute():
 
     execute_window = ctk.CTkToplevel()
     execute_window.title("확인")
-    execute_window.geometry(f"{int(300*1.4)}x{int(150*1.4)}")
+    execute_window.geometry(f"{int(300*1.4)}x{int(150*1.4)}+650+200")
 
     ctk.CTkLabel(execute_window, text="Task 정의가 완료되었습니다 \n Task를 바로 실행하시겠습니까?", font=ctk.CTkFont(size=int(30))).pack(pady=int(20*1.4))
 
@@ -718,7 +718,7 @@ def ask_to_execute():
 def impact_screen():
     exit_window = ctk.CTkToplevel()
     exit_window.title("충돌 감지")
-    exit_window.geometry(f"{int(400*1.4)}x{int(150*1.4)}")
+    exit_window.geometry(f"{int(400*1.4)}x{int(150*1.4)}+650+200")
 
     ctk.CTkLabel(exit_window, text="충돌이 감지되었으니 확인 후 진행해주세요",
                                           fg_color="#FF0000", hover_color="#CC0000", font=ctk.CTkFont(size=int(30))).pack(pady=int(20*1.4))
