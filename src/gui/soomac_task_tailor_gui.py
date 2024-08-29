@@ -715,25 +715,25 @@ def ask_to_execute():
     no_button = ctk.CTkButton(execute_window, text="아니오", font=ctk.CTkFont(size=int(30)), command=with_sound(close_all_windows), width=int(80*1.4))
     no_button.pack(side=ctk.RIGHT, padx=int(10*1.4), pady=int(10*1.4))
 
-def impact_screen():
-    exit_window = ctk.CTkToplevel()
-    exit_window.title("충돌 감지")
-    exit_window.geometry(f"{int(400*1.4)}x{int(150*1.4)}+650+200")
+# def impact_screen():
+#     exit_window = ctk.CTkToplevel()
+#     exit_window.title("충돌 감지")
+#     exit_window.geometry(f"{int(400*1.4)}x{int(150*1.4)}+650+200")
 
-    ctk.CTkLabel(exit_window, text="충돌이 감지되었으니 확인 후 진행해주세요",
-                                          fg_color="#FF0000", hover_color="#CC0000", font=ctk.CTkFont(size=int(30))).pack(pady=int(20*1.4))
+#     ctk.CTkLabel(exit_window, text="충돌이 감지되었으니 확인 후 진행해주세요",
+#                                           fg_color="#FF0000", hover_color="#CC0000", font=ctk.CTkFont(size=int(30))).pack(pady=int(20*1.4))
     
-    def exit_program():
-        exit_window.destroy()
+    # def exit_program():
+    #     exit_window.destroy()
 
-    def close_exit_window():
-        pass
+    # def close_exit_window():
+    #     pass
 
-    yes_button = ctk.CTkButton(exit_window, text="계속하기", font=ctk.CTkFont(size=int(30)), command=with_sound(exit_program), width=int(100*1.4))
-    yes_button.pack(side=ctk.LEFT, padx=(int(50*1.4), int(10*1.4)), pady=int(10*1.4))
+    # yes_button = ctk.CTkButton(exit_window, text="계속하기", font=ctk.CTkFont(size=int(30)), command=with_sound(exit_program), width=int(100*1.4))
+    # yes_button.pack(side=ctk.LEFT, padx=(int(50*1.4), int(10*1.4)), pady=int(10*1.4))
 
-    no_button = ctk.CTkButton(exit_window, text="나가기", font=ctk.CTkFont(size=int(30)), command=with_sound(close_exit_window), width=int(100*1.4))
-    no_button.pack(side=ctk.RIGHT, padx=(int(10*1.4), int(50*1.4)), pady=int(10*1.4))
+    # no_button = ctk.CTkButton(exit_window, text="나가기", font=ctk.CTkFont(size=int(30)), command=with_sound(close_exit_window), width=int(100*1.4))
+    # no_button.pack(side=ctk.RIGHT, padx=(int(10*1.4), int(50*1.4)), pady=int(10*1.4))
 
 if __name__ == "__main__":
     rospy.init_node('soomac_task_tailor_gui', anonymous=True)
