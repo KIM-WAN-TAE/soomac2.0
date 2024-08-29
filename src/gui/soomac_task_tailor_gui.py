@@ -295,7 +295,7 @@ def show_start_button(root, on_complete):
     
     start_button = ctk.CTkButton(root, 
                                  text="start", 
-                                 font=ctk.CTkFont(size=int(35)), 
+                                 font=("Cosmic Sans MS", 35), 
                                  command=lambda: [on_complete(), robot_arm.start()], 
                                  width=200, 
                                  height=50,
@@ -332,7 +332,7 @@ def main_gui(root):
     root.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
 
 
-    title_label = ctk.CTkLabel(root, text="Soomac Task Tailor", font=ctk.CTkFont(size=int(50), weight="bold"))
+    title_label = ctk.CTkLabel(root, text="Soomac Task Tailor", font=("Cosmic Sans MS", 35))
     title_label.grid(row=0, column=0, columnspan=2, pady=int(40))
 
     def confirm_exit():
@@ -442,7 +442,7 @@ def main_gui(root):
     # label = ctk.CTkLabel(root, text=label_text, font=ctk.CTkFont(size=int(14*1.4)))
     # label.grid(row=row, column=col, padx=int(10*1.4), pady=int(5*1.4))
 
-    info = ctk.CTkLabel(root, text="새 Task 정의하기 버튼을 눌러 나만의 Task를 만들어 작업을 수행해보세요!", font=ctk.CTkFont(size=int(20), weight="bold"))
+    info = ctk.CTkLabel(root, text="새 Task 정의하기 버튼을 눌러 나만의 Task를 만들어 작업을 수행해보세요!", font=("Cosmic Sans MS", 20))
     info.grid(row=5, column=0, columnspan=2, pady=int(20))
 
     info2 = ctk.CTkLabel(root, text="Task 불러오기 버튼을 눌러 저장해 두었던 Task를 수행해보세요!", font=ctk.CTkFont(size=int(20), weight="bold"))
