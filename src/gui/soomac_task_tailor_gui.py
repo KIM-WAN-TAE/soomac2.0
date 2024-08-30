@@ -421,7 +421,7 @@ def main_gui(root):
         ("새 Task 정의하기", open_task_definition),
         ("Task 불러오기", open_task_loader),
         ("종료", confirm_exit),
-        ("Dev Info", dev_info)
+        ("개발자 정보", dev_info)
     ]
 
     positions = [
