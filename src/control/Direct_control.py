@@ -7,7 +7,7 @@ from std_msgs.msg import Bool, Float32
 from std_msgs.msg import String
 from ikpy.chain import Chain
 from ikpy.link import OriginLink, URDFLink
-
+###############Test##################
 
 def dtr(dgree):
    return dgree*(np.pi/180)
