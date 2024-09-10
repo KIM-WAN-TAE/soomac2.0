@@ -4,6 +4,8 @@ import numpy as np
 def extract_objects_from_image(rgb_image, segmask):
     # 고유 라벨 값을 추출 (배경을 제외한)
     unique_labels = np.unique(segmask)
+    print(unique_labels)
+
     unique_labels = unique_labels[unique_labels != 0]  # 배경 라벨(0)을 제외
 
     cropped_images = []
@@ -51,11 +53,11 @@ def add_padding(image, target_size):
 
 
 # # 예제 RGB 이미지와 segmask
-# img_file = '/home/choiyoonji/catkin_ws/src/soomac/src/vision/uois/example_images/test_image_19.npy'
+# img_file = '/home/choiyoonji/catkin_ws/src/soomac/src/gui/Task/test01/test01_npy_0.npy'
 # d = np.load(img_file, allow_pickle=True, encoding='bytes').item()
 # rgb_image = d['rgb']
-# segmask = cv2.imread('/home/choiyoonji/catkin_ws/src/soomac/src/vision/uois/SegMask_6.png', cv2.IMREAD_GRAYSCALE)
-
+# segmask = cv2.imread('/home/choiyoonji/catkin_ws/src/soomac/src/vision/uois/test/segmask_0.png', cv2.IMREAD_GRAYSCALE)
+# print(segmask)
 # # 객체 크롭
 # cropped_images = extract_objects_from_image(rgb_image, segmask)
 # # print(cropped_images)

@@ -22,9 +22,10 @@ from sklearn.decomposition import PCA
 import copy
 import json
 from cv_bridge import CvBridge
+import math
 
 from realsense.realsense_depth import DepthCamera
-from realsense.utilities import compute_xyz, save_as_npy
+from realsense.utilities import compute_xyz, save_as_npy, compute_xyz_2
 
 from control.camera_transformation import transformation_camera
 
@@ -49,6 +50,7 @@ class Vision:
         self.task = []
         self.step = -1
         self.len_step = -1
+        self.place_coord = None
 
     def save_callback(self, msg):
         ret, depth_raw_frame, color_raw_frame = self.rs.get_raw_frame()
@@ -59,7 +61,7 @@ class Vision:
 
 
         rgb = cv2.cvtColor(color_frame, cv2.COLOR_BGR2RGB)
-        xyz = compute_xyz(depth_frame * self.depth_scale, self.rs.get_camera_intrinsics())
+        xyz = compute_xyz_2(depth_frame * self.depth_scale, self.rs.get_camera_intrinsics())
 
         data = save_as_npy(rgb, xyz)
 
@@ -162,7 +164,7 @@ class Vision:
                 pca.fit(cluster_points.point.positions.numpy())
                 aabb = cluster_points.get_axis_aligned_bounding_box()
                 aabb_extent = aabb.get_extent()  # 각 축에 대한 길이 (폭, 높이, 깊이)
-                gripper_width = aabb_extent[0]  # Grasp 방향(주축)으로의 폭
+                gripper_width = aabb_extent[0]/2.2  # Grasp 방향(주축)으로의 폭
                 
                 # PCA 주성분을 Grasp Pose로 사용
                 principal_axes = pca.components_
@@ -171,7 +173,7 @@ class Vision:
                     'principal_axis': principal_axes[0],  # 주축 (Grasp 방향)
                     'secondary_axis': principal_axes[1],  # 수평축 (회전 정의)
                     'normal_axis': principal_axes[2],      # 법선축
-                    'theta':  np.arctan2(principal_axes[0][1], principal_axes[0][0]),
+                    'theta':  math.degrees(np.arctan2(principal_axes[0][1], principal_axes[0][0])),
                     'grasp_width': gripper_width*1000
                 }
                 grasp_poses.append(grasp_pose)
@@ -227,7 +229,8 @@ class Vision:
 
 
     def coord_pub(self):
-        self.step %= self.len_step
+        self.step %= (self.len_step)
+        print(self.step)
         current_step = self.task[self.step]
     
         object1 = self.coords[0][current_step["pick"]]
@@ -240,14 +243,24 @@ class Vision:
         pick_position = transformation_camera(pick_position)
         place_position = transformation_camera(place_position)
 
+        if -5 < pick_position[0] - place_position[0] < 5:
+            if place_position is not None:
+                place_position = self.place_coord
+
+        self.place_coord = place_position
+
+        place_position = [ -5.48332222, 237.76662217,  40.07654767]
+
+
         print(pick_position)
         print(place_position)
 
         coord = fl()
-        coord.data = [pick_position[0], pick_position[1], pick_position[2],
+        coord.data = [pick_position[0], pick_position[1], pick_position[2]-5,
                       float(pick["theta"]), np.float32(pick["grasp_width"].numpy()),
-                      -place_position[0], place_position[1], place_position[2],
+                      place_position[0], place_position[1], place_position[2],
                       float(place["theta"])]
+        print('gripper',np.float32(pick["grasp_width"].numpy()))
         self.vision_pub.publish(coord)
 
     def reset(self):
@@ -275,12 +288,12 @@ class Info:
     def name_callback(self, msg):
         self.task_name = msg.data
         self.robot_pub.publish(True)
-        self.vision.step += 1
         self.vision.load_json(self.task_name)
 
     def robot_callback(self, msg):
         self.task_name = msg.data
-        rospy.sleep(5)
+        rospy.sleep(1.5)
+        self.vision.step += 1
         self.vision.coord_pub()
 
     def task_callback(self, msg):

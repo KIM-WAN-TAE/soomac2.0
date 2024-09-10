@@ -159,21 +159,21 @@ class Impact: # 작업 완료
                 diff_2nd[i] = self.diff_torques[diff_torques_num-1][i]-self.diff_torques[diff_torques_num-2][i]
             diff_2nd = np.abs(diff_2nd)
             
-            if diff_2nd[0] >= 80: # 수평 방향 충돌 감지
+            if diff_2nd[0] >= 100: # 수평 방향 충돌 감지
                 result = 1
                 rospy.logerr('########## impact 발생(수평) ')
 
-            if diff_2nd[1] >= 150: # XM_1 방향 충돌 감지
-                result = 1
-                rospy.logerr('########## impact 발생(XM_1) ')
+            # if diff_2nd[1] >= 150: # XM_1 방향 충돌 감지
+            #     result = 1
+            #     rospy.logerr('########## impact 발생(XM_1) ')
 
-            if diff_2nd[2] >= 80: # 수직 방향 충돌 감지
-                result = 1
-                rospy.logerr('########## impact 발생(수직)')
+            # if diff_2nd[2] >= 80: # 수직 방향 충돌 감지
+            #     result = 1
+            #     rospy.logerr('########## impact 발생(수직)')
 
-            if diff_2nd[0]/80 + diff_2nd[2]/80 >= 1.5: # 수직 방향 충돌 감지
-                result = 1
-                rospy.logerr('########## impact 발생(대각선)')
+            # if diff_2nd[0]/80 + diff_2nd[2]/80 >= 1.5: # 수직 방향 충돌 감지
+            #     result = 1
+            #     rospy.logerr('########## impact 발생(대각선)')
             
         self.diff_2nd.publish(diff_2nd[1])                
 
@@ -185,6 +185,7 @@ class Impact: # 작업 완료
         print("diff_torques : ",self.diff_torques)
         # print("last_diff_2nd : ",self.last_diff_2nd)
 
+ 
 
 class DynamixelNode:
     def __init__(self): # 파라미터 설정
@@ -373,12 +374,50 @@ class DynamixelNode:
         self.pub_data_4.publish(msg_4)
         self.pub_data_4.publish(msg_5)
 
+    def end(self):
+        rate = rospy.Rate(6)
+        present_position = np.zeros(6)
+        self.end = True
+
+        for dxl_id in range(0,6):
+            present_position[dxl_id] = self.read_motor_position(self.port_handler_xm, self.packet_handler_xm, dxl_id, XM_ADDR_PRESENT_POSITION)
+
+        print('현재 : ', present_position)
+
+        above = np.array([3072, 1850, 1460, 1325, 2048, 3666]) 
+        go_above = cubic_trajectory(present_position, above)
+
+        parking = np.array([3072, 1120, 1743, 942, 2048, 3666])
+        go_parking = cubic_trajectory(above, parking) # 각 모터마다의 각도를 trajectory, traj_arr는 (6,N)의 shape
+
+        go_above = go_above.astype(int)
+        go_parking = go_parking.astype(int)
+
+        for n in range(N):
+            for dxl_id in range(0,6):
+                self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, dxl_id, XM_ADDR_GOAL_POSITION, go_above[n][dxl_id])
+            rate.sleep()
+
+        for n in range(N):
+            for dxl_id in range(0,6):
+                # print("Set Goal XM_Position of ID %s = %s" % (XM_DXL_ID[dxl_id], xm_position[dxl_id]))
+                self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, dxl_id, XM_ADDR_GOAL_POSITION, go_parking[n][dxl_id])
+            rate.sleep()
+            # rospy.loginfo("모터 제어 value : %d, %d, %d, %d, %d, %d", *go_parking[n])
+        # rate.sleep()
+        self.shutdown()
+        rospy.sleep(2)
+
+        print("Robot OFF")         
+
 
 class Pose:
     def __init__(self, define_pose):
         self.goal_sub = rospy.Subscriber('/goal_pose', fl, self.callback_goal)  # from IK solver
         self.grip_sub = rospy.Subscriber('/grip_seperation', Float32, self.callback_grip) # from master node
         self.taks_sub = rospy.Subscriber('/task_to_motor_control', String , self.callback_task) # from master node
+        self.end_sub = rospy.Subscriber('/end', Bool , self.end_cb) # from master node
+        self.end = False
         self.stop_state = False
         # init_setting
         
@@ -443,8 +482,62 @@ class Pose:
         
     def callback_grip(self, msg):
         self.state_done_okay = False
-        self.grip_seperation = msg.data
-        goal_grip_seperation = self.gripper_close + (self.grip_seperation - self.gripper_close_mm) * self.seperation_per_mm
+        ob_size = msg.data
+        # self.grip_seperation = msg.data
+        # goal_grip_seperation = self.gripper_close + (self.grip_seperation - self.gripper_close_mm) * self.seperation_per_mm
+        grip_divide_mm_arr = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75]
+        grip_divide_dynamixel_arr =  [2200, 2403, 2550, 2700, 2800, 2900, 3000, 3125, 3225, 3350, 3500, 3800]
+
+        if ob_size <= grip_divide_mm_arr[0]:
+            goal_grip_seperation = grip_divide_dynamixel_arr[0]
+
+        elif ob_size <= grip_divide_mm_arr[1]:
+            value_per_mm = (grip_divide_dynamixel_arr[1]-grip_divide_dynamixel_arr[0])/(grip_divide_mm_arr[1]-grip_divide_mm_arr[0])
+            goal_grip_seperation = grip_divide_dynamixel_arr[0] + (ob_size-grip_divide_mm_arr[0])*value_per_mm 
+
+        elif ob_size <= grip_divide_mm_arr[2]:
+            value_per_mm = (grip_divide_dynamixel_arr[2]-grip_divide_dynamixel_arr[1])/(grip_divide_mm_arr[2]-grip_divide_mm_arr[1])
+            goal_grip_seperation = grip_divide_dynamixel_arr[1] + (ob_size-grip_divide_mm_arr[1])*value_per_mm 
+
+        elif ob_size <= grip_divide_mm_arr[3]:
+            value_per_mm = (grip_divide_dynamixel_arr[3]-grip_divide_dynamixel_arr[2])/(grip_divide_mm_arr[3]-grip_divide_mm_arr[2])
+            goal_grip_seperation = grip_divide_dynamixel_arr[2] + (ob_size-grip_divide_mm_arr[2])*value_per_mm 
+
+        elif ob_size <= grip_divide_mm_arr[4]:
+            value_per_mm = (grip_divide_dynamixel_arr[4]-grip_divide_dynamixel_arr[3])/(grip_divide_mm_arr[4]-grip_divide_mm_arr[3])
+            goal_grip_seperation = grip_divide_dynamixel_arr[3] + (ob_size-grip_divide_mm_arr[3])*value_per_mm 
+
+        elif ob_size <= grip_divide_mm_arr[5]:
+            value_per_mm = (grip_divide_dynamixel_arr[5]-grip_divide_dynamixel_arr[4])/(grip_divide_mm_arr[5]-grip_divide_mm_arr[4])
+            goal_grip_seperation = grip_divide_dynamixel_arr[4] + (ob_size-grip_divide_mm_arr[4])*value_per_mm 
+
+        elif ob_size <= grip_divide_mm_arr[6]:
+            value_per_mm = (grip_divide_dynamixel_arr[6]-grip_divide_dynamixel_arr[5])/(grip_divide_mm_arr[6]-grip_divide_mm_arr[5])
+            goal_grip_seperation = grip_divide_dynamixel_arr[5] + (ob_size-grip_divide_mm_arr[5])*value_per_mm
+
+        elif ob_size <= grip_divide_mm_arr[7]:
+            value_per_mm = (grip_divide_dynamixel_arr[7]-grip_divide_dynamixel_arr[6])/(grip_divide_mm_arr[7]-grip_divide_mm_arr[6])
+            goal_grip_seperation = grip_divide_dynamixel_arr[6] + (ob_size-grip_divide_mm_arr[6])*value_per_mm
+
+        elif ob_size <= grip_divide_mm_arr[8]:
+            value_per_mm = (grip_divide_dynamixel_arr[8]-grip_divide_dynamixel_arr[7])/(grip_divide_mm_arr[8]-grip_divide_mm_arr[7])
+            goal_grip_seperation = grip_divide_dynamixel_arr[7] + (ob_size-grip_divide_mm_arr[7])*value_per_mm
+            
+        elif ob_size <= grip_divide_mm_arr[9]:
+            value_per_mm = (grip_divide_dynamixel_arr[9]-grip_divide_dynamixel_arr[8])/(grip_divide_mm_arr[9]-grip_divide_mm_arr[8])
+            goal_grip_seperation = grip_divide_dynamixel_arr[8] + (ob_size-grip_divide_mm_arr[8])*value_per_mm          
+
+        elif ob_size <= grip_divide_mm_arr[10]:
+            value_per_mm = (grip_divide_dynamixel_arr[10]-grip_divide_dynamixel_arr[9])/(grip_divide_mm_arr[10]-grip_divide_mm_arr[9])
+            goal_grip_seperation = grip_divide_dynamixel_arr[9] + (ob_size-grip_divide_mm_arr[9])*value_per_mm          
+
+        elif ob_size <= grip_divide_mm_arr[11]:
+            value_per_mm = (grip_divide_dynamixel_arr[11]-grip_divide_dynamixel_arr[10])/(grip_divide_mm_arr[11]-grip_divide_mm_arr[10])
+            goal_grip_seperation = grip_divide_dynamixel_arr[10] + (ob_size-grip_divide_mm_arr[10])*value_per_mm      
+
+        else:
+            goal_grip_seperation = grip_divide_dynamixel_arr[11]
+
 
         print('### callback_grip ###')
         print('현재 상태 : ', self.last_pose[5])
@@ -479,12 +572,35 @@ class Pose:
         elif len(self.trajectory) == 0: # 값이 0이라면, 아직 한번도 trajectory를 진행하지 않은 상태임. 해당 경우는 초기 실행 상태임으로 pose update 없이 pass
             pass
 
+    def end_cb(self, data):
+        self.end = True
+    #     print('end')
+    #     # self.trajectory = self.trajectory[:1, :]
+    #     self.trajectory = np.array([self.last_pose])
+    #     rospy.sleep(0.1) # trjectory 최신화 될때 까지 기달
+    #     print(self.trajectory)
+        
+    #     # self.end = True
+    #     above = np.array([3072, 1850, 1460, 1325, 2048, 3666]) 
+    #     go_above = cubic_trajectory(self.last_pose, above)
+
+    #     parking = np.array([3072, 1120, 1743, 942, 2048, 3666])
+    #     go_parking = cubic_trajectory(above, parking) # 각 모터마다의 각도를 trajectory, traj_arr는 (6,N)의 shape
+
+    #     go_above = go_above.astype(int)
+    #     go_parking = go_parking.astype(int)
+    #     self.trajectory = np.append(self.trajectory, go_above)
+    #     self.trajectory = np.append(self.trajectory, go_parking)
+    #     self.stop_state = False
+
 def main(data):
     rate = rospy.Rate(15)
     print('motor_control_node is started')
+    global dynamixel
     dynamixel = DynamixelNode()
     pose = Pose(data.data)
     impact = Impact()
+    
     define_pose = data.data # (,5)
     define_pose = np.append(define_pose, pose.gripper_open) #pose 초기값(그리퍼 포함)
     dynamixel.move_current_to_goal(define_pose) # 초기 실행 시, 임의의 자세에서 last_pose로 이동. 이때 last_pose는 초기 pose임
@@ -500,6 +616,9 @@ def main(data):
         dynamixel.pub_pose(pose.last_pose) # 계속 last_pose로 모터 작동
         if pose.stop_state == False: # stop이 아니면 pose update
             pose.pose_update()
+
+        # if pose.end:
+        #     dynamixel.end()
 
         rate.sleep()
 

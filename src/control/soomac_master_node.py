@@ -343,7 +343,6 @@ class Callback:
             self.soomac_fsm.update()
 
         elif data.data == "stop" or data.data == "pause" :
-            
             msg = String()
             msg.data = "stop"
             self.soomac_fsm.pub_task_motor.publish(msg)
