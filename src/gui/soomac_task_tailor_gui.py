@@ -37,8 +37,8 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 # click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 # click_sound = pygame.mixer.Sound("/home/mataeeun/catkin_ws/src/soomac/src/gui/click_sound.mp3")
 
-image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
-# image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+# image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 # image_path = "/home/mataeeun/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 
 
@@ -325,7 +325,7 @@ def main_gui(root):
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("blue")
 
-    root.title("Soomac Taylor")
+    root.title("Soomac Task Tailor")
 
     image = Image.open(image_path)
     original_width, original_height = image.size
@@ -339,7 +339,6 @@ def main_gui(root):
     position_right = int(screen_width/2 - window_width/2)
 
     root.geometry(f'{window_width}x{window_height}+2750+350')
-
 
     title_label = ctk.CTkLabel(root, text="Soomac Task Tailor", font=ctk.CTkFont(size=int(50), weight="bold"))
     title_label.grid(row=0, column=0, columnspan=2, pady=int(40))
@@ -409,7 +408,6 @@ def main_gui(root):
                 print("Task가 선택되지 않았습니다")
                 warning()
 
-
         button_frame = ctk.CTkFrame(task_loader_window)
         button_frame.pack(pady=int(10*1.4))
 
@@ -420,10 +418,8 @@ def main_gui(root):
         back_button.pack(side=ctk.RIGHT, padx=int(10*1.4))
 
     buttons = [
-        # ("실행", robot_arm.start),
         ("새 Task 정의하기", open_task_definition),
         ("Task 불러오기", open_task_loader),
-        ("camera 자세", robot_arm.camera_pose_move_test),
         ("종료", confirm_exit),
         # ("Vision Data (Dev Info)", robot_arm.vision_test),
         ("Dev Info", dev_info)
@@ -431,11 +427,9 @@ def main_gui(root):
 
     positions = [
         (1, 0), 
-        (2, 0), 
-        (2, 1), 
-        (4, 1), 
-        (4, 0), 
-        (3, 1)
+        (1, 1),
+        (2, 0),
+        (2, 1)
     ]
 
     for i, (text, command) in enumerate(buttons):
@@ -448,9 +442,8 @@ def main_gui(root):
             button = ctk.CTkButton(root, text=text, command=with_sound(command), width=int(180*1.4), height=int(40*1.4), font=ctk.CTkFont(size=int(30)))
             button.grid(row=row, column=col, padx=int(40), pady=int(25))
 
-    # label_text = "새 Task 정의하기 버튼을 통해서 나만의 Task를 만들어 작업을 수행해보세요!"
-    # label = ctk.CTkLabel(root, text=label_text, font=ctk.CTkFont(size=int(14*1.4)))
-    # label.grid(row=row, column=col, padx=int(10*1.4), pady=int(5*1.4))
+    info = ctk.CTkLabel(root, text="새 Task 정의하기 버튼을 눌러 나만의 Task를 만들어 작업을 수행해보세요!", font=ctk.CTkFont(size=int(20), weight="bold"))
+    info.grid(row=3, column=0, columnspan=2, pady=int(20))
 
     info = ctk.CTkLabel(root, text="새 Task 정의하기 버튼을 눌러 나만의 Task를 만들어 작업을 수행해보세요!", font=ctk.CTkFont(size=int(20), weight="bold"))
     info.grid(row=5, column=0, columnspan=2, pady=int(20))
@@ -487,11 +480,14 @@ def dev_info():
     info1 = ctk.CTkLabel(root, text="[Vision]\n 최윤지 \n오희민", font=ctk.CTkFont(size=int(20), weight="bold"))
     info1.grid(row=0, column=0, columnspan=2, padx=int(20), pady=int(20))
 
+    info1 = ctk.CTkLabel(root, text="[Vision]\n 최윤지 \n오희민", font=ctk.CTkFont(size=int(20), weight="bold"))
+    info1.grid(row=1, column=0, columnspan=2, padx=int(20), pady=int(20))
+
     info2 = ctk.CTkLabel(root, text="[Control]\n 노현우 \n 조준현 \n 마태은 ", font=ctk.CTkFont(size=int(20), weight="bold"))
-    info2.grid(row=1, column=0, columnspan=2, padx=int(20), pady=int(20))
+    info2.grid(row=2, column=0, columnspan=2, padx=int(20), pady=int(20))
 
     info3 = ctk.CTkLabel(root, text="[Design]\n 최유진 \n 김도윤 \n정서진", font=ctk.CTkFont(size=int(20), weight="bold"))
-    info3.grid(row=2, column=0, columnspan=2, padx=int(20), pady=int(20))
+    info3.grid(row=3, column=0, columnspan=2, padx=int(20), pady=int(20))
 
 def open_task_definition():
     global task_name
