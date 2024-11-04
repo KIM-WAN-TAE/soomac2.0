@@ -38,8 +38,8 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 # click_sound = pygame.mixer.Sound("/home/mataeeun/catkin_ws/src/soomac/src/gui/click_sound.mp3")
 
 # image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
-image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
-# image_path = "/home/mataeeun/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+#image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+image_path = "/home/mataeeun/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 
 
 task_name = None #task_name 토픽 발행을 위한 전역 변수 설정
@@ -127,9 +127,8 @@ class Robot_control:
         print("gui - info")
 
     def end(self):
-        msg = Bool()
-        msg.data = True
-        self.pub_end.publish(msg)
+        self.gui_msg.data = "end"
+        self.pub_gui.publish(self.gui_msg)
         print('gui - end')
 
 ################### screen for robot control ################### 
