@@ -41,12 +41,12 @@ class robot_function: # degree : 모터 5개의 각도, grip_size : mm
     
         self.action_pub(action = "move_with_grip", degree = degree, grip_size=grip_mm)        
 
-    def line(self, coord):
+    def line(self, coord, twist):
         if len(coord) == 4: # (x,y,z,rx) -> (th1, th2, th3, th4, th5)
             degree = self.chain.IK(coord)
         else:
             degree = coord
-        self.action_pub(action = "line", degree = degree)
+        self.action_pub(action = "line", degree = degree, twist=twist)
 
     def grip_close(self, grip_size):
         self.action_pub(action = "grip_close", grip_size=grip_size)
@@ -54,12 +54,22 @@ class robot_function: # degree : 모터 5개의 각도, grip_size : mm
     def grip_open(self, grip_size):
         self.action_pub(action = "grip_open", grip_size=grip_size)
 
-    def action_pub(self, action = "x", degree = [0], grip_size = 0, N = 0):
+    def continue_(self):
+        self.action_pub(action = "continue")
+
+    def previous(self):
+        self.action_pub(action = "previous")                
+
+    def stop(self):
+        self.action_pub(action = "stop")                
+
+    def action_pub(self, action = "x", degree = [0], grip_size = 0, N = 0, twist = 0):
         action_msg = action_info()
         action_msg.action = action
         action_msg.degree = degree
         action_msg.grip_size = grip_size   
-        action_msg.N = N         
+        action_msg.N = N
+        action_msg.twist = twist         
         self.pub_action.publish(action_msg)
 
 
@@ -85,7 +95,7 @@ class Control:
 
         # offset 설정
         self.pick_offset = 100
-        self.place_offset = 100
+        self.place_offset = 200
 
         # ros topic
         self.pub_start = rospy.Publisher('/start', action_info, queue_size=10)
@@ -105,6 +115,10 @@ class Control:
 
         elif self.mode == 'end':
             self.mode_end()              
+
+        elif self.mode == 'push':
+            self.mode_push()              
+
 
     def mode_pnp(self):
         if self.action_state == 0:
@@ -147,14 +161,16 @@ class Control:
             self.action_state += 1
 
         elif self.action_state == 7:
-            print('##### [Mode : init_pos] step_2 : place')
-            self.rb.move(self.place_coord)
-            self.action_state += 1            
-
-        elif self.action_state == 8:
             print('##### [Mode : init_pos] step_2 : grip_open')
             self.rb.grip_open(self.gripper_open_mm)
             self.action_state += 1
+
+        elif self.action_state == 8:
+            print('##### [Mode : init_pos] step_2 : place')
+            place_above = deepcopy(self.place_coord)
+            place_above[2] += self.place_offset
+            self.rb.move(place_above)            
+            self.action_state += 1            
 
         elif self.action_state == 9:
             print('##### [Mode : init_pos] step_2 : camera_pos')
@@ -218,14 +234,65 @@ class Control:
             self.rb.move(self.parking_degree, N = 30)
             self.action_state += 1            
 
-    def stop(self):
-        pass
+    def mode_push(self):
+        if self.action_state == 0:
+            pass
+        
+        elif self.action_state == 1:
+            print('##### [Mode : init_pos] step_2 : grip_open')
+            self.rb.grip_open(self.gripper_open_mm)
+            self.action_state += 1
 
-    def previous(self):
-        pass
+        elif self.action_state == 2:
+            print('##### [push] step 1 : pick_above')
+            pick_above = deepcopy(self.pick_coord)
+            pick_above[2] += self.pick_offset
+            self.rb.move(pick_above)
+            self.action_state += 1
+
+        elif self.action_state == 3:
+            print('##### [Mode : init_pos] step_2 : pick')
+            self.rb.move(self.pick_coord)
+            self.action_state += 1
+
+        elif self.action_state == 4: # line으로 바꾸기
+            print('##### [Mode : init_pos] step_2 : push')
+            self.rb.line(self.place_coord, twist=self.place_coord[3])
+            self.action_state += 1
+
+        elif self.action_state == 5:
+            print('##### [Mode : init_pos] step_2 : place')
+            self.rb.move(self.place_coord)
+            self.action_state += 1
+
+        elif self.action_state == 6:
+            print('##### [Mode : init_pos] step_2 : place_above')
+            place_above = deepcopy(self.place_coord)
+            place_above[2] += self.place_offset
+            self.rb.move(place_above)            
+            self.action_state += 1  
+
+        elif self.action_state == 7:
+            print('##### [Mode : init_pos] step_2 : camera_pos')
+            self.rb.move(self.camera_coord)
+            self.action_state += 1
+
+        else:
+            pass
+
+
+    ################## 조작 ################## 
+    def stop(self):
+        self.rb.stop()
+
+    def previous(self): # 나중에 다시 보기
+        self.rb.previous()
 
     def continue_(self):
-        pass
+        self.rb.continue_()
+        self.action_state -= 1 # 기존 명령 다시 보내기
+        self.modes()
+
 
 class Callback:
     def __init__(self):
@@ -244,13 +311,18 @@ class Callback:
         
     def vision(self, data): # camera -> 동작
         print('####### vision topic ####### ')
-        vision_data = data
-        self.control.object_size = np.array(vision_data[4])
+        print(data)
+        vision_data = data.data
+        self.control.object_size = vision_data[4]
         self.control.pick_coord = np.array(list(vision_data[:4]))
         self.control.place_coord = np.array(list(vision_data[5:]))
-
         self.control.action_state = 1
-        self.control.mode = 'pnp'        
+
+        if self.control.object_size == -1: # push 해야함
+            self.control.mode = 'push'
+        else:
+            self.control.mode = 'pnp'
+        
         self.control.modes()
 
     def camera_pose(self):
@@ -299,11 +371,12 @@ class Callback:
 
 
     def state_done(self, data): # motor_control로 부터 state_done 받을 시 동작 메서드
+        print("### state_done")
         self.control.modes()
 
 
 def main():
-    rospy.init_node('Control_master_node', anonymous=True)
+    rospy.init_node('ControlNode', anonymous=True)
     Callback()
     rospy.spin()
 

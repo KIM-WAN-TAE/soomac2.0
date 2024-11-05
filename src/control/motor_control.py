@@ -23,11 +23,10 @@ from std_msgs.msg import Float32MultiArray as fl
 from std_msgs.msg import Float32, Bool, String
 from soomac.msg import action_info
 
+from echobot_chain import Echobot
 from functions import *
-# import threading
-# import matplotlib.pyplot as plt
-# import matplotlib.animation as animation
-# import plotly.graph_objects as go
+import time
+
 DEVICENAME = '/dev/ttyUSB0'
 
 
@@ -284,12 +283,14 @@ class DynamixelNode:
         rospy.loginfo("Shutdown Dynamixel node.")
 
     def pub_pose(self, dynamixel_value): # input : (,6) // 5축 degree + gripper_value 
-        
         for dxl_id in XM_DXL_ID:
-            dv = int(dynamixel_value[dxl_id]) 
+            dv = int(dynamixel_value[dxl_id])              
             self.packet_handler_xm.write4ByteTxRx(self.port_handler_xm, dxl_id, XM_ADDR_GOAL_POSITION, dv)
 class Pose:
     def __init__(self, start_value, action_msg):
+        self.rb = Echobot()
+        self.dvc = dynamixel_value_change()
+
         self.goal_sub = rospy.Subscriber('/action_req', action_info, self.callback_action)  # from IK solver
         self.state_done_topic = rospy.Publisher('/state_done', Bool, queue_size=10) # to master
         self.state_done_okay = False
@@ -300,8 +301,10 @@ class Pose:
         self.action = action_msg.action
         self.degree = action_msg.degree
         self.grip_mm = action_msg.grip_size
-        self.N = action_msg.N                
-        self.trajectory_value = np.zeros(6) # 대기열       
+        self.N = action_msg.N       
+        self.twist = action_msg.twist
+        self.trajectory_value = np.zeros(6) # 대기열
+        self.save_value = start_value       
         self.move_with_grip()
 
     def callback_action(self, action_msg):
@@ -323,42 +326,91 @@ class Pose:
             self.grip_close()
         elif self.action == "grip_open":                            
             self.grip_open()
+        elif self.action == "continue":                            
+            self.continue_()            
+        elif self.action == "previous":                            
+            self.previous()                  
+        elif self.action == "stop":                            
+            self.stop()                       
             
-    def move_with_grip(self):
-        self.state_done_okay = False
-        goal_value = degree_to_dynamixel_value(self.degree, self.grip_mm)
-        self.trajectory_value = cubic_trajectory(self.last_value, goal_value)
+    def continue_(self):
+        # self.state_done_okay = False
+        self.stop_state = False
+        
+    def previous(self):
+        self.trajectory_value = cubic_trajectory(self.last_value, self.save_value, N_req=30)
+        self.stop_state = False
 
-    def move(self):
+    def stop(self):
+        self.stop_state = True
+    
+    def move_with_grip(self):
+        goal_value = self.dvc.degree_to_dynamixel_value(self.degree, self.grip_mm)
+        self.trajectory_value = cubic_trajectory(self.last_value, goal_value)
         self.state_done_okay = False
+        
+    def move(self):
         current_grip_value = self.last_value[5]
-        goal_value = degree_to_dynamixel_value(self.degree, current_grip_value, grip_option="value")
+        goal_value = self.dvc.degree_to_dynamixel_value(self.degree, current_grip_value, grip_option="value")
         if self.N != 0:
             self.trajectory_value = cubic_trajectory(self.last_value, goal_value, N_req=self.N)
         else:
             self.trajectory_value = cubic_trajectory(self.last_value, goal_value)
+        self.state_done_okay = False    
 
+    def line(self):
+        current_grip_value = self.last_value[5]
+        current_degree, _ = self.dvc.dynamixel_value_to_degree(self.last_value)
+        # current_degree는 5축에 대한 ik 각도
+        # current_twist_degree = current_degree[4]
+        goal_twist_degree = self.twist
+        current_coord = self.rb.FK(current_degree)
+        goal_coord = self.rb.FK(self.degree)
+        # coord는 (x, y, z) 형태
+        
+        N = 30
+        trajectory_coord = linear_trajectory(current_coord, goal_coord, N=N)
 
-    def line():
-        pass
+        # 추가할 열을 생성 (예: 값이 1로 채워진 열)
+        current_twist_degree_column = np.full((trajectory_coord.shape[0], 1), goal_twist_degree)  # (N, 1) 형태로 생성
+
+        # 수평 결합하여 (N, 4) 배열 생성
+        trajectory_coord = np.hstack([trajectory_coord, current_twist_degree_column])
+
+        print("시작 좌표 : ", current_coord)
+        print("목표 좌표 : ", goal_coord)
+        # print(trajectory_coord)
+        # trajectory_coord는 (N, 3) 형태
+        goal_trajecory_value = np.zeros((N,6))
+        trajectory_degree = np.zeros((N,5))
+        
+        for idx in range(N):
+            trajectory_degree[idx] = self.rb.IK(trajectory_coord[idx])
+            goal_trajecory_value[idx] = self.dvc.degree_to_dynamixel_value(trajectory_degree[idx], current_grip_value, grip_option="value")
+
+        self.trajectory_value = goal_trajecory_value
+        self.state_done_okay = False
 
     def grip_close(self):
-        self.state_done_okay = False
-        goal_value = self.last_value
+        goal_value = deepcopy(self.last_value)
         goal_value[5] = grip_mm_to_value(self.grip_mm)
         self.trajectory_value = gripper_trajectory(self.last_value, goal_value)
+        self.state_done_okay = False        
 
     def grip_open(self):
-        self.state_done_okay = False
-        goal_value = self.last_value
+        goal_value = deepcopy(self.last_value)
         goal_value[5] = grip_mm_to_value(self.grip_mm)
         self.trajectory_value = gripper_trajectory(self.last_value, goal_value)
-
+        self.state_done_okay = False
+        
     def state_done(self): # link, gripper 제어 완료 시 state_done 토픽 발행해주는 메서드
         if self.state_done_okay == False:
             state_msg = Bool()
             state_msg.data = True
             self.state_done_topic.publish(state_msg)
+            print("### state_done")
+            self.save_value = deepcopy(self.last_value)
+            print("state 완료 시 value : ", self.save_value)
         self.state_done_okay = True
 
     def pose_update(self):
@@ -383,18 +435,21 @@ def main(data):
 
     pose = Pose(current_value, data)
     impact = Impact()
-
+    last_traj_len = 0
 
     while not rospy.is_shutdown():
-        
         impact_state = dynamixel.monitor_current()
         if impact_state == 1:
             pose.stop_state = True 
             impact.impact_to_gui.publish(True)
+            print("남은 위치 개수 : ", len(pose.trajectory_value))
+            print("충돌 감지로 인한 정지 상태")
 
         if pose.stop_state == False: # stop이 아니면 pose update
             pose.pose_update()
-            print(len(pose.trajectory_value))
+            if last_traj_len !=len(pose.trajectory_value):
+                print(len(pose.trajectory_value))
+            last_traj_len = len(pose.trajectory_value)
         # print(pose.last_value)
         dynamixel.pub_pose(pose.last_value) # 계속 last_value로 모터 작동
 

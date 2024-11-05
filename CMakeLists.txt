@@ -209,7 +209,7 @@ include_directories(
 
 catkin_install_python(PROGRAMS 
   src/control/motor_control.py 
-  src/control/soomac_master_node.py
+  src/control/ControlNode.py
   src/control/camera_transformation.py
   src/gui/soomac_task_tailor_gui.py 
   src/gui/GUI.py 
