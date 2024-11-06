@@ -127,9 +127,8 @@ class Robot_control:
         print("gui - info")
 
     def end(self):
-        msg = Bool()
-        msg.data = True
-        self.pub_end.publish(msg)
+        self.gui_msg.data = "end"
+        self.pub_gui.publish(self.gui_msg)
         print('gui - end')
 
 ################### screen for robot control ################### 

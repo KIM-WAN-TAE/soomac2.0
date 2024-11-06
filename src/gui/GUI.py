@@ -21,8 +21,8 @@ class Robot_control:
         self.gui_msg.data = None
         # vision test용 msg 
         self.vision_msg = fl()
-        self.vision_msg.data = [250, 250, 100, 0, 15, # pick : (x, y, z, theta, grip_size) 
-                                -250, 250, 100, 30 ] # place : (x, y, z, theta)
+        self.vision_msg.data = [125, 250, 3, 0, 30, # pick : (x, y, z, theta, grip_size) 
+                                -125, 250, 3, 0 ] # place : (x, y, z, theta)
 
     def vision_test(self): 
         self.pub_vision.publish(self.vision_msg)
@@ -64,6 +64,32 @@ class Robot_control:
         if impact == True:
             self.impact_screen()
 
+    def end(self):
+        self.gui_msg.data = "end"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - end')
+
+    def Continue(self):
+        print('continue')
+        self.gui_msg.data = "continue"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - continue')
+        
+
+    def Previous(self):
+        print('previous')
+        self.gui_msg.data = "previous"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - previous')
+
+
+    def Init_pose(self):
+        print('init_pose')
+        self.gui_msg.data = "init_pose"
+        self.pub_gui.publish(self.gui_msg)
+        print('gui - init_pose')
+
+
     def impact_screen(self):
         exit_window = Toplevel()
         exit_window.title("충돌 감지")
@@ -76,6 +102,7 @@ class Robot_control:
         # GUI를 종료하면서 로봇을 거치대로 이동하는 작업을 수행하기 위해서 exit_program 함수에 로봇이 거치대로 이동하는 코드를 추가해야함. 
         def exit_program():
             exit_window.destroy()
+            self.Continue()
 
         def close_exit_window():
             pass
@@ -156,6 +183,7 @@ def main_screen():
         # GUI를 종료하면서 로봇을 거치대로 이동하는 작업을 수행하기 위해서 exit_program 함수에 로봇이 거치대로 이동하는 코드를 추가해야함. 
         def exit_program():
             root.destroy()
+            robot_arm.end()
 
         def close_exit_window():
             exit_window.destroy()
