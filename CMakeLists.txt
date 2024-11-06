@@ -51,6 +51,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  action_info.msg
   PickPlace.msg
   image.msg
 )
@@ -208,10 +209,10 @@ include_directories(
 
 catkin_install_python(PROGRAMS 
   src/control/motor_control.py 
-  src/control/pub_test.py 
-  src/control/soomac_master_node.py
+  src/control/ControlNode.py
   src/control/camera_transformation.py
-  src/gui/soomac_task_tailor_gui.py src/gui/GUI.py 
+  src/gui/soomac_task_tailor_gui.py 
+  src/gui/GUI.py 
   src/gui/test_for_task_complete_sub.py 
   src/vision/VisionNode.py
 
