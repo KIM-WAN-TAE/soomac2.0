@@ -24,7 +24,7 @@ import json
 from cv_bridge import CvBridge
 import math
 
-from realsense.realsense_depth import DepthCamera
+from vision.realsense.realsense_camera import DepthCamera
 from realsense.utilities import compute_xyz, save_as_npy, compute_xyz_2
 
 from control.camera_transformation import transformation_camera
@@ -52,21 +52,6 @@ class Vision:
         self.len_step = -1
         self.place_coord = None
 
-    def save_callback(self, msg):
-        ret, depth_raw_frame, color_raw_frame = self.rs.get_raw_frame()
-        color_frame = np.asanyarray(color_raw_frame.get_data())
-        depth_frame = np.asanyarray(depth_raw_frame.get_data())
-        cv2.imwrite(msg.color, color_frame)
-        plt.imsave(msg.depth, depth_frame)
-
-
-        rgb = cv2.cvtColor(color_frame, cv2.COLOR_BGR2RGB)
-        xyz = compute_xyz_2(depth_frame * self.depth_scale, self.rs.get_camera_intrinsics())
-
-        data = save_as_npy(rgb, xyz)
-
-        np.save(msg.npy, data)
-
     def image_pub(self):
         bridge = CvBridge()
         ret, depth_raw_frame, color_raw_frame = self.rs.get_raw_frame()
@@ -81,6 +66,19 @@ class Vision:
         depth_image = bridge.cv2_to_imgmsg(depth_frame)
         self.rgb_pub.publish(rgb_image)
         self.depth_pub.publish(depth_image)
+
+    def save_callback(self, msg):
+        ret, depth_raw_frame, color_raw_frame = self.rs.get_raw_frame()
+        color_frame = np.asanyarray(color_raw_frame.get_data())
+        depth_frame = np.asanyarray(depth_raw_frame.get_data())
+        cv2.imwrite(msg.color, color_frame)
+        plt.imsave(msg.depth, depth_frame)
+        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_frame, alpha=0.15), cv2.COLORMAP_JET)
+        
+        origin_images = np.vstack((color_frame, depth_colormap))
+        resized_images = cv2.resize(origin_images, (640, 480*2))
+
+        cv2.imshow('Camera and Yolo Detection', resized_images)
 
     def load_json(self, task_name):
         self.task_name = task_name

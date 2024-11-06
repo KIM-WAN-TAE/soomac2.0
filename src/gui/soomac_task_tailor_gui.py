@@ -27,7 +27,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 matplotlib.use("TkAgg")
 
-from vision.realsense.realsense_depth import DepthCamera
+from vision.realsense.realsense_camera import DepthCamera
 from vision.realsense.utilities import compute_xyz, save_as_npy
 
 # Pygame 초기화 및 사운드 로드
@@ -37,8 +37,8 @@ from vision.realsense.utilities import compute_xyz, save_as_npy
 # click_sound = pygame.mixer.Sound("/home/seojin/catkin_ws/src/soomac/src/gui/click_sound.mp3")  # 경로를 실제 파일 경로로 변경
 # click_sound = pygame.mixer.Sound("/home/mataeeun/catkin_ws/src/soomac/src/gui/click_sound.mp3")
 
-# image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
-image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+image_path = "/home/choiyoonji/catkin_ws/src/soomac/src/gui/start_image2.jpg"
+# image_path = "/home/seojin/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 # image_path = "/home/mataeeun/catkin_ws/src/soomac/src/gui/start_image2.jpg"
 
 
@@ -608,12 +608,10 @@ def open_camera_window(save_path, task_name):
         global image_count
         color_path = f"{save_path}/{task_name}_color_{image_count}.png"
         depth_path = f"{save_path}/{task_name}_depth_{image_count}.png"
-        npy_path = f"{save_path}/{task_name}_npy_{image_count}.npy"
 
         path_list = image()
         path_list.color = color_path
         path_list.depth = depth_path
-        path_list.npy = npy_path
 
         save_img_pub.publish(path_list)
         

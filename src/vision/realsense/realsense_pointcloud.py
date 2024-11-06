@@ -2,7 +2,7 @@ import numpy as np
 import pyrealsense2 as rs
 from matplotlib import pyplot as plt
 import cv2
-from realsense_depth import DepthCamera
+from vision.realsense.realsense_camera import DepthCamera
 from utilities import compute_xyz, save_as_npy
 
 resolution_width, resolution_height = (640, 480)
