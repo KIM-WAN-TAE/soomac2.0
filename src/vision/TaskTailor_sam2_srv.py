@@ -12,7 +12,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = "0" # TODO: Change this if you have more th
 import sys
 sys.path.append(os.path.dirname(__file__))
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-sys.path.append('/home/choiyoonji/sam2/sam2')
+sys.path.append('/home/choiyoonji/sam2')
 import json
 from time import time
 import glob
@@ -26,37 +26,32 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-import sam_main
-from utils.Seg2Crop import extract_objects_from_image
+import sam2.sam_main as sam_main
 
 from siamese_network.eval import Siamese
 
-from control.camera_transformation import transformation_define
+from control.camera_transformation import transformation_camera
+from vision.realsense.realsense_camera import DepthCamera
 
 
 folder_path = '/home/choiyoonji/catkin_ws/src/soomac/src/gui/Task/'
 
 
-def parse_obj_info(obj_info, rgb, depth):
-    camera_intrinsics = {'fx': 387.5052185058594, 'fy': 387.5052185058594, 'x_offset': 324.73431396484375, 'y_offset': 238.08770751953125, 'img_height': 960, 'img_width': 1280}
+def parse_obj_info(obj_info, rgb, depth, camera_intrinsics):
     crop_imgs = []
     pixel_coords = []
     world_coords = []
 
+    print(rgb.shape, depth.shape)
+    print(camera_intrinsics)
     for i in obj_info:
-        crop_img = []
-        pixel_coord = []
-        world_coord = []
-        for j in i['bbox']:
-            crop_img.append(rgb[j[1]:j[1]+j[3], j[0]:j[0]+j[2]])
-            pixel = [j[0]*2+j[2], j[1]*2+j[3]]
-            world = pyrealsense2.rs2_deproject_pixel_to_point(camera_intrinsics, pixel, depth[pixel])
-            pixel_coord.append(pixel)
-            world_coord.append(world)
-            
-        crop_imgs.append(crop_img)
-        pixel_coords.append(pixel_coord)
-        world_coords.append(world_coord)
+        x, y, h, w = list(map(int, i))
+        crop = rgb[y:y+w, x:x+h, : ]
+        crop_imgs.append(crop)
+        pixel = [int((x*2+h)/2), int((y*2+w)/2)]
+        world = transformation_camera(pyrealsense2.rs2_deproject_pixel_to_point(camera_intrinsics, pixel, depth[pixel[0], pixel[1]]))
+        pixel_coords.append(pixel)
+        world_coords.append(world)
 
     return crop_imgs, pixel_coords, world_coords
 
@@ -68,14 +63,25 @@ class GUI:
 
         self.sam = sam_main.SAM2()
         self.siamese = Siamese()
+        self.rs = DepthCamera(1280,960)
+        self.camera_intrinsic = self.rs.get_camera_intrinsics()
+        self.rs.release()
+        print('===========================================')
+        print("Realsense Released")
+        print('===========================================')
 
     def path_callback(self, req):
         self.task_name = req.TaskName
-        png_files = sorted(glob.glob(os.path.join(folder_path+self.task_name, '*.png')))
+        rgb_png = sorted(glob.glob(os.path.join(folder_path+self.task_name, '*.png')))    
+        depth_npy = sorted(glob.glob(os.path.join(folder_path+self.task_name, '*.npy')))    
         
-        img_num = len(png_files)
-        rgb_png = png_files[:int(img_num/2)]
-        depth_png = png_files[int(img_num/2):]
+        img_num = len(rgb_png)
+
+        for idx, path in enumerate(rgb_png):
+            rgb_png[idx] = cv2.imread(path)
+
+        for idx, path in enumerate(depth_npy):
+            depth_npy[idx] = cv2.imread(path, cv2.IMREAD_UNCHANGED)
 
         task = {}
         task["name"] = self.task_name
@@ -87,13 +93,15 @@ class GUI:
         step = {'pick': 0, 'place': 0}
 
         print("load")
-
-        for i in range(int(img_num/2)):
+        print(img_num)
+        for i in range(img_num):
             pixel_coords = []
             world_coords = []
             obj_info = self.sam.generate_mask(rgb_png[i])
+            print(obj_info)
+            print(i)
 
-            crop_img, pixel_coord, world_coord = parse_obj_info(obj_info, rgb_png[i], depth_png[i])
+            crop_img, pixel_coord, world_coord = parse_obj_info(obj_info, rgb_png[i], depth_npy[i], self.camera_intrinsic)
 
             if i == 0:
                 for idx, img in enumerate(crop_img):
@@ -124,7 +132,8 @@ class GUI:
         world_coord_list = np.array(world_coord_list)
         # task["objects"] = object_list
 
-        for i in range(1, int(img_num/2)):
+        for i in range(1, int(img_num)):
+            step = {'pick': 0, 'place': 0}
             dis = np.linalg.norm(pixel_coord_list[i-1] - pixel_coord_list[i], axis=1)
             pick_ind = np.argmax(dis)
             step['pick'] = int(pick_ind)
@@ -138,7 +147,7 @@ class GUI:
 
         task["steps"] = task_list
         print('define')
-
+        
         with open(folder_path+self.task_name+'/'+self.task_name+'.json', 'w') as json_file:
             json.dump(task, json_file, ensure_ascii=False, indent=4)
 

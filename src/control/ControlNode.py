@@ -99,7 +99,7 @@ class Control:
 
         # ros topic
         self.pub_start = rospy.Publisher('/start', action_info, queue_size=10)
-
+        self.camera_ready = rospy.Publisher('/camera_ready', Bool, queue_size=10)
     def modes(self):
         if self.mode == 'start':
             self.mode_start()
@@ -177,6 +177,11 @@ class Control:
             self.rb.move(self.camera_coord)
             self.action_state += 1
 
+        elif self.action_state == 10:
+            msg = Bool()
+            msg.data = True
+            self.camera_ready.publish(msg)
+            print("camera_ready topic")
         else:
             pass
     
@@ -207,9 +212,19 @@ class Control:
             pass
         
         elif self.action_state == 1:
-            print('##### [Mode : init_pos] step_2 : camera_pos')
+            print('##### [Mode : init_pos] step_1 : camera_pos')
             self.rb.move(self.camera_coord) 
             self.action_state += 1
+
+        elif self.action_state == 2:
+            print('##### [Mode : init_pos] step_2 : camera_ready')
+            msg = Bool()
+            msg.data = True
+            self.camera_ready.publish(msg)
+            print("camera_ready topic")
+            self.action_state += 1
+
+
 
     def mode_define_pose(self):
         if self.action_state == 0:
@@ -277,6 +292,12 @@ class Control:
             self.rb.move(self.camera_coord)
             self.action_state += 1
 
+        elif self.action_state == 8:
+            msg = Bool()
+            msg.data = True
+            self.camera_ready.publish(msg)
+            print("camera_ready topic")
+
         else:
             pass
 
@@ -325,7 +346,7 @@ class Callback:
         
         self.control.modes()
 
-    def camera_pose(self):
+    def camera_pose(self, msg):
         self.control.mode = 'camera_pose'
         self.control.action_state = 1            
         self.control.modes()        

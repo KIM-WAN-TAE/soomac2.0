@@ -7,7 +7,7 @@ class coordinate_setting:
         
         # ik 기준 각도
         self.parking_degree = [0, 180, -130, -100, 0]
-        self.define_degree = [0, 170, -120, -90, 0]
+        self.define_degree = [0, 210, 370 , 0]
 
         # dynamixel 기준 각도
         self.parking_above_degree = [270, 143.7, 150.73, 110, 180]

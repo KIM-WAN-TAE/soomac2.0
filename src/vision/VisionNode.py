@@ -12,21 +12,22 @@ import os
 import sys
 sys.path.append(os.path.dirname(__file__))
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+import glob
 
-import open3d as o3d
-import open3d.core as o3c
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
 import copy
 import json
 from cv_bridge import CvBridge
 import math
+from sklearn.cluster import DBSCAN
+from sklearn.decomposition import PCA
+import pyrealsense2 as rs2
+
+from siamese_network.eval import Siamese
 
 from vision.realsense.realsense_camera import DepthCamera
-from realsense.utilities import compute_xyz, save_as_npy, compute_xyz_2
-
 from control.camera_transformation import transformation_camera
 
 
@@ -42,6 +43,8 @@ class Vision:
         self.depth_pub = rospy.Publisher('/depth_frame', Image)
         self.save_sub = rospy.Subscriber('/save_img', image, self.save_callback)
 
+        self.siamese = Siamese()
+
         self.rs = DepthCamera(resolution_width, resolution_height)
         self.depth_scale = self.rs.get_depth_scale()
 
@@ -51,6 +54,7 @@ class Vision:
         self.step = -1
         self.len_step = -1
         self.place_coord = None
+        self.objects_img = []
 
     def image_pub(self):
         bridge = CvBridge()
@@ -72,193 +76,126 @@ class Vision:
         color_frame = np.asanyarray(color_raw_frame.get_data())
         depth_frame = np.asanyarray(depth_raw_frame.get_data())
         cv2.imwrite(msg.color, color_frame)
-        plt.imsave(msg.depth, depth_frame)
-        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_frame, alpha=0.15), cv2.COLORMAP_JET)
+        plt.imsave(msg.depth[:-3]+'png', depth_frame)
+        np.save(msg.depth, depth_frame)
+        # depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_frame, alpha=0.15), cv2.COLORMAP_JET)
         
-        origin_images = np.vstack((color_frame, depth_colormap))
-        resized_images = cv2.resize(origin_images, (640, 480*2))
+        # origin_images = np.vstack((color_frame, depth_colormap))
+        # resized_images = cv2.resize(origin_images, (640, 480*2))
 
-        cv2.imshow('Camera and Yolo Detection', resized_images)
+        # cv2.imshow('Camera and Yolo Detection', resized_images)
 
     def load_json(self, task_name):
         self.task_name = task_name
+        self.objects_img = []
+
+        rgb_png = sorted(glob.glob(os.path.join(folder_path+'/'+self.task_name+'/', 'object0_*.png')))    
+        for idx, path in enumerate(rgb_png):
+            self.objects_img.append(cv2.imread(path))
 
         with open(folder_path+'/'+task_name+'/'+task_name+'.json') as json_file:
             json_data = json.load(json_file)
 
             print(json_data)
 
-            self.coords = json_data["coords"]
             self.task = json_data["steps"]
             self.len_step = len(self.task)
+            self.case_place_coord = self.task[0]['place']
 
-    def calc_position(self, object1, object2):
+    def calc_position_obj(self, object1):
         ret, depth_raw_frame, color_raw_frame = self.rs.get_raw_frame()
+        color_frame = np.asanyarray(color_raw_frame.get_data())
         depth_frame = np.asanyarray(depth_raw_frame.get_data())
-        plt.imsave(folder_path+'test.png', depth_frame)
+
+        def check_valid(y, w, h):
+            if object1 != 0:
+                return y < 360 and 40 < w < 350 and 40 < h < 300
+            else:
+                return y >= 360 and 300 < w < 350 and 200 < h < 300
+
+        gray = cv2.cvtColor(color_frame, cv2.COLOR_BGR2GRAY)
+        blurred_image = cv2.GaussianBlur(gray, (3, 3), 0)
+
+        edges = cv2.Canny(blurred_image, threshold1=50, threshold2=135)
+        points = np.column_stack(np.nonzero(edges))
+
+        dbscan = DBSCAN(eps=10, min_samples=10).fit(points)
+        labels = dbscan.labels_
+                
+        bbox = []
+        max_similarity = -1
+        for label in set(labels):
+            if label == -1:  # 노이즈는 제외
+                continue
+            
+            cluster_points = points[labels == label]
+            y, x, h, w = cv2.boundingRect(cluster_points)
+            
+            if check_valid(y, w, h):
+                crop = color_frame[x:x+w, y:y+w]
+                similarity = self.siamese.eval(self.objects_img[object1], crop)
+                if similarity > max_similarity:
+                    bbox = [x, y, w, h]
+                    max_similarity = similarity
+
+        pick_coord = [int(bbox[0]+bbox[2]/2), int(bbox[1]+bbox[3]/2)]
+        pick_coord = rs2.rs2_deproject_pixel_to_point(self.rs.depth_intrinsics, pick_coord, depth_frame[pick_coord[0],pick_coord[1]])
         
-        camera_intrinsics = self.rs.get_camera_intrinsics()  # 카메라 내부 파라미터 가져오기
-        fx = camera_intrinsics['fx']
-        fy = camera_intrinsics['fy']
-        cx = camera_intrinsics['x_offset']
-        cy = camera_intrinsics['y_offset']
-        xyz = compute_xyz(depth_frame * self.depth_scale, camera_intrinsics).reshape((-1,3))
+        x, y, w, h = bbox
+        e = edges[y:y+h,x:x+w]
+        object_pixels = np.column_stack(np.where(e == 255))
+        pca = PCA(n_components=2)
+        pca.fit(object_pixels)  
 
-        pcd = o3d.t.geometry.PointCloud(o3c.Tensor(xyz, o3c.float32))
-        downpcd = pcd.voxel_down_sample(voxel_size=0.005)
+        # 주성분 벡터
+        principal_axes = pca.components_
+        first_axis = principal_axes[1]
+        angle_radians = np.arctan2(first_axis[1], first_axis[0])  # y축, x축
+        angle_degrees = np.degrees(angle_radians)
 
-        plane_model, inliers = downpcd.segment_plane(distance_threshold=0.01,
-                                                    ransac_n=3,
-                                                    num_iterations=500)
-
-        inlier_cloud = downpcd.select_by_index(inliers)
-        outlier_cloud = downpcd.select_by_index(inliers, invert=True)
-
-        labels = outlier_cloud.cluster_dbscan(eps=0.01, min_points=10, print_progress=True)
-
-        # 새로운 코드: 군집 크기 필터링 및 중심점 추출
-        min_cluster_size = 50  # 최소 군집 크기
-        max_cluster_size = 1000  # 최대 군집 크기
-
-        # 군집 레이블별 포인트 개수를 계산
-        unique_labels, counts = np.unique(labels, return_counts=True)
-
-        # 필터링된 군집의 중심점 및 PCA 결과 저장할 리스트
-        centroids = []
-        grasp_poses = []
-        pick_ind = -1
-        pick_min = 9999
-        place_ind = -1
-        place_min = 9999
-
-        for label, count in zip(unique_labels, counts):
-            if min_cluster_size <= count <= max_cluster_size:
-                # 해당 군집의 포인트만 선택
-                cluster_points = outlier_cloud.select_by_index(np.where(labels == label)[0])
-                
-                # 중심점 계산
-                centroid = np.mean(cluster_points.point.positions.numpy(), axis=0)
-                centroids.append(centroid)
-
-                X, Y, Z = centroid
-                u = (X * fx) / Z + cx
-                v = (Y * fy) / Z + cy
-
-                pixel = np.array([u,v])
-                print(pixel, object1, object2)
-
-                dis = np.linalg.norm(pixel-object1)
-                if dis < pick_min:
-                    pick_ind = len(centroids)-1
-                    pick_min = dis
-
-                dis = np.linalg.norm(pixel-object2)
-                if dis < place_min:
-                    place_ind = len(centroids)-1
-                    place_min = dis
-                
-                # PCA를 통해 Grasp Pose 계산
-                pca = PCA(n_components=3)
-                pca.fit(cluster_points.point.positions.numpy())
-                aabb = cluster_points.get_axis_aligned_bounding_box()
-                aabb_extent = aabb.get_extent()  # 각 축에 대한 길이 (폭, 높이, 깊이)
-                gripper_width = aabb_extent[0]/2.2  # Grasp 방향(주축)으로의 폭
-                
-                # PCA 주성분을 Grasp Pose로 사용
-                principal_axes = pca.components_
-                grasp_pose = {
-                    'position': centroid,
-                    'principal_axis': principal_axes[0],  # 주축 (Grasp 방향)
-                    'secondary_axis': principal_axes[1],  # 수평축 (회전 정의)
-                    'normal_axis': principal_axes[2],      # 법선축
-                    'theta':  math.degrees(np.arctan2(principal_axes[0][1], principal_axes[0][0])),
-                    'grasp_width': gripper_width*1000
-                }
-                grasp_poses.append(grasp_pose)
-
-
-        # 결과 출력
-        print(f"추출된 Grasp Pose 개수: {len(grasp_poses)}")
-        for i, pose in enumerate(grasp_poses):
-            print(f"Grasp Pose {i+1}:")
-            print(f"  Position: {pose['position']}")
-            # print(f"  Principal Axis (Grasp Direction): {pose['principal_axis']}")
-            # print(f"  Secondary Axis: {pose['secondary_axis']}")
-            # print(f"  Normal Axis: {pose['normal_axis']}")
-            print(f"  theta : {pose['theta']}")
-            # print(f"  grasp_width : {pose['grasp_width']}")
-
-        # 시각화를 위한 코드 (옵션)
-        # sphere_size = 0.01  # 중심점 크기 조절
-        # centroid_spheres = []
-
-        # for centroid in centroids:
-        #     sphere = o3d.geometry.TriangleMesh.create_sphere(radius=sphere_size)
-        #     sphere.translate(centroid)  # 중심점을 구 위치로 이동
-        #     sphere.paint_uniform_color([0, 1, 0])  # 초록색으로 색칠
-        #     centroid_spheres.append(sphere)
-
-        # # Grasp Pose의 주축을 화살표로 시각화
-        # arrows = []
-        # for pose in grasp_poses:
-        #     start_point = pose['position']
-        #     end_point = start_point + pose['principal_axis'] * 0.1  # 화살표 길이 조절
-        #     direction = pose['principal_axis']
-            
-        #     # 회전 행렬을 생성하여 화살표 회전
-        #     z_axis = np.array([0, 0, 1])
-        #     rotation_matrix = np.eye(3)
-            
-        #     if not np.allclose(direction, z_axis):
-        #         axis = np.cross(z_axis, direction)
-        #         angle = np.arccos(np.dot(z_axis, direction))
-        #         rotation_matrix = o3d.geometry.get_rotation_matrix_from_axis_angle(axis * angle)
-            
-        #     arrow = o3d.geometry.TriangleMesh.create_arrow(
-        #         cylinder_radius=0.01, cone_radius=0.02, cylinder_height=0.1, cone_height=0.02
-        #     )
-        #     arrow.translate(start_point)
-        #     arrow.rotate(rotation_matrix, center=start_point)
-        #     arrow.paint_uniform_color([1, 0, 0])  # 빨간색으로 색칠
-            
-        #     arrows.append(arrow)
-
-        return grasp_poses[pick_ind], grasp_poses[place_ind]
-
+        return pick_coord, angle_degrees
 
     def coord_pub(self):
-        self.step %= (self.len_step)
+        if self.step >= self.len_step:
+            self.step = 0
+        # self.step %= (self.len_step)
         print(self.step)
         current_step = self.task[self.step]
     
-        object1 = self.coords[0][current_step["pick"]]
-        object2 = self.coords[0][current_step["place"]]
-        pick, place = self.calc_position(object1, object2)
+        object1 = current_step['pick']
+        place_coord = current_step['place']
+        pick, theta = self.calc_position_obj(object1)
+        
+        if object1 == 0:
+            place = self.case_place_coord
+        else:
+            place = self.case_place_coord
 
-        pick_position = np.array(pick["position"], dtype=float)*1000
-        place_position = np.array(place["position"], dtype=float)*1000
+        pick_position = np.array(pick, dtype=float)
+        place_position = np.array(place, dtype=float)
+
+        print(pick_position)
+        print(place_position)
 
         pick_position = transformation_camera(pick_position)
         place_position = transformation_camera(place_position)
-
-        if -5 < pick_position[0] - place_position[0] < 5:
-            if place_position is not None:
-                place_position = self.place_coord
-
-        self.place_coord = place_position
-
-        place_position = [ -5.48332222, 237.76662217,  40.07654767]
-
 
         print(pick_position)
         print(place_position)
 
         coord = fl()
-        coord.data = [pick_position[0], pick_position[1], pick_position[2]-5,
-                      float(pick["theta"]), np.float32(pick["grasp_width"].numpy()),
-                      place_position[0], place_position[1], place_position[2],
-                      float(place["theta"])]
-        print('gripper',np.float32(pick["grasp_width"].numpy()))
+        if object1 == 0:
+            coord.data = [pick_position[0]+74, pick_position[1], 25,
+                        0, float(-1),
+                        place_position[0]+74, place_position[1], 25,
+                        0]
+            print('gripper',float(-1))
+        else:
+            coord.data = [pick_position[0], pick_position[1], 20,
+                        theta, float(30),
+                        place_position[0], place_position[1], 20,
+                        theta]
+            
         self.vision_pub.publish(coord)
 
     def reset(self):

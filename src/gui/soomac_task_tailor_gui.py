@@ -432,14 +432,9 @@ def main_gui(root):
     ]
 
     for i, (text, command) in enumerate(buttons):
-        if i == 0:  
-            row, col = positions[i]
-            button = ctk.CTkButton(root, text=text, command=with_sound(command), width=int(300*1.4), height=int(40*1.4), font=ctk.CTkFont(size=int(30)))
-            button.grid(row=row, column=col, padx=25, pady=int(25), columnspan=2)
-        else:  
-            row, col = positions[i]
-            button = ctk.CTkButton(root, text=text, command=with_sound(command), width=int(180*1.4), height=int(40*1.4), font=ctk.CTkFont(size=int(30)))
-            button.grid(row=row, column=col, padx=int(40), pady=int(25))
+        row, col = positions[i]
+        button = ctk.CTkButton(root, text=text, command=with_sound(command), width=int(180*1.4), height=int(40*1.4), font=ctk.CTkFont(size=int(30)))
+        button.grid(row=row, column=col, padx=int(40), pady=int(25))
 
     info = ctk.CTkLabel(root, text="새 Task 정의하기 버튼을 눌러 나만의 Task를 만들어 작업을 수행해보세요!", font=ctk.CTkFont(size=int(20), weight="bold"))
     info.grid(row=3, column=0, columnspan=2, pady=int(20))
@@ -508,16 +503,16 @@ def open_task_definition():
     task_name_var.trace("w", on_task_name_change)
     task_name_entry.configure(textvariable=task_name_var)
 
-    ctk.CTkLabel(task_window, text="반복 방식:", font=ctk.CTkFont(size=int(30))).grid(row=1, column=0, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
-    repeat_mode_var = ctk.StringVar(value="개수 기반")
+    ctk.CTkLabel(task_window,text="반복 방식:", font=ctk.CTkFont(size=int(30))).grid(row=1, column=0, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
+    repeat_mode_var = ctk.StringVar(value="분류")
     
     repeat_mode_frame = ctk.CTkFrame(task_window)
     repeat_mode_frame.grid(row=1, column=1, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
     
-    repeat_mode_count = ctk.CTkRadioButton(repeat_mode_frame, text="개수 기반", variable=repeat_mode_var, value="개수 기반", font=ctk.CTkFont(size=int(30)), command=play_click_sound)
+    repeat_mode_count = ctk.CTkRadioButton(repeat_mode_frame, text="분류", variable=repeat_mode_var, value="분류", font=ctk.CTkFont(size=int(30)), command=play_click_sound)
     repeat_mode_count.grid(row=0, column=0, padx=int(10*1.4))
     
-    repeat_mode_distribution = ctk.CTkRadioButton(repeat_mode_frame, text="분포 기반", variable=repeat_mode_var, value="분포 기반", font=ctk.CTkFont(size=int(30)), command=play_click_sound)
+    repeat_mode_distribution = ctk.CTkRadioButton(repeat_mode_frame, text="포장", variable=repeat_mode_var, value="포장", font=ctk.CTkFont(size=int(30)), command=play_click_sound)
     repeat_mode_distribution.grid(row=0, column=1, padx=int(10*1.4))
 
     ctk.CTkLabel(task_window, text="그리퍼 종류:", font=ctk.CTkFont(size=int(30))).grid(row=2, column=0, pady=int(10*1.4), padx=int(10*1.4), sticky=ctk.W)
@@ -586,7 +581,7 @@ def open_camera_window(save_path, task_name):
     save_img_pub = rospy.Publisher('/save_img', image, queue_size=10)
     camera_window = ctk.CTkToplevel()
     camera_window.title("카메라 뷰")
-    camera_window.geometry(f"{int(800)}x{int(600)}+2750+350")
+    camera_window.geometry(f"{int(1280)}x{int(960)}+2750+350")
 
     print("카메라 윈도우 열림")
 
@@ -606,7 +601,7 @@ def open_camera_window(save_path, task_name):
     def capture_image():
         global image_count
         color_path = f"{save_path}/{task_name}_color_{image_count}.png"
-        depth_path = f"{save_path}/{task_name}_depth_{image_count}.png"
+        depth_path = f"{save_path}/{task_name}_depth_{image_count}.npy"
 
         path_list = image()
         path_list.color = color_path
