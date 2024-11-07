@@ -146,7 +146,7 @@ class DynamixelNode:
         self.impact = Impact()
         self.dynamixel_setting()
         self.change_para = 1024/90
-
+        self.grip_stack = 0
         ## ROS
         # for state done
 
@@ -156,6 +156,8 @@ class DynamixelNode:
         self.pub_data_3 = rospy.Publisher('XM_2', Float32, queue_size=10)
         self.pub_data_4 = rospy.Publisher('XM_3', Float32, queue_size=10)
         self.pub_data_5 = rospy.Publisher('XM_4', Float32, queue_size=10)
+        self.pub_data_6 = rospy.Publisher('XM_5', Float32, queue_size=10)
+
 
         # self.data_array = np.zeros((20, 5))  # (20, 4) 형태의 데이터 배열 초기화
 
@@ -232,6 +234,17 @@ class DynamixelNode:
         for dxl_id in range(0,6):
             present_position[dxl_id] = self.read_motor_position(self.port_handler_xm, self.packet_handler_xm, dxl_id, XM_ADDR_PRESENT_POSITION)        
         return present_position
+    
+    def monitor_gripper_current(self):
+        grip_state = False
+        current = self.read_motor_current(gripper_DXL_ID)
+        self.pub_data_6.publish()
+
+        if current >= 1000:
+            self.grip_stack += 1 
+        if self.grip_stack >= 1:
+            grip_state = True
+        return grip_state
 
     def read_motor_current(self, dxl_id): # 주어진 id의 모터에 대한 전류 값 반환
         # 모터의 현재 전류 값 읽기
@@ -248,7 +261,6 @@ class DynamixelNode:
         return dxl_present_current
         
     def monitor_current(self): # 모터 전류값 모니터링하는 메서드. 모니터링 후 충격 확인까지 진행
-        global t
         data_t = np.zeros(5)
         result = 0
         
@@ -439,12 +451,16 @@ def main(data):
 
     while not rospy.is_shutdown():
         impact_state = dynamixel.monitor_current()
+        grip_state = dynamixel.monitor_gripper_current()
         if impact_state == 1:
             pose.stop_state = True 
             impact.impact_to_gui.publish(True)
             print("남은 위치 개수 : ", len(pose.trajectory_value))
             print("충돌 감지로 인한 정지 상태")
 
+        if grip_state == True:
+            pose.trajectory_value = pose.last_value
+            
         if pose.stop_state == False: # stop이 아니면 pose update
             pose.pose_update()
             if last_traj_len !=len(pose.trajectory_value):
