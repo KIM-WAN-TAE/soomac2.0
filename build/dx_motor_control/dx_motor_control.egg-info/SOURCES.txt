@@ -1,0 +1,13 @@
+package.xml
+setup.cfg
+setup.py
+dx_motor_control/__init__.py
+dx_motor_control/motor_connect.py
+dx_motor_control.egg-info/PKG-INFO
+dx_motor_control.egg-info/SOURCES.txt
+dx_motor_control.egg-info/dependency_links.txt
+dx_motor_control.egg-info/entry_points.txt
+dx_motor_control.egg-info/requires.txt
+dx_motor_control.egg-info/top_level.txt
+dx_motor_control.egg-info/zip-safe
+resource/dx_motor_control

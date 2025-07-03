@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-    		'motor_ready = head_moving.motor_ready:main',
+    		'motor_connect = dx_motor_control.motor_connect:main',
         ],
     },
 )
