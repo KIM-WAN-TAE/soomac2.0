@@ -1,0 +1,10 @@
+/home/pc/soomac_ws/build/dxl_cpp_pkg/CMakeFiles/uninstall.dir
+/home/pc/soomac_ws/build/dxl_cpp_pkg/CMakeFiles/dxl_cpp_pkg_uninstall.dir
+/home/pc/soomac_ws/build/dxl_cpp_pkg/CMakeFiles/motor_connect.dir
+/home/pc/soomac_ws/build/dxl_cpp_pkg/CMakeFiles/test.dir
+/home/pc/soomac_ws/build/dxl_cpp_pkg/CMakeFiles/edit_cache.dir
+/home/pc/soomac_ws/build/dxl_cpp_pkg/CMakeFiles/rebuild_cache.dir
+/home/pc/soomac_ws/build/dxl_cpp_pkg/CMakeFiles/list_install_components.dir
+/home/pc/soomac_ws/build/dxl_cpp_pkg/CMakeFiles/install.dir
+/home/pc/soomac_ws/build/dxl_cpp_pkg/CMakeFiles/install/local.dir
+/home/pc/soomac_ws/build/dxl_cpp_pkg/CMakeFiles/install/strip.dir

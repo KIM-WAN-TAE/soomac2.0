@@ -1,0 +1,17 @@
+running develop
+running egg_info
+writing finger_test.egg-info/PKG-INFO
+writing dependency_links to finger_test.egg-info/dependency_links.txt
+writing entry points to finger_test.egg-info/entry_points.txt
+writing requirements to finger_test.egg-info/requires.txt
+writing top-level names to finger_test.egg-info/top_level.txt
+reading manifest file 'finger_test.egg-info/SOURCES.txt'
+writing manifest file 'finger_test.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages/finger-test.egg-link (link to .)
+Installing finger_test script to /home/pc/soomac_ws/install/finger_test/lib/finger_test
+
+Installed /home/pc/soomac_ws/build/finger_test
+running symlink_data
+symbolically linking /home/pc/soomac_ws/build/finger_test/resource/finger_test -> /home/pc/soomac_ws/install/finger_test/share/ament_index/resource_index/packages
+symbolically linking /home/pc/soomac_ws/build/finger_test/package.xml -> /home/pc/soomac_ws/install/finger_test/share/finger_test

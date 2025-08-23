@@ -1,0 +1,15 @@
+running develop
+running egg_info
+writing dx_motor_control.egg-info/PKG-INFO
+writing dependency_links to dx_motor_control.egg-info/dependency_links.txt
+writing entry points to dx_motor_control.egg-info/entry_points.txt
+writing requirements to dx_motor_control.egg-info/requires.txt
+writing top-level names to dx_motor_control.egg-info/top_level.txt
+reading manifest file 'dx_motor_control.egg-info/SOURCES.txt'
+writing manifest file 'dx_motor_control.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/pc/soomac_ws/install/dx_motor_control/lib/python3.10/site-packages/dx-motor-control.egg-link (link to .)
+Installing motor_connect script to /home/pc/soomac_ws/install/dx_motor_control/lib/dx_motor_control
+
+Installed /home/pc/soomac_ws/build/dx_motor_control
+running symlink_data

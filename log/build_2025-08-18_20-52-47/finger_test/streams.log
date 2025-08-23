@@ -1,0 +1,36 @@
+[0.258s] Invoking command in '/home/pc/soomac_ws/build/finger_test': PYTHONPATH=/home/pc/soomac_ws/build/finger_test/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/finger_test/build
+[0.371s] running develop
+[0.433s] Removing /home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages/finger-test.egg-link (link to .)
+[0.443s] Invoked command in '/home/pc/soomac_ws/build/finger_test' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/finger_test/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/finger_test/build
+[0.444s] Invoking command in '/home/pc/soomac_ws/src/finger_test': PYTHONPATH=/home/pc/soomac_ws/build/finger_test/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/finger_test build --build-base /home/pc/soomac_ws/build/finger_test/build install --record /home/pc/soomac_ws/build/finger_test/install.log --single-version-externally-managed install_data --force
+[0.547s] running egg_info
+[0.547s] writing ../../build/finger_test/finger_test.egg-info/PKG-INFO
+[0.547s] writing dependency_links to ../../build/finger_test/finger_test.egg-info/dependency_links.txt
+[0.547s] writing entry points to ../../build/finger_test/finger_test.egg-info/entry_points.txt
+[0.547s] writing requirements to ../../build/finger_test/finger_test.egg-info/requires.txt
+[0.547s] writing top-level names to ../../build/finger_test/finger_test.egg-info/top_level.txt
+[0.548s] reading manifest file '../../build/finger_test/finger_test.egg-info/SOURCES.txt'
+[0.548s] writing manifest file '../../build/finger_test/finger_test.egg-info/SOURCES.txt'
+[0.548s] running build
+[0.548s] running build_py
+[0.549s] creating /home/pc/soomac_ws/build/finger_test/build
+[0.549s] creating /home/pc/soomac_ws/build/finger_test/build/lib
+[0.549s] creating /home/pc/soomac_ws/build/finger_test/build/lib/finger_test
+[0.549s] copying finger_test/__init__.py -> /home/pc/soomac_ws/build/finger_test/build/lib/finger_test
+[0.549s] copying finger_test/finger_test.py -> /home/pc/soomac_ws/build/finger_test/build/lib/finger_test
+[0.549s] running install
+[0.549s] running install_lib
+[0.549s] creating /home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages/finger_test
+[0.549s] copying /home/pc/soomac_ws/build/finger_test/build/lib/finger_test/__init__.py -> /home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages/finger_test
+[0.549s] copying /home/pc/soomac_ws/build/finger_test/build/lib/finger_test/finger_test.py -> /home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages/finger_test
+[0.549s] byte-compiling /home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages/finger_test/__init__.py to __init__.cpython-310.pyc
+[0.550s] byte-compiling /home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages/finger_test/finger_test.py to finger_test.cpython-310.pyc
+[0.550s] running install_data
+[0.550s] copying resource/finger_test -> /home/pc/soomac_ws/install/finger_test/share/ament_index/resource_index/packages
+[0.550s] copying package.xml -> /home/pc/soomac_ws/install/finger_test/share/finger_test
+[0.550s] running install_egg_info
+[0.551s] Copying ../../build/finger_test/finger_test.egg-info to /home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages/finger_test-0.0.0-py3.10.egg-info
+[0.552s] running install_scripts
+[0.561s] Installing finger_test script to /home/pc/soomac_ws/install/finger_test/lib/finger_test
+[0.561s] writing list of installed files to '/home/pc/soomac_ws/build/finger_test/install.log'
+[0.570s] Invoked command in '/home/pc/soomac_ws/src/finger_test' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/finger_test/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/finger_test build --build-base /home/pc/soomac_ws/build/finger_test/build install --record /home/pc/soomac_ws/build/finger_test/install.log --single-version-externally-managed install_data --force

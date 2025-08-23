@@ -1,0 +1,3 @@
+[console_scripts]
+homework01 = homework_pkg.homework_01:main
+

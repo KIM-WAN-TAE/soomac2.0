@@ -1,0 +1,15 @@
+running develop
+running egg_info
+writing homework_pkg.egg-info/PKG-INFO
+writing dependency_links to homework_pkg.egg-info/dependency_links.txt
+writing entry points to homework_pkg.egg-info/entry_points.txt
+writing requirements to homework_pkg.egg-info/requires.txt
+writing top-level names to homework_pkg.egg-info/top_level.txt
+reading manifest file 'homework_pkg.egg-info/SOURCES.txt'
+writing manifest file 'homework_pkg.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/pc/soomac_ws/install/homework_pkg/lib/python3.10/site-packages/homework-pkg.egg-link (link to .)
+Installing homework01 script to /home/pc/soomac_ws/install/homework_pkg/lib/homework_pkg
+
+Installed /home/pc/soomac_ws/build/homework_pkg
+running symlink_data

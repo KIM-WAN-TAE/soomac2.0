@@ -1,0 +1,19 @@
+[0.264s] Invoking command in '/home/pc/soomac_ws/build/finger_test': PYTHONPATH=/home/pc/soomac_ws/build/finger_test/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/finger_test/build --no-deps symlink_data --force
+[0.376s] running develop
+[0.435s] running egg_info
+[0.435s] writing finger_test.egg-info/PKG-INFO
+[0.435s] writing dependency_links to finger_test.egg-info/dependency_links.txt
+[0.435s] writing entry points to finger_test.egg-info/entry_points.txt
+[0.435s] writing requirements to finger_test.egg-info/requires.txt
+[0.436s] writing top-level names to finger_test.egg-info/top_level.txt
+[0.437s] reading manifest file 'finger_test.egg-info/SOURCES.txt'
+[0.437s] writing manifest file 'finger_test.egg-info/SOURCES.txt'
+[0.437s] running build_ext
+[0.437s] Creating /home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages/finger-test.egg-link (link to .)
+[0.438s] Installing finger_test script to /home/pc/soomac_ws/install/finger_test/lib/finger_test
+[0.438s] 
+[0.438s] Installed /home/pc/soomac_ws/build/finger_test
+[0.438s] running symlink_data
+[0.438s] symbolically linking /home/pc/soomac_ws/build/finger_test/resource/finger_test -> /home/pc/soomac_ws/install/finger_test/share/ament_index/resource_index/packages
+[0.438s] symbolically linking /home/pc/soomac_ws/build/finger_test/package.xml -> /home/pc/soomac_ws/install/finger_test/share/finger_test
+[0.448s] Invoked command in '/home/pc/soomac_ws/build/finger_test' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/finger_test/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/finger_test/build --no-deps symlink_data --force

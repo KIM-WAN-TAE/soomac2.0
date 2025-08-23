@@ -1,0 +1,3 @@
+[console_scripts]
+finger_test = finger_test.finger_test:main
+

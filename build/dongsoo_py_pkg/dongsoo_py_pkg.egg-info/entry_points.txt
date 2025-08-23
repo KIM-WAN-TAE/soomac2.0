@@ -1,0 +1,4 @@
+[console_scripts]
+one_way_trajectory = dongsoo_py_pkg.one_way_trajectory:main
+trajectory_test = dongsoo_py_pkg.trajectory_test:main
+
