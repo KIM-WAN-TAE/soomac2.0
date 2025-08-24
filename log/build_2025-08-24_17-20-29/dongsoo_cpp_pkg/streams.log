@@ -1,0 +1,58 @@
+[0.006s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[0.033s] [35m[1mConsolidate compiler generated dependencies of target motor_connect[0m
+[0.034s] [35m[1mConsolidate compiler generated dependencies of target data_hub[0m
+[0.045s] [ 50%] Built target motor_connect
+[0.047s] [ 75%] [32mBuilding CXX object CMakeFiles/data_hub.dir/src/data_hub.cpp.o[0m
+[0.970s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:94:54:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kstd::array<float, 3> DataHub::last_floats_[m[K’
+[0.970s]    94 |     std::array<float,3> last_floats_{0.0f, 0.0f, 0.0f[01;31m[K}[m[K;
+[0.970s]       |                                                      [01;31m[K^[m[K
+[0.970s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:18:25:[m[K [01;36m[Knote: [m[Kprevious declaration ‘[01m[Kstd::array<float, 3> DataHub::last_floats_[m[K’
+[0.970s]    18 |     std::array<float,3> [01;36m[Klast_floats_[m[K{0.0f, 0.0f, 0.0f};
+[0.970s]       |                         [01;36m[K^~~~~~~~~~~~[m[K
+[0.976s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:[m[K In member function ‘[01m[Kvoid DataHub::onTimer()[m[K’:
+[0.976s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:34:52:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass rclcpp::Time[m[K’ has no member named ‘[01m[Ksecond[m[K’; did you mean ‘[01m[Kseconds[m[K’?
+[0.976s]    34 |         const double ts = this->get_clock()->now().[01;31m[Ksecond[m[K();
+[0.976s]       |                                                    [01;31m[K^~~~~~[m[K
+[0.976s]       |                                                    [32m[Kseconds[m[K
+[0.978s] In file included from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/logging.hpp:24[m[K,
+[0.978s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/client.hpp:40[m[K,
+[0.978s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/callback_group.hpp:24[m[K,
+[0.978s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/any_executable.hpp:20[m[K,
+[0.978s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/memory_strategy.hpp:25[m[K,
+[0.978s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/memory_strategies.hpp:18[m[K,
+[0.979s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executor_options.hpp:20[m[K,
+[0.979s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executor.hpp:37[m[K,
+[0.979s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors/multi_threaded_executor.hpp:25[m[K,
+[0.979s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors.hpp:21[m[K,
+[0.979s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp:155[m[K,
+[0.979s]                  from [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:9[m[K:
+[0.979s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:35:65:[m[K [01;31m[Kerror: [m[K‘[01m[Ktid[m[K’ was not declared in this scope
+[0.979s]    35 |         RCLCPP_INFO(get_logger(), "[T%zu][%.3f] onTimer Start", [01;31m[Ktid[m[K(), ts);
+[0.979s]       |                                                                 [01;31m[K^~~[m[K
+[0.981s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:70:90:[m[K [01;31m[Kerror: [m[K‘[01m[Ktid[m[K’ was not declared in this scope
+[0.981s]    70 |         RCLCPP_INFO(this->get_logger(), "[T%zu][%.3f] onTimer  END  (%.3f, %.3f, %.3f)", [01;31m[Ktid[m[K(), this->get_clock()->now().seconds(), s1, s2, s3);
+[0.981s]       |                                                                                          [01;31m[K^~~[m[K
+[0.981s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:[m[K In member function ‘[01m[Kvoid DataHub::onTimer_2()[m[K’:
+[0.981s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:77:52:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass rclcpp::Time[m[K’ has no member named ‘[01m[Ksecond[m[K’; did you mean ‘[01m[Kseconds[m[K’?
+[0.981s]    77 |         const double ts = this->get_clock()->now().[01;31m[Ksecond[m[K();
+[0.981s]       |                                                    [01;31m[K^~~~~~[m[K
+[0.981s]       |                                                    [32m[Kseconds[m[K
+[0.983s] In file included from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/logging.hpp:24[m[K,
+[0.983s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/client.hpp:40[m[K,
+[0.983s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/callback_group.hpp:24[m[K,
+[0.983s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/any_executable.hpp:20[m[K,
+[0.983s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/memory_strategy.hpp:25[m[K,
+[0.983s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/memory_strategies.hpp:18[m[K,
+[0.983s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executor_options.hpp:20[m[K,
+[0.983s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executor.hpp:37[m[K,
+[0.983s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors/multi_threaded_executor.hpp:25[m[K,
+[0.983s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors.hpp:21[m[K,
+[0.983s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp:155[m[K,
+[0.983s]                  from [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:9[m[K:
+[0.983s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:83:84:[m[K [01;31m[Kerror: [m[K‘[01m[Ktid[m[K’ was not declared in this scope
+[0.983s]    83 |         RCLCPP_INFO(get_logger(), "[T%zu][%.3f] onTimer2 READ (%.3f, %.3f, %.3f)", [01;31m[Ktid[m[K(), ts, copy[0], copy[1], copy[2]);
+[0.983s]       |                                                                                    [01;31m[K^~~[m[K
+[1.382s] gmake[2]: *** [CMakeFiles/data_hub.dir/build.make:76: CMakeFiles/data_hub.dir/src/data_hub.cpp.o] Error 1
+[1.382s] gmake[1]: *** [CMakeFiles/Makefile2:165: CMakeFiles/data_hub.dir/all] Error 2
+[1.382s] gmake: *** [Makefile:146: all] Error 2
+[1.384s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32

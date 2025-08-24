@@ -1,0 +1,75 @@
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:14:22:[m[K [01;35m[Kwarning: [m[Kcharacter constant too long for its type
+   14 |     DataHub() : Node([01;35m[K'data_hub'[m[K), t_(0.0f) {
+      |                      [01;35m[K^~~~~~~~~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:[m[K In constructor ‘[01m[KDataHub::DataHub()[m[K’:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:14:42:[m[K [01;31m[Kerror: [m[Kno matching function for call to ‘[01m[Krclcpp::Node::Node(int)[m[K’
+   14 |     DataHub() : Node('data_hub'), t_(0.0f[01;31m[K)[m[K {
+      |                                          [01;31m[K^[m[K
+In file included from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors/single_threaded_executor.hpp:28[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors.hpp:22[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp:155[m[K,
+                 from [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:5[m[K:
+[01m[K/opt/ros/humble/include/rclcpp/rclcpp/node.hpp:1294:3:[m[K [01;36m[Knote: [m[Kcandidate: ‘[01m[Krclcpp::Node::Node(const rclcpp::Node&, const string&)[m[K’
+ 1294 |   [01;36m[KNode[m[K(
+      |   [01;36m[K^~~~[m[K
+[01m[K/opt/ros/humble/include/rclcpp/rclcpp/node.hpp:1294:3:[m[K [01;36m[Knote: [m[K  candidate expects 2 arguments, 1 provided
+[01m[K/opt/ros/humble/include/rclcpp/rclcpp/node.hpp:101:12:[m[K [01;36m[Knote: [m[Kcandidate: ‘[01m[Krclcpp::Node::Node(const string&, const string&, const rclcpp::NodeOptions&)[m[K’
+  101 |   explicit [01;36m[KNode[m[K(
+      |            [01;36m[K^~~~[m[K
+[01m[K/opt/ros/humble/include/rclcpp/rclcpp/node.hpp:101:12:[m[K [01;36m[Knote: [m[K  candidate expects 3 arguments, 1 provided
+[01m[K/opt/ros/humble/include/rclcpp/rclcpp/node.hpp:89:12:[m[K [01;36m[Knote: [m[Kcandidate: ‘[01m[Krclcpp::Node::Node(const string&, const rclcpp::NodeOptions&)[m[K’
+   89 |   explicit [01;36m[KNode[m[K(
+      |            [01;36m[K^~~~[m[K
+[01m[K/opt/ros/humble/include/rclcpp/rclcpp/node.hpp:90:25:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[Kint[m[K’ to ‘[01m[Kconst string&[m[K’ {aka ‘[01m[Kconst std::__cxx11::basic_string<char>&[m[K’}
+   90 |     [01;36m[Kconst std::string & node_name[m[K,
+      |     [01;36m[K~~~~~~~~~~~~~~~~~~~~^~~~~~~~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:16:9:[m[K [01;31m[Kerror: [m[K‘[01m[Kpub_float_[m[K’ was not declared in this scope; did you mean ‘[01m[Kpub_floats_[m[K’?
+   16 |         [01;31m[Kpub_float_[m[K = this->create_publisher<std_msgs::msg:Float32MulityArray>("/floats", rclcpp::QoS(10));
+      |         [01;31m[K^~~~~~~~~~[m[K
+      |         [32m[Kpub_floats_[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:16:58:[m[K [01;31m[Kerror: [m[Kfound ‘[01m[K:[m[K’ in nested-name-specifier, expected ‘[01m[K::[m[K’
+   16 |         pub_float_ = this->create_publisher<std_msgs::msg[01;31m[K:[m[KFloat32MulityArray>("/floats", rclcpp::QoS(10));
+      |                                                          [01;31m[K^[m[K
+      |                                                          [32m[K::[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:16:59:[m[K [01;31m[Kerror: [m[K‘[01m[KFloat32MulityArray[m[K’ is not a member of ‘[01m[Kstd_msgs::msg[m[K’; did you mean ‘[01m[KFloat32MultiArray[m[K’?
+   16 |         pub_float_ = this->create_publisher<std_msgs::msg:[01;31m[KFloat32MulityArray[m[K>("/floats", rclcpp::QoS(10));
+      |                                                           [01;31m[K^~~~~~~~~~~~~~~~~~[m[K
+      |                                                           [32m[KFloat32MultiArray[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:16:78:[m[K [01;31m[Kerror: [m[Kno matching function for call to ‘[01m[KDataHub::create_publisher<<expression error> >(const char [8], rclcpp::QoS)[m[K’
+   16 |         pub_float_ = [01;31m[Kthis->create_publisher<std_msgs::msg:Float32MulityArray>("/floats", rclcpp::QoS(10))[m[K;
+      |                      [01;31m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+In file included from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/node.hpp:1321[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors/single_threaded_executor.hpp:28[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors.hpp:22[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp:155[m[K,
+                 from [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:5[m[K:
+[01m[K/opt/ros/humble/include/rclcpp/rclcpp/node_impl.hpp:73:1:[m[K [01;36m[Knote: [m[Kcandidate: ‘[01m[Ktemplate<class MessageT, class AllocatorT, class PublisherT> std::shared_ptr<PublisherT> rclcpp::Node::create_publisher(const string&, const rclcpp::QoS&, const rclcpp::PublisherOptionsWithAllocator<AllocatorT>&)[m[K’
+   73 | [01;36m[KNode[m[K::create_publisher(
+      | [01;36m[K^~~~[m[K
+[01m[K/opt/ros/humble/include/rclcpp/rclcpp/node_impl.hpp:73:1:[m[K [01;36m[Knote: [m[K  template argument deduction/substitution failed:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:16:78:[m[K [01;31m[Kerror: [m[Ktemplate argument 1 is invalid
+   16 |         pub_float_ = [01;31m[Kthis->create_publisher<std_msgs::msg:Float32MulityArray>("/floats", rclcpp::QoS(10))[m[K;
+      |                      [01;31m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:17:64:[m[K [01;31m[Kerror: [m[K‘[01m[KArrayPublisher[m[K’ has not been declared
+   17 |         timer_     = this->create_wall_timer(100ms, std::bind(&[01;31m[KArrayPublisher[m[K::onTimer, this))
+      |                                                                [01;31m[K^~~~~~~~~~~~~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:57:35:[m[K [01;31m[Kerror: [m[K‘[01m[KArrayPublisher[m[K’ was not declared in this scope
+   57 |     rclcpp::spin(std::make_shared<[01;31m[KArrayPublisher[m[K>());
+      |                                   [01;31m[K^~~~~~~~~~~~~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:57:50:[m[K [01;31m[Kerror: [m[Kno matching function for call to ‘[01m[Kmake_shared<<expression error> >()[m[K’
+   57 |     rclcpp::spin([01;31m[Kstd::make_shared<ArrayPublisher>()[m[K);
+      |                  [01;31m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~[m[K
+In file included from [01m[K/usr/include/c++/11/memory:77[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp:153[m[K,
+                 from [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:5[m[K:
+[01m[K/usr/include/c++/11/bits/shared_ptr.h:875:5:[m[K [01;36m[Knote: [m[Kcandidate: ‘[01m[Ktemplate<class _Tp, class ... _Args> std::shared_ptr<_Tp> std::make_shared(_Args&& ...)[m[K’
+  875 |     [01;36m[Kmake_shared[m[K(_Args&&... __args)
+      |     [01;36m[K^~~~~~~~~~~[m[K
+[01m[K/usr/include/c++/11/bits/shared_ptr.h:875:5:[m[K [01;36m[Knote: [m[K  template argument deduction/substitution failed:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:57:50:[m[K [01;31m[Kerror: [m[Ktemplate argument 1 is invalid
+   57 |     rclcpp::spin([01;31m[Kstd::make_shared<ArrayPublisher>()[m[K);
+      |                  [01;31m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~[m[K
+gmake[2]: *** [CMakeFiles/data_hub.dir/build.make:76: CMakeFiles/data_hub.dir/src/data_hub.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:165: CMakeFiles/data_hub.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

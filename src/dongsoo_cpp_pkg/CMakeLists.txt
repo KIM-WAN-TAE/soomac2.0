@@ -42,5 +42,12 @@ install(TARGETS motor_connect
   DESTINATION lib/${PROJECT_NAME}
 )
 
-ament_package()
+add_executable(data_hub src/data_hub.cpp)
+target_include_directories(data_hub PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+ament_target_dependencies(data_hub rclcpp std_msgs)
+install(TARGETS data_hub DESTINATION lib/${PROJECT_NAME})
 
+ament_package()

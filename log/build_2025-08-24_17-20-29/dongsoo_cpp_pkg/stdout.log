@@ -1,0 +1,4 @@
+[35m[1mConsolidate compiler generated dependencies of target motor_connect[0m
+[35m[1mConsolidate compiler generated dependencies of target data_hub[0m
+[ 50%] Built target motor_connect
+[ 75%] [32mBuilding CXX object CMakeFiles/data_hub.dir/src/data_hub.cpp.o[0m

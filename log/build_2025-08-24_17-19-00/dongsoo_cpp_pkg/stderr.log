@@ -1,0 +1,62 @@
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:94:55:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kstd::array<float, 3> DataHub::last_floats_[m[K’
+   94 |     std::array<float, 3> last_floats_{0.0f, 0.0f, 0.0f[01;31m[K}[m[K;
+      |                                                       [01;31m[K^[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:18:25:[m[K [01;36m[Knote: [m[Kprevious declaration ‘[01m[Kstd::array<float, 3> DataHub::last_floats_[m[K’
+   18 |     std::array<float,3> [01;36m[Klast_floats_[m[K{0.0f, 0.0f, 0.0f};
+      |                         [01;36m[K^~~~~~~~~~~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:[m[K In member function ‘[01m[Kvoid DataHub::onTimer()[m[K’:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:34:52:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass rclcpp::Time[m[K’ has no member named ‘[01m[Ksecond[m[K’; did you mean ‘[01m[Kseconds[m[K’?
+   34 |         const double ts = this->get_clock()->now().[01;31m[Ksecond[m[K();
+      |                                                    [01;31m[K^~~~~~[m[K
+      |                                                    [32m[Kseconds[m[K
+In file included from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/logging.hpp:24[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/client.hpp:40[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/callback_group.hpp:24[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/any_executable.hpp:20[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/memory_strategy.hpp:25[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/memory_strategies.hpp:18[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executor_options.hpp:20[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executor.hpp:37[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors/multi_threaded_executor.hpp:25[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors.hpp:21[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp:155[m[K,
+                 from [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:9[m[K:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:35:65:[m[K [01;31m[Kerror: [m[K‘[01m[Ktid[m[K’ was not declared in this scope
+   35 |         RCLCPP_INFO(get_logger(), "[T%zu][%.3f] onTimer Start", [01;31m[Ktid[m[K(), ts);
+      |                                                                 [01;31m[K^~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:70:90:[m[K [01;31m[Kerror: [m[K‘[01m[Ktid[m[K’ was not declared in this scope
+   70 |         RCLCPP_INFO(this->get_logger(), "[T%zu][%.3f] onTimer  END  (%.3f, %.3f, %.3f)", [01;31m[Ktid[m[K(), this->get_clock()->now().seconds(), s1, s2, s3);
+      |                                                                                          [01;31m[K^~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:[m[K In member function ‘[01m[Kvoid DataHub::onTimer_2()[m[K’:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:77:52:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass rclcpp::Time[m[K’ has no member named ‘[01m[Ksecond[m[K’; did you mean ‘[01m[Kseconds[m[K’?
+   77 |         const double ts = this->get_clock()->now().[01;31m[Ksecond[m[K();
+      |                                                    [01;31m[K^~~~~~[m[K
+      |                                                    [32m[Kseconds[m[K
+In file included from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/logging.hpp:24[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/client.hpp:40[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/callback_group.hpp:24[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/any_executable.hpp:20[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/memory_strategy.hpp:25[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/memory_strategies.hpp:18[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executor_options.hpp:20[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executor.hpp:37[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors/multi_threaded_executor.hpp:25[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors.hpp:21[m[K,
+                 from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp:155[m[K,
+                 from [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:9[m[K:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:83:84:[m[K [01;31m[Kerror: [m[K‘[01m[Ktid[m[K’ was not declared in this scope
+   83 |         RCLCPP_INFO(get_logger(), "[T%zu][%.3f] onTimer2 READ (%.3f, %.3f, %.3f)", [01;31m[Ktid[m[K(), ts, copy[0], copy[1], copy[2]);
+      |                                                                                    [01;31m[K^~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:104:24:[m[K [01;31m[Kerror: [m[K‘[01m[KMultiThreadExecutor[m[K’ is not a member of ‘[01m[Krclcpp::executors[m[K’; did you mean ‘[01m[KMultiThreadedExecutor[m[K’?
+  104 |     rclcpp::executors::[01;31m[KMultiThreadExecutor[m[K exec(rclcpp::ExecutorOptions(), 2);
+      |                        [01;31m[K^~~~~~~~~~~~~~~~~~~[m[K
+      |                        [32m[KMultiThreadedExecutor[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:105:5:[m[K [01;31m[Kerror: [m[K‘[01m[Kexec[m[K’ was not declared in this scope; did you mean ‘[01m[Kexecv[m[K’?
+  105 |     [01;31m[Kexec[m[K.add_node(node);
+      |     [01;31m[K^~~~[m[K
+      |     [32m[Kexecv[m[K
+gmake[2]: *** [CMakeFiles/data_hub.dir/build.make:76: CMakeFiles/data_hub.dir/src/data_hub.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:165: CMakeFiles/data_hub.dir/all] Error 2
+gmake[1]: *** Waiting for unfinished jobs....
+gmake: *** [Makefile:146: all] Error 2

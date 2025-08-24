@@ -1,0 +1,10 @@
+[35m[1mConsolidate compiler generated dependencies of target data_hub[0m
+[ 50%] Built target motor_connect
+[ 75%] [32mBuilding CXX object CMakeFiles/data_hub.dir/src/data_hub.cpp.o[0m
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:[m[K In constructor ‘[01m[KDataHub::DataHub()[m[K’:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:17:64:[m[K [01;31m[Kerror: [m[K‘[01m[KArrayPublisher[m[K’ has not been declared
+   17 |         timer_     = this->create_wall_timer(100ms, std::bind(&[01;31m[KArrayPublisher[m[K::onTimer, this));
+      |                                                                [01;31m[K^~~~~~~~~~~~~~[m[K
+gmake[2]: *** [CMakeFiles/data_hub.dir/build.make:76: CMakeFiles/data_hub.dir/src/data_hub.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:165: CMakeFiles/data_hub.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

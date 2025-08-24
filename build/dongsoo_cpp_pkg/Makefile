@@ -210,6 +210,43 @@ motor_connect/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_connect.dir/build.make CMakeFiles/motor_connect.dir/build
 .PHONY : motor_connect/fast
 
+#=============================================================================
+# Target rules for targets named data_hub
+
+# Build rule for target.
+data_hub: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 data_hub
+.PHONY : data_hub
+
+# fast build rule for target.
+data_hub/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/data_hub.dir/build.make CMakeFiles/data_hub.dir/build
+.PHONY : data_hub/fast
+
+src/data_hub.o: src/data_hub.cpp.o
+.PHONY : src/data_hub.o
+
+# target to build an object file
+src/data_hub.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/data_hub.dir/build.make CMakeFiles/data_hub.dir/src/data_hub.cpp.o
+.PHONY : src/data_hub.cpp.o
+
+src/data_hub.i: src/data_hub.cpp.i
+.PHONY : src/data_hub.i
+
+# target to preprocess a source file
+src/data_hub.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/data_hub.dir/build.make CMakeFiles/data_hub.dir/src/data_hub.cpp.i
+.PHONY : src/data_hub.cpp.i
+
+src/data_hub.s: src/data_hub.cpp.s
+.PHONY : src/data_hub.s
+
+# target to generate assembly for a file
+src/data_hub.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/data_hub.dir/build.make CMakeFiles/data_hub.dir/src/data_hub.cpp.s
+.PHONY : src/data_hub.cpp.s
+
 src/motor_connect.o: src/motor_connect.cpp.o
 .PHONY : src/motor_connect.o
 
@@ -249,7 +286,11 @@ help:
 	@echo "... test"
 	@echo "... dongsoo_cpp_pkg_uninstall"
 	@echo "... uninstall"
+	@echo "... data_hub"
 	@echo "... motor_connect"
+	@echo "... src/data_hub.o"
+	@echo "... src/data_hub.i"
+	@echo "... src/data_hub.s"
 	@echo "... src/motor_connect.o"
 	@echo "... src/motor_connect.i"
 	@echo "... src/motor_connect.s"

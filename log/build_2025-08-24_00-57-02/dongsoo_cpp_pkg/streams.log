@@ -1,0 +1,16 @@
+[0.007s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[0.041s] [35m[1mConsolidate compiler generated dependencies of target data_hub[0m
+[0.056s] [ 25%] [32mBuilding CXX object CMakeFiles/data_hub.dir/src/data_hub.cpp.o[0m
+[0.056s] [ 50%] [32mBuilding CXX object CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o[0m
+[1.060s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:[m[K In constructor ‘[01m[KDataHub::DataHub()[m[K’:
+[1.060s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:20:9:[m[K [01;31m[Kerror: [m[K‘[01m[Ktimer_2_[m[K’ was not declared in this scope; did you mean ‘[01m[Ktimer_[m[K’?
+[1.060s]    20 |         [01;31m[Ktimer_2_[m[K   = this->create_wall_timer(100ms, std::bind(&DataHub::onTimer_2, this));
+[1.060s]       |         [01;31m[K^~~~~~~~[m[K
+[1.060s]       |         [32m[Ktimer_[m[K
+[1.472s] gmake[2]: *** [CMakeFiles/data_hub.dir/build.make:76: CMakeFiles/data_hub.dir/src/data_hub.cpp.o] Error 1
+[1.472s] gmake[1]: *** [CMakeFiles/Makefile2:165: CMakeFiles/data_hub.dir/all] Error 2
+[1.472s] gmake[1]: *** Waiting for unfinished jobs....
+[4.474s] [ 75%] [32m[1mLinking CXX executable motor_connect[0m
+[4.701s] [ 75%] Built target motor_connect
+[4.702s] gmake: *** [Makefile:146: all] Error 2
+[4.703s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32

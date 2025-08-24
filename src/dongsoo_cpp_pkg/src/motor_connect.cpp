@@ -80,7 +80,7 @@ public:
     // ---- 제어 주기[s] ----
     dt(0.005f),
 
-    K_GFF({1.00, 1.0, 1.0, 1.0})
+    K_GFF({1.0, 1.0, 1.0, 1.0})
   {
     // 포트/패킷 핸들러
     port_handler_   = PortHandler::getPortHandler(device_name_.c_str());
@@ -491,8 +491,6 @@ private:
   const float dt;
 
   const std::array<double,4> K_GFF;
-  
- 
 
   std::vector<float> desired_pos_;
   std::vector<float> last_pos_error_;

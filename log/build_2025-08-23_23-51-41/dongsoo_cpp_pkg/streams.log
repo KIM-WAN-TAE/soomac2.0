@@ -1,0 +1,31 @@
+[0.007s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[0.031s] [35m[1mConsolidate compiler generated dependencies of target data_hub[0m
+[0.042s] [ 50%] Built target motor_connect
+[0.043s] [ 75%] [32mBuilding CXX object CMakeFiles/data_hub.dir/src/data_hub.cpp.o[0m
+[0.988s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:[m[K In constructor ‘[01m[KDataHub::DataHub()[m[K’:
+[0.988s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:16:60:[m[K [01;31m[Kerror: [m[K‘[01m[KFloat32MulityArray[m[K’ is not a member of ‘[01m[Kstd_msgs::msg[m[K’; did you mean ‘[01m[KFloat32MultiArray[m[K’?
+[0.988s]    16 |         pub_float_ = this->create_publisher<std_msgs::msg::[01;31m[KFloat32MulityArray[m[K>("/floats", rclcpp::QoS(10));
+[0.988s]       |                                                            [01;31m[K^~~~~~~~~~~~~~~~~~[m[K
+[0.988s]       |                                                            [32m[KFloat32MultiArray[m[K
+[0.988s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:16:79:[m[K [01;31m[Kerror: [m[Kno matching function for call to ‘[01m[KDataHub::create_publisher<<expression error> >(const char [8], rclcpp::QoS)[m[K’
+[0.988s]    16 |         pub_float_ = [01;31m[Kthis->create_publisher<std_msgs::msg::Float32MulityArray>("/floats", rclcpp::QoS(10))[m[K;
+[0.988s]       |                      [01;31m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[0.988s] In file included from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/node.hpp:1321[m[K,
+[0.988s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors/single_threaded_executor.hpp:28[m[K,
+[0.988s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/executors.hpp:22[m[K,
+[0.988s]                  from [01m[K/opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp:155[m[K,
+[0.988s]                  from [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:5[m[K:
+[0.988s] [01m[K/opt/ros/humble/include/rclcpp/rclcpp/node_impl.hpp:73:1:[m[K [01;36m[Knote: [m[Kcandidate: ‘[01m[Ktemplate<class MessageT, class AllocatorT, class PublisherT> std::shared_ptr<PublisherT> rclcpp::Node::create_publisher(const string&, const rclcpp::QoS&, const rclcpp::PublisherOptionsWithAllocator<AllocatorT>&)[m[K’
+[0.988s]    73 | [01;36m[KNode[m[K::create_publisher(
+[0.988s]       | [01;36m[K^~~~[m[K
+[0.988s] [01m[K/opt/ros/humble/include/rclcpp/rclcpp/node_impl.hpp:73:1:[m[K [01;36m[Knote: [m[K  template argument deduction/substitution failed:
+[0.988s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:16:79:[m[K [01;31m[Kerror: [m[Ktemplate argument 1 is invalid
+[0.988s]    16 |         pub_float_ = [01;31m[Kthis->create_publisher<std_msgs::msg::Float32MulityArray>("/floats", rclcpp::QoS(10))[m[K;
+[0.988s]       |                      [01;31m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[0.988s] [01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/data_hub.cpp:17:64:[m[K [01;31m[Kerror: [m[K‘[01m[KArrayPublisher[m[K’ has not been declared
+[0.988s]    17 |         timer_     = this->create_wall_timer(100ms, std::bind(&[01;31m[KArrayPublisher[m[K::onTimer, this));
+[0.988s]       |                                                                [01;31m[K^~~~~~~~~~~~~~[m[K
+[1.344s] gmake[2]: *** [CMakeFiles/data_hub.dir/build.make:76: CMakeFiles/data_hub.dir/src/data_hub.cpp.o] Error 1
+[1.345s] gmake[1]: *** [CMakeFiles/Makefile2:165: CMakeFiles/data_hub.dir/all] Error 2
+[1.345s] gmake: *** [Makefile:146: all] Error 2
+[1.347s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
