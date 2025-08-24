@@ -25,7 +25,7 @@ target_include_directories(motor_connect PRIVATE
   $<INSTALL_INTERFACE:include>
 )
 
-# Eigen 필요하면 링크(무해합니다)
+# Eigen 링크
 target_link_libraries(motor_connect Eigen3::Eigen)
 if(NOT TARGET Eigen3::Eigen)
   message(WARNING "Eigen3::Eigen 타깃을 못 찾음 -> /usr/include/eigen3 수동 추가")

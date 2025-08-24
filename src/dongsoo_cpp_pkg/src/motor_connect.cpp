@@ -15,9 +15,11 @@
 #include <cmath>       // std::round
 #include <string>
 #include <signal.h>    // signal handling
+#include <fstream>     // JSON file reading
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
+#include "std_msgs/msg/int32_multi_array.hpp"
 
 #include "dynamixel_sdk/dynamixel_sdk.h"  // C++ Dynamixel SDK
 
@@ -42,6 +44,112 @@ static inline Matrix4d dh(double th, double d, double a, double al) {
   return T;
 }
 
+// -------------------- 간단한 JSON 파싱 함수들 --------------------
+// nlohmann-json 대신 간단한 수동 파싱 사용
+struct DHParameters {
+  double d1, a2, a3, a4, alpha1, theta2_offset;
+  Vector3d gravity_vector;
+};
+
+struct LinkInertialData {
+  double mass;
+  Vector3d com;
+};
+
+// JSON에서 숫자 추출하는 간단한 함수
+double extractNumber(const std::string& line, const std::string& key) {
+  size_t pos = line.find("\"" + key + "\"");
+  if (pos == std::string::npos) return 0.0;
+  
+  pos = line.find(":", pos);
+  if (pos == std::string::npos) return 0.0;
+  
+  pos = line.find_first_of("-0123456789", pos);
+  if (pos == std::string::npos) return 0.0;
+  
+  size_t end_pos = line.find_first_of(",}\n", pos);
+  if (end_pos == std::string::npos) end_pos = line.length();
+  
+  return std::stod(line.substr(pos, end_pos - pos));
+}
+
+DHParameters loadDHParameters(const std::string& config_path) {
+  std::ifstream file(config_path + "/gravity_dh_param.json");
+  if (!file.is_open()) {
+    throw std::runtime_error("Cannot open gravity_dh_param.json");
+  }
+  
+  DHParameters params;
+  std::string line;
+  
+  while (std::getline(file, line)) {
+    if (line.find("\"d\"") != std::string::npos) {
+      params.d1 = extractNumber(line, "d");
+    } else if (line.find("\"alpha\"") != std::string::npos && params.alpha1 == 0) {
+      params.alpha1 = extractNumber(line, "alpha");
+    } else if (line.find("\"theta_offset\"") != std::string::npos) {
+      params.theta2_offset = extractNumber(line, "theta_offset");
+    } else if (line.find("\"a\"") != std::string::npos) {
+      double a_val = extractNumber(line, "a");
+      if (a_val > 0.2 && a_val < 0.3 && params.a2 == 0) {
+        params.a2 = a_val;  // First a value ~0.25
+      } else if (a_val > 0.2 && a_val < 0.3 && params.a3 == 0) {
+        params.a3 = a_val;  // Second a value ~0.25  
+      } else if (a_val > 0.2 && a_val < 0.22) {
+        params.a4 = a_val;  // Third a value ~0.216
+      }
+    } else if (line.find("\"x\"") != std::string::npos && line.find("gravity") != std::string::npos) {
+      params.gravity_vector.x() = extractNumber(line, "x");
+    } else if (line.find("\"y\"") != std::string::npos && line.find("gravity") != std::string::npos) {
+      params.gravity_vector.y() = extractNumber(line, "y");
+    } else if (line.find("\"z\"") != std::string::npos && line.find("gravity") != std::string::npos) {
+      params.gravity_vector.z() = extractNumber(line, "z");
+    }
+  }
+  
+  return params;
+}
+
+std::vector<LinkInertialData> loadLinkInertialData(const std::string& config_path) {
+  std::ifstream file(config_path + "/link_inertial.json");
+  if (!file.is_open()) {
+    throw std::runtime_error("Cannot open link_inertial.json");
+  }
+  
+  std::vector<LinkInertialData> links;
+  LinkInertialData current_link;
+  std::string line;
+  bool in_link = false;
+  bool in_com = false;
+  
+  while (std::getline(file, line)) {
+    if (line.find("\"link_id\"") != std::string::npos) {
+      if (in_link) {
+        links.push_back(current_link);
+      }
+      current_link = LinkInertialData();
+      in_link = true;
+    } else if (in_link && line.find("\"mass\"") != std::string::npos) {
+      current_link.mass = extractNumber(line, "mass");
+    } else if (in_link && line.find("\"center_of_mass\"") != std::string::npos) {
+      in_com = true;
+    } else if (in_com && line.find("\"x\"") != std::string::npos) {
+      current_link.com.x() = extractNumber(line, "x");
+    } else if (in_com && line.find("\"y\"") != std::string::npos) {
+      current_link.com.y() = extractNumber(line, "y");
+    } else if (in_com && line.find("\"z\"") != std::string::npos) {
+      current_link.com.z() = extractNumber(line, "z");
+      in_com = false;
+    }
+  }
+  
+  if (in_link) {
+    links.push_back(current_link);
+  }
+  
+  return links;
+}
+
 class DxlCurrentNode : public rclcpp::Node
 {
 public:
@@ -49,8 +157,8 @@ public:
   : Node("dxl_current_node"),
     device_name_("/dev/ttyUSB0"),
     protocol_version_(2.0),
-    // 4자유도 로봇팔: ID 1,2,3: XH540-V270-R, ID 4: XH430-V350-R
-    dxl_ids_{1, 2, 3, 4},
+    // 4자유도 로봇팔: ID 1,2,3: XH540-V270-R, ID 4: XH430-V350-R, ID 5: 별도 제어용
+    dxl_ids_{1, 2, 3, 4, 5},
 
     // ---- Control Table (X 시리즈 공통, V270 페이지 확인) ----
     ADDR_OPERATING_MODE(11), CURRENT_CONTROL_MODE(0),
@@ -82,6 +190,34 @@ public:
 
     K_GFF({1.0, 1.0, 1.0, 1.0})
   {
+    // ---- JSON 설정 파일 로드 ----
+    try {
+      std::string config_path = "/home/pc/soomac_ws/src/dongsoo_description/config";
+      
+      // DH 파라미터 로드
+      DHParameters dh_params = loadDHParameters(config_path);
+      d1_ = dh_params.d1;
+      a2_ = dh_params.a2;
+      a3_ = dh_params.a3;
+      a4_ = dh_params.a4;
+      alpha1_ = dh_params.alpha1;
+      theta2_offset_ = dh_params.theta2_offset;
+      gvec_ = dh_params.gravity_vector;
+      
+      // 링크 관성 정보 로드
+      std::vector<LinkInertialData> link_data = loadLinkInertialData(config_path);
+      for (size_t i = 0; i < 4 && i < link_data.size(); ++i) {
+        link_[i].m = link_data[i].mass;
+        link_[i].com = link_data[i].com;
+      }
+      
+      RCLCPP_INFO(get_logger(), "JSON 설정 파일 로드 완료");
+      
+    } catch (const std::exception& e) {
+      RCLCPP_ERROR(get_logger(), "JSON 설정 파일 로드 실패: %s", e.what());
+      rclcpp::shutdown();
+      return;
+    }
     // 포트/패킷 핸들러
     port_handler_   = PortHandler::getPortHandler(device_name_.c_str());
     packet_handler_ = PacketHandler::getPacketHandler(protocol_version_);
@@ -152,30 +288,47 @@ public:
     // 퍼블리셔
     publisher_current_  = create_publisher<std_msgs::msg::Float32MultiArray>("motor/current", 10);
     publisher_velocity_ = create_publisher<std_msgs::msg::Float32MultiArray>("motor/velocity", 10);
-    publisher_position_ = create_publisher<std_msgs::msg::Float32MultiArray>("motor/position", 10);
+    publisher_position_ = create_publisher<std_msgs::msg::Int32MultiArray>("motor/position", 10);
 
-    // 벡터 초기화
-    desired_pos_.resize(dxl_ids_.size());
-    last_pos_error_.assign(dxl_ids_.size(), 0.0f);
-    integral_error_.assign(dxl_ids_.size(), 0.0f);  // 적분 오차 초기화
+    // 벡터 초기화 (4개 모터용)
+    desired_pos_.resize(4);  // 1,2,3,4번 모터만
+    last_pos_error_.assign(4, 0.0f);
+    integral_error_.assign(4, 0.0f);  // 적분 오차 초기화
+
+    // 5번 모터 별도 초기화
+    desired_dxl5_pos_ = 0.0f;
+    last_dxl5_pos_error_ = 0.0f;
+    integral_dxl5_error_ = 0.0f;
 
     // SyncWrite 파라미터 버퍼(포인터 수명 문제 방지용) - 각 축 2바이트
     goal_current_bufs_.resize(dxl_ids_.size());
     for (auto &b : goal_current_bufs_) b = {0, 0};
 
-    // 초기 위치 홀드
+    // 초기 위치 홀드 (1,2,3,4번 모터)
     group_bulk_read_->txRxPacket();
-    for (size_t i = 0; i < dxl_ids_.size(); ++i) {
+    for (size_t i = 0; i < 4; ++i) {
       uint32_t raw_p = group_bulk_read_->getData(dxl_ids_[i], ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
       int32_t sp = static_cast<int32_t>(raw_p);
       if (sp & 0x80000000) sp -= 0x100000000;
       desired_pos_[i] = static_cast<float>(sp);  // count
     }
 
+    // 5번 모터 초기 위치 홀드
+    uint32_t raw_p5 = group_bulk_read_->getData(5, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
+    int32_t sp5 = static_cast<int32_t>(raw_p5);
+    if (sp5 & 0x80000000) sp5 -= 0x100000000;
+    desired_dxl5_pos_ = static_cast<float>(sp5);
+
     // 서브스크립션
-    subscription_position_ = create_subscription<std_msgs::msg::Float32MultiArray>(
+    subscription_position_ = create_subscription<std_msgs::msg::Int32MultiArray>(
       "motor/command_position", 10,
       std::bind(&DxlCurrentNode::positionCallback, this, std::placeholders::_1)
+    );
+
+    // 5번 모터 별도 서브스크립션
+    subscription_dxl5_position_ = create_subscription<std_msgs::msg::Int32MultiArray>(
+      "motor/command_dxl5_position", 10,
+      std::bind(&DxlCurrentNode::dxl5PositionCallback, this, std::placeholders::_1)
     );
 
     // 타이머
@@ -203,32 +356,16 @@ public:
   }
 
 private:
-  // -------------------- 로봇/동역학 파라미터 --------------------
-  // 4자유도 DH (mm -> m 변환, rad) - 그리퍼 장착으로 변경
-  // 0->1: theta1, d1=115.75mm, a1=0, alpha1=pi/2
-  // 1->2: theta2 + pi/2, d2=0, a2=250.0mm, alpha2=0
-  // 2->3: theta3, d3=0, a3=250.0mm, alpha3=0
-  // 3->H: theta4, d4=0, a4=215.9mm, alpha4=0 (그리퍼 포함)
-  const double d1_ = 0.11575;
-  const double a2_ = 0.250;
-  const double a3_ = 0.250;
-  const double a4_ = 0.2159;
-  const double alpha1_ = M_PI_2;
-  const double theta2_offset_ = M_PI_2;
-
-  // 질량/COM (각 링크 프레임 기준, 단위: kg, m)
-  // CAD 데이터에서 g 단위를 kg로, mm 단위를 m로 변환 - 그리퍼 장착 반영
+  // -------------------- 로봇/동역학 파라미터 (JSON에서 로드) --------------------
+  // DH parameters loaded from JSON
+  double d1_, a2_, a3_, a4_, alpha1_, theta2_offset_;
+  
+  // Link inertial properties loaded from JSON
   struct LinkInertial { double m; Vector3d com; };
-  std::array<LinkInertial,4> link_ = {{
-    {0.243781, Vector3d(0.000136, -0.000537, 0.092417)},  // Link1: 2번 v2 (243.781g)
-    {0.277998, Vector3d(0.0, -0.000361, 0.182326)},       // Link2: 3번 v4 (277.998g)
-    {0.195515, Vector3d(0.0, -0.000161, 0.163246)},       // Link3: 4번 v5 (195.515g)
-    {0.346561, Vector3d(-0.003365, -0.00013, 0.108851)}   // Link4: 5번 + Gripper + Camera (346.561g)
-  }};
-
-  // 중력벡터 g (베이스 프레임)
-  // TODO(선택): 베이스가 기울면 IMU로 gvec_ 갱신
-  const Vector3d gvec_ = Vector3d(0, 0, -9.81);
+  std::array<LinkInertial,4> link_;
+  
+  // Gravity vector loaded from JSON
+  Vector3d gvec_;
 
   // 엔코더 count -> rad (런타임 설정)
   double POS_COUNT_PER_REV_ = 4096.0;
@@ -307,19 +444,29 @@ private:
   }
 
   // -------------------- 콜백/메인 루프 --------------------
-  void positionCallback(const std_msgs::msg::Float32MultiArray::SharedPtr msg) {
-    if (msg->data.size() >= dxl_ids_.size()) {
-      for (size_t i = 0; i < dxl_ids_.size(); ++i) {
-        desired_pos_[i] = msg->data[i]; // count
+  void positionCallback(const std_msgs::msg::Int32MultiArray::SharedPtr msg) {
+    if (msg->data.size() >= 4) {
+      for (size_t i = 0; i < 4; ++i) {
+        desired_pos_[i] = static_cast<float>(msg->data[i]); // int to float for internal processing
         // 새로운 목표 위치 설정 시 적분 오차 리셋 (선택사항)
         // integral_error_[i] = 0.0f;  // 주석 처리: 연속적인 적분 유지
       }
-      RCLCPP_INFO(get_logger(), "Position command received: PID control");
+      RCLCPP_INFO(get_logger(), "Position command received (motors 1-4): PID control");
+    }
+  }
+
+  void dxl5PositionCallback(const std_msgs::msg::Int32MultiArray::SharedPtr msg) {
+    if (msg->data.size() >= 1) {
+      desired_dxl5_pos_ = static_cast<float>(msg->data[0]); // int to float for internal processing
+      // 새로운 목표 위치 설정 시 적분 오차 리셋 (선택사항)
+      // integral_dxl5_error_ = 0.0f;  // 주석 처리: 연속적인 적분 유지
+      RCLCPP_INFO(get_logger(), "DXL5 Position command received: %d count", msg->data[0]);
     }
   }
 
   void readAndPublish() {
-    std_msgs::msg::Float32MultiArray msg_cur, msg_vel, msg_pos;
+    std_msgs::msg::Float32MultiArray msg_cur, msg_vel;
+    std_msgs::msg::Int32MultiArray msg_pos;
 
     int comm = group_bulk_read_->txRxPacket();
     if (comm != COMM_SUCCESS) {
@@ -350,9 +497,8 @@ private:
       uint32_t raw_p = group_bulk_read_->getData(id, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
       int32_t sp = static_cast<int32_t>(raw_p);
       if (sp & 0x80000000) sp -= 0x100000000;
-      float pos_raw = static_cast<float>(sp);
-      msg_pos.data.push_back(pos_raw);
-      pos_count[i] = pos_raw;
+      msg_pos.data.push_back(sp);  // int32로 직접 퍼블리시
+      pos_count[i] = static_cast<float>(sp);  // 내부 계산용은 float 유지
     }
 
     // q(rad) 4축 구성
@@ -397,7 +543,8 @@ private:
     // SyncWrite 파라미터 초기화
     group_sync_write_->clearParam();
 
-    for (size_t i = 0; i < dxl_ids_.size(); ++i) {
+    // 1,2,3,4번 모터 제어 (기존 로직 유지)
+    for (size_t i = 0; i < 4; ++i) {
       // PID 제어: 출력 단위 = "전류 raw"
       float pos_err = desired_pos_[i] - pos_count[i];
       float dpos = (pos_err - last_pos_error_[i]) / dt;
@@ -413,8 +560,7 @@ private:
                       KD_POS_GAINS[i] * dpos;
 
       // 중력보상(전류 raw) 합산
-      if (i < 4) cmd_raw += static_cast<float>(tau_g_raw[i]);
-
+      cmd_raw += static_cast<float>(tau_g_raw[i]);
 
       // 소프트 리밋 (모터별 차등 적용)
       float limit;
@@ -433,6 +579,32 @@ private:
       if (!group_sync_write_->addParam(dxl_ids_[i], goal_current_bufs_[i].data())) {
         RCLCPP_ERROR(get_logger(), "ID %u SyncWrite addParam 실패", dxl_ids_[i]);
       }
+    }
+
+    // 5번 모터 별도 제어 (중력보상 없이 순수 PID만)
+    float dxl5_pos_err = desired_dxl5_pos_ - pos_count[4];  // pos_count[4] = ID5 position
+    float dxl5_dpos = (dxl5_pos_err - last_dxl5_pos_error_) / dt;
+    
+    // 적분 항 계산 (Anti-windup 포함)
+    integral_dxl5_error_ += dxl5_pos_err * dt;
+    integral_dxl5_error_ = std::clamp(integral_dxl5_error_, -MAX_INTEGRAL_ERROR, MAX_INTEGRAL_ERROR);
+    
+    last_dxl5_pos_error_ = dxl5_pos_err;
+    
+    float dxl5_cmd_raw = KP_DXL5_GAIN * dxl5_pos_err + 
+                         KI_DXL5_GAIN * integral_dxl5_error_ +
+                         KD_DXL5_GAIN * dxl5_dpos;
+
+    // 5번 모터 소프트 리밋 (기본값 사용)
+    dxl5_cmd_raw = std::clamp(dxl5_cmd_raw, -900.0f, +900.0f);
+
+    // 5번 모터 SyncWrite 버퍼
+    int32_t dxl5_goal_current = static_cast<int32_t>(std::lround(dxl5_cmd_raw));
+    goal_current_bufs_[4][0] = static_cast<uint8_t>( dxl5_goal_current & 0xFF);
+    goal_current_bufs_[4][1] = static_cast<uint8_t>((dxl5_goal_current >> 8) & 0xFF);
+
+    if (!group_sync_write_->addParam(5, goal_current_bufs_[4].data())) {
+      RCLCPP_ERROR(get_logger(), "ID 5 SyncWrite addParam 실패");
     }
 
     // 전송
@@ -462,9 +634,10 @@ private:
 
   rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr publisher_current_;
   rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr publisher_velocity_;
-  rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr publisher_position_;
+  rclcpp::Publisher<std_msgs::msg::Int32MultiArray>::SharedPtr publisher_position_;
 
-  rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr subscription_position_;
+  rclcpp::Subscription<std_msgs::msg::Int32MultiArray>::SharedPtr subscription_position_;
+  rclcpp::Subscription<std_msgs::msg::Int32MultiArray>::SharedPtr subscription_dxl5_position_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   // 제어테이블 주소
@@ -486,6 +659,11 @@ private:
   const std::array<float,4> KP_POS_GAINS;
   const std::array<float,4> KI_POS_GAINS;
   const std::array<float,4> KD_POS_GAINS;
+
+  // 5번 모터용 PID 게인
+  const float KP_DXL5_GAIN = 0.5f;
+  const float KI_DXL5_GAIN = 0.0f;
+  const float KD_DXL5_GAIN = 0.012f;
   const int   CURRENT_LIMIT_SOFT; // raw
   const float MAX_INTEGRAL_ERROR; // 적분 제한값
   const float dt;
@@ -495,6 +673,11 @@ private:
   std::vector<float> desired_pos_;
   std::vector<float> last_pos_error_;
   std::vector<float> integral_error_;  // 적분 오차 누적
+
+  // 5번 모터 별도 제어용 변수
+  float desired_dxl5_pos_;
+  float last_dxl5_pos_error_;
+  float integral_dxl5_error_;
 };
 
 // 시그널 핸들러: 안전한 종료를 위한 플래그
