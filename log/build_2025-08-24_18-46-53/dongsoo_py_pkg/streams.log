@@ -1,0 +1,42 @@
+[0.272s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_py_pkg': PYTHONPATH=/home/pc/soomac_ws/build/dongsoo_py_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/dongsoo_py_pkg/build
+[0.386s] running develop
+[0.449s] Removing /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo-py-pkg.egg-link (link to .)
+[0.460s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_py_pkg' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/dongsoo_py_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/dongsoo_py_pkg/build
+[0.460s] Invoking command in '/home/pc/soomac_ws/src/dongsoo_py_pkg': PYTHONPATH=/home/pc/soomac_ws/build/dongsoo_py_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/dongsoo_py_pkg build --build-base /home/pc/soomac_ws/build/dongsoo_py_pkg/build install --record /home/pc/soomac_ws/build/dongsoo_py_pkg/install.log --single-version-externally-managed install_data --force
+[0.574s] running egg_info
+[0.574s] writing ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/PKG-INFO
+[0.574s] writing dependency_links to ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/dependency_links.txt
+[0.575s] writing entry points to ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/entry_points.txt
+[0.575s] writing requirements to ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/requires.txt
+[0.575s] writing top-level names to ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/top_level.txt
+[0.575s] reading manifest file '../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/SOURCES.txt'
+[0.576s] writing manifest file '../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/SOURCES.txt'
+[0.576s] running build
+[0.576s] running build_py
+[0.576s] copying dongsoo_py_pkg/motor_dummy.py -> /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg
+[0.576s] copying dongsoo_py_pkg/trajectory_test.py -> /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg
+[0.576s] copying dongsoo_py_pkg/data_hub.py -> /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg
+[0.576s] running install
+[0.576s] running install_lib
+[0.577s] creating /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg
+[0.577s] copying /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg/motor_dummy.py -> /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg
+[0.577s] copying /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg/trajectory_test.py -> /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg
+[0.577s] copying /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg/__init__.py -> /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg
+[0.577s] copying /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg/one_way_trajectory.py -> /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg
+[0.577s] copying /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg/data_hub.py -> /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg
+[0.577s] byte-compiling /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/motor_dummy.py to motor_dummy.cpython-310.pyc
+[0.577s] byte-compiling /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/trajectory_test.py to trajectory_test.cpython-310.pyc
+[0.578s] byte-compiling /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/__init__.py to __init__.cpython-310.pyc
+[0.578s] byte-compiling /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/one_way_trajectory.py to one_way_trajectory.cpython-310.pyc
+[0.579s] byte-compiling /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/data_hub.py to data_hub.cpython-310.pyc
+[0.579s] running install_data
+[0.579s] copying resource/dongsoo_py_pkg -> /home/pc/soomac_ws/install/dongsoo_py_pkg/share/ament_index/resource_index/packages
+[0.579s] copying package.xml -> /home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg
+[0.579s] running install_egg_info
+[0.580s] Copying ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info to /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg-0.0.0-py3.10.egg-info
+[0.580s] running install_scripts
+[0.589s] Installing motor_dummy script to /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/dongsoo_py_pkg
+[0.589s] Installing one_way_trajectory script to /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/dongsoo_py_pkg
+[0.590s] Installing trajectory_test script to /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/dongsoo_py_pkg
+[0.590s] writing list of installed files to '/home/pc/soomac_ws/build/dongsoo_py_pkg/install.log'
+[0.599s] Invoked command in '/home/pc/soomac_ws/src/dongsoo_py_pkg' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/dongsoo_py_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/dongsoo_py_pkg build --build-base /home/pc/soomac_ws/build/dongsoo_py_pkg/build install --record /home/pc/soomac_ws/build/dongsoo_py_pkg/install.log --single-version-externally-managed install_data --force

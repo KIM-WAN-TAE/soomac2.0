@@ -1,7 +1,16 @@
 package.xml
 setup.cfg
 setup.py
+../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/PKG-INFO
+../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/SOURCES.txt
+../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/dependency_links.txt
+../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/entry_points.txt
+../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/requires.txt
+../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/top_level.txt
+../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/zip-safe
 dongsoo_py_pkg/__init__.py
+dongsoo_py_pkg/data_hub.py
+dongsoo_py_pkg/motor_dummy.py
 dongsoo_py_pkg/one_way_trajectory.py
 dongsoo_py_pkg/trajectory_test.py
 dongsoo_py_pkg.egg-info/PKG-INFO

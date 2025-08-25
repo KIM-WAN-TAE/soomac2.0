@@ -694,6 +694,11 @@ CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o: /home/pc/soomac_ws/src/don
   /opt/ros/humble/include/std_msgs/std_msgs/msg/detail/multi_array_dimension__traits.hpp \
   /opt/ros/humble/include/std_msgs/std_msgs/msg/detail/float32_multi_array__type_support.hpp \
   /opt/ros/humble/include/std_msgs/std_msgs/msg/rosidl_generator_cpp__visibility_control.hpp \
+  /opt/ros/humble/include/std_msgs/std_msgs/msg/int32_multi_array.hpp \
+  /opt/ros/humble/include/std_msgs/std_msgs/msg/detail/int32_multi_array__struct.hpp \
+  /opt/ros/humble/include/std_msgs/std_msgs/msg/detail/int32_multi_array__builder.hpp \
+  /opt/ros/humble/include/std_msgs/std_msgs/msg/detail/int32_multi_array__traits.hpp \
+  /opt/ros/humble/include/std_msgs/std_msgs/msg/detail/int32_multi_array__type_support.hpp \
   /opt/ros/humble/include/dynamixel_sdk/dynamixel_sdk.h \
   /opt/ros/humble/include/dynamixel_sdk/group_bulk_read.h \
   /opt/ros/humble/include/dynamixel_sdk/port_handler.h \
@@ -1148,6 +1153,10 @@ CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o: /home/pc/soomac_ws/src/don
 
 /opt/ros/humble/include/dynamixel_sdk/group_bulk_read.h:
 
+/opt/ros/humble/include/std_msgs/std_msgs/msg/detail/int32_multi_array__type_support.hpp:
+
+/opt/ros/humble/include/std_msgs/std_msgs/msg/detail/int32_multi_array__builder.hpp:
+
 /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:
 
 /usr/include/eigen3/Eigen/src/plugins/BlockMethods.h:
@@ -1303,6 +1312,8 @@ CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o: /home/pc/soomac_ws/src/don
 /usr/include/eigen3/Eigen/src/Core/CwiseTernaryOp.h:
 
 /opt/ros/humble/include/rcl_interfaces/rcl_interfaces/msg/detail/parameter__struct.hpp:
+
+/opt/ros/humble/include/std_msgs/std_msgs/msg/detail/int32_multi_array__struct.hpp:
 
 /opt/ros/humble/include/rcl_interfaces/rcl_interfaces/msg/parameter_event.hpp:
 
@@ -1770,6 +1781,8 @@ CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o: /home/pc/soomac_ws/src/don
 
 /opt/ros/humble/include/rclcpp/rclcpp/detail/resolve_intra_process_buffer_type.hpp:
 
+/opt/ros/humble/include/std_msgs/std_msgs/msg/detail/int32_multi_array__traits.hpp:
+
 /usr/include/c++/11/initializer_list:
 
 /usr/include/c++/11/iosfwd:
@@ -1875,6 +1888,8 @@ CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o: /home/pc/soomac_ws/src/don
 /usr/include/x86_64-linux-gnu/sys/select.h:
 
 /usr/include/time.h:
+
+/opt/ros/humble/include/std_msgs/std_msgs/msg/int32_multi_array.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/getopt_posix.h:
 

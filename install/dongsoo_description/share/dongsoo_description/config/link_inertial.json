@@ -1,0 +1,119 @@
+{
+  "robot_description": {
+    "name": "dongsoo_4dof_arm_inertial",
+    "description": "Link mass and center of mass information for gravity compensation",
+    "source": "CAD data converted from grams to kg and mm to meters"
+  },
+  "link_inertial_properties": {
+    "link_count": 4,
+    "links": [
+      {
+        "link_id": 1,
+        "motor_id": 1,
+        "name": "Link1_v2",
+        "mass": 0.243781,
+        "center_of_mass": {
+          "x": 0.000136,
+          "y": -0.000537,
+          "z": 0.092417,
+          "description": "COM relative to link frame [m]"
+        },
+        "original_cad_data": {
+          "mass_grams": 243.781,
+          "com_mm": {
+            "x": 0.136,
+            "y": -0.537,
+            "z": 92.417
+          }
+        }
+      },
+      {
+        "link_id": 2,
+        "motor_id": 2,
+        "name": "Link2_v4",
+        "mass": 0.277998,
+        "center_of_mass": {
+          "x": 0.0,
+          "y": -0.000361,
+          "z": 0.182326,
+          "description": "COM relative to link frame [m]"
+        },
+        "original_cad_data": {
+          "mass_grams": 277.998,
+          "com_mm": {
+            "x": 0.0,
+            "y": -0.361,
+            "z": 182.326
+          }
+        }
+      },
+      {
+        "link_id": 3,
+        "motor_id": 3,
+        "name": "Link3_v5",
+        "mass": 0.195515,
+        "center_of_mass": {
+          "x": 0.0,
+          "y": -0.000161,
+          "z": 0.163246,
+          "description": "COM relative to link frame [m]"
+        },
+        "original_cad_data": {
+          "mass_grams": 195.515,
+          "com_mm": {
+            "x": 0.0,
+            "y": -0.161,
+            "z": 163.246
+          }
+        }
+      },
+      {
+        "link_id": 4,
+        "motor_id": 4,
+        "name": "Link4_EndEffector",
+        "mass": 0.346561,
+        "center_of_mass": {
+          "x": -0.003365,
+          "y": -0.00013,
+          "z": 0.108851,
+          "description": "COM relative to link frame [m] - includes gripper and camera"
+        },
+        "original_cad_data": {
+          "mass_grams": 346.561,
+          "com_mm": {
+            "x": -3.365,
+            "y": -0.13,
+            "z": 108.851
+          }
+        },
+        "components": [
+          "Link 5 base",
+          "Gripper mechanism",
+          "Camera assembly"
+        ]
+      }
+    ],
+    "units": {
+      "mass": "kilograms",
+      "length": "meters"
+    },
+    "coordinate_system": "DH frame convention",
+    "total_mass": 1.063855
+  },
+  "gravity_compensation": {
+    "enabled": true,
+    "gravity_feedforward_gains": {
+      "joint_1": 1.0,
+      "joint_2": 1.0,
+      "joint_3": 1.0,
+      "joint_4": 1.0,
+      "description": "Gravity feedforward scaling factors K_GFF"
+    }
+  },
+  "notes": {
+    "coordinate_frames": "COM coordinates are expressed in each link's DH coordinate frame",
+    "gravity_direction": "Negative Z direction in base frame",
+    "cad_conversion": "Original CAD data converted: g->kg, mm->m",
+    "end_effector": "Link 4 includes all end-effector components for accurate gravity compensation"
+  }
+}
