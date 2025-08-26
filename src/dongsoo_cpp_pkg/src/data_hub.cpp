@@ -95,6 +95,7 @@ private:
     std::mutex m_;
 
     float t_;
+
 };
 
 int main(int argc, char** argv) {
