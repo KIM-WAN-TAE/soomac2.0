@@ -23,7 +23,8 @@ setup(
             'trajectory_test = dongsoo_py_pkg.trajectory_test:main',
             'one_way_trajectory = dongsoo_py_pkg.one_way_trajectory:main',
             'motor_dummy = dongsoo_py_pkg.motor_dummy:main',
-            'data_hub_py = dongsoo_py_pkg.data_hub:main'
+            'data_hub_py = dongsoo_py_pkg.data_hub:main',
+            'monitoring_hub = dongsoo_py_pkg.monitoring_hub:main',
         ],
     },
 )

@@ -2,13 +2,37 @@
 
 이 파일은 Claude Code가 soomac_ws 워크스페이스에서 작업할 때 가이드를 제공합니다.
 
+## ⚠️ 세션 시작 시 필수 작업
+
+### 최근 작업 상황 파악
+Claude가 soomac_ws에서 작업을 시작할 때는 **반드시** 다음 단계를 수행해야 합니다:
+
+1. **최신 work_log 확인**: `work_log/` 디렉토리에서 가장 최근 날짜의 파일을 읽어 이전 작업 내용 파악
+2. **현재 브랜치 상태 확인**: `git status` 및 최근 커밋 확인
+3. **주요 파일 변경사항 검토**: 핵심 파일들의 최신 상태 확인
+
+```bash
+# 세션 시작 시 실행할 명령어들
+ls -la work_log/ | tail -5          # 최근 work log 확인
+git log --oneline -5                # 최근 커밋 확인  
+git status                          # 현재 상태 확인
+```
+
+**중요**: work_log를 통해 이전 세션의 작업 내용, 구현된 기능, 해결된 문제점들을 이해한 후 작업을 시작하세요.
+
 ## 세션 컨텍스트 (Session Context)
 
 ### 현재 프로젝트 상태
 - **워크스페이스**: soomac_ws (5자유도 로봇팔 제어)
 - **개발 브랜치**: dev_1
-- **최근 작업**: JSON 기반 설정 시스템 구축, 중력보상 알고리즘 구현
+- **최근 작업**: DH 파라미터 JSON 모듈화, 실시간 모니터링 시스템 구축 (2025/08/26)
 - **주요 패키지**: dongsoo_cpp_pkg, dongsoo_py_pkg, dongsoo_description
+
+### 최근 주요 성과 (2025/08/26)
+- **JSON 모듈화**: `read_json.py` 모듈 개발로 DH 파라미터 관리 체계화
+- **Monitoring Hub 재구축**: 멀티스레딩, thread lock, 실시간 pose 계산 구현
+- **코드 최적화**: JSON 파싱 로직 분리로 재사용성 및 가독성 향상
+- **Forward Kinematics**: Roll-Pitch-Yaw 각도 계산 및 실시간 출력
 
 ### 이전 세션 요약
 - 워크스페이스 구조 분석 완료 (2025/08/25)
@@ -29,8 +53,9 @@
 
 #### dongsoo_py_pkg (Python 상위 제어)
 - **data_hub.py**: 순기구학 계산 및 데이터 처리
+- **read_json.py**: DH 파라미터 JSON 읽기 모듈 (CameraDH, GripperDH 클래스)
+- **monitoring_hub.py**: 실시간 모니터링 (멀티스레딩, pose 계산)
 - **trajectory_test.py**: 궤적 계획 테스트
-- **monitoring_hub.py**: 실시간 모니터링
 
 #### dongsoo_description (설정 패키지)
 - DH 파라미터 JSON 파일들
@@ -58,6 +83,9 @@ ros2 run dongsoo_cpp_pkg motor_connect
 
 # 데이터 허브 실행
 ros2 run dongsoo_py_pkg data_hub_py
+
+# 모니터링 허브 실행 (실시간 pose 출력)
+ros2 run dongsoo_py_pkg monitoring_hub
 ```
 
 ### ROS 2 Topic 구조
@@ -116,5 +144,5 @@ ros2 run dongsoo_py_pkg data_hub_py
 - 전류 제한 설정으로 안전성 확보
 
 ---
-**마지막 업데이트**: 2025년 8월 25일
+**마지막 업데이트**: 2025년 8월 26일
 **현재 개발자**: Claude Code 사용자
