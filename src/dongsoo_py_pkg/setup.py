@@ -25,6 +25,8 @@ setup(
             'motor_dummy = dongsoo_py_pkg.motor_dummy:main',
             'data_hub_py = dongsoo_py_pkg.data_hub:main',
             'monitoring_hub = dongsoo_py_pkg.monitoring_hub:main',
+            'client_dongsoo = dongsoo_py_pkg.dongsoo_client:main',
+            'server_dongsoo = dongsoo_py_pkg.dongsoo_server:main',
         ],
     },
 )

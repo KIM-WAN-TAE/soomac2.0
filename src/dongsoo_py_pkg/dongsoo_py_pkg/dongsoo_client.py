@@ -1,41 +1,66 @@
 #!/usr/bin/env python3
 
+import os, sys
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import MultiThreadedExecutor
 from dongsoo_interfaces.srv import DongSooExecutor
+from dongsoo_interfaces.msg import DongSooCommand
+from std_msgs.msg import Float32MultiArray
 import numpy as np
 
 class DongsooClient(Node):
     def __init__(self):
         super().__init__('dongsoo_client')
+        self.get_logger().info(' DongSoo Service Client On! ')
         
-        self.client = self.create_client(DongSooExecutor, 'motor_executor')
-        while not self.client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('service not available, waiting again...')
-            
-        self.idx = 0
-        self.send_next_goal()
+        self.dongsoo_client = self.create_client(DongSooExecutor, 'dongsoo_excutor')
         
-    def send_next_goal(self):
-        if self.idx >= len(coordinate_list):
-            self.get_logger().info('모든 좌표 전송 완료')
+        self.target_co_sub = self.create_subscription(
+            DongSooCommand,
+            '/command/array/pose',
+            self.target_pose_callback,
+            10)
+        
+        self.target_Position = np.array([])
+        self.target_look = None
+        self.target_flag = False
+        
+        timer_period = 1/10
+        self.client_timer = self.create_timer(timer_period, self.client_timer)
+        
+    def target_pose_callback(self, msg: Float32MultiArray):
+        P = np.array(msg.position, dtype=np.float32)
+        LOOK = msg.look
+        
+        self.target_Position= P
+        self.target_look = LOOK
+        self.target_flag = True
+        
+    def client_timer(self):
+        print(f' Flag State : {self.target_flag}')
+        if not self.target_flag:
+            print(' Waiting Target Pose... ')
             return
-
-        x, y, z, grab, task = coordinate_list[self.idx]
-        req = DongsooExecutor.Request()
-        req.x = x
-        req.y = y
-        req.z = z
-        req.task = task
-        req.grab = grab
+        
+        # os.system('clear')
+        while self.target_flag:
+            if self.target_flag and self.target_Position.size != 0:
+                copy_target = self.target_Position
+                self.send_next_pose(copy_target)
+        
+    def send_next_pose(self, position, look):
+        if position.size < 3:
+            self.get_logger().warn(' Wrong Array Size Target Pose')
+            return
         
         req = DongSooExecutor.Request()
-        req.p_x = 
-
-        self.get_logger().info(f'[{self.idx}] 목표 좌표 전송: x={x:.2f}, y={y:.2f}, z={z:.2f}')
-        future = self.client.call_async(req)
+        req.position = position
+        req.look     = look
+                
+        future = self.dongsoo_client.call_async(req)
         future.add_done_callback(self.response_callback)
-
+        
     def response_callback(self, future):
         try:
             res = future.result()
@@ -44,19 +69,23 @@ class DongsooClient(Node):
             return
 
         if res.success:
-            self.get_logger().info(f'[{self.idx}] 동작 성공')
-            self.idx += 1
-            # 다음 좌표 전송
-            self.send_next_goal()
+            self.get_logger().info(f' 동작 성공 ')
         else:
-            self.get_logger().warn(f'[{self.idx}] 동작 실패')
-            # 재시도하거나 종료 로직 추가 가능
+            self.get_logger().warn(f' 동작 실패 ')
+            
+        self.target_flag = False
 
 def main(args=None):
     rclpy.init(args=args)
     node = DongsooClient()
+    
+    exec = MultiThreadedExecutor(num_threads=2)
+    exec.add_node(node)
+    
     try:
-        rclpy.spin(node)
+        exec.spin()
+    except KeyboardInterrupt:
+        print("\n\nShutting down Dongsoo Service Client...")
     finally:
         node.destroy_node()
         rclpy.shutdown()
