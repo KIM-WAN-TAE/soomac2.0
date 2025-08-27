@@ -2,17 +2,16 @@
 
 import rclpy
 from rclpy.node import Node
+from dongsoo_interfaces.srv import DongSooExecutor
 import numpy as np
 
 class DongsooClient(Node):
     def __init__(self):
         super().__init__('dongsoo_client')
         
-        self.client = self.create_client(MotorExecutor, 'motor_executor')
+        self.client = self.create_client(DongSooExecutor, 'motor_executor')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
-            
-        self.create_publisher(Int32, 'start_signal', 10)
             
         self.idx = 0
         self.send_next_goal()
@@ -23,12 +22,15 @@ class DongsooClient(Node):
             return
 
         x, y, z, grab, task = coordinate_list[self.idx]
-        req = MotorExecutor.Request()
+        req = DongsooExecutor.Request()
         req.x = x
         req.y = y
         req.z = z
         req.task = task
         req.grab = grab
+        
+        req = DongSooExecutor.Request()
+        req.p_x = 
 
         self.get_logger().info(f'[{self.idx}] 목표 좌표 전송: x={x:.2f}, y={y:.2f}, z={z:.2f}')
         future = self.client.call_async(req)

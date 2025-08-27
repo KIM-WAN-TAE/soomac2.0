@@ -5,20 +5,12 @@ import threading
 import numpy as np
 import rclpy
 from rclpy.node import Node
-from robotics_interfaces.srv import MotorExecutor
+from dongsoo_interfaces.srv import DongSooExecutor
 from std_msgs.msg import Float32MultiArray, Float32
-from test_robotics_proj.Inverse_Kinematics import inverse_kinematics
-from test_robotics_proj.Trajectory_Planner import TrajectoryPlanner
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.qos import QoSProfile, QoSHistoryPolicy
-
-def get_it():
-    return int(1955)
-
-def let_it():
-    return int(2354)
 
 class MotorExecutorServer(Node):
     def __init__(self):
@@ -40,7 +32,7 @@ class MotorExecutorServer(Node):
             Float32MultiArray,
             '/robotics/coordinate/position',
             self.position_callback,
-            qos,                                # ← 여기
+            qos,
             callback_group=self.sub_cb_group, 
         )   
         
@@ -49,7 +41,7 @@ class MotorExecutorServer(Node):
             Float32MultiArray,
             '/robotics/radian/theta',
             self.angle_callback,
-            qos,                                # ← 여기
+            qos,
             callback_group=self.sub_cb_group, 
         )
         
@@ -63,7 +55,7 @@ class MotorExecutorServer(Node):
             '/robotics/abs/speed',
             10
         )
-        self.srv = self.create_service(MotorExecutor, 'motor_executor', 
+        self.srv = self.create_service(DongSooExecutor, 'motor_executor', 
                                        self.service_response_callback,
                                        callback_group=self.srv_cb_group)
         
@@ -189,7 +181,6 @@ class MotorExecutorServer(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = MotorExecutorServer()
-    # 스레드를 2개로 늘립니다.
     exec = MultiThreadedExecutor(num_threads=2)
     exec.add_node(node)
     exec.spin()

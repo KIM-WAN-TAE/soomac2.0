@@ -11,7 +11,7 @@
 
   <depend>std_msgs</depend>
   <depend>rcply</depend>
-  <depend>robotics_interface</depend>
+  <depend>dongsoo_interfaces</depend>
   <depend>dynamixel_sdk</depend>
 
   <export>

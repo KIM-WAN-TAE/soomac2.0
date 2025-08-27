@@ -3,6 +3,7 @@
 import rclpy
 import numpy as np
 import threading
+import time
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 from std_msgs.msg import Float32MultiArray, Int32MultiArray
@@ -60,9 +61,9 @@ class MonitoringHub(Node):
         self.currents = [0.0, 0.0, 0.0, 0.0, 0.0]
         self.velocities = [0.0, 0.0, 0.0, 0.0, 0.0]
         
-        # Pose data
-        self.gripper_pose = {'x': 0.0, 'y': 0.0, 'z': 0.0, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0}
-        self.camera_pose = {'x': 0.0, 'y': 0.0, 'z': 0.0, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0}
+        # Pose data (4x4 transformation matrices)
+        self.gripper_pose = np.eye(4)
+        self.camera_pose = np.eye(4)
         
         # Subscribers
         self.sub_position = self.create_subscription(
@@ -85,6 +86,30 @@ class MonitoringHub(Node):
             self.present_velocity_callback,
             10
         )
+        
+        self.camera_mat_sub = self.create_subscription(
+            Float32MultiArray,
+            '/info/matrix/camera',
+            self.camera_mat_callback,
+            10
+        )
+        
+        self.gripper_mat_sub = self.create_subscription(
+            Float32MultiArray,
+            '/info/matrix/gripper',
+            self.gripper_mat_callback,
+            10
+        )
+        
+        self.grip_mat = np.eye(4)
+        self.cam_mat = np.eye(4)
+        
+        # Comparison tolerance for matrix comparison
+        self.matrix_tolerance = 1e-4
+        
+        # Last data_hub matrix update times
+        self.last_cam_update = None
+        self.last_grip_update = None
         
         # DH parameter objects
         self.cam_dh = CameraDH()
@@ -114,19 +139,9 @@ class MonitoringHub(Node):
         T_cam = self.fk(cam_params)
         T_grip = self.fk(grip_params)
         
-        # Extract positions
-        cam_pos = T_cam[:3, 3]
-        grip_pos = T_grip[:3, 3]
-        
-        # Extract orientations
-        cam_roll, cam_pitch, cam_yaw = rotation_matrix_to_rpy(T_cam[:3, :3])
-        grip_roll, grip_pitch, grip_yaw = rotation_matrix_to_rpy(T_grip[:3, :3])
-        
         return {
-            'camera': {'x': cam_pos[0], 'y': cam_pos[1], 'z': cam_pos[2], 
-                      'roll': cam_roll, 'pitch': cam_pitch, 'yaw': cam_yaw},
-            'gripper': {'x': grip_pos[0], 'y': grip_pos[1], 'z': grip_pos[2],
-                       'roll': grip_roll, 'pitch': grip_pitch, 'yaw': grip_yaw}
+            'camera': T_cam,
+            'gripper': T_grip
         }
     
     def present_position_callback(self, msg: Int32MultiArray):
@@ -157,6 +172,74 @@ class MonitoringHub(Node):
             velocities = list(msg.data)
             for i in range(min(5, len(velocities))):
                 self.velocities[i] = velocities[i]
+                
+    def camera_mat_callback(self, msg : Float32MultiArray):
+        with self.data_lock:
+            dims = msg.layout.dim
+            
+            if len(dims) < 2:
+                self.get_logger().warn(' 잘못된 행렬 수신 ')
+                return
+
+            rows = dims[0].size
+            cols = dims[1].size
+            
+            if len(msg.data) != rows * cols:
+                self.get_logger().warn(f' msg count error : msg_count : {rows*cols}')
+                return
+            
+            self.cam_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
+            self.last_cam_update = time.time()
+
+        
+    def gripper_mat_callback(self, msg : Float32MultiArray):
+        with self.data_lock:
+            dims = msg.layout.dim
+            
+            if len(dims) < 2:
+                self.get_logger().warn(' 잘못된 행렬 수신 ')
+                return
+
+            rows = dims[0].size
+            cols = dims[1].size
+            
+            if len(msg.data) != rows * cols:
+                self.get_logger().warn(f' msg count error : msg_count : {rows*cols}')
+                return
+            
+            self.grip_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
+            self.last_grip_update = time.time()
+    
+    def compare_matrices(self, mat1, mat2, tolerance=1e-4):
+        """Compare two 4x4 matrices with tolerance"""
+        return np.allclose(mat1, mat2, atol=tolerance)
+    
+    def print_pose_comparison(self, pose_type, datahub_mat, monitoring_mat, is_same):
+        """Print pose comparison in requested format"""
+        print(f" ====== {pose_type.upper()} POSE ======")
+        print()
+        
+        if is_same:
+            # Same - print data_hub pose
+            for i in range(4):
+                row = " ".join(f"{datahub_mat[i,j]:8.4f}" for j in range(4))
+                print(f" {row}")
+        else:
+            # Different - show side by side comparison
+            print(" [DATA_HUB POSE]                     || [MONITORING_HUB POSE]")
+            for i in range(4):
+                dh_row = " ".join(f"{datahub_mat[i,j]:8.4f}" for j in range(4))
+                mon_row = " ".join(f"{monitoring_mat[i,j]:8.4f}" for j in range(4))
+                print(f" {dh_row} || {mon_row}")
+            
+            print()
+            print(" [DIFFERENCE (DataHub - MonitoringHub)]")
+            diff_mat = datahub_mat - monitoring_mat
+            for i in range(4):
+                diff_row = " ".join(f"{diff_mat[i,j]:8.4f}" for j in range(4))
+                print(f" {diff_row}")
+        
+        print()
     
     def timer_callback(self):
         """Timer callback for periodic data display (0.1Hz)"""
@@ -168,7 +251,7 @@ class MonitoringHub(Node):
             print(" ")
             
             # Joint information
-            print(" === JOINT STATUS ===")
+            print(" ====== JOINT STATUS ======")
             for i in range(5):
                 print(f" Joint #{i+1:1d} : Pulse: {self.joint_pulses[i]:6d} | "
                       f"DEG: {self.joint_degrees[i]:7.2f} | "
@@ -176,25 +259,42 @@ class MonitoringHub(Node):
                       f"Velocity: {self.velocities[i]:7.2f}rpm")
             print(" ")
             
-            # Gripper pose
-            print(" === GRIPPER POSE ===")
-            print(f" Position X Y Z : {self.gripper_pose['x']:8.4f} | "
-                  f"{self.gripper_pose['y']:8.4f} | "
-                  f"{self.gripper_pose['z']:8.4f}")
-            print(f" Roll Pitch Yaw : {np.rad2deg(self.gripper_pose['roll']):8.2f}° | "
-                  f"{np.rad2deg(self.gripper_pose['pitch']):8.2f}° | "
-                  f"{np.rad2deg(self.gripper_pose['yaw']):8.2f}°")
-            print(" ")
+            # Check for recent data_hub updates (within last 0.5 seconds)
+            current_time = time.time()
+            use_comparison = (
+                self.last_cam_update is not None and 
+                self.last_grip_update is not None and
+                (current_time - self.last_cam_update) < 0.5 and
+                (current_time - self.last_grip_update) < 0.5
+            )
             
-            # Camera pose
-            print(" === CAMERA POSE ===")
-            print(f" Position X Y Z : {self.camera_pose['x']:8.4f} | "
-                  f"{self.camera_pose['y']:8.4f} | "
-                  f"{self.camera_pose['z']:8.4f}")
-            print(f" Roll Pitch Yaw : {np.rad2deg(self.camera_pose['roll']):8.2f}° | "
-                  f"{np.rad2deg(self.camera_pose['pitch']):8.2f}° | "
-                  f"{np.rad2deg(self.camera_pose['yaw']):8.2f}°")
-            print(" ")
+            if use_comparison:
+                # Compare and print gripper pose
+                grip_same = self.compare_matrices(self.grip_mat, self.gripper_pose, self.matrix_tolerance)
+                self.print_pose_comparison("gripper", self.grip_mat, self.gripper_pose, grip_same)
+                
+                # Compare and print camera pose  
+                cam_same = self.compare_matrices(self.cam_mat, self.camera_pose, self.matrix_tolerance)
+                self.print_pose_comparison("camera", self.cam_mat, self.camera_pose, cam_same)
+            else:
+                # Fallback to monitoring hub calculated poses
+                print(" ====== GRIPPER POSE ======")
+                print()
+                for i in range(4):
+                    row = " ".join(f"{self.gripper_pose[i,j]:8.4f}" for j in range(4))
+                    print(f" {row}")
+                print()
+                
+                # Camera pose
+                print(" ====== CAMERA POSE ======")
+                print()
+                for i in range(4):
+                    row = " ".join(f"{self.camera_pose[i,j]:8.4f}" for j in range(4))
+                    print(f" {row}")
+                print()
+                
+                print(" [INFO: Using monitoring_hub calculated poses - data_hub topic not recent]")
+                print()
             
             print(" ==================== MONITORING HUB ==================== ")
 
