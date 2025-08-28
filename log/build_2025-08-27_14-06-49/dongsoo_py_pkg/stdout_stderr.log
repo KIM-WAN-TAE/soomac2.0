@@ -1,0 +1,40 @@
+running egg_info
+writing ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/PKG-INFO
+writing dependency_links to ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/dependency_links.txt
+writing entry points to ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/entry_points.txt
+writing requirements to ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/requires.txt
+writing top-level names to ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/top_level.txt
+reading manifest file '../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/SOURCES.txt'
+writing manifest file '../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/SOURCES.txt'
+running build
+running build_py
+copying dongsoo_py_pkg/monitoring_hub.py -> /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg
+copying dongsoo_py_pkg/dongsoo_client.py -> /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg
+copying dongsoo_py_pkg/dongsoo_server.py -> /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg
+copying dongsoo_py_pkg/data_hub.py -> /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg
+running install
+running install_lib
+copying /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg/monitoring_hub.py -> /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg
+copying /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg/dongsoo_client.py -> /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg
+copying /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg/dongsoo_server.py -> /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg
+copying /home/pc/soomac_ws/build/dongsoo_py_pkg/build/lib/dongsoo_py_pkg/data_hub.py -> /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg
+byte-compiling /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/monitoring_hub.py to monitoring_hub.cpython-310.pyc
+byte-compiling /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/dongsoo_client.py to dongsoo_client.cpython-310.pyc
+  File "/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/dongsoo_client.py", line 33
+    req.p_x = 
+              ^
+SyntaxError: invalid syntax
+
+byte-compiling /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/dongsoo_server.py to dongsoo_server.cpython-310.pyc
+byte-compiling /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/data_hub.py to data_hub.cpython-310.pyc
+running install_data
+running install_egg_info
+removing '/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info to /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg-0.0.0-py3.10.egg-info
+running install_scripts
+Installing data_hub_py script to /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/dongsoo_py_pkg
+Installing monitoring_hub script to /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/dongsoo_py_pkg
+Installing motor_dummy script to /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/dongsoo_py_pkg
+Installing one_way_trajectory script to /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/dongsoo_py_pkg
+Installing trajectory_test script to /home/pc/soomac_ws/install/dongsoo_py_pkg/lib/dongsoo_py_pkg
+writing list of installed files to '/home/pc/soomac_ws/build/dongsoo_py_pkg/install.log'

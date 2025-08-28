@@ -47,7 +47,8 @@ class DongsooClient(Node):
         while self.target_flag:
             if self.target_flag and self.target_Position.size != 0:
                 copy_target = self.target_Position
-                self.send_next_pose(copy_target)
+                copy_look   = self.target_look
+                self.send_next_pose(copy_target, copy_look)
         
     def send_next_pose(self, position, look):
         if position.size < 3:

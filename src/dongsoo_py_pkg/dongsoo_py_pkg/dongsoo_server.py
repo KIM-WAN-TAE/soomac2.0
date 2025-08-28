@@ -7,6 +7,7 @@ from rclpy.executors import MultiThreadedExecutor
 from dongsoo_interfaces.srv import DongSooExecutor
 from std_msgs.msg import Float32MultiArray
 from rclpy.callback_groups import ReentrantCallbackGroup
+from dongsoo_py_pkg.Inverse_Kinematics import get_ik_result
 import numpy as np
 
 class DongsooServer(Node):
@@ -63,6 +64,12 @@ class DongsooServer(Node):
             end_point = req.position
             end_look  = req.look
             
+            if end_look == 'down':
+                q_list = get_ik_result(start_point, end_point, mode='down', w_ori=0.2)
+            
+            elif end_look == 'straight':
+                q_list = get_ik_result(start_point, end_point, mode='down', w_ori=0.2)
+                
             q_msg = Float32MultiArray()
             
         except Exception as e:

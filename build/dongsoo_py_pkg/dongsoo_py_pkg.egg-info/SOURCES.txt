@@ -10,7 +10,8 @@ setup.py
 ../../build/dongsoo_py_pkg/dongsoo_py_pkg.egg-info/zip-safe
 dongsoo_py_pkg/__init__.py
 dongsoo_py_pkg/data_hub.py
-dongsoo_py_pkg/memo.py
+dongsoo_py_pkg/dongsoo_client.py
+dongsoo_py_pkg/dongsoo_server.py
 dongsoo_py_pkg/monitoring_hub.py
 dongsoo_py_pkg/motor_dummy.py
 dongsoo_py_pkg/one_way_trajectory.py

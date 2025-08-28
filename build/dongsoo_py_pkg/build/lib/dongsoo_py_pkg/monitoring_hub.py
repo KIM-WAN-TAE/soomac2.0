@@ -3,7 +3,6 @@
 import rclpy
 import numpy as np
 import threading
-import time
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 from std_msgs.msg import Float32MultiArray, Int32MultiArray
@@ -61,9 +60,9 @@ class MonitoringHub(Node):
         self.currents = [0.0, 0.0, 0.0, 0.0, 0.0]
         self.velocities = [0.0, 0.0, 0.0, 0.0, 0.0]
         
-        # Pose data
-        self.gripper_pose = {'x': 0.0, 'y': 0.0, 'z': 0.0, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0}
-        self.camera_pose = {'x': 0.0, 'y': 0.0, 'z': 0.0, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0}
+        # Pose data (4x4 transformation matrices)
+        self.gripper_pose = np.eye(4)
+        self.camera_pose = np.eye(4)
         
         # Subscribers
         self.sub_position = self.create_subscription(
@@ -90,9 +89,9 @@ class MonitoringHub(Node):
         # DH parameter objects
         self.cam_dh = CameraDH()
         self.grip_dh = GripperDH()
-        
-        # Timer for 0.1Hz printing (10 seconds interval)
-        self.timer = self.create_timer(10.0, self.timer_callback)
+
+        timer_period = 1/10 # 100 Hz
+        self.timer = self.create_timer(timer_period, self.timer_callback)
         
         self.get_logger().info(f"Camera DH joints: {self.cam_dh.get_joint_count()}")
         self.get_logger().info(f"Gripper DH joints: {self.grip_dh.get_joint_count()}")
@@ -115,19 +114,9 @@ class MonitoringHub(Node):
         T_cam = self.fk(cam_params)
         T_grip = self.fk(grip_params)
         
-        # Extract positions
-        cam_pos = T_cam[:3, 3]
-        grip_pos = T_grip[:3, 3]
-        
-        # Extract orientations
-        cam_roll, cam_pitch, cam_yaw = rotation_matrix_to_rpy(T_cam[:3, :3])
-        grip_roll, grip_pitch, grip_yaw = rotation_matrix_to_rpy(T_grip[:3, :3])
-        
         return {
-            'camera': {'x': cam_pos[0], 'y': cam_pos[1], 'z': cam_pos[2], 
-                      'roll': cam_roll, 'pitch': cam_pitch, 'yaw': cam_yaw},
-            'gripper': {'x': grip_pos[0], 'y': grip_pos[1], 'z': grip_pos[2],
-                       'roll': grip_roll, 'pitch': grip_pitch, 'yaw': grip_yaw}
+            'camera': T_cam,
+            'gripper': T_grip
         }
     
     def present_position_callback(self, msg: Int32MultiArray):
@@ -169,36 +158,30 @@ class MonitoringHub(Node):
             print(" ")
             
             # Joint information
-            print(" === JOINT STATUS ===")
+            print(" ====== JOINT STATUS ======")
             for i in range(5):
                 print(f" Joint #{i+1:1d} : Pulse: {self.joint_pulses[i]:6d} | "
                       f"DEG: {self.joint_degrees[i]:7.2f} | "
-                      f"RAD: {self.q_rad[i]:7.4f} | "
-                      f"Current: {self.currents[i]:6.3f}A | "
+                      f"Current: {self.currents[i]:6.3f}mA | "
                       f"Velocity: {self.velocities[i]:7.2f}rpm")
             print(" ")
             
             # Gripper pose
-            print(" === GRIPPER POSE ===")
-            print(f" Position X Y Z : {self.gripper_pose['x']:8.4f} | "
-                  f"{self.gripper_pose['y']:8.4f} | "
-                  f"{self.gripper_pose['z']:8.4f}")
-            print(f" Roll Pitch Yaw : {np.rad2deg(self.gripper_pose['roll']):8.2f}° | "
-                  f"{np.rad2deg(self.gripper_pose['pitch']):8.2f}° | "
-                  f"{np.rad2deg(self.gripper_pose['yaw']):8.2f}°")
-            print(" ")
+            print(" ====== GRIPPER POSE ======")
+            print()
+            for i in range(4):
+                row = " ".join(f"{self.gripper_pose[i,j]:8.4f}" for j in range(4))
+                print(f" {row}")
+            print()
             
             # Camera pose
-            print(" === CAMERA POSE ===")
-            print(f" Position X Y Z : {self.camera_pose['x']:8.4f} | "
-                  f"{self.camera_pose['y']:8.4f} | "
-                  f"{self.camera_pose['z']:8.4f}")
-            print(f" Roll Pitch Yaw : {np.rad2deg(self.camera_pose['roll']):8.2f}° | "
-                  f"{np.rad2deg(self.camera_pose['pitch']):8.2f}° | "
-                  f"{np.rad2deg(self.camera_pose['yaw']):8.2f}°")
-            print(" ")
+            print(" ====== CAMERA POSE ======")
+            print()
+            for i in range(4):
+                row = " ".join(f"{self.camera_pose[i,j]:8.4f}" for j in range(4))
+                print(f" {row}")
+            print()
             
-            print(f" === UPDATE TIME: {time.strftime('%H:%M:%S')} ===")
             print(" ==================== MONITORING HUB ==================== ")
 
 

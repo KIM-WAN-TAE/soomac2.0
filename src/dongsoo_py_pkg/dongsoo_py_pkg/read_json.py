@@ -210,19 +210,140 @@ class GripperDH(DHParameters):
         super().__init__("gripper")
 
 
+class GravityDH:
+    """중력보상용 4-DOF DH 파라미터 클래스"""
+    
+    def __init__(self):
+        self.joints_data = self._load_json()
+        
+    def _find_config_directory(self):
+        """설정 파일 디렉토리를 찾는 메서드"""
+        pkg_name = "dongsoo_description"
+        config_dir = None
+        
+        if get_package_share_directory is not None:
+            try:
+                share_dir = get_package_share_directory(pkg_name)
+                config_dir = os.path.join(share_dir, "config")
+            except Exception:
+                pass
+                
+        if config_dir is None:
+            here = os.path.dirname(os.path.abspath(__file__))
+            config_dir = os.path.normpath(os.path.join(here, "..", "..", "..", "dongsoo_description", "config"))
+        
+        return config_dir
+    
+    def _load_json(self):
+        """gravity_dh_param.json 파일을 로드하는 메서드"""
+        config_dir = self._find_config_directory()
+        json_path = os.path.join(config_dir, "gravity_dh_param.json")
+        
+        if not os.path.isfile(json_path):
+            raise FileNotFoundError(f"Gravity DH JSON 파일을 찾을 수 없습니다: {json_path}")
+        
+        with open(json_path, 'r', encoding="utf-8") as f:
+            data = json.load(f)
+        
+        return data["gravity_dh_parameters"]["joints"]
+    
+    def get_joint_count(self):
+        """조인트 개수를 반환 (4-DOF)"""
+        return len(self.joints_data)
+    
+    def get_joint_parameter(self, joint_id, parameter_name):
+        """특정 조인트의 특정 파라미터 값을 반환"""
+        for joint in self.joints_data:
+            if joint["joint_id"] == joint_id:
+                dh_params = joint.get("dh_params", {})
+                return dh_params.get(parameter_name, 0.0)
+        raise ValueError(f"Joint ID {joint_id}를 찾을 수 없습니다")
+    
+    def get_all_parameters(self, joint_id):
+        """특정 조인트의 모든 DH 파라미터를 딕셔너리로 반환"""
+        for joint in self.joints_data:
+            if joint["joint_id"] == joint_id:
+                return joint.get("dh_params", {}).copy()
+        raise ValueError(f"Joint ID {joint_id}를 찾을 수 없습니다")
+    
+    def get_parameter_list(self, parameter_name):
+        """모든 조인트의 특정 파라미터 리스트를 반환"""
+        result = []
+        for joint in self.joints_data:
+            dh_params = joint.get("dh_params", {})
+            result.append(dh_params.get(parameter_name, 0.0))
+        return result
+    
+    def get_dh_matrix_params(self, joint_id, q_values=None):
+        """
+        특정 조인트의 DH 변환 행렬 계산을 위한 파라미터들을 반환
+        
+        Args:
+            joint_id (int): 조인트 ID  
+            q_values (list): 조인트 각도 값들 (라디안)
+        
+        Returns:
+            dict: theta, d, a, alpha 값들
+        """
+        joint_data = self.get_all_parameters(joint_id)
+        
+        if q_values is None:
+            q_values = [0.0] * 4  # 4-DOF
+        
+        # theta 값 계산
+        varmap = {"pi": np.pi}
+        for i, qi in enumerate(q_values, start=1):
+            varmap[f"q{i}"] = float(qi)
+        parser = SafeExpr(varmap)
+        
+        theta_raw = joint_data.get("theta", 0.0)
+        theta_offset_raw = joint_data.get("theta_offset", 0.0)
+        
+        theta_main = parser.eval(theta_raw)
+        theta_offset = parser.eval(theta_offset_raw) if isinstance(theta_offset_raw, str) else float(theta_offset_raw)
+        theta_total = theta_main + theta_offset
+        
+        # alpha 값 계산
+        alpha_raw = joint_data.get("alpha", 0.0)
+        alpha = parser.eval(alpha_raw) if isinstance(alpha_raw, str) else float(alpha_raw)
+        
+        return {
+            "theta": theta_total,
+            "d": float(joint_data.get("d", 0.0)),
+            "a": float(joint_data.get("a", 0.0)),
+            "alpha": alpha
+        }
+    
+    def get_all_dh_params(self, q_values=None):
+        """모든 조인트의 DH 파라미터를 반환"""
+        if q_values is None:
+            q_values = [0.0] * 4  # 4-DOF
+            
+        all_params = []
+        for joint in self.joints_data:
+            joint_id = joint["joint_id"]
+            params = self.get_dh_matrix_params(joint_id, q_values)
+            params["joint_id"] = joint_id
+            all_params.append(params)
+        
+        return all_params
+
+
 def create_dh_reader(dh_type):
     """
     팩토리 함수: DH 타입에 따라 적절한 클래스 인스턴스를 반환
     
     Args:
-        dh_type (str): "camera" 또는 "gripper"
+        dh_type (str): "camera", "gripper", 또는 "gravity"
     
     Returns:
-        DHParameters: CameraDH 또는 GripperDH 인스턴스
+        DHParameters: CameraDH, GripperDH, 또는 GravityDH 인스턴스
     """
     if dh_type == "camera":
         return CameraDH()
     elif dh_type == "gripper":
         return GripperDH()
+    elif dh_type == "gravity":
+        return GravityDH()
     else:
-        raise ValueError("dh_type must be 'camera' or 'gripper'")
+        raise ValueError("dh_type must be 'camera', 'gripper', or 'gravity'")
