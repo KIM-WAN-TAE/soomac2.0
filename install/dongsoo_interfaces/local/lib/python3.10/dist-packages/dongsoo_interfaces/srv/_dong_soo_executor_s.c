@@ -70,7 +70,7 @@ bool dongsoo_interfaces__srv__dong_soo_executor__request__convert_from_py(PyObje
       Py_INCREF(seq_field);
       assert(PyArray_NDIM(seq_field) == 1);
       assert(PyArray_TYPE(seq_field) == NPY_FLOAT32);
-      Py_ssize_t size = 16;
+      Py_ssize_t size = 3;
       float * dest = ros_message->position;
       for (Py_ssize_t i = 0; i < size; ++i) {
         float tmp = *(npy_float32 *)PyArray_GETPTR1(seq_field, i);
@@ -132,7 +132,7 @@ PyObject * dongsoo_interfaces__srv__dong_soo_executor__request__convert_to_py(vo
     assert(sizeof(npy_float32) == sizeof(float));
     npy_float32 * dst = (npy_float32 *)PyArray_GETPTR1(seq_field, 0);
     float * src = &(ros_message->position[0]);
-    memcpy(dst, src, 16 * sizeof(float));
+    memcpy(dst, src, 3 * sizeof(float));
     Py_DECREF(field);
   }
   {  // look

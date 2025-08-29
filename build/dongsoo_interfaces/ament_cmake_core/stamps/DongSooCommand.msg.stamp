@@ -1,3 +1,3 @@
-# dongsoo_interfaces/srv/DongSooCommand.msg
+# dongsoo_interfaces/msg/DongSooCommand.msg
 float32[3] position
 string look

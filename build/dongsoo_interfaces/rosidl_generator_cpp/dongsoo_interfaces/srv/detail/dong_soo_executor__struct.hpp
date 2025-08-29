@@ -38,7 +38,7 @@ struct DongSooExecutor_Request_
     if (rosidl_runtime_cpp::MessageInitialization::ALL == _init ||
       rosidl_runtime_cpp::MessageInitialization::ZERO == _init)
     {
-      std::fill<typename std::array<float, 16>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
+      std::fill<typename std::array<float, 3>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
       this->look = "";
     }
   }
@@ -50,14 +50,14 @@ struct DongSooExecutor_Request_
     if (rosidl_runtime_cpp::MessageInitialization::ALL == _init ||
       rosidl_runtime_cpp::MessageInitialization::ZERO == _init)
     {
-      std::fill<typename std::array<float, 16>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
+      std::fill<typename std::array<float, 3>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
       this->look = "";
     }
   }
 
   // field types and members
   using _position_type =
-    std::array<float, 16>;
+    std::array<float, 3>;
   _position_type position;
   using _look_type =
     std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>>;
@@ -65,7 +65,7 @@ struct DongSooExecutor_Request_
 
   // setters for named parameter idiom
   Type & set__position(
-    const std::array<float, 16> & _arg)
+    const std::array<float, 3> & _arg)
   {
     this->position = _arg;
     return *this;

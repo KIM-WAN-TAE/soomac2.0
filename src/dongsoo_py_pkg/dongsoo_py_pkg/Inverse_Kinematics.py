@@ -241,10 +241,10 @@ def get_ik_result(start, end, mode='down', w_ori=0.2):
         'q_end': q_end
     }
     
-if __name__ == '__main__':
-    start = np.array([0.2, 0.2, 0.3])
-    end   = np.array([0.2, -0.2, 0.2])
-    result = get_ik_result(start, end, mode='down', w_ori=0.2)
-    print(f"시작 관절각: {result['q_start']}")
-    print(f"끝 관절각: {result['q_end']}")
-    print(f"관절각 변화량: {result['q_end'] - result['q_start']}")
+# if __name__ == '__main__':
+#     start = np.array([0.2, 0.2, 0.3])
+#     end   = np.array([0.2, -0.2, 0.2])
+#     result = get_ik_result(start, end, mode='down', w_ori=0.2)
+#     print(f"시작 관절각: {result['q_start']}")
+#     print(f"끝 관절각: {result['q_end']}")
+#     print(f"관절각 변화량: {result['q_end'] - result['q_start']}")

@@ -73,7 +73,7 @@ get_serialized_size(
 
   // Member: position
   {
-    size_t array_size = 16;
+    size_t array_size = 3;
     size_t item_size = sizeof(ros_message.position[0]);
     current_alignment += array_size * item_size +
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
@@ -108,7 +108,7 @@ max_serialized_size_DongSooExecutor_Request(
 
   // Member: position
   {
-    size_t array_size = 16;
+    size_t array_size = 3;
 
     last_member_size = array_size * sizeof(uint32_t);
     current_alignment += array_size * sizeof(uint32_t) +

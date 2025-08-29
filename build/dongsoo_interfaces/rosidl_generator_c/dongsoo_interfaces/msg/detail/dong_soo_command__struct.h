@@ -23,7 +23,7 @@ extern "C"
 
 /// Struct defined in msg/DongSooCommand in the package dongsoo_interfaces.
 /**
-  * dongsoo_interfaces/srv/DongSooCommand.msg
+  * dongsoo_interfaces/msg/DongSooCommand.msg
  */
 typedef struct dongsoo_interfaces__msg__DongSooCommand
 {

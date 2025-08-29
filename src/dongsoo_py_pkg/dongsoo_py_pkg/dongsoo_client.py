@@ -40,7 +40,7 @@ class DongsooClient(Node):
     def client_timer(self):
         print(f' Flag State : {self.target_flag}')
         if not self.target_flag:
-            print(' Waiting Target Pose... ')
+            self.get_logger().info(' Waiting Target Pose... ')
             return
         
         # os.system('clear')
@@ -48,6 +48,7 @@ class DongsooClient(Node):
             if self.target_flag and self.target_Position.size != 0:
                 copy_target = self.target_Position
                 copy_look   = self.target_look
+                self.target_flag = False
                 self.send_next_pose(copy_target, copy_look)
         
     def send_next_pose(self, position, look):

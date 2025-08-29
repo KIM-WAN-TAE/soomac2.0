@@ -7,7 +7,7 @@ module dongsoo_interfaces {
   module msg {
     typedef float float__3[3];
     @verbatim (language="comment", text=
-      "dongsoo_interfaces/srv/DongSooCommand.msg")
+      "dongsoo_interfaces/msg/DongSooCommand.msg")
     struct DongSooCommand {
       float__3 position;
 

@@ -39,7 +39,7 @@ size_t dongsoo_interfaces__srv__DongSooExecutor_Request__rosidl_typesupport_intr
   const void * untyped_member)
 {
   (void)untyped_member;
-  return 16;
+  return 3;
 }
 
 const void * dongsoo_interfaces__srv__DongSooExecutor_Request__rosidl_typesupport_introspection_c__get_const_function__DongSooExecutor_Request__position(
@@ -87,7 +87,7 @@ static rosidl_typesupport_introspection_c__MessageMember dongsoo_interfaces__srv
     0,  // upper bound of string
     NULL,  // members of sub message
     true,  // is array
-    16,  // array size
+    3,  // array size
     false,  // is upper bound
     offsetof(dongsoo_interfaces__srv__DongSooExecutor_Request, position),  // bytes offset in struct
     NULL,  // default value

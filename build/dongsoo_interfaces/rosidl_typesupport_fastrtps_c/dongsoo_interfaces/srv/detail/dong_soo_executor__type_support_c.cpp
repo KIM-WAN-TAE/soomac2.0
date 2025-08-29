@@ -53,7 +53,7 @@ static bool _DongSooExecutor_Request__cdr_serialize(
   const _DongSooExecutor_Request__ros_msg_type * ros_message = static_cast<const _DongSooExecutor_Request__ros_msg_type *>(untyped_ros_message);
   // Field name: position
   {
-    size_t size = 16;
+    size_t size = 3;
     auto array_ptr = ros_message->position;
     cdr.serializeArray(array_ptr, size);
   }
@@ -86,7 +86,7 @@ static bool _DongSooExecutor_Request__cdr_deserialize(
   _DongSooExecutor_Request__ros_msg_type * ros_message = static_cast<_DongSooExecutor_Request__ros_msg_type *>(untyped_ros_message);
   // Field name: position
   {
-    size_t size = 16;
+    size_t size = 3;
     auto array_ptr = ros_message->position;
     cdr.deserializeArray(array_ptr, size);
   }
@@ -126,7 +126,7 @@ size_t get_serialized_size_dongsoo_interfaces__srv__DongSooExecutor_Request(
 
   // field.name position
   {
-    size_t array_size = 16;
+    size_t array_size = 3;
     auto array_ptr = ros_message->position;
     (void)array_ptr;
     size_t item_size = sizeof(array_ptr[0]);
@@ -168,7 +168,7 @@ size_t max_serialized_size_dongsoo_interfaces__srv__DongSooExecutor_Request(
 
   // member: position
   {
-    size_t array_size = 16;
+    size_t array_size = 3;
 
     last_member_size = array_size * sizeof(uint32_t);
     current_alignment += array_size * sizeof(uint32_t) +

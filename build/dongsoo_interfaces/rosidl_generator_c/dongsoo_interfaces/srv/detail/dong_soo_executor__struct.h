@@ -24,7 +24,7 @@ extern "C"
 /// Struct defined in srv/DongSooExecutor in the package dongsoo_interfaces.
 typedef struct dongsoo_interfaces__srv__DongSooExecutor_Request
 {
-  float position[16];
+  float position[3];
   rosidl_runtime_c__String look;
 } dongsoo_interfaces__srv__DongSooExecutor_Request;
 

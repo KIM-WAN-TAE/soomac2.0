@@ -47,7 +47,7 @@ dongsoo_interfaces__srv__DongSooExecutor_Request__are_equal(const dongsoo_interf
     return false;
   }
   // position
-  for (size_t i = 0; i < 16; ++i) {
+  for (size_t i = 0; i < 3; ++i) {
     if (lhs->position[i] != rhs->position[i]) {
       return false;
     }
@@ -70,7 +70,7 @@ dongsoo_interfaces__srv__DongSooExecutor_Request__copy(
     return false;
   }
   // position
-  for (size_t i = 0; i < 16; ++i) {
+  for (size_t i = 0; i < 3; ++i) {
     output->position[i] = input->position[i];
   }
   // look

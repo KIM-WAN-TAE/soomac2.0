@@ -5,10 +5,29 @@ import rclpy
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 from dongsoo_interfaces.srv import DongSooExecutor
-from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Float32MultiArray, Int32MultiArray 
 from rclpy.callback_groups import ReentrantCallbackGroup
 from dongsoo_py_pkg.Inverse_Kinematics import get_ik_result
 import numpy as np
+
+def plan_joint_trajectory(q_start, q_end, steps=80, traj_type='linear'):
+    q_start = np.asarray(q_start, dtype=float)
+    q_end = np.asarray(q_end, dtype=float)
+    
+    if traj_type == 'linear':
+        # 선형 보간
+        alphas = np.linspace(0.0, 1.0, steps)
+        q_traj = (1 - alphas)[:, None] * q_start[None, :] + alphas[:, None] * q_end[None, :]
+    elif traj_type == 'smooth':
+        # S-커브 보간 (부드러운 가속/감속)
+        t = np.linspace(0.0, 1.0, steps)
+        # 3차 다항식: 3t^2 - 2t^3 (0에서 0, 1에서 1, 부드러운 전환)
+        alphas = 3 * t**2 - 2 * t**3
+        q_traj = (1 - alphas)[:, None] * q_start[None, :] + alphas[:, None] * q_end[None, :]
+    else:
+        raise ValueError("traj_type은 'linear' 또는 'smooth'")
+    
+    return q_traj
 
 class DongsooServer(Node):
     def __init__(self):
@@ -27,7 +46,7 @@ class DongsooServer(Node):
             callback_group = self.sub_cb_group
         )
         
-        self.motor_control_pub = self.create_publisher(Float32MultiArray, '/motor/command_position', 10)
+        self.motor_control_pub = self.create_publisher(Int32MultiArray, '/motor/command_position', 10)
         
         self.present_position = np.array([])
         self.present_orientation = np.array([])
@@ -65,13 +84,29 @@ class DongsooServer(Node):
             end_look  = req.look
             
             if end_look == 'down':
-                q_list = get_ik_result(start_point, end_point, mode='down', w_ori=0.2)
+                q_result = get_ik_result(start_point, end_point, mode='down', w_ori=0.2)
             
             elif end_look == 'straight':
-                q_list = get_ik_result(start_point, end_point, mode='down', w_ori=0.2)
+                q_result = get_ik_result(start_point, end_point, mode='straight', w_ori=0.2)
                 
-            q_msg = Float32MultiArray()
+            q_start = q_result['q_start']
+            q_end   = q_result['q_end']
+            self.get_logger().info(f'[Q_list] : {q_end}')
             
+            sleep_time = 0.01
+            
+            q_msg = Int32MultiArray()
+            q_list = plan_joint_trajectory(q_start, q_end, steps=10000, traj_type='linear')
+            
+            import time
+            # 이거 쏘기 전에 rad -> pulse 로 변환 전부 해야함
+            for i, q_s in enumerate(q_list):
+                q_msg.data = q_s.tolist()
+                self.motor_control_pub.publish(q_msg)
+                time.sleep(sleep_time)
+            
+            response.success = True
+
         except Exception as e:
             self.get_logger().error(f' Planning or Ik Fail : {e}')
             response.success = False

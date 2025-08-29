@@ -199,27 +199,22 @@ class MonitoringHub(Node):
     def compare_matrices(self, mat1, mat2, tolerance=1e-4):
         return np.allclose(mat1, mat2, atol=tolerance)
     
-    def print_pose_comparison(self, pose_type, datahub_mat, monitoring_mat, is_same):
+    def print_pose_comparison(self, pose_type, datahub_mat, monitoring_mat):
         print(f" ====== {pose_type.upper()} POSE ======")
         print()
         
-        if is_same:
-            for i in range(4):
-                row = " ".join(f"{datahub_mat[i,j]:8.4f}" for j in range(4))
-                print(f" {row}")
-        else:
-            print(" [DATA_HUB POSE]                     || [MONITORING_HUB POSE]")
-            for i in range(4):
-                dh_row = " ".join(f"{datahub_mat[i,j]:8.4f}" for j in range(4))
-                mon_row = " ".join(f"{monitoring_mat[i,j]:8.4f}" for j in range(4))
-                print(f" {dh_row} || {mon_row}")
-            
-            print()
-            print(" [DIFFERENCE (DataHub - MonitoringHub)]")
-            diff_mat = datahub_mat - monitoring_mat
-            for i in range(4):
-                diff_row = " ".join(f"{diff_mat[i,j]:8.4f}" for j in range(4))
-                print(f" {diff_row}")
+        print(" [DATA_HUB POSE]                     || [MONITORING_HUB POSE]")
+        for i in range(4):
+            dh_row = " ".join(f"{datahub_mat[i,j]:8.4f}" for j in range(4))
+            mon_row = " ".join(f"{monitoring_mat[i,j]:8.4f}" for j in range(4))
+            print(f" {dh_row} || {mon_row}")
+        
+        print()
+        print(" [DIFFERENCE (DataHub - MonitoringHub)]")
+        diff_mat = datahub_mat - monitoring_mat
+        for i in range(4):
+            diff_row = " ".join(f"{diff_mat[i,j]:8.4f}" for j in range(4))
+            print(f" {diff_row}")
         
         print()
     
@@ -248,11 +243,8 @@ class MonitoringHub(Node):
             )
             
             if use_comparison:
-                grip_same = self.compare_matrices(self.grip_mat, self.gripper_pose, self.matrix_tolerance)
-                self.print_pose_comparison("gripper", self.grip_mat, self.gripper_pose, grip_same)
-                
-                cam_same = self.compare_matrices(self.cam_mat, self.camera_pose, self.matrix_tolerance)
-                self.print_pose_comparison("camera", self.cam_mat, self.camera_pose, cam_same)
+                self.print_pose_comparison("gripper", self.grip_mat, self.gripper_pose)
+                self.print_pose_comparison("camera", self.cam_mat, self.camera_pose)
             else:
                 print(" ====== GRIPPER POSE ======")
                 print()

@@ -9,7 +9,7 @@ import builtins  # noqa: E402, I100
 
 import math  # noqa: E402, I100
 
-# Member 'pose'
+# Member 'position'
 import numpy  # noqa: E402, I100
 
 import rosidl_parser.definition  # noqa: E402, I100
@@ -60,12 +60,12 @@ class DongSooExecutor_Request(metaclass=Metaclass_DongSooExecutor_Request):
     """Message class 'DongSooExecutor_Request'."""
 
     __slots__ = [
-        '_pose',
+        '_position',
         '_look',
     ]
 
     _fields_and_field_types = {
-        'pose': 'float[16]',
+        'position': 'float[16]',
         'look': 'string',
     }
 
@@ -78,11 +78,11 @@ class DongSooExecutor_Request(metaclass=Metaclass_DongSooExecutor_Request):
         assert all('_' + key in self.__slots__ for key in kwargs.keys()), \
             'Invalid arguments passed to constructor: %s' % \
             ', '.join(sorted(k for k in kwargs.keys() if '_' + k not in self.__slots__))
-        if 'pose' not in kwargs:
-            self.pose = numpy.zeros(16, dtype=numpy.float32)
+        if 'position' not in kwargs:
+            self.position = numpy.zeros(16, dtype=numpy.float32)
         else:
-            self.pose = numpy.array(kwargs.get('pose'), dtype=numpy.float32)
-            assert self.pose.shape == (16, )
+            self.position = numpy.array(kwargs.get('position'), dtype=numpy.float32)
+            assert self.position.shape == (16, )
         self.look = kwargs.get('look', str())
 
     def __repr__(self):
@@ -114,7 +114,7 @@ class DongSooExecutor_Request(metaclass=Metaclass_DongSooExecutor_Request):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        if any(self.pose != other.pose):
+        if any(self.position != other.position):
             return False
         if self.look != other.look:
             return False
@@ -126,18 +126,18 @@ class DongSooExecutor_Request(metaclass=Metaclass_DongSooExecutor_Request):
         return copy(cls._fields_and_field_types)
 
     @builtins.property
-    def pose(self):
-        """Message field 'pose'."""
-        return self._pose
+    def position(self):
+        """Message field 'position'."""
+        return self._position
 
-    @pose.setter
-    def pose(self, value):
+    @position.setter
+    def position(self, value):
         if isinstance(value, numpy.ndarray):
             assert value.dtype == numpy.float32, \
-                "The 'pose' numpy.ndarray() must have the dtype of 'numpy.float32'"
+                "The 'position' numpy.ndarray() must have the dtype of 'numpy.float32'"
             assert value.size == 16, \
-                "The 'pose' numpy.ndarray() must have a size of 16"
-            self._pose = value
+                "The 'position' numpy.ndarray() must have a size of 16"
+            self._position = value
             return
         if __debug__:
             from collections.abc import Sequence
@@ -153,8 +153,8 @@ class DongSooExecutor_Request(metaclass=Metaclass_DongSooExecutor_Request):
                  len(value) == 16 and
                  all(isinstance(v, float) for v in value) and
                  all(not (val < -3.402823466e+38 or val > 3.402823466e+38) or math.isinf(val) for val in value)), \
-                "The 'pose' field must be a set or sequence with length 16 and each value of type 'float' and each float in [-340282346600000016151267322115014000640.000000, 340282346600000016151267322115014000640.000000]"
-        self._pose = numpy.array(value, dtype=numpy.float32)
+                "The 'position' field must be a set or sequence with length 16 and each value of type 'float' and each float in [-340282346600000016151267322115014000640.000000, 340282346600000016151267322115014000640.000000]"
+        self._position = numpy.array(value, dtype=numpy.float32)
 
     @builtins.property
     def look(self):

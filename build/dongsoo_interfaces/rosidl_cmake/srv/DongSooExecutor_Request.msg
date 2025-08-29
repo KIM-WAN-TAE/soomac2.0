@@ -1,3 +1,3 @@
 # dongsoo_interfaces/srv/DongSooExecutor.srv
-float32[16] position
+float32[3] position
 string look

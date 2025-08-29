@@ -56,8 +56,8 @@ bool dongsoo_interfaces__srv__dong_soo_executor__request__convert_from_py(PyObje
     assert(strncmp("dongsoo_interfaces.srv._dong_soo_executor.DongSooExecutor_Request", full_classname_dest, 65) == 0);
   }
   dongsoo_interfaces__srv__DongSooExecutor_Request * ros_message = _ros_message;
-  {  // pose
-    PyObject * field = PyObject_GetAttrString(_pymsg, "pose");
+  {  // position
+    PyObject * field = PyObject_GetAttrString(_pymsg, "position");
     if (!field) {
       return false;
     }
@@ -71,7 +71,7 @@ bool dongsoo_interfaces__srv__dong_soo_executor__request__convert_from_py(PyObje
       assert(PyArray_NDIM(seq_field) == 1);
       assert(PyArray_TYPE(seq_field) == NPY_FLOAT32);
       Py_ssize_t size = 16;
-      float * dest = ros_message->pose;
+      float * dest = ros_message->position;
       for (Py_ssize_t i = 0; i < size; ++i) {
         float tmp = *(npy_float32 *)PyArray_GETPTR1(seq_field, i);
         memcpy(&dest[i], &tmp, sizeof(float));
@@ -117,9 +117,9 @@ PyObject * dongsoo_interfaces__srv__dong_soo_executor__request__convert_to_py(vo
     }
   }
   dongsoo_interfaces__srv__DongSooExecutor_Request * ros_message = (dongsoo_interfaces__srv__DongSooExecutor_Request *)raw_ros_message;
-  {  // pose
+  {  // position
     PyObject * field = NULL;
-    field = PyObject_GetAttrString(_pymessage, "pose");
+    field = PyObject_GetAttrString(_pymessage, "position");
     if (!field) {
       return NULL;
     }
@@ -131,7 +131,7 @@ PyObject * dongsoo_interfaces__srv__dong_soo_executor__request__convert_to_py(vo
     assert(PyArray_TYPE(seq_field) == NPY_FLOAT32);
     assert(sizeof(npy_float32) == sizeof(float));
     npy_float32 * dst = (npy_float32 *)PyArray_GETPTR1(seq_field, 0);
-    float * src = &(ros_message->pose[0]);
+    float * src = &(ros_message->position[0]);
     memcpy(dst, src, 16 * sizeof(float));
     Py_DECREF(field);
   }

@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Float32MultiArray, Int32MultiArray
 
 
 class OneWayTrajectoryNode(Node):
@@ -34,17 +34,17 @@ class OneWayTrajectoryNode(Node):
         
         # 퍼블리셔 생성
         self.publisher = self.create_publisher(
-            Float32MultiArray,
+            Int32MultiArray,
             '/motor/command_position',
             10
         )
         
         # 4자유도 궤적 정의: start -> end (편도)
-        self.start_pos = [2048.0, 2048.0, 2048.0, 2048.0]  # 시작점 (중앙 위치)
-        self.end_pos = [2048.0, 2780.0, 500.0, 1800.0]     # 종료점 (목표 위치)
+        #self.start_pos = [2048.0, 2048.0, 2048.0, 2048.0]  # 시작점 (중앙 위치)
+        #self.end_pos = [2048.0, 2740.0, 700.0, 1700.0]     # 종료점 (목표 위치)
         
-        # self.end_pos = [2048.0, 2048.0, 2048.0, 2048.0]  # 시작점 (중앙 위치)
-        # self.start_pos = [2048.0, 2780.0, 500.0, 1800.0]     # 종료점 (목표 위치)
+        self.end_pos = [2048.0, 2048.0, 2048.0, 2048.0]  # 시작점 (중앙 위치)
+        self.start_pos = [2048.0, 2740.0, 700.0, 1700.0]
         
         # 타이머 생성 (interval_sec 간격으로 실행)
         self.timer = self.create_timer(
@@ -157,8 +157,8 @@ class OneWayTrajectoryNode(Node):
         
         if self.current_point < len(self.trajectory_points):
             # 현재 포인트 발행
-            msg = Float32MultiArray()
-            msg.data = [float(x) for x in self.trajectory_points[self.current_point]]
+            msg = Int32MultiArray()
+            msg.data = [int(x) for x in self.trajectory_points[self.current_point]]
             self.publisher.publish(msg)
             
             # 진행률 계산
