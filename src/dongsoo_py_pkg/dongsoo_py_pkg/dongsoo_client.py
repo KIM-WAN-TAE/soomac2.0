@@ -14,7 +14,7 @@ class DongsooClient(Node):
         super().__init__('dongsoo_client')
         self.get_logger().info(' DongSoo Service Client On! ')
         
-        self.dongsoo_client = self.create_client(DongSooExecutor, 'dongsoo_excutor')
+        self.dongsoo_client = self.create_client(DongSooExecutor, 'dongsoo_executor')
         
         self.target_co_sub = self.create_subscription(
             DongSooCommand,

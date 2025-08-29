@@ -108,12 +108,11 @@ class MonitoringHub(Node):
         self.cam_dh = CameraDH()
         self.grip_dh = GripperDH()
 
-        timer_period = 1/10 # 100 Hz
+        timer_period = 1/10 
         self.timer = self.create_timer(timer_period, self.timer_callback)
         
         self.get_logger().info(f"Camera DH joints: {self.cam_dh.get_joint_count()}")
         self.get_logger().info(f"Gripper DH joints: {self.grip_dh.get_joint_count()}")
-        self.get_logger().info("Timer set to 0.1Hz (10 second intervals)")
     
     def fk(self, dh_params):
         """Forward kinematics calculation"""
@@ -140,7 +139,7 @@ class MonitoringHub(Node):
             
             for i in range(min(5, len(pulses))):
                 self.joint_pulses[i] = pulses[i]
-                self.joint_degrees[i] = (pulses[i] / 4096.0) * 360.0
+                self.joint_degrees[i] = ((pulses[i] - 2048) / 4096.0) * 360.0
                 self.q_rad[i] = np.deg2rad(self.joint_degrees[i])
             
             poses = self.calculate_poses(self.q_rad)

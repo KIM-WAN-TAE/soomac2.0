@@ -71,7 +71,7 @@ class DataHub(Node):
         self.camera_mat_pub = self.create_publisher(Float32MultiArray, '/info/matrix/camera', 10)
         self.gripper_mat_pub = self.create_publisher(Float32MultiArray, '/info/matrix/gripper', 10)
         
-        timer_period = 1/10  # 10Hz 
+        timer_period = 1/10
         self.create_timer(timer_period, self.timer_callback)
     
     def fk(self, dh_params):
@@ -98,7 +98,7 @@ class DataHub(Node):
             
             for i in range(min(5, len(pulses))):
                 self.joint_pulses[i] = pulses[i]
-                self.joint_degrees[i] = (pulses[i] / 4096.0) * 360.0
+                self.joint_degrees[i] = ((pulses[i] - 2048) / 4096.0) * 360.0
                 self.q_rad[i] = np.deg2rad(self.joint_degrees[i])
             
             poses = self.calculate_poses(self.q_rad)

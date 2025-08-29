@@ -10,23 +10,26 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from dongsoo_py_pkg.Inverse_Kinematics import get_ik_result
 import numpy as np
 
-def plan_joint_trajectory(q_start, q_end, steps=80, traj_type='linear'):
+def rad_to_pulse(rad_values):
+    pulse_values = []
+    for rad_val in rad_values:
+        pulse_val = int((rad_val * 4096.0 / (2 * np.pi)) + 2048)
+        pulse_values.append(pulse_val)
+    return pulse_values
+
+def plan_joint_trajectory(q_start, q_end, steps=80, traj_type='smooth'):
     q_start = np.asarray(q_start, dtype=float)
     q_end = np.asarray(q_end, dtype=float)
     
     if traj_type == 'linear':
-        # 선형 보간
         alphas = np.linspace(0.0, 1.0, steps)
         q_traj = (1 - alphas)[:, None] * q_start[None, :] + alphas[:, None] * q_end[None, :]
     elif traj_type == 'smooth':
-        # S-커브 보간 (부드러운 가속/감속)
         t = np.linspace(0.0, 1.0, steps)
-        # 3차 다항식: 3t^2 - 2t^3 (0에서 0, 1에서 1, 부드러운 전환)
         alphas = 3 * t**2 - 2 * t**3
         q_traj = (1 - alphas)[:, None] * q_start[None, :] + alphas[:, None] * q_end[None, :]
     else:
         raise ValueError("traj_type은 'linear' 또는 'smooth'")
-    
     return q_traj
 
 class DongsooServer(Node):
@@ -51,9 +54,8 @@ class DongsooServer(Node):
         self.present_position = np.array([])
         self.present_orientation = np.array([])
         
-        self.create_service(DongSooExecutor, 'dongsoo_excutor', self.service_callback, callback_group = self.srv_cb_group)
+        self.create_service(DongSooExecutor, 'dongsoo_executor', self.service_callback, callback_group = self.srv_cb_group)
     
-    # Topic으로 Gripper Pose 받아오는 코드
     def gripper_mat_callback(self, msg : Float32MultiArray):
         with self.data_lock:
             dims = msg.layout.dim
@@ -96,12 +98,13 @@ class DongsooServer(Node):
             sleep_time = 0.01
             
             q_msg = Int32MultiArray()
-            q_list = plan_joint_trajectory(q_start, q_end, steps=10000, traj_type='linear')
+            q_list = plan_joint_trajectory(q_start, q_end, steps=10000, traj_type='smooth')
             
             import time
-            # 이거 쏘기 전에 rad -> pulse 로 변환 전부 해야함
+            # rad -> pulse 변환 함수 사용
             for i, q_s in enumerate(q_list):
-                q_msg.data = q_s.tolist()
+                q_pulse = rad_to_pulse(q_s)
+                q_msg.data = q_pulse
                 self.motor_control_pub.publish(q_msg)
                 time.sleep(sleep_time)
             
