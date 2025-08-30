@@ -90,15 +90,21 @@ class DongsooServer(Node):
             
             elif end_look == 'straight':
                 q_result = get_ik_result(start_point, end_point, mode='straight', w_ori=0.2)
+            else :
+                self.get_logger().warn(' 잘못된 방향 입력 ')
+                response.success = False
+                return
                 
             q_start = q_result['q_start']
             q_end   = q_result['q_end']
-            self.get_logger().info(f'[Q_list] : {q_end}')
+            print(' ')
+            for i, _ in enumerate(q_end):
+                self.get_logger().info(f'[Q_list_{i+1}] : {np.degrees(q_end[i]):7.2f}')
             
             sleep_time = 0.01
             
             q_msg = Int32MultiArray()
-            q_list = plan_joint_trajectory(q_start, q_end, steps=10000, traj_type='smooth')
+            q_list = plan_joint_trajectory(q_start, q_end, steps=1000, traj_type='smooth')
             
             import time
             # rad -> pulse 변환 함수 사용
