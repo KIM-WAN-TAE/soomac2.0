@@ -1,0 +1,3 @@
+[console_scripts]
+ros2_chat_node = llm_node.ros2_chat_node:main
+

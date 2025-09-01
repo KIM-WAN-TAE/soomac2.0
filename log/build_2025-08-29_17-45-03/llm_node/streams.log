@@ -1,0 +1,40 @@
+[0.747s] Invoking command in '/home/temp_id/ros2_ws/src/llm_node': HISTTIMEFORMAT=20%y/%m/%d %T PS1=\[\e[1;47;30m\][\u@\h:\W]\$\[\e[m\] PYTHONPATH=/home/temp_id/ros2_ws/build/llm_node/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/temp_id/ros2_ws/install/llm_node/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/llm_node build --build-base /home/temp_id/ros2_ws/build/llm_node/build install --record /home/temp_id/ros2_ws/build/llm_node/install.log --single-version-externally-managed install_data
+[0.937s] running egg_info
+[0.938s] creating ../../build/llm_node/llm_node.egg-info
+[0.938s] writing ../../build/llm_node/llm_node.egg-info/PKG-INFO
+[0.938s] writing dependency_links to ../../build/llm_node/llm_node.egg-info/dependency_links.txt
+[0.938s] writing entry points to ../../build/llm_node/llm_node.egg-info/entry_points.txt
+[0.938s] writing requirements to ../../build/llm_node/llm_node.egg-info/requires.txt
+[0.938s] writing top-level names to ../../build/llm_node/llm_node.egg-info/top_level.txt
+[0.938s] writing manifest file '../../build/llm_node/llm_node.egg-info/SOURCES.txt'
+[0.940s] reading manifest file '../../build/llm_node/llm_node.egg-info/SOURCES.txt'
+[0.940s] writing manifest file '../../build/llm_node/llm_node.egg-info/SOURCES.txt'
+[0.940s] running build
+[0.940s] running build_py
+[0.940s] creating /home/temp_id/ros2_ws/build/llm_node/build
+[0.940s] creating /home/temp_id/ros2_ws/build/llm_node/build/lib
+[0.941s] creating /home/temp_id/ros2_ws/build/llm_node/build/lib/llm_node
+[0.941s] copying llm_node/llm_inference.py -> /home/temp_id/ros2_ws/build/llm_node/build/lib/llm_node
+[0.945s] copying llm_node/__init__.py -> /home/temp_id/ros2_ws/build/llm_node/build/lib/llm_node
+[0.945s] copying llm_node/ros2_chat_node.py -> /home/temp_id/ros2_ws/build/llm_node/build/lib/llm_node
+[0.945s] running install
+[0.945s] running install_lib
+[0.946s] creating /home/temp_id/ros2_ws/install/llm_node/lib/python3.10/site-packages/llm_node
+[0.946s] copying /home/temp_id/ros2_ws/build/llm_node/build/lib/llm_node/llm_inference.py -> /home/temp_id/ros2_ws/install/llm_node/lib/python3.10/site-packages/llm_node
+[0.946s] copying /home/temp_id/ros2_ws/build/llm_node/build/lib/llm_node/__init__.py -> /home/temp_id/ros2_ws/install/llm_node/lib/python3.10/site-packages/llm_node
+[0.946s] copying /home/temp_id/ros2_ws/build/llm_node/build/lib/llm_node/ros2_chat_node.py -> /home/temp_id/ros2_ws/install/llm_node/lib/python3.10/site-packages/llm_node
+[0.947s] byte-compiling /home/temp_id/ros2_ws/install/llm_node/lib/python3.10/site-packages/llm_node/llm_inference.py to llm_inference.cpython-310.pyc
+[0.952s] byte-compiling /home/temp_id/ros2_ws/install/llm_node/lib/python3.10/site-packages/llm_node/__init__.py to __init__.cpython-310.pyc
+[0.952s] byte-compiling /home/temp_id/ros2_ws/install/llm_node/lib/python3.10/site-packages/llm_node/ros2_chat_node.py to ros2_chat_node.cpython-310.pyc
+[0.953s] running install_data
+[0.953s] creating /home/temp_id/ros2_ws/install/llm_node/share/ament_index
+[0.953s] creating /home/temp_id/ros2_ws/install/llm_node/share/ament_index/resource_index
+[0.953s] creating /home/temp_id/ros2_ws/install/llm_node/share/ament_index/resource_index/packages
+[0.953s] copying resource/llm_node -> /home/temp_id/ros2_ws/install/llm_node/share/ament_index/resource_index/packages
+[0.954s] copying package.xml -> /home/temp_id/ros2_ws/install/llm_node/share/llm_node
+[0.954s] running install_egg_info
+[0.954s] Copying ../../build/llm_node/llm_node.egg-info to /home/temp_id/ros2_ws/install/llm_node/lib/python3.10/site-packages/llm_node-0.0.0-py3.10.egg-info
+[0.955s] running install_scripts
+[0.971s] Installing ros2_chat_node script to /home/temp_id/ros2_ws/install/llm_node/lib/llm_node
+[0.971s] writing list of installed files to '/home/temp_id/ros2_ws/build/llm_node/install.log'
+[1.002s] Invoked command in '/home/temp_id/ros2_ws/src/llm_node' returned '0': HISTTIMEFORMAT=20%y/%m/%d %T PS1=\[\e[1;47;30m\][\u@\h:\W]\$\[\e[m\] PYTHONPATH=/home/temp_id/ros2_ws/build/llm_node/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/temp_id/ros2_ws/install/llm_node/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/llm_node build --build-base /home/temp_id/ros2_ws/build/llm_node/build install --record /home/temp_id/ros2_ws/build/llm_node/install.log --single-version-externally-managed install_data

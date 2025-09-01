@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ros2 pkg list:*)",
+      "Bash(apt list:*)",
+      "Read(/opt/ros/humble/**)",
+      "Bash(apt search:*)",
+      "Bash(sudo apt:*)",
+      "Bash(sudo apt install:*)",
+      "Bash(dpkg:*)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Bash(source:*)",
+      "Bash(python3:*)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Read(/home/temp_id/ros2_ws/src/vision_node/**)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Read(/home/temp_id/ros2_ws/install/vision_node/**)",
+      "Read(/home/temp_id/ros2_ws/install/vision_node/lib/python3.10/site-packages/**)",
+      "Read(/home/temp_id/ros2_ws/src/vision_node/**)",
+      "Read(/home/temp_id/ros2_ws/src/vision_node/**)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Bash(pip3 install:*)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Read(/home/temp_id/ros2_ws/**)",
+      "Read(/home/temp_id/ros2_ws/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

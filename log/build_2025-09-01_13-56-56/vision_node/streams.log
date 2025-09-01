@@ -1,0 +1,28 @@
+[0.684s] Invoking command in '/home/temp_id/ros2_ws/src/vision_node': HISTTIMEFORMAT=20%y/%m/%d %T PS1=\[\e[1;47;30m\][\u@\h:\W]\$\[\e[m\] PYTHONPATH=/home/temp_id/ros2_ws/build/vision_node/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/temp_id/ros2_ws/install/vision_node/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/vision_node build --build-base /home/temp_id/ros2_ws/build/vision_node/build install --record /home/temp_id/ros2_ws/build/vision_node/install.log --single-version-externally-managed install_data
+[0.861s] running egg_info
+[0.861s] writing ../../build/vision_node/vision_node.egg-info/PKG-INFO
+[0.861s] writing dependency_links to ../../build/vision_node/vision_node.egg-info/dependency_links.txt
+[0.861s] writing entry points to ../../build/vision_node/vision_node.egg-info/entry_points.txt
+[0.861s] writing requirements to ../../build/vision_node/vision_node.egg-info/requires.txt
+[0.862s] writing top-level names to ../../build/vision_node/vision_node.egg-info/top_level.txt
+[0.863s] reading manifest file '../../build/vision_node/vision_node.egg-info/SOURCES.txt'
+[0.864s] adding license file 'LICENSE'
+[0.864s] writing manifest file '../../build/vision_node/vision_node.egg-info/SOURCES.txt'
+[0.864s] running build
+[0.864s] running build_py
+[0.864s] copying vision_node/tool_detect.py -> /home/temp_id/ros2_ws/build/vision_node/build/lib/vision_node
+[0.865s] copying vision_node/tool_detect copy.py -> /home/temp_id/ros2_ws/build/vision_node/build/lib/vision_node
+[0.865s] running install
+[0.865s] running install_lib
+[0.865s] copying /home/temp_id/ros2_ws/build/vision_node/build/lib/vision_node/tool_detect.py -> /home/temp_id/ros2_ws/install/vision_node/lib/python3.10/site-packages/vision_node
+[0.865s] copying /home/temp_id/ros2_ws/build/vision_node/build/lib/vision_node/tool_detect copy.py -> /home/temp_id/ros2_ws/install/vision_node/lib/python3.10/site-packages/vision_node
+[0.866s] byte-compiling /home/temp_id/ros2_ws/install/vision_node/lib/python3.10/site-packages/vision_node/tool_detect.py to tool_detect.cpython-310.pyc
+[0.869s] byte-compiling /home/temp_id/ros2_ws/install/vision_node/lib/python3.10/site-packages/vision_node/tool_detect copy.py to tool_detect copy.cpython-310.pyc
+[0.873s] running install_data
+[0.873s] running install_egg_info
+[0.874s] removing '/home/temp_id/ros2_ws/install/vision_node/lib/python3.10/site-packages/vision_node-0.0.0-py3.10.egg-info' (and everything under it)
+[0.874s] Copying ../../build/vision_node/vision_node.egg-info to /home/temp_id/ros2_ws/install/vision_node/lib/python3.10/site-packages/vision_node-0.0.0-py3.10.egg-info
+[0.874s] running install_scripts
+[0.888s] Installing vision_node script to /home/temp_id/ros2_ws/install/vision_node/lib/vision_node
+[0.888s] writing list of installed files to '/home/temp_id/ros2_ws/build/vision_node/install.log'
+[0.909s] Invoked command in '/home/temp_id/ros2_ws/src/vision_node' returned '0': HISTTIMEFORMAT=20%y/%m/%d %T PS1=\[\e[1;47;30m\][\u@\h:\W]\$\[\e[m\] PYTHONPATH=/home/temp_id/ros2_ws/build/vision_node/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/temp_id/ros2_ws/install/vision_node/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/vision_node build --build-base /home/temp_id/ros2_ws/build/vision_node/build install --record /home/temp_id/ros2_ws/build/vision_node/install.log --single-version-externally-managed install_data

@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: vision-node
+Version: 0.0.0
+Summary: ROS2 vision node for tool detection using RealSense camera and YOLO
+Home-page: UNKNOWN
+Maintainer: temp_id
+Maintainer-email: kwt9882@naver.com
+License: Apache-2.0
+Platform: UNKNOWN
+License-File: LICENSE
+
+UNKNOWN
+
