@@ -63,21 +63,21 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/data_hub" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/data_hub")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/test_motor_connect" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/test_motor_connect")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/data_hub"
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/test_motor_connect"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg" TYPE EXECUTABLE FILES "/home/pc/soomac_ws/build/dongsoo_cpp_pkg/data_hub")
-  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/data_hub" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/data_hub")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg" TYPE EXECUTABLE FILES "/home/pc/soomac_ws/build/dongsoo_cpp_pkg/test_motor_connect")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/test_motor_connect" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/test_motor_connect")
     file(RPATH_CHANGE
-         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/data_hub"
+         FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/test_motor_connect"
          OLD_RPATH "/opt/ros/humble/lib:"
          NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/data_hub")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/dongsoo_cpp_pkg/test_motor_connect")
     endif()
   endif()
 endif()

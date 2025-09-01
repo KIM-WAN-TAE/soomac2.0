@@ -16,6 +16,7 @@
 #include <string>
 #include <signal.h>    // signal handling
 #include <fstream>     // JSON file reading
+#include <nlohmann/json.hpp>  // nlohmann JSON library
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
@@ -44,8 +45,9 @@ static inline Matrix4d dh(double th, double d, double a, double al) {
   return T;
 }
 
-// -------------------- 간단한 JSON 파싱 함수들 --------------------
-// nlohmann-json 대신 간단한 수동 파싱 사용
+// -------------------- nlohmann JSON 파싱 함수들 --------------------
+using json = nlohmann::json;
+
 struct DHParameters {
   double d1, a2, a3, a4, alpha1, theta2_offset;
   Vector3d gravity_vector;
@@ -56,56 +58,45 @@ struct LinkInertialData {
   Vector3d com;
 };
 
-// JSON에서 숫자 추출하는 간단한 함수
-double extractNumber(const std::string& line, const std::string& key) {
-  size_t pos = line.find("\"" + key + "\"");
-  if (pos == std::string::npos) return 0.0;
-  
-  pos = line.find(":", pos);
-  if (pos == std::string::npos) return 0.0;
-  
-  pos = line.find_first_of("-0123456789", pos);
-  if (pos == std::string::npos) return 0.0;
-  
-  size_t end_pos = line.find_first_of(",}\n", pos);
-  if (end_pos == std::string::npos) end_pos = line.length();
-  
-  return std::stod(line.substr(pos, end_pos - pos));
-}
-
 DHParameters loadDHParameters(const std::string& config_path) {
   std::ifstream file(config_path + "/gravity_dh_param.json");
   if (!file.is_open()) {
     throw std::runtime_error("Cannot open gravity_dh_param.json");
   }
   
-  DHParameters params;
-  std::string line;
+  json j;
+  file >> j;
   
-  while (std::getline(file, line)) {
-    if (line.find("\"d\"") != std::string::npos) {
-      params.d1 = extractNumber(line, "d");
-    } else if (line.find("\"alpha\"") != std::string::npos && params.alpha1 == 0) {
-      params.alpha1 = extractNumber(line, "alpha");
-    } else if (line.find("\"theta_offset\"") != std::string::npos) {
-      params.theta2_offset = extractNumber(line, "theta_offset");
-    } else if (line.find("\"a\"") != std::string::npos) {
-      double a_val = extractNumber(line, "a");
-      if (a_val > 0.2 && a_val < 0.3 && params.a2 == 0) {
-        params.a2 = a_val;  // First a value ~0.25
-      } else if (a_val > 0.2 && a_val < 0.3 && params.a3 == 0) {
-        params.a3 = a_val;  // Second a value ~0.25  
-      } else if (a_val > 0.2 && a_val < 0.22) {
-        params.a4 = a_val;  // Third a value ~0.216
+  DHParameters params;
+  
+  // Gravity DH parameters에서 정확한 파싱
+  const auto& joints = j["gravity_dh_parameters"]["joints"];
+  
+  // Joint 1 (motor_id: 1) - d1, alpha1 추출
+  for (const auto& joint : joints) {
+    int motor_id = joint["motor_id"];
+    const auto& dh = joint["dh_params"];
+    
+    if (motor_id == 1) {
+      params.d1 = dh["d"];
+      params.alpha1 = dh["alpha"];
+    } else if (motor_id == 2) {
+      params.a2 = dh["a"];
+      if (dh.contains("theta_offset")) {
+        params.theta2_offset = dh["theta_offset"];
       }
-    } else if (line.find("\"x\"") != std::string::npos && line.find("gravity") != std::string::npos) {
-      params.gravity_vector.x() = extractNumber(line, "x");
-    } else if (line.find("\"y\"") != std::string::npos && line.find("gravity") != std::string::npos) {
-      params.gravity_vector.y() = extractNumber(line, "y");
-    } else if (line.find("\"z\"") != std::string::npos && line.find("gravity") != std::string::npos) {
-      params.gravity_vector.z() = extractNumber(line, "z");
+    } else if (motor_id == 3) {
+      params.a3 = dh["a"];
+    } else if (motor_id == 4) {
+      params.a4 = dh["a"];
     }
   }
+  
+  // Gravity vector 정확한 파싱
+  const auto& gvec = j["gravity_dh_parameters"]["gravity_vector"];
+  params.gravity_vector.x() = gvec["x"];
+  params.gravity_vector.y() = gvec["y"];
+  params.gravity_vector.z() = gvec["z"];
   
   return params;
 }
@@ -116,35 +107,22 @@ std::vector<LinkInertialData> loadLinkInertialData(const std::string& config_pat
     throw std::runtime_error("Cannot open link_inertial.json");
   }
   
+  json j;
+  file >> j;
+  
   std::vector<LinkInertialData> links;
-  LinkInertialData current_link;
-  std::string line;
-  bool in_link = false;
-  bool in_com = false;
   
-  while (std::getline(file, line)) {
-    if (line.find("\"link_id\"") != std::string::npos) {
-      if (in_link) {
-        links.push_back(current_link);
-      }
-      current_link = LinkInertialData();
-      in_link = true;
-    } else if (in_link && line.find("\"mass\"") != std::string::npos) {
-      current_link.mass = extractNumber(line, "mass");
-    } else if (in_link && line.find("\"center_of_mass\"") != std::string::npos) {
-      in_com = true;
-    } else if (in_com && line.find("\"x\"") != std::string::npos) {
-      current_link.com.x() = extractNumber(line, "x");
-    } else if (in_com && line.find("\"y\"") != std::string::npos) {
-      current_link.com.y() = extractNumber(line, "y");
-    } else if (in_com && line.find("\"z\"") != std::string::npos) {
-      current_link.com.z() = extractNumber(line, "z");
-      in_com = false;
-    }
-  }
-  
-  if (in_link) {
-    links.push_back(current_link);
+  // 정확한 JSON 구조로 파싱
+  for (const auto& link : j["links"]) {
+    LinkInertialData link_data;
+    link_data.mass = link["inertial"]["mass"];
+    
+    const auto& com = link["inertial"]["center_of_mass"];
+    link_data.com.x() = com["x"];
+    link_data.com.y() = com["y"];
+    link_data.com.z() = com["z"];
+    
+    links.push_back(link_data);
   }
   
   return links;
@@ -171,10 +149,10 @@ public:
 
     // ---- PID 게인 (출력 단위: "전류 raw 카운트") ----
     // 입력은 position/velocity raw(count) 단위이므로 게인은 raw->raw 스케일입니다.
-    // 2,3축은 처짐 보상을 위해 더 높은 게인 적용
-    KP_POS_GAINS({0.5f, 1.25f, 1.0f, 1.0f}), 
-    KI_POS_GAINS({0.0f, 0.01f, 0.01f, 0.000f}),  // I 게인 (초기값 0.0)
-    KD_POS_GAINS({0.012f, 0.015f, 0.012f, 0.01f}),
+    // 2,3축은 처짐 보상을 위해 더 높은 게인 적용 (개선된 버전)
+    KP_POS_GAINS({0.8f, 1.5f, 1.2f, 1.0f}), 
+    KI_POS_GAINS({0.05f, 0.08f, 0.06f, 0.03f}),  // I 게인 강화 (정상상태 오차 감소)
+    KD_POS_GAINS({0.02f, 0.025f, 0.02f, 0.015f}),
 
     // ---- 전류 리밋(soft clamp + 레지스터(38) 설정) ----
     // XH540-V270-R: Current Limit(38) 범위 0~1188 (3.2A)
@@ -182,13 +160,13 @@ public:
     // 벤치 시작: 각각 900(2.42A), 500(1.35A) 정도 권장
     CURRENT_LIMIT_SOFT(1200),
 
-    // ---- 적분 제한 (Anti-windup) ----
-    MAX_INTEGRAL_ERROR(10000.0f),  // 적분 누적 최대값 [count*sec]
+    // ---- 적분 제한 (Anti-windup) 강화 ----
+    MAX_INTEGRAL_ERROR(5000.0f),  // 적분 누적 최대값 감소 [count*sec]
 
     // ---- 제어 주기[s] ----
     dt(0.005f),
 
-    K_GFF({1.0, 1.0, 1.0, 1.0})
+    K_GFF({1.2, 1.45, 1.4, 1.2})  // 중력보상 게인 조정 (2,3축 강화)
   {
     // ---- JSON 설정 파일 로드 ----
     try {
@@ -512,22 +490,29 @@ private:
     // τg[Nm] & 전류 raw 산출
     Eigen::Vector4d tau_g = computeGravityTorqueNm(q_rad);
     
-    // 중력보상 디버깅 로그 (5초마다 출력)
+    // 중력보상 및 제어 품질 디버깅 로그 (5초마다 출력)
     static auto last_log_time = std::chrono::steady_clock::now();
     auto now = std::chrono::steady_clock::now();
     if (std::chrono::duration_cast<std::chrono::seconds>(now - last_log_time).count() >= 5) {
-      RCLCPP_INFO(get_logger(), "Gravity Debug - q[rad]: [%.3f, %.3f, %.3f, %.3f]", 
+      RCLCPP_INFO(get_logger(), "=== 제어 상태 모니터링 (nlohmann JSON 버전) ===");
+      RCLCPP_INFO(get_logger(), "DH Params - d1:%.3f, a2:%.3f, a3:%.3f, a4:%.3f, alpha1:%.3f", 
+                  d1_, a2_, a3_, a4_, alpha1_);
+      RCLCPP_INFO(get_logger(), "Gravity Vec - [%.3f, %.3f, %.3f]", 
+                  gvec_.x(), gvec_.y(), gvec_.z());
+      RCLCPP_INFO(get_logger(), "Joint Angles[rad] - [%.3f, %.3f, %.3f, %.3f]", 
                   q_rad[0], q_rad[1], q_rad[2], q_rad[3]);
-      RCLCPP_INFO(get_logger(), "Gravity Debug - tau_g[Nm]: [%.3f, %.3f, %.3f, %.3f]", 
+      RCLCPP_INFO(get_logger(), "Gravity Torque[Nm] - [%.3f, %.3f, %.3f, %.3f]", 
                   tau_g[0], tau_g[1], tau_g[2], tau_g[3]);
-      RCLCPP_INFO(get_logger(), "Gravity Debug - pos_err[cnt]: [%.1f, %.1f, %.1f, %.1f]", 
+      RCLCPP_INFO(get_logger(), "Position Errors[cnt] - [%.1f, %.1f, %.1f, %.1f]", 
                   desired_pos_[0]-pos_count[0], desired_pos_[1]-pos_count[1], 
                   desired_pos_[2]-pos_count[2], desired_pos_[3]-pos_count[3]);
-      RCLCPP_INFO(get_logger(), "Gravity Debug - tau_g_raw[LSB]: [%d, %d, %d, %d]", 
+      RCLCPP_INFO(get_logger(), "FF Current[LSB] - [%d, %d, %d, %d]", 
                   torqueNm_to_currentRaw(tau_g[0]*K_GFF[0], 0),
                   torqueNm_to_currentRaw(tau_g[1]*K_GFF[1], 1),
                   torqueNm_to_currentRaw(tau_g[2]*K_GFF[2], 2),
                   torqueNm_to_currentRaw(tau_g[3]*K_GFF[3], 3));
+      RCLCPP_INFO(get_logger(), "Integral Terms - [%.1f, %.1f, %.1f, %.1f]", 
+                  integral_error_[0], integral_error_[1], integral_error_[2], integral_error_[3]);
       last_log_time = now;
     }
 
@@ -543,25 +528,19 @@ private:
     // SyncWrite 파라미터 초기화
     group_sync_write_->clearParam();
 
-    // 1,2,3,4번 모터 제어 (기존 로직 유지)
+    // 1,2,3,4번 모터 제어 (개선된 버전: 강화된 Anti-windup)
     for (size_t i = 0; i < 4; ++i) {
       // PID 제어: 출력 단위 = "전류 raw"
       float pos_err = desired_pos_[i] - pos_count[i];
       float dpos = (pos_err - last_pos_error_[i]) / dt;
       
-      // 적분 항 계산 (Anti-windup 포함)
-      integral_error_[i] += pos_err * dt;
-      integral_error_[i] = std::clamp(integral_error_[i], -MAX_INTEGRAL_ERROR, MAX_INTEGRAL_ERROR);
+      // P, D 항 먼저 계산
+      float pid_raw = KP_POS_GAINS[i] * pos_err + KD_POS_GAINS[i] * dpos;
       
-      last_pos_error_[i] = pos_err;
+      // 중력보상 개별 적용 (포화 전에 미리 합산)
+      float ff_raw = static_cast<float>(tau_g_raw[i]);
+      float pre_sat_cmd = pid_raw + ff_raw;
       
-      float cmd_raw = KP_POS_GAINS[i] * pos_err + 
-                      KI_POS_GAINS[i] * integral_error_[i] +  // I 항 추가
-                      KD_POS_GAINS[i] * dpos;
-
-      // 중력보상(전류 raw) 합산
-      cmd_raw += static_cast<float>(tau_g_raw[i]);
-
       // 소프트 리밋 (모터별 차등 적용)
       float limit;
       if (dxl_ids_[i] == 4) {
@@ -569,7 +548,20 @@ private:
       } else {
         limit = 900.0f; // XH540-V270-R
       }
+      
+      // Back-calculation Anti-windup: 포화 전후 차이를 I 항에서 보상
+      float cmd_raw_clamped = std::clamp(pre_sat_cmd, -limit, +limit);
+      float saturation_error = cmd_raw_clamped - pre_sat_cmd;
+      
+      // 적분 항 계산 (Back-calculation Anti-windup 적용)
+      integral_error_[i] += pos_err * dt + (saturation_error * 0.1f / KI_POS_GAINS[i]); // Back-calculation factor
+      integral_error_[i] = std::clamp(integral_error_[i], -MAX_INTEGRAL_ERROR, MAX_INTEGRAL_ERROR);
+      
+      // I 항 추가 및 최종 명령값 계산
+      float cmd_raw = pid_raw + KI_POS_GAINS[i] * integral_error_[i] + ff_raw;
       cmd_raw = std::clamp(cmd_raw, -limit, +limit);
+      
+      last_pos_error_[i] = pos_err;
 
       // SyncWrite 버퍼(멤버에 유지: 포인터 수명 문제 방지)
       int32_t goal_current = static_cast<int32_t>(std::lround(cmd_raw));

@@ -1,0 +1,33 @@
+[0.007s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[0.032s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.110s] -- Found rclcpp: 16.0.14 (/opt/ros/humble/share/rclcpp/cmake)
+[0.127s] -- Found rosidl_generator_c: 3.1.7 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[0.129s] -- Found rosidl_adapter: 3.1.7 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.132s] -- Found rosidl_generator_cpp: 3.1.7 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[0.138s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.145s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.163s] -- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[0.164s] -- Found rmw_fastrtps_cpp: 6.2.8 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[0.221s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.247s] -- Found dynamixel_sdk: 3.8.4 (/opt/ros/humble/share/dynamixel_sdk/cmake)
+[0.253s] [31mCMake Error at CMakeLists.txt:20 (find_package):
+[0.253s]   By not providing "Findnlohmann_json.cmake" in CMAKE_MODULE_PATH this
+[0.253s]   project has asked CMake to find a package configuration file provided by
+[0.253s]   "nlohmann_json", but CMake did not find one.
+[0.253s] 
+[0.253s]   Could not find a package configuration file provided by "nlohmann_json"
+[0.253s]   (requested version 3.2.0) with any of the following names:
+[0.253s] 
+[0.253s]     nlohmann_jsonConfig.cmake
+[0.253s]     nlohmann_json-config.cmake
+[0.253s] 
+[0.253s]   Add the installation prefix of "nlohmann_json" to CMAKE_PREFIX_PATH or set
+[0.253s]   "nlohmann_json_DIR" to a directory containing one of the above files.  If
+[0.253s]   "nlohmann_json" provides a separate development package or SDK, be sure it
+[0.253s]   has been installed.
+[0.253s] 
+[0.253s] [0m
+[0.253s] -- Configuring incomplete, errors occurred!
+[0.254s] See also "/home/pc/soomac_ws/build/dongsoo_cpp_pkg/CMakeFiles/CMakeOutput.log".
+[0.255s] gmake: *** [Makefile:308: cmake_check_build_system] Error 1
+[0.257s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32

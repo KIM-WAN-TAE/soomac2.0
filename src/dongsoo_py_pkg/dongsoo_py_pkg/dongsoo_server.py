@@ -48,11 +48,25 @@ class DongsooServer(Node):
             10,
             callback_group = self.sub_cb_group
         )
-        
+        # Subscribe to current joint positions to ensure smooth start
+        self.joint_pos_sub = self.create_subscription(
+            Int32MultiArray,
+            '/motor/position',
+            self.joint_position_callback,
+            10,
+            callback_group=self.sub_cb_group
+        )
+
         self.motor_control_pub = self.create_publisher(Int32MultiArray, '/motor/command_position', 10)
         
         self.present_position = np.array([])
         self.present_orientation = np.array([])
+        # Track latest joint pulses and active joint angles (J1..J4) in radians
+        self.latest_pulses = np.array([2048, 2048, 2048, 2048, 2048], dtype=np.int32)
+        self.q_current_active = np.zeros(4, dtype=float)
+        self.last_joint_update = None
+        
+        self.last_end_point = None
         
         self.create_service(DongSooExecutor, 'dongsoo_executor', self.service_callback, callback_group = self.srv_cb_group)
     
@@ -79,24 +93,52 @@ class DongsooServer(Node):
             # print(f'Position    : {self.present_position:8.4f}')
             # print(f'Orientation : {self.present_orientation:8.4f}')
             
+    def joint_position_callback(self, msg: Int32MultiArray):
+        """Update latest joint positions and compute current active joint angles (J1..J4)."""
+        with self.data_lock:
+            data = list(msg.data)
+            if len(data) >= 4:
+                # Store pulses
+                for i in range(min(5, len(data))):
+                    self.latest_pulses[i] = int(data[i])
+                # Convert to radians for J1..J4 (assuming 2048 -> 0 rad)
+                # 4096 cnt/rev, 2*pi rad/rev
+                cnt2rad = 2.0 * np.pi / 4096.0
+                self.q_current_active = ((self.latest_pulses[:4] - 2048).astype(float)) * cnt2rad
+                self.last_joint_update = self.get_clock().now()
+
     def service_callback(self, req, response):
         try:
-            start_point = self.present_position
+            # Desired end-effector pose from request
+            if self.last_end_point is None:
+                start_point = self.present_position
+            else:
+                # Ensure start_point is properly formatted as numpy array
+                start_point = np.asarray(self.last_end_point, dtype=np.float32)
+                # Make sure it has the same shape as present_position
+                if start_point.ndim == 1:
+                    start_point = start_point.reshape(1, -1)
             end_point = req.position
             end_look  = req.look
-            
+
+            self.last_end_point = end_point
+
+            # Use current joint angles (from /motor/position) as start state to avoid initial jerk
+            with self.data_lock:
+                q_start = self.q_current_active.copy()
+
+            # Solve only for end configuration, warm-starting from current joints
             if end_look == 'down':
                 q_result = get_ik_result(start_point, end_point, mode='down', w_ori=0.2)
-            
             elif end_look == 'straight':
                 q_result = get_ik_result(start_point, end_point, mode='straight', w_ori=0.2)
-            else :
+            else:
                 self.get_logger().warn(' 잘못된 방향 입력 ')
                 response.success = False
                 return
-                
-            q_start = q_result['q_start']
-            q_end   = q_result['q_end']
+
+            # Replace IK-computed q_start with actual current joints to ensure smooth start
+            q_end = q_result['q_end']
             print(' ')
             for i, _ in enumerate(q_end):
                 self.get_logger().info(f'[Q_list_{i+1}] : {np.degrees(q_end[i]):7.2f}')
