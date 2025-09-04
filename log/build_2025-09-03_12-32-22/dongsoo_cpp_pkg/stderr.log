@@ -1,0 +1,17 @@
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/test_motor_connect.cpp:333:18:[m[K [01;31m[Kerror: [m[Kexpected class-name before ‘[01m[K([m[K’ token
+  333 |   ~DxlCurrentNode[01;31m[K([m[K) {
+      |                  [01;31m[K^[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/test_motor_connect.cpp:[m[K In constructor ‘[01m[KTestDxlCurrentNode::TestDxlCurrentNode()[m[K’:
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/test_motor_connect.cpp:317:18:[m[K [01;31m[Kerror: [m[K‘[01m[KDxlCurrentNode[m[K’ has not been declared
+  317 |       std::bind(&[01;31m[KDxlCurrentNode[m[K::positionCallback, this, std::placeholders::_1)
+      |                  [01;31m[K^~~~~~~~~~~~~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/test_motor_connect.cpp:323:18:[m[K [01;31m[Kerror: [m[K‘[01m[KDxlCurrentNode[m[K’ has not been declared
+  323 |       std::bind(&[01;31m[KDxlCurrentNode[m[K::dxl5PositionCallback, this, std::placeholders::_1)
+      |                  [01;31m[K^~~~~~~~~~~~~~[m[K
+[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/test_motor_connect.cpp:328:43:[m[K [01;31m[Kerror: [m[K‘[01m[KDxlCurrentNode[m[K’ has not been declared
+  328 |                                std::bind(&[01;31m[KDxlCurrentNode[m[K::readAndPublish, this));
+      |                                           [01;31m[K^~~~~~~~~~~~~~[m[K
+gmake[2]: *** [CMakeFiles/test_motor_connect.dir/build.make:76: CMakeFiles/test_motor_connect.dir/src/test_motor_connect.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:165: CMakeFiles/test_motor_connect.dir/all] Error 2
+gmake[1]: *** Waiting for unfinished jobs....
+gmake: *** [Makefile:146: all] Error 2

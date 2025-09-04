@@ -1,5 +1,6 @@
 [console_scripts]
 client_dongsoo = dongsoo_py_pkg.dongsoo_client:main
+command_centor = dongsoo_py_pkg.dongsoo_command_centor:main
 data_hub_py = dongsoo_py_pkg.data_hub:main
 monitoring_hub = dongsoo_py_pkg.monitoring_hub:main
 motor_dummy = dongsoo_py_pkg.motor_dummy:main
