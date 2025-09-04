@@ -69,16 +69,20 @@ DHParameters loadDHParameters(const std::string& config_path) {
   
   DHParameters params;
   
-  // Gravity DH parameters에서 정확한 파싱
+  // ==> 수정사항.md 문제점 해결 1: 정식 JSON 파싱 사용 <==
+  // 기존: 라인 기반 파싱으로 중력벡터 파싱 실패 (FF≈0)
+  // 개선: nlohmann::json으로 구조적 접근
   const auto& joints = j["gravity_dh_parameters"]["joints"];
   
-  // Joint 1 (motor_id: 1) - d1, alpha1 추출
+  // ==> 수정사항.md 문제점 해결 2: d1 덤어쓰기 버그 수정 <==
+  // 기존: 모든 "d" 키를 처리하다가 Joint 2,3,4의 "d":0.0이 d1을 덤어씀
+  // 개선: motor_id로 명시적 구분
   for (const auto& joint : joints) {
     int motor_id = joint["motor_id"];
     const auto& dh = joint["dh_params"];
     
     if (motor_id == 1) {
-      params.d1 = dh["d"];
+      params.d1 = dh["d"];           // 올바른 d1=0.11575 유지
       params.alpha1 = dh["alpha"];
     } else if (motor_id == 2) {
       params.a2 = dh["a"];
@@ -92,11 +96,13 @@ DHParameters loadDHParameters(const std::string& config_path) {
     }
   }
   
-  // Gravity vector 정확한 파싱
+  // ==> 수정사항.md 문제점 해결 3: 중력벡터 정확한 파싱 <==
+  // 기존: line.find("gravity") && line.find("x") 동시 조건으로 파싱 실패
+  // 개선: 구조적 경로로 직접 접근
   const auto& gvec = j["gravity_dh_parameters"]["gravity_vector"];
-  params.gravity_vector.x() = gvec["x"];
-  params.gravity_vector.y() = gvec["y"];
-  params.gravity_vector.z() = gvec["z"];
+  params.gravity_vector.x() = gvec["x"];  // 0.0
+  params.gravity_vector.y() = gvec["y"];  // 0.0
+  params.gravity_vector.z() = gvec["z"];  // -9.81 (올바른 값)
   
   return params;
 }
@@ -166,6 +172,9 @@ public:
     // ---- 제어 주기[s] ----
     dt(0.005f),
 
+    // ==> 수정사항.md 문제점 해결 8: 중력보상 게인 조정 <==
+    // 기존: K_GFF={1.0, 1.0, 1.0, 1.0} - 균등한 게인
+    // 개선: 2,3축 강화로 중력보상 효과 극대화
     K_GFF({1.2, 1.45, 1.4, 1.2})  // 중력보상 게인 조정 (2,3축 강화)
   {
     // ---- JSON 설정 파일 로드 ----
@@ -490,6 +499,9 @@ private:
     // τg[Nm] & 전류 raw 산출
     Eigen::Vector4d tau_g = computeGravityTorqueNm(q_rad);
     
+    // ==> 수정사항.md 문제점 해결 6: 강화된 디버깅 로그 <==
+    // 기존: 기본 디버깅 정보만 출력
+    // 개선: d1, gravity_vector, FF 전류, 적분항 상태까지 모니터링
     // 중력보상 및 제어 품질 디버깅 로그 (5초마다 출력)
     static auto last_log_time = std::chrono::steady_clock::now();
     auto now = std::chrono::steady_clock::now();

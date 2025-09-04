@@ -27,6 +27,7 @@ setup(
             'monitoring_hub = dongsoo_py_pkg.monitoring_hub:main',
             'client_dongsoo = dongsoo_py_pkg.dongsoo_client:main',
             'server_dongsoo = dongsoo_py_pkg.dongsoo_server:main',
+            'command_centor = dongsoo_py_pkg.dongsoo_command_centor:main'
         ],
     },
 )
