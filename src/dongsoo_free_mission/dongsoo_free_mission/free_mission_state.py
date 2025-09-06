@@ -12,12 +12,7 @@ class FreeMissionState():
         # 니퍼
         if self.tool == 'nipper':
             print('Get Nipper Plz')
-            
-            if self.state == 0:
                 
-            elif self.state == 1:
-        
-        
         # 버니어 캘리퍼
         elif self.tool == 'vernier_calipers':
             pass
@@ -31,3 +26,6 @@ class FreeMissionState():
         # 와이어 스트리퍼
         elif self.tool == 'wire_stripper':
             pass
+        
+    def nipper_grip(self):
+        

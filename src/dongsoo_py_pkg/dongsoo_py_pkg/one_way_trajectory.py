@@ -39,9 +39,18 @@ class OneWayTrajectoryNode(Node):
             10
         )
         
+        # 현재 위치 수신을 위한 서브스크립션
+        self.position_subscriber = self.create_subscription(
+            Int32MultiArray,
+            '/motor/position',
+            self.position_callback,
+            10
+        )
+        
         # 4자유도 궤적 정의: start -> end (편도)
-        self.start_pos = [2048.0, 2048.0, 2048.0, 2048.0]  # 시작점 (중앙 위치)
+        self.start_pos = [2048.0, 2048.0, 2048.0, 2048.0]  # 기본값 (현재 위치로 업데이트됨)
         self.end_pos = [2048.0, 2740.0, 700.0, 1700.0]     # 종료점 (목표 위치)
+        self.current_position_received = False  # 현재 위치 수신 플래그
         
         # self.end_pos = [2048.0, 2048.0, 2048.0, 2048.0]  # 시작점 (중앙 위치)
         # self.start_pos = [2048.0, 2740.0, 700.0, 1700.0]
@@ -72,9 +81,27 @@ class OneWayTrajectoryNode(Node):
         # 궤적 생성
         self.generate_trajectory()
         
-        # 3초 후 시작
-        self.get_logger().info('3초 후 편도 궤적 실행 시작...')
-        self.start_timer = self.create_timer(3.0, self.start_trajectory)
+        # 현재 위치를 받을 때까지 대기 후 시작
+        self.get_logger().info('현재 모터 위치를 기다리는 중...')
+        self.wait_timer = self.create_timer(0.1, self.wait_for_position)
+    
+    def position_callback(self, msg):
+        """현재 모터 위치 수신 콜백"""
+        if not self.current_position_received and len(msg.data) >= 4:
+            # 현재 위치를 시작점으로 설정 (4자유도만 사용)
+            self.start_pos = [float(msg.data[i]) for i in range(4)]
+            self.current_position_received = True
+            self.get_logger().info(f'현재 위치를 시작점으로 설정: {self.start_pos}')
+            
+            # 새로운 시작점으로 궤적 재생성
+            self.generate_trajectory()
+    
+    def wait_for_position(self):
+        """현재 위치 수신 대기"""
+        if self.current_position_received:
+            self.wait_timer.destroy()
+            self.get_logger().info('3초 후 편도 궤적 실행 시작...')
+            self.start_timer = self.create_timer(3.0, self.start_trajectory)
     
     def generate_trajectory(self):
         """편도 궤적 포인트 생성: start -> end"""

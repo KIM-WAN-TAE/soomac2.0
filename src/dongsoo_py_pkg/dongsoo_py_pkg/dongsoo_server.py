@@ -5,7 +5,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 from dongsoo_interfaces.srv import DongSooExecutor
-from std_msgs.msg import Float32MultiArray, Int32MultiArray 
+from std_msgs.msg import Float32MultiArray, Int32MultiArray, String
 from rclpy.callback_groups import ReentrantCallbackGroup
 from dongsoo_py_pkg.Inverse_Kinematics import get_ik_result
 import numpy as np
@@ -58,6 +58,7 @@ class DongsooServer(Node):
         )
 
         self.motor_control_pub = self.create_publisher(Int32MultiArray, '/motor/command_position', 10)
+        self.ik_done_pub       = self.create_publisher(String, '/info/string/movement_done', 10)
         
         self.present_position = np.array([])
         self.present_orientation = np.array([])
@@ -157,6 +158,11 @@ class DongsooServer(Node):
                 time.sleep(sleep_time)
             
             response.success = True
+            
+            ik_msg = String()
+            ik_msg.data = 'done'
+            self.get_logger().info(f'{ik_msg.data}')
+            self.ik_done_pub.publish(ik_msg)
 
         except Exception as e:
             self.get_logger().error(f' Planning or Ik Fail : {e}')

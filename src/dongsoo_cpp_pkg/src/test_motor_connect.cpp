@@ -157,9 +157,9 @@ public:
     // ---- PID 게인 (출력 단위: "전류 raw 카운트") ----
     // 입력은 position/velocity raw(count) 단위이므로 게인은 raw->raw 스케일입니다.
     // 2,3축은 처짐 보상을 위해 더 높은 게인 적용 (개선된 버전)
-    KP_POS_GAINS({0.8f, 1.5f, 1.2f, 1.0f}), 
-    KI_POS_GAINS({0.05f, 0.08f, 0.06f, 0.03f}),  // I 게인 강화 (정상상태 오차 감소)
-    KD_POS_GAINS({0.02f, 0.025f, 0.02f, 0.015f}),
+    KP_POS_GAINS({1.0f, 1.5f, 1.2f, 1.1f}), 
+    KI_POS_GAINS({0.00f, 0.05f, 0.05f, 0.01f}),  // I 게인 강화 (정상상태 오차 감소)
+    KD_POS_GAINS({0.02f, 0.015f, 0.02f, 0.005f}),
 
     // ---- 전류 리밋(soft clamp + 레지스터(38) 설정) ----
     // XH540-V270-R: Current Limit(38) 범위 0~1188 (3.2A)
