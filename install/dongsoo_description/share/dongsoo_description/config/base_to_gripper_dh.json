@@ -4,14 +4,14 @@
       {
         "joint_id": 1,
         "theta": "q1",
-        "d": 0.11575,
+        "d": 0.12075,
         "a": 0.0,
-        "alpha": 1.5707963267948966
+        "alpha": "pi/2"
       },
       {
         "joint_id": 2,
         "theta": "q2",
-        "theta_offset": 1.5707963267948966,
+        "theta_offset": "pi/2",
         "d": 0.0,
         "a": 0.250,
         "alpha": 0.0
@@ -26,15 +26,15 @@
       {
         "joint_id": 4,
         "theta": "q4",
-        "theta_offset": 1.5707963267948966,
+        "theta_offset": "pi/2",
         "d": 0.0,
         "a": 0.0,
-        "alpha": 1.5707963267948966
+        "alpha": "pi/2"
       },
       {
         "joint_id": 5,
         "theta": "q5",
-        "d": 0.2159,
+        "d": 0.2049,
         "a": 0.0,
         "alpha": 0.0
       }

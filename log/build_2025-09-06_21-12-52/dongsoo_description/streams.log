@@ -1,0 +1,26 @@
+[0.005s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_description -- -j32 -l32
+[0.030s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_description -- -j32 -l32
+[0.034s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_description
+[0.037s] -- Install configuration: ""
+[0.037s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config
+[0.037s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/base_to_gripper_dh.json
+[0.037s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/base_to_camera_dh.json
+[0.037s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/link_inertial.json
+[0.037s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/README.md
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/gravity_dh_param.json
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/ament_index/resource_index/package_run_dependencies/dongsoo_description
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/ament_index/resource_index/parent_prefix_path/dongsoo_description
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/environment/ament_prefix_path.sh
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/environment/ament_prefix_path.dsv
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/environment/path.sh
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/environment/path.dsv
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/local_setup.bash
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/local_setup.sh
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/local_setup.zsh
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/local_setup.dsv
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.dsv
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/ament_index/resource_index/packages/dongsoo_description
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/cmake/dongsoo_descriptionConfig.cmake
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/cmake/dongsoo_descriptionConfig-version.cmake
+[0.038s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.xml
+[0.038s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_description

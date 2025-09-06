@@ -50,64 +50,40 @@ class DataHub(Node):
         super().__init__('data_hub')
         self.get_logger().info(' DataHub Node On! ')
         
-        # Thread lock for data synchronization
         self.data_lock = threading.Lock()
         
-        # Data storage variables
-        self.joint_pulses = [0, 0, 0, 0, 0]  # pulse values
-        self.joint_degrees = [0.0, 0.0, 0.0, 0.0, 0.0]  # degree values
-        self.q_rad = [0.0, 0.0, 0.0, 0.0, 0.0]  # radian values
+        self.joint_pulses = [0, 0, 0, 0, 0]
+        self.joint_degrees = [0.0, 0.0, 0.0, 0.0, 0.0]
+        self.q_rad = [0.0, 0.0, 0.0, 0.0, 0.0]
         self.currents = [0.0, 0.0, 0.0, 0.0, 0.0]
         self.velocities = [0.0, 0.0, 0.0, 0.0, 0.0]
         
-        # Pose data (4x4 transformation matrices)
         self.gripper_pose = np.eye(4)
         self.camera_pose = np.eye(4)
         
-        # Subscribers
-        self.sub_position = self.create_subscription(
+        self.sub_pose = self.create_subscription(
             Int32MultiArray,
             '/motor/position',
             self.present_position_callback,
             10
         )
         
-        self.sub_current = self.create_subscription(
-            Float32MultiArray,
-            '/motor/current',
-            self.present_current_callback,
-            10
-        )
-        
-        self.sub_velocity = self.create_subscription(
-            Float32MultiArray,
-            '/motor/velocity',
-            self.present_velocity_callback,
-            10
-        )
-        
         self.camera_mat_pub = self.create_publisher(Float32MultiArray, '/info/matrix/camera', 10)
         self.gripper_mat_pub = self.create_publisher(Float32MultiArray, '/info/matrix/gripper', 10)
         
-        # Use global DH parameter objects
-        
-        timer_period = 1/10  # 10Hz - 적절한 발행 주기
+        timer_period = 1/10
         self.create_timer(timer_period, self.timer_callback)
     
     def fk(self, dh_params):
-        """Forward kinematics calculation"""
         T = np.eye(4)
         for params in dh_params:
             T = T @ dh_transform(params['theta'], params['d'], params['a'], params['alpha'])
         return T
     
     def calculate_poses(self, q_rad):
-        """Calculate gripper and camera poses from joint angles"""
-        # Get DH parameters
         cam_params = cam_dh.get_all_dh_params(q_rad)
         grip_params = grip_dh.get_all_dh_params(q_rad)
         
-        # Forward kinematics
         T_cam = self.fk(cam_params)
         T_grip = self.fk(grip_params)
         
@@ -120,31 +96,15 @@ class DataHub(Node):
         with self.data_lock:
             pulses = list(msg.data)
             
-            # Store pulse values
             for i in range(min(5, len(pulses))):
                 self.joint_pulses[i] = pulses[i]
-                # Convert pulse to degrees (assuming 4096 pulses = 360 degrees for Dynamixel)
-                self.joint_degrees[i] = (pulses[i] / 4096.0) * 360.0
-                # Convert to radians
+                self.joint_degrees[i] = ((pulses[i] - 2048) / 4096.0) * 360.0
                 self.q_rad[i] = np.deg2rad(self.joint_degrees[i])
             
-            # Calculate poses
             poses = self.calculate_poses(self.q_rad)
             self.camera_pose = poses['camera']
             self.gripper_pose = poses['gripper']
     
-    def present_current_callback(self, msg: Float32MultiArray):
-        with self.data_lock:
-            currents = list(msg.data)
-            for i in range(min(5, len(currents))):
-                self.currents[i] = currents[i]
-    
-    def present_velocity_callback(self, msg: Float32MultiArray):
-        with self.data_lock:
-            velocities = list(msg.data)
-            for i in range(min(5, len(velocities))):
-                self.velocities[i] = velocities[i]
-
     def timer_callback(self):
         with self.data_lock:
             cam_mat = np.array(self.camera_pose, dtype=np.float32)
@@ -169,7 +129,6 @@ def main(args=None):
     rclpy.init(args=args)
     node = DataHub()
     
-    # Use MultiThreadedExecutor for thread separation
     exec = MultiThreadedExecutor(num_threads=4)
     exec.add_node(node)
     

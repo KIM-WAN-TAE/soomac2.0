@@ -4,6 +4,3 @@ source;share/finger_test/hook/pythonpath.sh
 source;share/finger_test/hook/ament_prefix_path.ps1
 source;share/finger_test/hook/ament_prefix_path.dsv
 source;share/finger_test/hook/ament_prefix_path.sh
-source;../../build/finger_test/share/finger_test/hook/pythonpath_develop.ps1
-source;../../build/finger_test/share/finger_test/hook/pythonpath_develop.dsv
-source;../../build/finger_test/share/finger_test/hook/pythonpath_develop.sh

@@ -1,190 +1,190 @@
 #!/usr/bin/env python3
 
-import time, os
 import threading
-import numpy as np
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import MultiThreadedExecutor
 from dongsoo_interfaces.srv import DongSooExecutor
-from std_msgs.msg import Float32MultiArray, Float32
-from rclpy.executors import MultiThreadedExecutor
+from std_msgs.msg import Float32MultiArray, Int32MultiArray, String
 from rclpy.callback_groups import ReentrantCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
-from rclpy.qos import QoSProfile, QoSHistoryPolicy
+from dongsoo_py_pkg.Inverse_Kinematics import get_ik_result
+import numpy as np
 
-class MotorExecutorServer(Node):
+def rad_to_pulse(rad_values):
+    pulse_values = []
+    for rad_val in rad_values:
+        pulse_val = int((rad_val * 4096.0 / (2 * np.pi)) + 2048)
+        pulse_values.append(pulse_val)
+    return pulse_values
+
+def plan_joint_trajectory(q_start, q_end, steps=80, traj_type='smooth'):
+    q_start = np.asarray(q_start, dtype=float)
+    q_end = np.asarray(q_end, dtype=float)
+    
+    if traj_type == 'linear':
+        alphas = np.linspace(0.0, 1.0, steps)
+        q_traj = (1 - alphas)[:, None] * q_start[None, :] + alphas[:, None] * q_end[None, :]
+    elif traj_type == 'smooth':
+        t = np.linspace(0.0, 1.0, steps)
+        alphas = 3 * t**2 - 2 * t**3
+        q_traj = (1 - alphas)[:, None] * q_start[None, :] + alphas[:, None] * q_end[None, :]
+    else:
+        raise ValueError("traj_type은 'linear' 또는 'smooth'")
+    return q_traj
+
+class DongsooServer(Node):
     def __init__(self):
-        super().__init__('motor_executor_server')
-        self.lock = threading.Lock()
+        super().__init__('dongsoo_server')
+        self.get_logger().info(' DongSoo Service Server On! ')
         
+        self.data_lock = threading.Lock()
         self.srv_cb_group = ReentrantCallbackGroup()
         self.sub_cb_group = ReentrantCallbackGroup()
-        qos = QoSProfile(depth=10, history=QoSHistoryPolicy.KEEP_LAST)
         
-        self.motor_pub = self.create_publisher(
+        self.gripper_mat_sub = self.create_subscription(
             Float32MultiArray,
-            '/robotics/degree/target_theta',
-            10
+            '/info/matrix/gripper',
+            self.gripper_mat_callback,
+            10,
+            callback_group = self.sub_cb_group
         )
-        
-        self.present_x, self.present_y, self.present_z = None, None, None
-        self.position_sub = self.create_subscription(
-            Float32MultiArray,
-            '/robotics/coordinate/position',
-            self.position_callback,
-            qos,
-            callback_group=self.sub_cb_group, 
-        )   
-        
-        self.present_th1, self.present_th2, self.present_th3, self.present_th4 = None, None, None, None
-        self.angle_sub = self.create_subscription(
-            Float32MultiArray,
-            '/robotics/radian/theta',
-            self.angle_callback,
-            qos,
-            callback_group=self.sub_cb_group, 
+        # Subscribe to current joint positions to ensure smooth start
+        self.joint_pos_sub = self.create_subscription(
+            Int32MultiArray,
+            '/motor/position',
+            self.joint_position_callback,
+            10,
+            callback_group=self.sub_cb_group
         )
-        
-        self.gripper_pub = self.create_publisher(
-            Float32,
-            '/robotics/gripper/command',
-            10
-        )
-        self.motor_speed_pub = self.create_publisher(
-            Float32MultiArray,
-            '/robotics/abs/speed',
-            10
-        )
-        self.srv = self.create_service(DongSooExecutor, 'motor_executor', 
-                                       self.service_response_callback,
-                                       callback_group=self.srv_cb_group)
-        
-        self.timer_period = 0.5
-        self.create_timer(self.timer_period, self.timer_callback)
 
-    def angle_callback(self, msg=Float32MultiArray):
-        with self.lock:
-            if len(msg.data) != 4:
-                return
-            
-            self.present_th1 = msg.data[0]
-            self.present_th2 = msg.data[1]
-            self.present_th3 = msg.data[2]
-            self.present_th4 = msg.data[3]
-            
-    def position_callback(self, msg=Float32MultiArray):
-        with self.lock:
-            if len(msg.data) != 3:
-                return
-            
-            self.present_x = msg.data[0]
-            self.present_y = msg.data[1]
-            self.present_z = msg.data[2]
-            # print(f'x: {self.present_x:.2f} / y: {self.present_y:.2f} / z: {self.present_z:.2f}')
+        self.motor_control_pub = self.create_publisher(Int32MultiArray, '/motor/command_position', 10)
+        self.ik_done_pub       = self.create_publisher(String, '/info/string/movement_done', 10)
+        
+        self.present_position = np.array([])
+        self.present_orientation = np.array([])
+        # Track latest joint pulses and active joint angles (J1..J4) in radians
+        self.latest_pulses = np.array([2048, 2048, 2048, 2048, 2048], dtype=np.int32)
+        self.q_current_active = np.zeros(4, dtype=float)
+        self.last_joint_update = None
+        
+        self.last_end_point = None
+        
+        self.create_service(DongSooExecutor, 'dongsoo_executor', self.service_callback, callback_group = self.srv_cb_group)
     
-    def timer_callback(self):
-        pass
-        
-    def service_response_callback(self, request, response):
+    def gripper_mat_callback(self, msg : Float32MultiArray):
+        with self.data_lock:
+            dims = msg.layout.dim
+            
+            if len(dims) < 2:
+                self.get_logger().warn(' 잘못된 행렬 수신 ')
+                return
+
+            rows = dims[0].size
+            cols = dims[1].size
+            
+            if len(msg.data) != rows * cols:
+                self.get_logger().warn(f' msg count error : msg_count : {rows*cols}')
+                return
+            
+            self.grip_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
+            self.present_position = np.array([self.grip_mat[:3,3]])
+            self.present_orientation = np.array([self.grip_mat[:3,:3]])
+            
+            # # monitoring
+            # print(f'Position    : {self.present_position:8.4f}')
+            # print(f'Orientation : {self.present_orientation:8.4f}')
+            
+    def joint_position_callback(self, msg: Int32MultiArray):
+        """Update latest joint positions and compute current active joint angles (J1..J4)."""
+        with self.data_lock:
+            data = list(msg.data)
+            if len(data) >= 4:
+                # Store pulses
+                for i in range(min(5, len(data))):
+                    self.latest_pulses[i] = int(data[i])
+                # Convert to radians for J1..J4 (assuming 2048 -> 0 rad)
+                # 4096 cnt/rev, 2*pi rad/rev
+                cnt2rad = 2.0 * np.pi / 4096.0
+                self.q_current_active = ((self.latest_pulses[:4] - 2048).astype(float)) * cnt2rad
+                self.last_joint_update = self.get_clock().now()
+
+    def service_callback(self, req, response):
         try:
-            start_point = [self.present_x, self.present_y, self.present_z]
-            end_point= [request.x, request.y, request.z]
-            grab = request.grab
-            radius = request.r
-            task = request.task
-            # worktime = request.time
-            
-            print(f'요청된 목표 좌표: x={end_point[0]}, y={end_point[1]}, z={end_point[2]}')
-            print(f'요청된 작업: {task}, 반경: {radius}')
-            
-            if grab:
-                theta_5 = 1955.0
+            # Desired end-effector pose from request
+            if self.last_end_point is None:
+                start_point = self.present_position
             else:
-                theta_5 = 2354.0
+                # Ensure start_point is properly formatted as numpy array
+                start_point = np.asarray(self.last_end_point, dtype=np.float32)
+                # Make sure it has the same shape as present_position
+                if start_point.ndim == 1:
+                    start_point = start_point.reshape(1, -1)
+            end_point = req.position
+            end_look  = req.look
+
+            self.last_end_point = end_point
+
+            # Use current joint angles (from /motor/position) as start state to avoid initial jerk
+            with self.data_lock:
+                q_start = self.q_current_active.copy()
+
+            # Solve only for end configuration, warm-starting from current joints
+            if end_look == 'down':
+                q_result = get_ik_result(start_point, end_point, mode='down', w_ori=0.2)
+            elif end_look == 'straight':
+                q_result = get_ik_result(start_point, end_point, mode='straight', w_ori=0.2)
+            else:
+                self.get_logger().warn(' 잘못된 방향 입력 ')
+                response.success = False
+                return
+
+            # Replace IK-computed q_start with actual current joints to ensure smooth start
+            q_end = q_result['q_end']
+            print(' ')
+            for i, _ in enumerate(q_end):
+                self.get_logger().info(f'[Q_list_{i+1}] : {np.degrees(q_end[i]):7.2f}')
             
-            if task == 'detailed_move':
-                print(' Gripper가 이동합니다. ')
-                self.motor_speed_pub.publish(Float32MultiArray(data=[0.0, 0.0, 0.0, 0.0]))
-
-                # path  = TrajectoryPlanner(start_point=start_point, end_point=end_point, num_points=900).plan()
-                path  = np.linspace(start_point, end_point, num=500)
-                
-                q_matrix = inverse_kinematics(path, 
-                                                initial_q_full=[0, self.present_th1, self.present_th2, self.present_th3, self.present_th4])
-                
-                q_matrix = np.array(q_matrix)
-                q_matrix = np.rad2deg(q_matrix)
-
-                # 6) 시간 스케줄 기반 joint‐level 명령 발행
-                q_msg    = Float32MultiArray()
-                for idx, q in enumerate(q_matrix):
-                    
-                    # 6-2) 목표 각도 변환 및 퍼블리시
-                    q_msg.data = [q[0], q[1], q[2], q[3], float(theta_5)]
-                    self.motor_pub.publish(q_msg)
-                    
-                    time.sleep(0.0035)
-                    
-                response.success = True
-                self.get_logger().info('플래닝 및 IK 성공')
-                
-            elif task == 'fast_move':
-                print(' Gripper가 이동합니다. ')
-                self.motor_speed_pub.publish(Float32MultiArray(data=[70.0, 70.0, 70.0, 70.0]))
-                
-                path = np.vstack((start_point, end_point))
-                
-                q_matrix = inverse_kinematics(path, 
-                                                initial_q_full=[0, self.present_th1, self.present_th2, self.present_th3, self.present_th4])
-                
-                q_matrix = np.array(q_matrix)
-                q_matrix = np.rad2deg(q_matrix)
-
-                # 6) 시간 스케줄 기반 joint‐level 명령 발행
-                q_msg    = Float32MultiArray()
-                for idx, q in enumerate(q_matrix):
-                    
-                    # 6-2) 목표 각도 변환 및 퍼블리시
-                    q_msg.data = [q[0], q[1], q[2], q[3], float(theta_5)]
-                    self.motor_pub.publish(q_msg)
-                    
-                while True:
-                    current = [self.present_x, self.present_y, self.present_z]
-                    e = [abs(e - c) for e, c in zip(end_point, current)]
-                    
-                    if all(err <= 5 for err in e):
-                        break
-                    time.sleep(0.001)
-                
-                response.success = True
-                self.get_logger().info('플래닝 및 IK 성공')
-                
-            elif task == 'pick' or task == 'place':
-                print(' Gripper를 열거나 닫습니다. ')
-                
-                gripper_msg = Float32()
-                gripper_msg.data = theta_5
-                self.gripper_pub.publish(gripper_msg)
-                
-                time.sleep(0.5)
-                
-                response.success = True
-                self.get_logger().info('잡기 성공')
+            sleep_time = 0.005
             
+            q_msg = Int32MultiArray()
+            q_list = plan_joint_trajectory(q_start, q_end, steps=1000, traj_type='smooth')
+            
+            import time
+            # rad -> pulse 변환 함수 사용
+            for i, q_s in enumerate(q_list):
+                q_pulse = rad_to_pulse(q_s)
+                q_msg.data = q_pulse
+                self.motor_control_pub.publish(q_msg)
+                time.sleep(sleep_time)
+            
+            response.success = True
+            
+            ik_msg = String()
+            ik_msg.data = 'done'
+            self.get_logger().info(f'{ik_msg.data}')
+            self.ik_done_pub.publish(ik_msg)
+
         except Exception as e:
-            self.get_logger().error(f'플래닝/IK 실패: {e}')
+            self.get_logger().error(f' Planning or Ik Fail : {e}')
             response.success = False
-
+            
         return response
     
-
 def main(args=None):
     rclpy.init(args=args)
-    node = MotorExecutorServer()
-    exec = MultiThreadedExecutor(num_threads=2)
-    exec.add_node(node)
-    exec.spin()
-    rclpy.shutdown()
+    node = DongsooServer()
     
-if __name__=='__main__':
+    exec = MultiThreadedExecutor(num_threads=4)
+    exec.add_node(node)
+    
+    try:
+        exec.spin()
+    except KeyboardInterrupt:
+        print("\n\nShutting down Dongsoo Service Server...")
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == '__main__':
     main()

@@ -65,12 +65,12 @@ class DongSooExecutor_Request(metaclass=Metaclass_DongSooExecutor_Request):
     ]
 
     _fields_and_field_types = {
-        'position': 'float[16]',
+        'position': 'float[3]',
         'look': 'string',
     }
 
     SLOT_TYPES = (
-        rosidl_parser.definition.Array(rosidl_parser.definition.BasicType('float'), 16),  # noqa: E501
+        rosidl_parser.definition.Array(rosidl_parser.definition.BasicType('float'), 3),  # noqa: E501
         rosidl_parser.definition.UnboundedString(),  # noqa: E501
     )
 
@@ -79,10 +79,10 @@ class DongSooExecutor_Request(metaclass=Metaclass_DongSooExecutor_Request):
             'Invalid arguments passed to constructor: %s' % \
             ', '.join(sorted(k for k in kwargs.keys() if '_' + k not in self.__slots__))
         if 'position' not in kwargs:
-            self.position = numpy.zeros(16, dtype=numpy.float32)
+            self.position = numpy.zeros(3, dtype=numpy.float32)
         else:
             self.position = numpy.array(kwargs.get('position'), dtype=numpy.float32)
-            assert self.position.shape == (16, )
+            assert self.position.shape == (3, )
         self.look = kwargs.get('look', str())
 
     def __repr__(self):
@@ -135,8 +135,8 @@ class DongSooExecutor_Request(metaclass=Metaclass_DongSooExecutor_Request):
         if isinstance(value, numpy.ndarray):
             assert value.dtype == numpy.float32, \
                 "The 'position' numpy.ndarray() must have the dtype of 'numpy.float32'"
-            assert value.size == 16, \
-                "The 'position' numpy.ndarray() must have a size of 16"
+            assert value.size == 3, \
+                "The 'position' numpy.ndarray() must have a size of 3"
             self._position = value
             return
         if __debug__:
@@ -150,10 +150,10 @@ class DongSooExecutor_Request(metaclass=Metaclass_DongSooExecutor_Request):
                   isinstance(value, UserList)) and
                  not isinstance(value, str) and
                  not isinstance(value, UserString) and
-                 len(value) == 16 and
+                 len(value) == 3 and
                  all(isinstance(v, float) for v in value) and
                  all(not (val < -3.402823466e+38 or val > 3.402823466e+38) or math.isinf(val) for val in value)), \
-                "The 'position' field must be a set or sequence with length 16 and each value of type 'float' and each float in [-340282346600000016151267322115014000640.000000, 340282346600000016151267322115014000640.000000]"
+                "The 'position' field must be a set or sequence with length 3 and each value of type 'float' and each float in [-340282346600000016151267322115014000640.000000, 340282346600000016151267322115014000640.000000]"
         self._position = numpy.array(value, dtype=numpy.float32)
 
     @builtins.property

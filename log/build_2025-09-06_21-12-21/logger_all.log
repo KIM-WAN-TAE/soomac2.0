@@ -1,0 +1,474 @@
+[0.051s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.051s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=32, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x77e57ff863e0>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x77e57ff405e0>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x77e57ff405e0>>, mixin_verb=('build',))
+[0.119s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.119s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.119s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.119s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.119s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.119s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.119s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/pc/soomac_ws'
+[0.119s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.119s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.120s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.120s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.120s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.120s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.120s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.120s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.120s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extensions ['ignore', 'ignore_ament_install']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extension 'ignore'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extension 'ignore_ament_install'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extensions ['colcon_pkg']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extension 'colcon_pkg'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extensions ['colcon_meta']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extension 'colcon_meta'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extensions ['ros']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extension 'ros'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extensions ['cmake', 'python']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extension 'cmake'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extension 'python'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extensions ['python_setup_py']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(etc) by extension 'python_setup_py'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extensions ['ignore', 'ignore_ament_install']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extension 'ignore'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extension 'ignore_ament_install'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extensions ['colcon_pkg']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extension 'colcon_pkg'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extensions ['colcon_meta']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extension 'colcon_meta'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extensions ['ros']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extension 'ros'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extensions ['cmake', 'python']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extension 'cmake'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extension 'python'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extensions ['python_setup_py']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(shared_context) by extension 'python_setup_py'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_cpp_pkg) by extensions ['ignore', 'ignore_ament_install']
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_cpp_pkg) by extension 'ignore'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_cpp_pkg) by extension 'ignore_ament_install'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_cpp_pkg) by extensions ['colcon_pkg']
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_cpp_pkg) by extension 'colcon_pkg'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_cpp_pkg) by extensions ['colcon_meta']
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_cpp_pkg) by extension 'colcon_meta'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_cpp_pkg) by extensions ['ros']
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_cpp_pkg) by extension 'ros'
+[0.127s] DEBUG:colcon.colcon_core.package_identification:Package 'src/dongsoo_cpp_pkg' with type 'ros.ament_cmake' and name 'dongsoo_cpp_pkg'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_description) by extensions ['ignore', 'ignore_ament_install']
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_description) by extension 'ignore'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_description) by extension 'ignore_ament_install'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_description) by extensions ['colcon_pkg']
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_description) by extension 'colcon_pkg'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_description) by extensions ['colcon_meta']
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_description) by extension 'colcon_meta'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_description) by extensions ['ros']
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_description) by extension 'ros'
+[0.127s] DEBUG:colcon.colcon_core.package_identification:Package 'src/dongsoo_description' with type 'ros.ament_cmake' and name 'dongsoo_description'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_free_mission) by extensions ['ignore', 'ignore_ament_install']
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_free_mission) by extension 'ignore'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_free_mission) by extension 'ignore_ament_install'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_free_mission) by extensions ['colcon_pkg']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_free_mission) by extension 'colcon_pkg'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_free_mission) by extensions ['colcon_meta']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_free_mission) by extension 'colcon_meta'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_free_mission) by extensions ['ros']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_free_mission) by extension 'ros'
+[0.128s] DEBUG:colcon.colcon_core.package_identification:Package 'src/dongsoo_free_mission' with type 'ros.ament_python' and name 'dongsoo_free_mission'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_interfaces) by extensions ['ignore', 'ignore_ament_install']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_interfaces) by extension 'ignore'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_interfaces) by extension 'ignore_ament_install'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_interfaces) by extensions ['colcon_pkg']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_interfaces) by extension 'colcon_pkg'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_interfaces) by extensions ['colcon_meta']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_interfaces) by extension 'colcon_meta'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_interfaces) by extensions ['ros']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_interfaces) by extension 'ros'
+[0.128s] DEBUG:colcon.colcon_core.package_identification:Package 'src/dongsoo_interfaces' with type 'ros.ament_cmake' and name 'dongsoo_interfaces'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_py_pkg) by extensions ['ignore', 'ignore_ament_install']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_py_pkg) by extension 'ignore'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_py_pkg) by extension 'ignore_ament_install'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_py_pkg) by extensions ['colcon_pkg']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_py_pkg) by extension 'colcon_pkg'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_py_pkg) by extensions ['colcon_meta']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_py_pkg) by extension 'colcon_meta'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_py_pkg) by extensions ['ros']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(src/dongsoo_py_pkg) by extension 'ros'
+[0.129s] DEBUG:colcon.colcon_core.package_identification:Package 'src/dongsoo_py_pkg' with type 'ros.ament_python' and name 'dongsoo_py_pkg'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(src/finger_test) by extensions ['ignore', 'ignore_ament_install']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(src/finger_test) by extension 'ignore'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(src/finger_test) by extension 'ignore_ament_install'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(src/finger_test) by extensions ['colcon_pkg']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(src/finger_test) by extension 'colcon_pkg'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(src/finger_test) by extensions ['colcon_meta']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(src/finger_test) by extension 'colcon_meta'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(src/finger_test) by extensions ['ros']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(src/finger_test) by extension 'ros'
+[0.129s] DEBUG:colcon.colcon_core.package_identification:Package 'src/finger_test' with type 'ros.ament_python' and name 'finger_test'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extensions ['ignore', 'ignore_ament_install']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extension 'ignore'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extension 'ignore_ament_install'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extensions ['colcon_pkg']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extension 'colcon_pkg'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extensions ['colcon_meta']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extension 'colcon_meta'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extensions ['ros']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extension 'ros'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extensions ['cmake', 'python']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extension 'cmake'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extension 'python'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extensions ['python_setup_py']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(work_log) by extension 'python_setup_py'
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.143s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.143s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.144s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 0 installed packages in /home/pc/teensy_ws/install
+[0.144s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 4 installed packages in /home/pc/cont_ws/install
+[0.144s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 5 installed packages in /home/pc/mg_motor_ws/install
+[0.145s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 8 installed packages in /home/pc/soomac_ws/install
+[0.145s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 272 installed packages in /opt/ros/humble
+[0.146s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_cpp_pkg' build argument 'cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_cpp_pkg' build argument 'cmake_target' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_cpp_pkg' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_cpp_pkg' build argument 'cmake_clean_cache' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_cpp_pkg' build argument 'cmake_clean_first' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_cpp_pkg' build argument 'cmake_force_configure' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_cpp_pkg' build argument 'ament_cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_cpp_pkg' build argument 'catkin_cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_cpp_pkg' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.161s] DEBUG:colcon.colcon_core.verb:Building package 'dongsoo_cpp_pkg' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/dongsoo_cpp_pkg', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/dongsoo_cpp_pkg', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/dongsoo_cpp_pkg', 'symlink_install': False, 'test_result_base': None}
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_description' build argument 'cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_description' build argument 'cmake_target' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_description' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_description' build argument 'cmake_clean_cache' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_description' build argument 'cmake_clean_first' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_description' build argument 'cmake_force_configure' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_description' build argument 'ament_cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_description' build argument 'catkin_cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_description' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.161s] DEBUG:colcon.colcon_core.verb:Building package 'dongsoo_description' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/dongsoo_description', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/dongsoo_description', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/dongsoo_description', 'symlink_install': False, 'test_result_base': None}
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_interfaces' build argument 'cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_interfaces' build argument 'cmake_target' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_interfaces' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_interfaces' build argument 'cmake_clean_cache' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_interfaces' build argument 'cmake_clean_first' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_interfaces' build argument 'cmake_force_configure' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_interfaces' build argument 'ament_cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_interfaces' build argument 'catkin_cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_interfaces' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.161s] DEBUG:colcon.colcon_core.verb:Building package 'dongsoo_interfaces' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/dongsoo_interfaces', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/dongsoo_interfaces', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/dongsoo_interfaces', 'symlink_install': False, 'test_result_base': None}
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'finger_test' build argument 'cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'finger_test' build argument 'cmake_target' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'finger_test' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'finger_test' build argument 'cmake_clean_cache' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'finger_test' build argument 'cmake_clean_first' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'finger_test' build argument 'cmake_force_configure' from command line to 'False'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'finger_test' build argument 'ament_cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'finger_test' build argument 'catkin_cmake_args' from command line to 'None'
+[0.161s] Level 5:colcon.colcon_core.verb:set package 'finger_test' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.161s] DEBUG:colcon.colcon_core.verb:Building package 'finger_test' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/finger_test', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/finger_test', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/finger_test', 'symlink_install': False, 'test_result_base': None}
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_free_mission' build argument 'cmake_args' from command line to 'None'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_free_mission' build argument 'cmake_target' from command line to 'None'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_free_mission' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_free_mission' build argument 'cmake_clean_cache' from command line to 'False'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_free_mission' build argument 'cmake_clean_first' from command line to 'False'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_free_mission' build argument 'cmake_force_configure' from command line to 'False'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_free_mission' build argument 'ament_cmake_args' from command line to 'None'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_free_mission' build argument 'catkin_cmake_args' from command line to 'None'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_free_mission' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.162s] DEBUG:colcon.colcon_core.verb:Building package 'dongsoo_free_mission' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/dongsoo_free_mission', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/dongsoo_free_mission', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/dongsoo_free_mission', 'symlink_install': False, 'test_result_base': None}
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_py_pkg' build argument 'cmake_args' from command line to 'None'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_py_pkg' build argument 'cmake_target' from command line to 'None'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_py_pkg' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_py_pkg' build argument 'cmake_clean_cache' from command line to 'False'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_py_pkg' build argument 'cmake_clean_first' from command line to 'False'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_py_pkg' build argument 'cmake_force_configure' from command line to 'False'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_py_pkg' build argument 'ament_cmake_args' from command line to 'None'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_py_pkg' build argument 'catkin_cmake_args' from command line to 'None'
+[0.162s] Level 5:colcon.colcon_core.verb:set package 'dongsoo_py_pkg' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.162s] DEBUG:colcon.colcon_core.verb:Building package 'dongsoo_py_pkg' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/dongsoo_py_pkg', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/dongsoo_py_pkg', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/dongsoo_py_pkg', 'symlink_install': False, 'test_result_base': None}
+[0.162s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.162s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.162s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/pc/soomac_ws/src/dongsoo_interfaces' with build type 'ament_cmake'
+[0.163s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/pc/soomac_ws/src/dongsoo_interfaces'
+[0.164s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.164s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.164s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.166s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/pc/soomac_ws/src/dongsoo_cpp_pkg' with build type 'ament_cmake'
+[0.166s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/pc/soomac_ws/src/dongsoo_cpp_pkg'
+[0.166s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.166s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.168s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/pc/soomac_ws/src/dongsoo_description' with build type 'ament_cmake'
+[0.168s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/pc/soomac_ws/src/dongsoo_description'
+[0.168s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.168s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.169s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/pc/soomac_ws/src/finger_test' with build type 'ament_python'
+[0.170s] Level 1:colcon.colcon_core.shell:create_environment_hook('finger_test', 'ament_prefix_path')
+[0.170s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/finger_test/share/finger_test/hook/ament_prefix_path.ps1'
+[0.170s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/finger_test/share/finger_test/hook/ament_prefix_path.dsv'
+[0.170s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/finger_test/share/finger_test/hook/ament_prefix_path.sh'
+[0.170s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.170s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.174s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/dongsoo_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_interfaces -- -j32 -l32
+[0.175s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[0.176s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/dongsoo_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_description -- -j32 -l32
+[0.290s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/pc/soomac_ws/src/finger_test'
+[0.290s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.290s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.336s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/dongsoo_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_description -- -j32 -l32
+[0.341s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/dongsoo_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_description
+[0.344s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(dongsoo_description)
+[0.345s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/dongsoo_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_description
+[0.346s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description' for CMake module files
+[0.346s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description' for CMake config files
+[0.346s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_description', 'cmake_prefix_path')
+[0.347s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/hook/cmake_prefix_path.ps1'
+[0.347s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/hook/cmake_prefix_path.dsv'
+[0.347s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/hook/cmake_prefix_path.sh'
+[0.347s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description/bin'
+[0.347s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description/lib/pkgconfig/dongsoo_description.pc'
+[0.347s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description/lib/python3.10/site-packages'
+[0.347s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description/bin'
+[0.347s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.ps1'
+[0.348s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.dsv'
+[0.348s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.sh'
+[0.348s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.bash'
+[0.349s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.zsh'
+[0.349s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/dongsoo_description/share/colcon-core/packages/dongsoo_description)
+[0.349s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(dongsoo_description)
+[0.349s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description' for CMake module files
+[0.349s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description' for CMake config files
+[0.349s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_description', 'cmake_prefix_path')
+[0.349s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/hook/cmake_prefix_path.ps1'
+[0.349s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/hook/cmake_prefix_path.dsv'
+[0.350s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/hook/cmake_prefix_path.sh'
+[0.350s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description/bin'
+[0.350s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description/lib/pkgconfig/dongsoo_description.pc'
+[0.350s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description/lib/python3.10/site-packages'
+[0.350s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_description/bin'
+[0.350s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.ps1'
+[0.350s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.dsv'
+[0.350s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.sh'
+[0.351s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.bash'
+[0.351s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/package.zsh'
+[0.351s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/dongsoo_description/share/colcon-core/packages/dongsoo_description)
+[0.444s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/finger_test': PYTHONPATH=/home/pc/soomac_ws/build/finger_test/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/finger_test/build
+[0.635s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/finger_test' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/finger_test/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/finger_test/build
+[0.636s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/src/finger_test': PYTHONPATH=/home/pc/soomac_ws/build/finger_test/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/finger_test build --build-base /home/pc/soomac_ws/build/finger_test/build install --record /home/pc/soomac_ws/build/finger_test/install.log --single-version-externally-managed install_data --force
+[0.766s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/finger_test' for CMake module files
+[0.766s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/src/finger_test' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/finger_test/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/finger_test build --build-base /home/pc/soomac_ws/build/finger_test/build install --record /home/pc/soomac_ws/build/finger_test/install.log --single-version-externally-managed install_data --force
+[0.766s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/finger_test' for CMake config files
+[0.767s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/finger_test/lib'
+[0.767s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/finger_test/bin'
+[0.767s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/finger_test/lib/pkgconfig/finger_test.pc'
+[0.767s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/finger_test/lib/python3.10/site-packages'
+[0.767s] Level 1:colcon.colcon_core.shell:create_environment_hook('finger_test', 'pythonpath')
+[0.767s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/finger_test/share/finger_test/hook/pythonpath.ps1'
+[0.768s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/finger_test/share/finger_test/hook/pythonpath.dsv'
+[0.768s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/finger_test/share/finger_test/hook/pythonpath.sh'
+[0.768s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/finger_test/bin'
+[0.768s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(finger_test)
+[0.768s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/finger_test/share/finger_test/package.ps1'
+[0.768s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/finger_test/share/finger_test/package.dsv'
+[0.768s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/finger_test/share/finger_test/package.sh'
+[0.769s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/finger_test/share/finger_test/package.bash'
+[0.769s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/finger_test/share/finger_test/package.zsh'
+[0.769s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/finger_test/share/colcon-core/packages/finger_test)
+[1.297s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/dongsoo_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_interfaces -- -j32 -l32
+[1.299s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/dongsoo_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_interfaces
+[1.328s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(dongsoo_interfaces)
+[1.328s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces' for CMake module files
+[1.329s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/dongsoo_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_interfaces
+[1.329s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces' for CMake config files
+[1.329s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_interfaces', 'cmake_prefix_path')
+[1.330s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/cmake_prefix_path.ps1'
+[1.330s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/cmake_prefix_path.dsv'
+[1.330s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/cmake_prefix_path.sh'
+[1.330s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces/lib'
+[1.331s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_interfaces', 'ld_library_path_lib')
+[1.331s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/ld_library_path_lib.ps1'
+[1.331s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/ld_library_path_lib.dsv'
+[1.331s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/ld_library_path_lib.sh'
+[1.331s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces/bin'
+[1.331s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces/lib/pkgconfig/dongsoo_interfaces.pc'
+[1.332s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces/lib/python3.10/site-packages'
+[1.332s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces/bin'
+[1.332s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.ps1'
+[1.332s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.dsv'
+[1.332s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.sh'
+[1.332s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.bash'
+[1.332s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.zsh'
+[1.333s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/dongsoo_interfaces/share/colcon-core/packages/dongsoo_interfaces)
+[1.333s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(dongsoo_interfaces)
+[1.333s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces' for CMake module files
+[1.333s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces' for CMake config files
+[1.333s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_interfaces', 'cmake_prefix_path')
+[1.333s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/cmake_prefix_path.ps1'
+[1.333s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/cmake_prefix_path.dsv'
+[1.333s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/cmake_prefix_path.sh'
+[1.334s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces/lib'
+[1.334s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_interfaces', 'ld_library_path_lib')
+[1.334s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/ld_library_path_lib.ps1'
+[1.334s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/ld_library_path_lib.dsv'
+[1.334s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/hook/ld_library_path_lib.sh'
+[1.334s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces/bin'
+[1.334s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces/lib/pkgconfig/dongsoo_interfaces.pc'
+[1.334s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces/lib/python3.10/site-packages'
+[1.334s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_interfaces/bin'
+[1.334s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.ps1'
+[1.335s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.dsv'
+[1.335s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.sh'
+[1.335s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.bash'
+[1.335s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.zsh'
+[1.335s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/dongsoo_interfaces/share/colcon-core/packages/dongsoo_interfaces)
+[1.336s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/pc/soomac_ws/src/dongsoo_free_mission' with build type 'ament_python'
+[1.336s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_free_mission', 'ament_prefix_path')
+[1.336s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/hook/ament_prefix_path.ps1'
+[1.336s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/hook/ament_prefix_path.dsv'
+[1.336s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/hook/ament_prefix_path.sh'
+[1.336s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.336s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.338s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/pc/soomac_ws/src/dongsoo_py_pkg' with build type 'ament_python'
+[1.338s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_py_pkg', 'ament_prefix_path')
+[1.338s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/hook/ament_prefix_path.ps1'
+[1.338s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/hook/ament_prefix_path.dsv'
+[1.339s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/hook/ament_prefix_path.sh'
+[1.339s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.339s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.455s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/pc/soomac_ws/src/dongsoo_free_mission'
+[1.455s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.455s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.573s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/pc/soomac_ws/src/dongsoo_py_pkg'
+[1.574s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.574s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.742s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/dongsoo_py_pkg': CMAKE_PREFIX_PATH=/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dxl_cpp_pkg:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/home/pc/cont_ws/install/dxl_cpp_pkg:/home/pc/mg_motor_ws/install/brobot_interfaces PYTHONPATH=/home/pc/soomac_ws/build/dongsoo_py_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/dongsoo_py_pkg/build
+[1.777s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/src/dongsoo_free_mission': CMAKE_PREFIX_PATH=/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dxl_cpp_pkg:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/home/pc/cont_ws/install/dxl_cpp_pkg:/home/pc/mg_motor_ws/install/brobot_interfaces PYTHONPATH=/home/pc/soomac_ws/build/dongsoo_free_mission/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/dongsoo_free_mission/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/dongsoo_free_mission build --build-base /home/pc/soomac_ws/build/dongsoo_free_mission/build install --record /home/pc/soomac_ws/build/dongsoo_free_mission/install.log --single-version-externally-managed install_data
+[1.910s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_free_mission' for CMake module files
+[1.910s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/src/dongsoo_free_mission' returned '0': CMAKE_PREFIX_PATH=/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dxl_cpp_pkg:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/home/pc/cont_ws/install/dxl_cpp_pkg:/home/pc/mg_motor_ws/install/brobot_interfaces PYTHONPATH=/home/pc/soomac_ws/build/dongsoo_free_mission/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/dongsoo_free_mission/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/dongsoo_free_mission build --build-base /home/pc/soomac_ws/build/dongsoo_free_mission/build install --record /home/pc/soomac_ws/build/dongsoo_free_mission/install.log --single-version-externally-managed install_data
+[1.910s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_free_mission' for CMake config files
+[1.910s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_free_mission/lib'
+[1.910s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_free_mission/bin'
+[1.910s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_free_mission/lib/pkgconfig/dongsoo_free_mission.pc'
+[1.910s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_free_mission/lib/python3.10/site-packages'
+[1.910s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_free_mission', 'pythonpath')
+[1.910s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/hook/pythonpath.ps1'
+[1.911s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/hook/pythonpath.dsv'
+[1.911s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/hook/pythonpath.sh'
+[1.911s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_free_mission/bin'
+[1.911s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(dongsoo_free_mission)
+[1.911s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/package.ps1'
+[1.911s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/package.dsv'
+[1.911s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/package.sh'
+[1.912s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/package.bash'
+[1.912s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_free_mission/share/dongsoo_free_mission/package.zsh'
+[1.912s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/dongsoo_free_mission/share/colcon-core/packages/dongsoo_free_mission)
+[1.945s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/dongsoo_py_pkg' returned '0': CMAKE_PREFIX_PATH=/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dxl_cpp_pkg:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/home/pc/cont_ws/install/dxl_cpp_pkg:/home/pc/mg_motor_ws/install/brobot_interfaces PYTHONPATH=/home/pc/soomac_ws/build/dongsoo_py_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/dongsoo_py_pkg/build
+[1.945s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/src/dongsoo_py_pkg': CMAKE_PREFIX_PATH=/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dxl_cpp_pkg:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/home/pc/cont_ws/install/dxl_cpp_pkg:/home/pc/mg_motor_ws/install/brobot_interfaces PYTHONPATH=/home/pc/soomac_ws/build/dongsoo_py_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/dongsoo_py_pkg build --build-base /home/pc/soomac_ws/build/dongsoo_py_pkg/build install --record /home/pc/soomac_ws/build/dongsoo_py_pkg/install.log --single-version-externally-managed install_data --force
+[2.087s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_py_pkg' for CMake module files
+[2.087s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/src/dongsoo_py_pkg' returned '0': CMAKE_PREFIX_PATH=/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dxl_cpp_pkg:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/home/pc/cont_ws/install/dxl_cpp_pkg:/home/pc/mg_motor_ws/install/brobot_interfaces PYTHONPATH=/home/pc/soomac_ws/build/dongsoo_py_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/dongsoo_py_pkg build --build-base /home/pc/soomac_ws/build/dongsoo_py_pkg/build install --record /home/pc/soomac_ws/build/dongsoo_py_pkg/install.log --single-version-externally-managed install_data --force
+[2.087s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_py_pkg' for CMake config files
+[2.088s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_py_pkg/lib'
+[2.088s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_py_pkg/bin'
+[2.088s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/pkgconfig/dongsoo_py_pkg.pc'
+[2.088s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages'
+[2.088s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_py_pkg', 'pythonpath')
+[2.088s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/hook/pythonpath.ps1'
+[2.089s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/hook/pythonpath.dsv'
+[2.089s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/hook/pythonpath.sh'
+[2.089s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_py_pkg/bin'
+[2.089s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(dongsoo_py_pkg)
+[2.089s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/package.ps1'
+[2.090s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/package.dsv'
+[2.090s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/package.sh'
+[2.090s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/package.bash'
+[2.090s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_py_pkg/share/dongsoo_py_pkg/package.zsh'
+[2.090s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/dongsoo_py_pkg/share/colcon-core/packages/dongsoo_py_pkg)
+[5.906s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[5.907s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_cpp_pkg
+[5.918s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(dongsoo_cpp_pkg)
+[5.918s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg' for CMake module files
+[5.918s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_cpp_pkg
+[5.919s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg' for CMake config files
+[5.919s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_cpp_pkg', 'cmake_prefix_path')
+[5.919s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/hook/cmake_prefix_path.ps1'
+[5.919s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/hook/cmake_prefix_path.dsv'
+[5.919s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/hook/cmake_prefix_path.sh'
+[5.920s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib'
+[5.920s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/bin'
+[5.920s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/pkgconfig/dongsoo_cpp_pkg.pc'
+[5.920s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/python3.10/site-packages'
+[5.920s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/bin'
+[5.920s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.ps1'
+[5.921s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.dsv'
+[5.921s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.sh'
+[5.921s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.bash'
+[5.921s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.zsh'
+[5.922s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/colcon-core/packages/dongsoo_cpp_pkg)
+[5.922s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(dongsoo_cpp_pkg)
+[5.922s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg' for CMake module files
+[5.922s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg' for CMake config files
+[5.922s] Level 1:colcon.colcon_core.shell:create_environment_hook('dongsoo_cpp_pkg', 'cmake_prefix_path')
+[5.922s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/hook/cmake_prefix_path.ps1'
+[5.922s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/hook/cmake_prefix_path.dsv'
+[5.922s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/hook/cmake_prefix_path.sh'
+[5.923s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib'
+[5.923s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/bin'
+[5.923s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/pkgconfig/dongsoo_cpp_pkg.pc'
+[5.923s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/python3.10/site-packages'
+[5.923s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/bin'
+[5.923s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.ps1'
+[5.923s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.dsv'
+[5.923s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.sh'
+[5.923s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.bash'
+[5.924s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.zsh'
+[5.924s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/colcon-core/packages/dongsoo_cpp_pkg)
+[5.924s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[5.924s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[5.924s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[5.924s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[5.926s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[5.926s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[5.927s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[5.931s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[5.931s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/pc/soomac_ws/install/local_setup.ps1'
+[5.932s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/pc/soomac_ws/install/_local_setup_util_ps1.py'
+[5.932s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/pc/soomac_ws/install/setup.ps1'
+[5.933s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/pc/soomac_ws/install/local_setup.sh'
+[5.933s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/pc/soomac_ws/install/_local_setup_util_sh.py'
+[5.933s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/pc/soomac_ws/install/setup.sh'
+[5.934s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/pc/soomac_ws/install/local_setup.bash'
+[5.934s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/pc/soomac_ws/install/setup.bash'
+[5.934s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/pc/soomac_ws/install/local_setup.zsh'
+[5.935s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/pc/soomac_ws/install/setup.zsh'
