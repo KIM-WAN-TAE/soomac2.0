@@ -48,6 +48,9 @@ class ZeusServerNode(Node):
         
         self.command_pub = self.create_publisher(String, '/zeus/string/binary_command', 10)
         
+        self.tol_ang = 0.5
+        self.tol_pos = 1.0
+        
     def calculate_base_to_camera_transform(self, joint_angles):
         all_dh_params = self.dh_reader.get_all_dh_params(joint_angles)
         T_total = np.eye(4)
@@ -86,6 +89,24 @@ class ZeusServerNode(Node):
             self.command_pub.publish(com_msg)
             
             # 여기서부터 좌표 비교해서 return 하는 로직 추가해야함
+            
+            while True:
+                with self.lock:
+                    if frame.lower() == 'l':
+                        current = np.array(self.xy_coor)
+                        error = np.linalg.norm(goal_coor = current)
+                        
+                        if error < self.tol_pos:
+                            res.success = True
+                            break
+                        
+                    elif frame.lower() == 'j':
+                        current = np.array(self.joint_coor)
+                        error = np.linalg.norm(goal_coor = current)
+                        
+                        if error < self.tol_ang:
+                            res.success = True
+                            break
 
         except Exception as e:
             self.get_logger().error(f'[ZEUS SERVER] Send Coordinate Fail : {e}')
