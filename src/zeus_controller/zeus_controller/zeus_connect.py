@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-import socket, time, rclpy
+import socket, time, rclpy, json
 from rclpy.node import Node
-from std_msgs.msg import String
+from std_msgs.msg import String, Float32MultiArray
 
 DEFAULT_IP = '192.168.1.23'
 DEFAULT_PORT = 5000
@@ -75,8 +74,17 @@ class ZeusConnectTestNode(Node):
             self.get_logger().warn(f"[TCP] start handshake failed: {e}")
 
         # 명령 수신 (한 줄에 'cmd [payload]' 형태)
-        self.create_subscription(String, '/zeus/test_command',
+        self.create_subscription(String, '/zeus/string/binary_command',
                                  self.order_callback, 10)
+        
+        self.str_pub = self.create_publisher(String, '/zeus/string/binary_responed', 10)
+        
+        # Float32MultiArray 퍼블리셔 생성
+        self.xy_pub = self.create_publisher(Float32MultiArray, '/zeus/array/xy_state', 10)
+        self.joint_pub = self.create_publisher(Float32MultiArray, '/zeus/array/joint_state', 10)
+        
+        # 10Hz 타이머로 좌표 데이터 주기적 요청 및 발행
+        self.create_timer(0.1, self.publish_coordinates)
 
     def _connect_with_retry(self, tries=2, delay=1.0):
         for i in range(tries):
@@ -104,19 +112,74 @@ class ZeusConnectTestNode(Node):
             if lines:
                 # 값 1줄 + ok/ERR 등 추가 줄이 있을 수 있음
                 self.get_logger().info(f"[TCP] resp[0]: {lines[0]}")
+                
+                # 첫 번째 응답을 토픽으로 발행
+                response_msg = String()
+                response_msg.data = lines[0]
+                self.str_pub.publish(response_msg)
+                
                 for i, ln in enumerate(lines[1:], 1):
                     self.get_logger().info(f"[TCP] resp[{i}]: {ln}")
             else:
                 self.get_logger().info("[TCP] (no payload before done)")
+                # 빈 응답도 토픽으로 발행
+                response_msg = String()
+                response_msg.data = ""
+                self.str_pub.publish(response_msg)
         except Exception as e:
             self.get_logger().error(f"[TCP] request failed: {e}")
             try:
                 self._connect_with_retry()
                 lines = self.client.request_until_done(wire)
+                if lines:
+                    # 재시도 성공 시에도 토픽으로 발행
+                    response_msg = String()
+                    response_msg.data = lines[0]
+                    self.str_pub.publish(response_msg)
+                    
                 for i, ln in enumerate(lines):
                     self.get_logger().info(f"[TCP] resp[{i}]: {ln}")
             except Exception as e2:
                 self.get_logger().error(f"[TCP] retry failed: {e2}")
+                # 재시도 실패 시 에러 메시지 발행
+                error_msg = String()
+                error_msg.data = f"ERROR: {e2}"
+                self.str_pub.publish(error_msg)
+
+    def publish_coordinates(self):
+        try:
+            # xy_state 요청
+            xy_lines = self.client.request_until_done('xy_state')
+            if xy_lines:
+                xy_data = self.parse_coordinate_data(xy_lines[0])
+                if xy_data is not None:
+                    xy_msg = Float32MultiArray()
+                    xy_msg.data = xy_data
+                    self.xy_pub.publish(xy_msg)
+            
+            # joint_state 요청
+            joint_lines = self.client.request_until_done('joint_state')
+            if joint_lines:
+                joint_data = self.parse_coordinate_data(joint_lines[0])
+                if joint_data is not None:
+                    joint_msg = Float32MultiArray()
+                    joint_msg.data = joint_data
+                    self.joint_pub.publish(joint_msg)
+                    
+        except Exception as e:
+            self.get_logger().debug(f"[TCP] coordinate request failed: {e}")
+            try:
+                self._connect_with_retry()
+            except:
+                pass
+    
+    def parse_coordinate_data(self, data_str: str):
+        try:
+            # CSV 형태의 문자열을 float 리스트로 변환
+            values = [float(x.strip()) for x in data_str.split(',') if x.strip()]
+            return values
+        except:
+            return None
 
     def destroy_node(self):
         try: self.client.close()

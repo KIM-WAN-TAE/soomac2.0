@@ -20,7 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'connect_zeus = zeus_controller.zeus_connect_test:main',
+            'connect_zeus = zeus_controller.zeus_connect:main',
+            'server_zeus = zeus_controller.zeus_server:main',
+            'client_zeus = zeus_controller.zeus_server:main',
         ],
     },
 )

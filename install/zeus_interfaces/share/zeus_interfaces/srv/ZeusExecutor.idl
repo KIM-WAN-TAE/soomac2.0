@@ -1,0 +1,20 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from zeus_interfaces/srv/ZeusExecutor.srv
+// generated code does not contain a copyright notice
+
+
+module zeus_interfaces {
+  module srv {
+    typedef float float__6[6];
+    @verbatim (language="comment", text=
+      "zeus_interfaces/srv/ZeusExecutor.srv")
+    struct ZeusExecutor_Request {
+      string frame;
+
+      float__6 coordinate;
+    };
+    struct ZeusExecutor_Response {
+      boolean success;
+    };
+  };
+};

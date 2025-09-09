@@ -1,3 +1,4 @@
 [console_scripts]
-connect_zeus = zeus_controller.zeus_connect_test:main
+connect_zeus = zeus_controller.zeus_connect:main
+main_zeus = zeus_controller.zeus_main:main
 

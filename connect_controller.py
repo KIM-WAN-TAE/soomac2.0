@@ -31,8 +31,8 @@ def main():
     print('[ZEUS] Robot is Ready! ')
     IOinit(rb)
     
-    m = MotionParam(jnt_speed=5, lin_speed=5, pose_speed=5, overlap=30)
-    rb.motionparam(m)
+    current_motion_param = MotionParam(jnt_speed=5, lin_speed=5, pose_speed=5, overlap=30)
+    rb.motionparam(current_motion_param)
     
     srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -54,7 +54,6 @@ def main():
                     buf += chunk.decode('utf-8', 'replace')
 
                     while u'\n' in buf:
-                        rb.asyncm(1)
                         
                         line, buf = buf.split(u'\n', 1)
                         line = line.strip()
@@ -71,6 +70,7 @@ def main():
                             cmd, payload = line, u''
 
                         try:
+                            rb.asyncm(1)
                             if cmd == u'start':
                                 cli.send('ready\n')
                                 cli.send('done\n') # 어떠한 명령/오류 든 통신이 완료되면 'done' 전송
@@ -138,7 +138,7 @@ def main():
                                     if len(vals) not in (6, 7):
                                         raise ValueError('need 6 or 7 (posture)')
                                     if len(vals) == 7:
-                                        P = Position(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6])
+                                        P = Position(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], int(vals[6]))
                                     else:
                                         P = Position(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5])
                                     rb.move(P)
@@ -153,7 +153,7 @@ def main():
 
                             elif cmd == u'joint_state':
                                 joints = shm_read(0x3050, 6).split(',')
-                                print('[ZEUS] joint : {}'.format(joints))
+                                # print('[ZEUS] joint : {}'.format(joints))
                                 for i in range(6):
                                     joints[i] = round(math.degrees(float(joints[i])), 3)
                                 resp = u','.join(unicode(j) for j in joints)
@@ -161,9 +161,33 @@ def main():
                                 cli.send('done\n')
                                 continue
 
+                            elif cmd == u'motionparam':
+                                if not payload:
+                                    cli.send('ERR:missing payload\\n')
+                                    cli.send('done\\n')
+                                    continue
+                                try:
+                                    vals = [float(x) for x in payload.split(',')]
+                                    if len(vals) != 4:
+                                        raise ValueError('need 4 values: jnt_speed,lin_speed,pose_speed,overlap')
+                                    current_motion_param = MotionParam(
+                                        jnt_speed=vals[0], 
+                                        lin_speed=vals[1], 
+                                        pose_speed=vals[2], 
+                                        overlap=vals[3]
+                                    )
+                                    rb.motionparam(current_motion_param)
+                                    cli.send('ok\\n')
+                                    cli.send('done\\n')
+                                    continue
+                                except Exception as e:
+                                    cli.send(('ERR:{0}\\n'.format(e)))
+                                    cli.send('done\\n')
+                                    continue
+
                             elif cmd == u'xy_state':
                                 pose = shm_read(0x3000, 6).split(',')
-                                print('[ZEUS] xy : {}'.format(pose))
+                                # print('[ZEUS] xy : {}'.format(pose))
                                 pose[0] = round(float(pose[0])*1000, 3)
                                 pose[1] = round(float(pose[1])*1000, 3)
                                 pose[2] = round(float(pose[2])*1000, 3)

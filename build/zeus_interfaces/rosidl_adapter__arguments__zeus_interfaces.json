@@ -1,0 +1,6 @@
+{
+  "package_name": "zeus_interfaces",
+  "non_idl_tuples": [
+    "/home/pc/soomac_ws/src/zeus_interfaces:srv/ZeusExecutor.srv"
+  ]
+}

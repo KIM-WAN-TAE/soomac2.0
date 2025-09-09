@@ -1,0 +1,65 @@
+{
+  "dh_parameters": {
+    "joints": [
+      {
+        "joint_id": 1,
+        "theta": "q1",
+        "theta_offset": "pi/2",
+        "d": 145.0,
+        "a": 0.0,
+        "alpha": "pi/2"
+      },
+      {
+        "joint_id": 2,
+        "theta": "q2",
+        "theta_offset": "pi/2",
+        "d": 0.0,
+        "a": 490.0,
+        "alpha": 0.0
+      },
+      {
+        "joint_id": 3,
+        "theta": "q3",
+        "theta_offset": "-pi/2",
+        "d": 0.0,
+        "a": 0.0,
+        "alpha": "-pi/2"
+      },
+      {
+        "joint_id": 4,
+        "theta": "q4",
+        "d": 370.0,
+        "a": 0.0,
+        "alpha": "pi/2"
+      },
+      {
+        "joint_id": 5,
+        "theta": "q5",
+        "d": 100.0,
+        "a": 0.0,
+        "alpha": "-pi/2"
+      },
+      {
+        "joint_id": 6,
+        "theta": "q6",
+        "d": 153.0,
+        "a": 0.0,
+        "alpha": 0.0
+      },
+      {
+        "joint_id": 7,
+        "theta": "-pi/2",
+        "d": 0.0,
+        "a": 67.26,
+        "alpha": 0.0
+      },
+      {
+        "joint_id": 8,
+        "theta": "pi/2",
+        "d": 0.0,
+        "a": -28.971,
+        "alpha": 0.0
+      }
+    ]
+  }
+}

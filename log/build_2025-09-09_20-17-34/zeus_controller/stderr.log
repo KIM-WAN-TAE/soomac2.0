@@ -1,0 +1,5 @@
+  File "/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller/zeus_main.py", line 18
+    def s
+         ^
+SyntaxError: invalid syntax
+

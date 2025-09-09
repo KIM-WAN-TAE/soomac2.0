@@ -1,0 +1,44 @@
+[0.006s] Invoking command in '/home/pc/soomac_ws/build/zeus_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_controller:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/zeus_description -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/zeus_description
+[0.069s] -- The C compiler identification is GNU 11.4.0
+[0.115s] -- The CXX compiler identification is GNU 11.4.0
+[0.120s] -- Detecting C compiler ABI info
+[0.158s] -- Detecting C compiler ABI info - done
+[0.162s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.162s] -- Detecting C compile features
+[0.162s] -- Detecting C compile features - done
+[0.164s] -- Detecting CXX compiler ABI info
+[0.205s] -- Detecting CXX compiler ABI info - done
+[0.208s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.208s] -- Detecting CXX compile features
+[0.208s] -- Detecting CXX compile features - done
+[0.210s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.299s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[0.353s] -- Found ament_lint_auto: 0.12.14 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[0.399s] -- Added test 'lint_cmake' to check CMake code style
+[0.400s] -- Added test 'xmllint' to check XML markup files
+[0.401s] -- Configuring done
+[0.402s] -- Generating done
+[0.402s] -- Build files have been written to: /home/pc/soomac_ws/build/zeus_description
+[0.406s] Invoked command in '/home/pc/soomac_ws/build/zeus_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_controller:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/zeus_description -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/zeus_description
+[0.406s] Invoking command in '/home/pc/soomac_ws/build/zeus_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_controller:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/zeus_description -- -j32 -l32
+[0.426s] Invoked command in '/home/pc/soomac_ws/build/zeus_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_controller:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/zeus_description -- -j32 -l32
+[0.432s] Invoking command in '/home/pc/soomac_ws/build/zeus_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_controller:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/zeus_description
+[0.436s] -- Install configuration: ""
+[0.436s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/config
+[0.436s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/config/base_to_camera_dh.json
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/ament_index/resource_index/package_run_dependencies/zeus_description
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/ament_index/resource_index/parent_prefix_path/zeus_description
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/environment/ament_prefix_path.sh
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/environment/ament_prefix_path.dsv
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/environment/path.sh
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/environment/path.dsv
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/local_setup.bash
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/local_setup.sh
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/local_setup.zsh
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/local_setup.dsv
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.dsv
+[0.437s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/ament_index/resource_index/packages/zeus_description
+[0.438s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/cmake/zeus_descriptionConfig.cmake
+[0.438s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/cmake/zeus_descriptionConfig-version.cmake
+[0.438s] -- Installing: /home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.xml
+[0.439s] Invoked command in '/home/pc/soomac_ws/build/zeus_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_controller:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/zeus_description

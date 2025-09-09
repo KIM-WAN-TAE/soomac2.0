@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "zeus_interfaces__py",
+		"source" : "/home/pc/soomac_ws/build/zeus_interfaces/zeus_interfaces__py"
+	}
+}
