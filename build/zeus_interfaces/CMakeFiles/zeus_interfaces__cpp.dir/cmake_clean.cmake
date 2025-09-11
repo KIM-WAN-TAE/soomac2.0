@@ -1,5 +1,10 @@
 file(REMOVE_RECURSE
   "CMakeFiles/zeus_interfaces__cpp"
+  "rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__builder.hpp"
+  "rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__struct.hpp"
+  "rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__traits.hpp"
+  "rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__type_support.hpp"
+  "rosidl_generator_cpp/zeus_interfaces/msg/zeus_main_command.hpp"
   "rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__builder.hpp"
   "rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__struct.hpp"
   "rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__traits.hpp"

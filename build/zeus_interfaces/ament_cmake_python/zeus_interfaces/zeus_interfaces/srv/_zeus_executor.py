@@ -7,6 +7,11 @@
 
 import builtins  # noqa: E402, I100
 
+import math  # noqa: E402, I100
+
+# Member 'coordinate'
+import numpy  # noqa: E402, I100
+
 import rosidl_parser.definition  # noqa: E402, I100
 
 
@@ -55,22 +60,30 @@ class ZeusExecutor_Request(metaclass=Metaclass_ZeusExecutor_Request):
     """Message class 'ZeusExecutor_Request'."""
 
     __slots__ = [
-        '_command',
+        '_frame',
+        '_coordinate',
     ]
 
     _fields_and_field_types = {
-        'command': 'string',
+        'frame': 'string',
+        'coordinate': 'float[6]',
     }
 
     SLOT_TYPES = (
         rosidl_parser.definition.UnboundedString(),  # noqa: E501
+        rosidl_parser.definition.Array(rosidl_parser.definition.BasicType('float'), 6),  # noqa: E501
     )
 
     def __init__(self, **kwargs):
         assert all('_' + key in self.__slots__ for key in kwargs.keys()), \
             'Invalid arguments passed to constructor: %s' % \
             ', '.join(sorted(k for k in kwargs.keys() if '_' + k not in self.__slots__))
-        self.command = kwargs.get('command', str())
+        self.frame = kwargs.get('frame', str())
+        if 'coordinate' not in kwargs:
+            self.coordinate = numpy.zeros(6, dtype=numpy.float32)
+        else:
+            self.coordinate = numpy.array(kwargs.get('coordinate'), dtype=numpy.float32)
+            assert self.coordinate.shape == (6, )
 
     def __repr__(self):
         typename = self.__class__.__module__.split('.')
@@ -101,7 +114,9 @@ class ZeusExecutor_Request(metaclass=Metaclass_ZeusExecutor_Request):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        if self.command != other.command:
+        if self.frame != other.frame:
+            return False
+        if any(self.coordinate != other.coordinate):
             return False
         return True
 
@@ -111,17 +126,48 @@ class ZeusExecutor_Request(metaclass=Metaclass_ZeusExecutor_Request):
         return copy(cls._fields_and_field_types)
 
     @builtins.property
-    def command(self):
-        """Message field 'command'."""
-        return self._command
+    def frame(self):
+        """Message field 'frame'."""
+        return self._frame
 
-    @command.setter
-    def command(self, value):
+    @frame.setter
+    def frame(self, value):
         if __debug__:
             assert \
                 isinstance(value, str), \
-                "The 'command' field must be of type 'str'"
-        self._command = value
+                "The 'frame' field must be of type 'str'"
+        self._frame = value
+
+    @builtins.property
+    def coordinate(self):
+        """Message field 'coordinate'."""
+        return self._coordinate
+
+    @coordinate.setter
+    def coordinate(self, value):
+        if isinstance(value, numpy.ndarray):
+            assert value.dtype == numpy.float32, \
+                "The 'coordinate' numpy.ndarray() must have the dtype of 'numpy.float32'"
+            assert value.size == 6, \
+                "The 'coordinate' numpy.ndarray() must have a size of 6"
+            self._coordinate = value
+            return
+        if __debug__:
+            from collections.abc import Sequence
+            from collections.abc import Set
+            from collections import UserList
+            from collections import UserString
+            assert \
+                ((isinstance(value, Sequence) or
+                  isinstance(value, Set) or
+                  isinstance(value, UserList)) and
+                 not isinstance(value, str) and
+                 not isinstance(value, UserString) and
+                 len(value) == 6 and
+                 all(isinstance(v, float) for v in value) and
+                 all(not (val < -3.402823466e+38 or val > 3.402823466e+38) or math.isinf(val) for val in value)), \
+                "The 'coordinate' field must be a set or sequence with length 6 and each value of type 'float' and each float in [-340282346600000016151267322115014000640.000000, 340282346600000016151267322115014000640.000000]"
+        self._coordinate = numpy.array(value, dtype=numpy.float32)
 
 
 # Import statements for member types

@@ -69,6 +69,7 @@ include CMakeFiles/zeus_interfaces.dir/progress.make
 CMakeFiles/zeus_interfaces: /home/pc/soomac_ws/src/zeus_interfaces/srv/ZeusExecutor.srv
 CMakeFiles/zeus_interfaces: rosidl_cmake/srv/ZeusExecutor_Request.msg
 CMakeFiles/zeus_interfaces: rosidl_cmake/srv/ZeusExecutor_Response.msg
+CMakeFiles/zeus_interfaces: /home/pc/soomac_ws/src/zeus_interfaces/msg/ZeusMainCommand.msg
 
 zeus_interfaces: CMakeFiles/zeus_interfaces
 zeus_interfaces: CMakeFiles/zeus_interfaces.dir/build.make

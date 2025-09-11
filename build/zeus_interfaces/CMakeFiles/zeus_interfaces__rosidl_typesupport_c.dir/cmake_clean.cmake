@@ -1,8 +1,11 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/zeus_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/zeus_interfaces/msg/zeus_main_command__type_support.cpp.o"
+  "CMakeFiles/zeus_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/zeus_interfaces/msg/zeus_main_command__type_support.cpp.o.d"
   "CMakeFiles/zeus_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/zeus_interfaces/srv/zeus_executor__type_support.cpp.o"
   "CMakeFiles/zeus_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/zeus_interfaces/srv/zeus_executor__type_support.cpp.o.d"
   "libzeus_interfaces__rosidl_typesupport_c.pdb"
   "libzeus_interfaces__rosidl_typesupport_c.so"
+  "rosidl_typesupport_c/zeus_interfaces/msg/zeus_main_command__type_support.cpp"
   "rosidl_typesupport_c/zeus_interfaces/srv/zeus_executor__type_support.cpp"
 )
 

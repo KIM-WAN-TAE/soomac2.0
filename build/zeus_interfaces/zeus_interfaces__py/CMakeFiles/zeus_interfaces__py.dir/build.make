@@ -70,8 +70,11 @@ zeus_interfaces__py/CMakeFiles/zeus_interfaces__py: rosidl_generator_py/zeus_int
 zeus_interfaces__py/CMakeFiles/zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_introspection_c.c
 zeus_interfaces__py/CMakeFiles/zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_c.c
 zeus_interfaces__py/CMakeFiles/zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/srv/_zeus_executor.py
+zeus_interfaces__py/CMakeFiles/zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command.py
 zeus_interfaces__py/CMakeFiles/zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/srv/__init__.py
+zeus_interfaces__py/CMakeFiles/zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/msg/__init__.py
 zeus_interfaces__py/CMakeFiles/zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/srv/_zeus_executor_s.c
+zeus_interfaces__py/CMakeFiles/zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command_s.c
 
 rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/lib/rosidl_generator_py/rosidl_generator_py
 rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_generator_py/__init__.py
@@ -87,6 +90,7 @@ rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fas
 rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/rosidl_generator_py/resource/_srv_pkg_typesupport_entry_point.c.em
 rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/rosidl_generator_py/resource/_srv.py.em
 rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c: rosidl_adapter/zeus_interfaces/srv/ZeusExecutor.idl
+rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c: rosidl_adapter/zeus_interfaces/msg/ZeusMainCommand.idl
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/pc/soomac_ws/build/zeus_interfaces/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python code for ROS interfaces"
 	cd /home/pc/soomac_ws/build/zeus_interfaces/zeus_interfaces__py && /usr/bin/python3 /opt/ros/humble/share/rosidl_generator_py/cmake/../../../lib/rosidl_generator_py/rosidl_generator_py --generator-arguments-file /home/pc/soomac_ws/build/zeus_interfaces/rosidl_generator_py__arguments.json --typesupport-impls "rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c;rosidl_typesupport_c"
 
@@ -99,15 +103,27 @@ rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_c.c
 rosidl_generator_py/zeus_interfaces/srv/_zeus_executor.py: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/zeus_interfaces/srv/_zeus_executor.py
 
+rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command.py: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command.py
+
 rosidl_generator_py/zeus_interfaces/srv/__init__.py: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/zeus_interfaces/srv/__init__.py
+
+rosidl_generator_py/zeus_interfaces/msg/__init__.py: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/zeus_interfaces/msg/__init__.py
 
 rosidl_generator_py/zeus_interfaces/srv/_zeus_executor_s.c: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/zeus_interfaces/srv/_zeus_executor_s.c
 
+rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command_s.c: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command_s.c
+
 zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_c.c
 zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
 zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/msg/__init__.py
+zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command.py
+zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command_s.c
 zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/srv/__init__.py
 zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/srv/_zeus_executor.py
 zeus_interfaces__py: rosidl_generator_py/zeus_interfaces/srv/_zeus_executor_s.c

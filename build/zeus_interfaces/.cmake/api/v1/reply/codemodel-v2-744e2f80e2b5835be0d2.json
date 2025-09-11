@@ -1,0 +1,233 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-a92d422bb5d3e4a3572d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17
+					]
+				},
+				{
+					"build" : "zeus_interfaces__py",
+					"jsonFile" : "directory-zeus_interfaces__py-53a06ff4cd53f15f4f6d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "/home/pc/soomac_ws/build/zeus_interfaces/zeus_interfaces__py",
+					"targetIndexes" : 
+					[
+						5
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1
+					],
+					"name" : "zeus_interfaces",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_build_zeus_interfaces_egg::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_build_zeus_interfaces_egg-d68d434d25f7097da8c2.json",
+					"name" : "ament_cmake_python_build_zeus_interfaces_egg",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_copy_zeus_interfaces::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_copy_zeus_interfaces-ae98536067846c8570b9.json",
+					"name" : "ament_cmake_python_copy_zeus_interfaces",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-abe1d8a44ebe2ce8fc7e.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces-c497033716ac2b02d2fa.json",
+					"name" : "zeus_interfaces",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__cpp-29f7576d2bdc651dbf71.json",
+					"name" : "zeus_interfaces__cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "zeus_interfaces__py::@da45a6503d353fb57b1f",
+					"jsonFile" : "target-zeus_interfaces__py-03dd85435e383dbf8a2f.json",
+					"name" : "zeus_interfaces__py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_generator_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_generator_c-e9b9bd8c2a984207fe46.json",
+					"name" : "zeus_interfaces__rosidl_generator_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_generator_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_generator_py-5ae30804670193c7fe51.json",
+					"name" : "zeus_interfaces__rosidl_generator_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_typesupport_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_typesupport_c-c3372b4d6a6dcd8fba89.json",
+					"name" : "zeus_interfaces__rosidl_typesupport_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_typesupport_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_typesupport_c__pyext-0e63357855d8cde8a286.json",
+					"name" : "zeus_interfaces__rosidl_typesupport_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_typesupport_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_typesupport_cpp-28ebac78a6de44552e00.json",
+					"name" : "zeus_interfaces__rosidl_typesupport_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_typesupport_fastrtps_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_typesupport_fastrtps_c-cb15b1f90b502145167f.json",
+					"name" : "zeus_interfaces__rosidl_typesupport_fastrtps_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_typesupport_fastrtps_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_typesupport_fastrtps_c__pyext-406530a026e1b168b93b.json",
+					"name" : "zeus_interfaces__rosidl_typesupport_fastrtps_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_typesupport_fastrtps_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_typesupport_fastrtps_cpp-9aeee829cc6272c2d5c9.json",
+					"name" : "zeus_interfaces__rosidl_typesupport_fastrtps_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_typesupport_introspection_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_typesupport_introspection_c-50329bf868a0a7ce6e2c.json",
+					"name" : "zeus_interfaces__rosidl_typesupport_introspection_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_typesupport_introspection_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_typesupport_introspection_c__pyext-3e9f2dc53731d39132d3.json",
+					"name" : "zeus_interfaces__rosidl_typesupport_introspection_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces__rosidl_typesupport_introspection_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces__rosidl_typesupport_introspection_cpp-c9636985e6cb0329c6f2.json",
+					"name" : "zeus_interfaces__rosidl_typesupport_introspection_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "zeus_interfaces_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-zeus_interfaces_uninstall-9e8390c0481a8bb33fe6.json",
+					"name" : "zeus_interfaces_uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/pc/soomac_ws/build/zeus_interfaces",
+		"source" : "/home/pc/soomac_ws/src/zeus_interfaces"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

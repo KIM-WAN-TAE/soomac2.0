@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/zeus_interfaces__rosidl_generator_py.dir/rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command_s.c.o"
+  "CMakeFiles/zeus_interfaces__rosidl_generator_py.dir/rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command_s.c.o.d"
   "CMakeFiles/zeus_interfaces__rosidl_generator_py.dir/rosidl_generator_py/zeus_interfaces/srv/_zeus_executor_s.c.o"
   "CMakeFiles/zeus_interfaces__rosidl_generator_py.dir/rosidl_generator_py/zeus_interfaces/srv/_zeus_executor_s.c.o.d"
   "rosidl_generator_py/zeus_interfaces/libzeus_interfaces__rosidl_generator_py.pdb"

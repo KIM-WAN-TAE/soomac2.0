@@ -71,6 +71,11 @@ CMakeFiles/zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/srv/detail
 CMakeFiles/zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__struct.hpp
 CMakeFiles/zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__traits.hpp
 CMakeFiles/zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__type_support.hpp
+CMakeFiles/zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/zeus_main_command.hpp
+CMakeFiles/zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__builder.hpp
+CMakeFiles/zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__struct.hpp
+CMakeFiles/zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__traits.hpp
+CMakeFiles/zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__type_support.hpp
 CMakeFiles/zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp
 
 rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp: /opt/ros/humble/lib/rosidl_generator_cpp/rosidl_generator_cpp
@@ -89,6 +94,7 @@ rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp: /opt/ros/humble/shar
 rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp: /opt/ros/humble/share/rosidl_generator_cpp/resource/srv__struct.hpp.em
 rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp: /opt/ros/humble/share/rosidl_generator_cpp/resource/srv__traits.hpp.em
 rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp: rosidl_adapter/zeus_interfaces/srv/ZeusExecutor.idl
+rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp: rosidl_adapter/zeus_interfaces/msg/ZeusMainCommand.idl
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/pc/soomac_ws/build/zeus_interfaces/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code for ROS interfaces"
 	/usr/bin/python3 /opt/ros/humble/share/rosidl_generator_cpp/cmake/../../../lib/rosidl_generator_cpp/rosidl_generator_cpp --generator-arguments-file /home/pc/soomac_ws/build/zeus_interfaces/rosidl_generator_cpp__arguments.json
 
@@ -104,7 +110,27 @@ rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__traits.hpp: rosid
 rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__type_support.hpp: rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__type_support.hpp
 
+rosidl_generator_cpp/zeus_interfaces/msg/zeus_main_command.hpp: rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/zeus_interfaces/msg/zeus_main_command.hpp
+
+rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__builder.hpp: rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__builder.hpp
+
+rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__struct.hpp: rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__struct.hpp
+
+rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__traits.hpp: rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__traits.hpp
+
+rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__type_support.hpp: rosidl_generator_cpp/zeus_interfaces/srv/zeus_executor.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__type_support.hpp
+
 zeus_interfaces__cpp: CMakeFiles/zeus_interfaces__cpp
+zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__builder.hpp
+zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__struct.hpp
+zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__traits.hpp
+zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/detail/zeus_main_command__type_support.hpp
+zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/msg/zeus_main_command.hpp
 zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__builder.hpp
 zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__struct.hpp
 zeus_interfaces__cpp: rosidl_generator_cpp/zeus_interfaces/srv/detail/zeus_executor__traits.hpp

@@ -1,4 +1,5 @@
 [console_scripts]
+client_zeus = zeus_controller.zeus_client:main
 connect_zeus = zeus_controller.zeus_connect:main
-main_zeus = zeus_controller.zeus_main:main
+server_zeus = zeus_controller.zeus_server:main
 

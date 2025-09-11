@@ -19,6 +19,9 @@
 #include "rosidl_runtime_c/string.h"
 #include "rosidl_runtime_c/string_functions.h"
 
+#include "rosidl_runtime_c/primitives_sequence.h"
+#include "rosidl_runtime_c/primitives_sequence_functions.h"
+
 
 ROSIDL_GENERATOR_C_EXPORT
 bool zeus_interfaces__srv__zeus_executor__request__convert_from_py(PyObject * _pymsg, void * _ros_message)
@@ -53,8 +56,8 @@ bool zeus_interfaces__srv__zeus_executor__request__convert_from_py(PyObject * _p
     assert(strncmp("zeus_interfaces.srv._zeus_executor.ZeusExecutor_Request", full_classname_dest, 55) == 0);
   }
   zeus_interfaces__srv__ZeusExecutor_Request * ros_message = _ros_message;
-  {  // command
-    PyObject * field = PyObject_GetAttrString(_pymsg, "command");
+  {  // frame
+    PyObject * field = PyObject_GetAttrString(_pymsg, "frame");
     if (!field) {
       return false;
     }
@@ -64,8 +67,32 @@ bool zeus_interfaces__srv__zeus_executor__request__convert_from_py(PyObject * _p
       Py_DECREF(field);
       return false;
     }
-    rosidl_runtime_c__String__assign(&ros_message->command, PyBytes_AS_STRING(encoded_field));
+    rosidl_runtime_c__String__assign(&ros_message->frame, PyBytes_AS_STRING(encoded_field));
     Py_DECREF(encoded_field);
+    Py_DECREF(field);
+  }
+  {  // coordinate
+    PyObject * field = PyObject_GetAttrString(_pymsg, "coordinate");
+    if (!field) {
+      return false;
+    }
+    {
+      // TODO(dirk-thomas) use a better way to check the type before casting
+      assert(field->ob_type != NULL);
+      assert(field->ob_type->tp_name != NULL);
+      assert(strcmp(field->ob_type->tp_name, "numpy.ndarray") == 0);
+      PyArrayObject * seq_field = (PyArrayObject *)field;
+      Py_INCREF(seq_field);
+      assert(PyArray_NDIM(seq_field) == 1);
+      assert(PyArray_TYPE(seq_field) == NPY_FLOAT32);
+      Py_ssize_t size = 6;
+      float * dest = ros_message->coordinate;
+      for (Py_ssize_t i = 0; i < size; ++i) {
+        float tmp = *(npy_float32 *)PyArray_GETPTR1(seq_field, i);
+        memcpy(&dest[i], &tmp, sizeof(float));
+      }
+      Py_DECREF(seq_field);
+    }
     Py_DECREF(field);
   }
 
@@ -90,22 +117,40 @@ PyObject * zeus_interfaces__srv__zeus_executor__request__convert_to_py(void * ra
     }
   }
   zeus_interfaces__srv__ZeusExecutor_Request * ros_message = (zeus_interfaces__srv__ZeusExecutor_Request *)raw_ros_message;
-  {  // command
+  {  // frame
     PyObject * field = NULL;
     field = PyUnicode_DecodeUTF8(
-      ros_message->command.data,
-      strlen(ros_message->command.data),
+      ros_message->frame.data,
+      strlen(ros_message->frame.data),
       "replace");
     if (!field) {
       return NULL;
     }
     {
-      int rc = PyObject_SetAttrString(_pymessage, "command", field);
+      int rc = PyObject_SetAttrString(_pymessage, "frame", field);
       Py_DECREF(field);
       if (rc) {
         return NULL;
       }
     }
+  }
+  {  // coordinate
+    PyObject * field = NULL;
+    field = PyObject_GetAttrString(_pymessage, "coordinate");
+    if (!field) {
+      return NULL;
+    }
+    assert(field->ob_type != NULL);
+    assert(field->ob_type->tp_name != NULL);
+    assert(strcmp(field->ob_type->tp_name, "numpy.ndarray") == 0);
+    PyArrayObject * seq_field = (PyArrayObject *)field;
+    assert(PyArray_NDIM(seq_field) == 1);
+    assert(PyArray_TYPE(seq_field) == NPY_FLOAT32);
+    assert(sizeof(npy_float32) == sizeof(float));
+    npy_float32 * dst = (npy_float32 *)PyArray_GETPTR1(seq_field, 0);
+    float * src = &(ros_message->coordinate[0]);
+    memcpy(dst, src, 6 * sizeof(float));
+    Py_DECREF(field);
   }
 
   // ownership of _pymessage is transferred to the caller

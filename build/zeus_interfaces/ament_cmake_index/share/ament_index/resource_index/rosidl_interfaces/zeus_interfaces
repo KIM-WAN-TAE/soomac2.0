@@ -1,3 +1,5 @@
+msg/ZeusMainCommand.idl
+msg/ZeusMainCommand.msg
 srv/ZeusExecutor.idl
 srv/ZeusExecutor.srv
 srv/ZeusExecutor_Request.msg

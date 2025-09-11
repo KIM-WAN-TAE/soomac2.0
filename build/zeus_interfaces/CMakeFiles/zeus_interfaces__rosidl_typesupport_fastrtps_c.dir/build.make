@@ -78,11 +78,18 @@ rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__rosidl_t
 rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_fastrtps_c.h: /opt/ros/humble/share/rosidl_typesupport_fastrtps_c/resource/srv__rosidl_typesupport_fastrtps_c.h.em
 rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_fastrtps_c.h: /opt/ros/humble/share/rosidl_typesupport_fastrtps_c/resource/srv__type_support_c.cpp.em
 rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_fastrtps_c.h: rosidl_adapter/zeus_interfaces/srv/ZeusExecutor.idl
+rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_fastrtps_c.h: rosidl_adapter/zeus_interfaces/msg/ZeusMainCommand.idl
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/pc/soomac_ws/build/zeus_interfaces/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C type support for eProsima Fast-RTPS"
 	/usr/bin/python3 /opt/ros/humble/lib/rosidl_typesupport_fastrtps_c/rosidl_typesupport_fastrtps_c --generator-arguments-file /home/pc/soomac_ws/build/zeus_interfaces/rosidl_typesupport_fastrtps_c__arguments.json
 
 rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp: rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_fastrtps_c.h
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp
+
+rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__rosidl_typesupport_fastrtps_c.h: rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_fastrtps_c.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__rosidl_typesupport_fastrtps_c.h
+
+rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp: rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_fastrtps_c.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp
 
 CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp.o: CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/flags.make
 CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp.o: rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp
@@ -98,14 +105,30 @@ CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/pc/soomac_ws/build/zeus_interfaces/rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp -o CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp.s
 
+CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.o: CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/flags.make
+CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.o: rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp
+CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.o: CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/pc/soomac_ws/build/zeus_interfaces/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.o -MF CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.o.d -o CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.o -c /home/pc/soomac_ws/build/zeus_interfaces/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp
+
+CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/pc/soomac_ws/build/zeus_interfaces/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp > CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.i
+
+CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/pc/soomac_ws/build/zeus_interfaces/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp -o CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.s
+
 # Object files for target zeus_interfaces__rosidl_typesupport_fastrtps_c
 zeus_interfaces__rosidl_typesupport_fastrtps_c_OBJECTS = \
-"CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp.o"
+"CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp.o" \
+"CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.o"
 
 # External object files for target zeus_interfaces__rosidl_typesupport_fastrtps_c
 zeus_interfaces__rosidl_typesupport_fastrtps_c_EXTERNAL_OBJECTS =
 
 libzeus_interfaces__rosidl_typesupport_fastrtps_c.so: CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp.o
+libzeus_interfaces__rosidl_typesupport_fastrtps_c.so: CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.o
 libzeus_interfaces__rosidl_typesupport_fastrtps_c.so: CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/build.make
 libzeus_interfaces__rosidl_typesupport_fastrtps_c.so: /opt/ros/humble/lib/librosidl_typesupport_fastrtps_cpp.so
 libzeus_interfaces__rosidl_typesupport_fastrtps_c.so: /opt/ros/humble/lib/librosidl_typesupport_fastrtps_c.so
@@ -115,7 +138,7 @@ libzeus_interfaces__rosidl_typesupport_fastrtps_c.so: /opt/ros/humble/lib/librmw
 libzeus_interfaces__rosidl_typesupport_fastrtps_c.so: /opt/ros/humble/lib/librosidl_runtime_c.so
 libzeus_interfaces__rosidl_typesupport_fastrtps_c.so: /opt/ros/humble/lib/librcutils.so
 libzeus_interfaces__rosidl_typesupport_fastrtps_c.so: CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/pc/soomac_ws/build/zeus_interfaces/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX shared library libzeus_interfaces__rosidl_typesupport_fastrtps_c.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/pc/soomac_ws/build/zeus_interfaces/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX shared library libzeus_interfaces__rosidl_typesupport_fastrtps_c.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -126,6 +149,8 @@ CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/clean:
 	$(CMAKE_COMMAND) -P CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/cmake_clean.cmake
 .PHONY : CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/clean
 
+CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/depend: rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__rosidl_typesupport_fastrtps_c.h
+CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/depend: rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp
 CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/depend: rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_fastrtps_c.h
 CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/depend: rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp
 	cd /home/pc/soomac_ws/build/zeus_interfaces && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/pc/soomac_ws/src/zeus_interfaces /home/pc/soomac_ws/src/zeus_interfaces /home/pc/soomac_ws/build/zeus_interfaces /home/pc/soomac_ws/build/zeus_interfaces /home/pc/soomac_ws/build/zeus_interfaces/CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/DependInfo.cmake --color=$(COLOR)

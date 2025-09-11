@@ -3,10 +3,12 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String, Float32MultiArray
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
 from zeus_interfaces.srv import ZeusExecutor
 
 import numpy as np
-import threading
+import threading, time 
 
 def dh_transform(theta, d, a, alpha):
     ct, st = np.cos(theta), np.sin(theta)
@@ -38,49 +40,42 @@ def command_string(frame, arr):
 class ZeusServerNode(Node):
     def __init__(self):
         super().__init__('zeus_server_node')
+        self.get_logger().info('[ZEUS] Server Node On!')
+        
+        self.service_cb_group = ReentrantCallbackGroup()
+        self.sub_cb_group = ReentrantCallbackGroup()
         
         self.lock = threading.Lock()
         
-        self.srv = self.create_service(ZeusExecutor, '/zeus_exec', self.handler) 
-        
-        self.create_subscription(Float32MultiArray, '/zeus/array/xy_state', self.xy_state_callback, 10)
-        self.create_subscription(Float32MultiArray, '/zeus/array/joint_state', self.joint_state_callback, 10)
-        
+        self.srv = self.create_service(ZeusExecutor, '/zeus_exec', self.handler, callback_group=self.service_cb_group)
+        self.create_subscription(Float32MultiArray, '/zeus/array/xy_state', self.xy_state_callback, 10, callback_group=self.sub_cb_group)
+        self.create_subscription(Float32MultiArray, '/zeus/array/joint_state', self.joint_state_callback, 10, callback_group=self.sub_cb_group)
         self.command_pub = self.create_publisher(String, '/zeus/string/binary_command', 10)
+        
+        self.xy_coor = np.zeros(6, dtype=np.float32)
+        self.joint_coor = np.zeros(6, dtype=np.float32)   
         
         self.tol_ang = 0.5
         self.tol_pos = 1.0
         
-    def calculate_base_to_camera_transform(self, joint_angles):
-        all_dh_params = self.dh_reader.get_all_dh_params(joint_angles)
-        T_total = np.eye(4)
-        
-        for params in all_dh_params:
-            T_joint = dh_transform(
-                params['theta'], params['d'], params['a'], params['alpha'])
-            T_total = np.dot(T_total, T_joint)
-        
-        return T_total
-        
-    def xy_state_callback(self, msg : Float32MultiArray):
-        if len(msg.data) != 6:
-            self.get_logger().warn('[ZEUS] Wrong Data length : XYZ State')
-            return
+    def xy_state_callback(self, msg):
         with self.lock:
-            self.xy_coor = msg.data
-        
-    def joint_state_callback(self, msg : Float32MultiArray):
-        if len(msg.data) != 6:
-            self.get_logger().warn('[ZEUS] Wrong Data length : Joint State')
-            return
+            if len(msg.data) == 6:
+                self.xy_coor = msg.data
+         # self.get_logger().info(f'[ZEUS] xyz_coor: {self.xy_coor}')
+
+    def joint_state_callback(self, msg):
         with self.lock:
-            self.joint_coor = msg.data
+            if len(msg.data) == 6:
+                self.joint_coor = msg.data
+        # self.get_logger().info(f'[ZEUS] joint_coor: {self.joint_coor}')
+
             
     def handler(self, req, res):
+        res.success = False
         try:
-            # 여기서 이제 목표를 전송하고 좌표가 도달했는지 feedback 하는 과정
             frame = req.frame
-            goal_coor = req.coordinate
+            goal_coor = np.array(req.coordinate)
 
             com_str = command_string(frame, goal_coor)
             
@@ -88,13 +83,12 @@ class ZeusServerNode(Node):
             com_msg.data = com_str
             self.command_pub.publish(com_msg)
             
-            # 여기서부터 좌표 비교해서 return 하는 로직 추가해야함
-            
             while True:
                 with self.lock:
                     if frame.lower() == 'l':
                         current = np.array(self.xy_coor)
-                        error = np.linalg.norm(goal_coor = current)
+                        error = np.linalg.norm(goal_coor - current)
+                        self.get_logger().info(f'Linear error : {error}')
                         
                         if error < self.tol_pos:
                             res.success = True
@@ -102,11 +96,13 @@ class ZeusServerNode(Node):
                         
                     elif frame.lower() == 'j':
                         current = np.array(self.joint_coor)
-                        error = np.linalg.norm(goal_coor = current)
+                        error = np.linalg.norm(goal_coor - current)
+                        self.get_logger().info(f'Joint error : {error}')
                         
                         if error < self.tol_ang:
                             res.success = True
                             break
+                time.sleep(0.05)
 
         except Exception as e:
             self.get_logger().error(f'[ZEUS SERVER] Send Coordinate Fail : {e}')
@@ -116,10 +112,10 @@ class ZeusServerNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = ZeusServerNode()
+    executor = MultiThreadedExecutor(num_threads=4)
+    executor.add_node(node)
     try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
+        executor.spin()
     finally:
         node.destroy_node()
         rclpy.shutdown()
