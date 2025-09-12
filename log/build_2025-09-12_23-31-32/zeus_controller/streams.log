@@ -1,0 +1,19 @@
+[0.276s] Invoking command in '/home/pc/soomac_ws/build/zeus_controller': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_controller/build --no-deps symlink_data
+[0.398s] running develop
+[0.460s] running egg_info
+[0.461s] writing zeus_controller.egg-info/PKG-INFO
+[0.461s] writing dependency_links to zeus_controller.egg-info/dependency_links.txt
+[0.461s] writing entry points to zeus_controller.egg-info/entry_points.txt
+[0.461s] writing requirements to zeus_controller.egg-info/requires.txt
+[0.461s] writing top-level names to zeus_controller.egg-info/top_level.txt
+[0.461s] reading manifest file 'zeus_controller.egg-info/SOURCES.txt'
+[0.462s] writing manifest file 'zeus_controller.egg-info/SOURCES.txt'
+[0.462s] running build_ext
+[0.463s] Creating /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus-controller.egg-link (link to .)
+[0.463s] Installing client_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.463s] Installing connect_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.463s] Installing server_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.463s] 
+[0.463s] Installed /home/pc/soomac_ws/build/zeus_controller
+[0.463s] running symlink_data
+[0.475s] Invoked command in '/home/pc/soomac_ws/build/zeus_controller' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_controller/build --no-deps symlink_data
