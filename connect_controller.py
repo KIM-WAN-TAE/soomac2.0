@@ -161,28 +161,51 @@ def main():
                                 cli.send('done\n')
                                 continue
 
-                            elif cmd == u'motionparam':
+                            elif cmd == u'mparam':
                                 if not payload:
-                                    cli.send('ERR:missing payload\\n')
-                                    cli.send('done\\n')
+                                    cli.send('ERR:missing payload\n')
+                                    cli.send('done\n')
                                     continue
                                 try:
-                                    vals = [float(x) for x in payload.split(',')]
-                                    if len(vals) != 4:
-                                        raise ValueError('need 4 values: jnt_speed,lin_speed,pose_speed,overlap')
+                                    parts = payload.split(',')
+                                    if len(parts) != 2:
+                                        raise ValueError('need format: param_type,value')
+                                    
+                                    param_type = parts[0].strip()
+                                    param_value = parts[1].strip()
+                                    
+                                    # 현재 모션 파라미터 값들을 가져옴 (기존 값 유지)
+                                    current_jnt_speed = current_motion_param.jnt_speed
+                                    current_lin_speed = current_motion_param.lin_speed
+                                    current_pose_speed = current_motion_param.pose_speed
+                                    current_overlap = current_motion_param.overlap
+                                    
+                                    # 파라미터 타입에 따라 값 설정
+                                    if param_type == 'jntspd':
+                                        current_jnt_speed = float(param_value)
+                                    elif param_type == 'linspd':
+                                        current_lin_speed = float(param_value)
+                                    elif param_type == 'posspd':
+                                        current_pose_speed = float(param_value)
+                                    elif param_type == 'ovrlap':
+                                        current_overlap = int(param_value)
+                                    else:
+                                        raise ValueError('invalid param type. use: jntspd, linspd, posspd, ovrlap')
+                                    
+                                    # 새로운 모션 파라미터 생성 및 적용
                                     current_motion_param = MotionParam(
-                                        jnt_speed=vals[0], 
-                                        lin_speed=vals[1], 
-                                        pose_speed=vals[2], 
-                                        overlap=vals[3]
+                                        jnt_speed=current_jnt_speed,
+                                        lin_speed=current_lin_speed,
+                                        pose_speed=current_pose_speed,
+                                        overlap=current_overlap
                                     )
                                     rb.motionparam(current_motion_param)
-                                    cli.send('ok\\n')
-                                    cli.send('done\\n')
+                                    cli.send('ok\n')
+                                    cli.send('done\n')
                                     continue
                                 except Exception as e:
-                                    cli.send(('ERR:{0}\\n'.format(e)))
-                                    cli.send('done\\n')
+                                    cli.send(('ERR:{0}\n'.format(e)))
+                                    cli.send('done\n')
                                     continue
 
                             elif cmd == u'xy_state':

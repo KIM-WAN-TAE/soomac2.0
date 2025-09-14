@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32MultiArray, String
+from std_msgs.msg import Float32MultiArray, String, MultiArrayDimension
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from zeus_interfaces.srv import ZeusExecutor
@@ -39,21 +39,33 @@ def rot_to_euler_zyx(R):
         rx = np.arctan2(-R[0,1], R[1,1])
     return np.rad2deg(rz), np.rad2deg(ry), np.rad2deg(rx)
 
+def mparam_command_string(param_type, value):
+    if isinstance(value, (list, tuple)):
+        value_str = ",".join([str(v) for v in value])
+    else:
+        value_str = str(value)
+    cmd = f"mparam+{param_type},{value_str}"
+    return cmd
+
 class ZeusClientNode(Node):
     def __init__(self):
         super().__init__('zeus_client_node')
         
         self.lock = threading.Lock()
         
-        CAM_INIT = ['j', -86.16, -15.19, -107.19, 0.0, -56.92, -86.16]
-        CAM_TEST = ['j', -70.16, -15.19, -107.19, 0.0, -56.92, -86.16]
+        CAM_INIT        = ['j', -86.16, -15.19, -107.19, 0.0, -56.92, -86.16]
+        BLOCK_DROP_INIT = ['j', 95.83, 1.51, -127.07, -0.03, -84.16, -84.16]
+        BLOCK_PICK_TOP  = []
+        BLOCK_PICK      = []
+        GRIPPER_TIME    = []
         
         self.block_list = [
             CAM_INIT,
-            CAM_TEST,
-            CAM_INIT,
-            CAM_TEST,
-            CAM_INIT
+            BLOCK_PICK_TOP,
+            BLOCK_PICK,
+            GRIPPER_TIME,
+            BLOCK_PICK_TOP,
+            BLOCK_DROP_INIT
         ]
         
         self.idx = 0
@@ -72,10 +84,12 @@ class ZeusClientNode(Node):
         self.service_cb_group = ReentrantCallbackGroup()
         self.sub_cb_group = ReentrantCallbackGroup()
         self.timer_cb_group = ReentrantCallbackGroup()
+        self.dh_timer_cb_group = ReentrantCallbackGroup()
 
         self.cli = self.create_client(ZeusExecutor, '/zeus_exec')
         
         self.block_pose_order_pub = self.create_publisher(String, '/zeus/string/block_order', 10)
+        self.base_to_camera_pub = self.create_publisher(Float32MultiArray, '/zeus/array/base_to_cam_matrix', 10)
         
         # self.create_subscription(Float32MultiArray, '/zeus/xyzrpy/block_rpy', self.block_rpy_callback, 10, callback_group=self.sub_cb_group)
         self.create_subscription(Float32MultiArray, '/zeus/array/block_pose', self.block_pose_callback, 10, callback_group=self.sub_cb_group)
@@ -83,6 +97,7 @@ class ZeusClientNode(Node):
         self.create_subscription(Float32MultiArray, '/zeus/array/joint_state', self.joint_state_callback, 10, callback_group=self.sub_cb_group)
         
         self.create_timer(1/10, self.timer, callback_group=self.timer_cb_group)
+        self.create_timer(1/10, self.dh_timer, callback_group=self.dh_timer_cb_group)
         
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('[ZEUS] ZeusExecutor 서비스 서버 대기 중...')
@@ -109,6 +124,20 @@ class ZeusClientNode(Node):
         # print(f'\n{T_BC}')
         return T_BC
     
+    def dh_timer(self):
+        with self.lock:
+            T = self.base_to_camera_matrix
+        
+        rows, cols = T.shape
+        
+        msg = Float32MultiArray()
+        msg.layout.dim.append(MultiArrayDimension(label='rows', size=rows, stride=cols))
+        msg.layout.dim.append(MultiArrayDimension(label='cols', size=cols, stride=1))
+        msg.layout.data_offset = 0
+        msg.data = T.flatten().tolist()
+        
+        self.base_to_camera_pub.publish(msg)
+        
     def response_callback(self, future):
         try:
             res = future.result()
@@ -135,9 +164,11 @@ class ZeusClientNode(Node):
             is_busy = self.is_busy
             
         if trigger and not is_busy:
+            # 카메라 초기 포즈
             if idx == 0:
                 self.send_next_command()
                 
+            # 블록 집기 전 위치    
             elif idx == 1:
                 with self.lock:
                     if self.topic_flag is False:
@@ -154,6 +185,7 @@ class ZeusClientNode(Node):
                 
                 with self.lock:
                     P, rz, ry, rx = self.block_pose
+                    
                     pose = [P[0], P[1], 300.0, rz, ry, rx]
                     print(self.xy_coor[3:])
                     pose[3:] = self.xy_coor[3:]
@@ -169,7 +201,7 @@ class ZeusClientNode(Node):
                 with self.lock:
                     self.block_pose = None
                     self.topic_flag = False
-            
+            # 블록 집기
             elif idx == 2:
                 with self.lock:
                     if self.topic_flag is False:
@@ -199,9 +231,25 @@ class ZeusClientNode(Node):
                 self.send_next_command()
                 
                 with self.lock:
-                    self.block_pose = None
                     self.topic_flag = False
+                    
+            # Gripper Command        
+            elif idx == 3:
+                with self.lock:
+                    self.idx = 4
+                    
+            # 블록 집고 상승
+            elif idx == 4:
+                with self.lock:
+                    self.block_list[3] = self.block_list[1]
+                    if self.block_list[3] != self.block_list[1]:
+                        return
+                    
+                self.send_next_command()
                 
+            # Drop 위치로 이동    
+            elif idx == 5:
+                self.send_next_command()
             
         elif trigger and is_busy:
             # self.get_logger().info(f"[ZEUS] I'm moving! ")
@@ -260,7 +308,6 @@ class ZeusClientNode(Node):
             return
         with self.lock:
             self.block_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
-            print(f"완태형의 사고 : {self.block_mat[:3, 3]}")
             T_BO = self.base_to_camera_matrix @ self.block_mat 
         
         P = T_BO[:3, 3]    
