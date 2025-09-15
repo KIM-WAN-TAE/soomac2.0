@@ -1,0 +1,22 @@
+running develop
+running egg_info
+creating zeus_dxl.egg-info
+writing zeus_dxl.egg-info/PKG-INFO
+writing dependency_links to zeus_dxl.egg-info/dependency_links.txt
+writing entry points to zeus_dxl.egg-info/entry_points.txt
+writing requirements to zeus_dxl.egg-info/requires.txt
+writing top-level names to zeus_dxl.egg-info/top_level.txt
+writing manifest file 'zeus_dxl.egg-info/SOURCES.txt'
+reading manifest file 'zeus_dxl.egg-info/SOURCES.txt'
+writing manifest file 'zeus_dxl.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus-dxl.egg-link (link to .)
+Installing gripper_run script to /home/pc/soomac_ws/install/zeus_dxl/lib/zeus_dxl
+
+Installed /home/pc/soomac_ws/build/zeus_dxl
+running symlink_data
+creating /home/pc/soomac_ws/install/zeus_dxl/share/ament_index
+creating /home/pc/soomac_ws/install/zeus_dxl/share/ament_index/resource_index
+creating /home/pc/soomac_ws/install/zeus_dxl/share/ament_index/resource_index/packages
+symbolically linking /home/pc/soomac_ws/build/zeus_dxl/resource/zeus_dxl -> /home/pc/soomac_ws/install/zeus_dxl/share/ament_index/resource_index/packages
+symbolically linking /home/pc/soomac_ws/build/zeus_dxl/package.xml -> /home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl

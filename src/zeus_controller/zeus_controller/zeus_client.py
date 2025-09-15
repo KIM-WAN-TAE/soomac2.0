@@ -53,8 +53,8 @@ class ZeusClientNode(Node):
         
         self.lock = threading.Lock()
         
-        CAM_INIT        = ['j', -86.16, -15.19, -107.19, 0.0, -56.92, -86.16]
-        BLOCK_DROP_INIT = ['j', 95.83, 1.51, -127.07, -0.03, -84.16, -84.16]
+        CAM_INIT        = ['j', -86.16, -10.96, -99.0, 0.0, -69.34, -86.16]
+        BLOCK_DROP_INIT = ['j', -70.83, 1.51, -127.07, -0.03, -84.16, -84.16]
         BLOCK_PICK_TOP  = []
         BLOCK_PICK      = []
         GRIPPER_TIME    = []
@@ -126,6 +126,9 @@ class ZeusClientNode(Node):
     
     def dh_timer(self):
         with self.lock:
+            if self.base_to_camera_matrix is None:
+                return
+            
             T = self.base_to_camera_matrix
         
         rows, cols = T.shape
@@ -186,7 +189,7 @@ class ZeusClientNode(Node):
                 with self.lock:
                     P, rz, ry, rx = self.block_pose
                     
-                    pose = [P[0], P[1], 300.0, rz, ry, rx]
+                    pose = [P[0]-60.0, P[1], 300.0, rz, ry, rx]
                     print(self.xy_coor[3:])
                     pose[3:] = self.xy_coor[3:]
                     
@@ -225,7 +228,7 @@ class ZeusClientNode(Node):
                     
                     P, rz, ry, rx = self.block_pose
                 self.get_logger().info(f'rz : {rz} / ry : {ry} / rx : {rx}')
-                pose = [P[0], P[1], 280.0, rz, ry, rx]
+                pose = [P[0], P[1], 240.0, rz, ry, rx]
                 self.block_list[2] = ['l'] + pose
    
                 self.send_next_command()
@@ -241,7 +244,7 @@ class ZeusClientNode(Node):
             # 블록 집고 상승
             elif idx == 4:
                 with self.lock:
-                    self.block_list[3] = self.block_list[1]
+                    self.block_list[3] = self.block_list[1].copy
                     if self.block_list[3] != self.block_list[1]:
                         return
                     
@@ -324,7 +327,7 @@ class ZeusClientNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = ZeusClientNode()
-    executor = MultiThreadedExecutor(num_threads=4)
+    executor = MultiThreadedExecutor(num_threads=5)
     executor.add_node(node)
     try:
         executor.spin()

@@ -1,0 +1,3 @@
+[console_scripts]
+gripper_run = zeus_dxl.zeus_gripper:main
+
