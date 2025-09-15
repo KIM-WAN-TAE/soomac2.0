@@ -28,6 +28,8 @@ setup(
     entry_points={
         'console_scripts': [
             'vision_node = vision_node.tool_detect:main',
+            'block_detect = vision_node.block_detect:main',
+            'block_detect_node = vision_node.block_detect_node:main',
         ],
     },
 )
