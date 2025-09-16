@@ -34,6 +34,11 @@ def command_string(frame, arr):
         cmd = f"move_l_abs+{values_str},6.0"
         return cmd
     
+    elif frame == 't' or frame == 'T':
+        values_str = ",".join([f"{v:.4f}" for v in arr])
+        cmd = f"tool_move+{values_str}"
+        return cmd
+    
     else:
         raise ValueError("Wrong Frame")
 
@@ -83,6 +88,12 @@ class ZeusServerNode(Node):
             com_msg.data = com_str
             self.command_pub.publish(com_msg)
             
+            target = None
+            if frame.lower() == 't':
+                with self.lock:
+                    current = np.array(self.xy_coor)
+                    target = current - goal_coor  # 상대좌표
+            
             while True:
                 with self.lock:
                     if frame.lower() == 'l':
@@ -102,6 +113,15 @@ class ZeusServerNode(Node):
                         if error < self.tol_ang:
                             res.success = True
                             break
+                        
+                    elif frame.lower() == 't':
+                        current = np.array(self.xy_coor)
+                        error = np.linalg.norm(target - current)
+                        self.get_logger().info(f'target : {target}, Toolmove error : {error}')
+                        if error < self.tol_pos:
+                            res.success = True
+                            break
+                        
                 time.sleep(0.05)
 
         except Exception as e:

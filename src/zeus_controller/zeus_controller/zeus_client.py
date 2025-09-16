@@ -10,6 +10,11 @@ from zeus_interfaces.srv import ZeusExecutor
 import threading, time
 import numpy as np
 from .read_json import CameraDHParameters
+from .make_best_rpy import pick_best_rpy
+
+Z_OFFSET  = 200.0
+PITCH_TOL = 3.0
+YAW_TOL   = 3.0
 
 def dh_transform(theta, d, a, alpha):
     ct, st = np.cos(theta), np.sin(theta)
@@ -56,19 +61,21 @@ class ZeusClientNode(Node):
         CAM_INIT        = ['j', -86.16, -10.96, -99.0, 0.0, -69.34, -86.16]
         BLOCK_DROP_INIT = ['j', -70.83, 1.51, -127.07, -0.03, -84.16, -84.16]
         BLOCK_PICK_TOP  = []
+        BLOCK_SPECIAL   = []
         BLOCK_MAKE_ORI  = []
         BLOCK_PICK      = []
         GRIPPER_TIME    = []
         
         
         self.block_list = [
-            CAM_INIT,
-            BLOCK_PICK_TOP,
-            BLOCK_MAKE_ORI,
-            BLOCK_PICK,
-            GRIPPER_TIME,
-            BLOCK_MAKE_ORI,
-            BLOCK_DROP_INIT
+            CAM_INIT,       # 0 Joint
+            BLOCK_PICK_TOP, # 1 Linear
+            BLOCK_SPECIAL,  # 2 Linear
+            BLOCK_MAKE_ORI, # 3 tool-rel -> 여기서 현 Pose Memo
+            BLOCK_PICK,     # 4 Linear
+            GRIPPER_TIME,   # 5 etc
+            BLOCK_MAKE_ORI, # 6 Linear   -> 현 Pose 불러오기
+            BLOCK_DROP_INIT # 7 Joint
         ]
         
         self.idx = 0
@@ -192,22 +199,16 @@ class ZeusClientNode(Node):
                 with self.lock:
                     P, rz, ry, rx = self.block_pose
                     
-                    pose = [P[0]-60.0, P[1], 300.0, rz, ry, rx]
-                    print(self.xy_coor[3:])
+                    pose = [P[0]-60.0, P[1], Z_OFFSET, rz, ry, rx]
                     pose[3:] = self.xy_coor[3:]
-                    
-                    # P = self.block_rpy[:3]
-                    # RPY = self.block_rpy[3:]
-                    # pose = [P[0], P[1], 300.0, RPY[2], RPY[1], RPY[0]]
-                    
-                self.block_list[1] = ['l'] + pose
-   
+                 
+                self.block_list[idx] = ['l'] + pose
                 self.send_next_command()
                 
                 with self.lock:
                     self.block_pose = None
                     self.topic_flag = False
-            # 블록 집기
+                    
             elif idx == 2:
                 with self.lock:
                     if self.topic_flag is False:
@@ -217,71 +218,104 @@ class ZeusClientNode(Node):
                         self.block_pose_order_pub.publish(s_msg)
                         self.topic_flag = True
                 
+                # 값을 받지않으면 return 
                 with self.lock:
                     if self.block_pose is None:
                         # self.get_logger().info('[ZEUS] Waiting Block Pose')
                         return
-                
-                time.sleep(2)
-                
-                with self.lock:
-                    # P = self.block_rpy[:3]
-                    # RPY = self.block_rpy[3:]
-                    # pose = [P[0], P[1], 300.0, RPY[2], RPY[1], RPY[0]]
                     
-                    P, rz, ry, rx = self.block_pose
-                self.get_logger().info(f'rz : {rz} / ry : {ry} / rx : {rx}')
-                pose = [P[0], P[1], P[2], rz, ry, rx]                
+                # 값 받으면 다음과 우선 옆으로 기울임과 동시에 진입 위치로 이동
+                with self.lock:
+                    B_P, rz, ry, rx = self.block_pose
+            
+                yaw, pitch, roll = rz, ry, rx               
+                
+                Z_HEIGHT = Z_OFFSET - B_P[2]
+                move_dis = Z_HEIGHT * np.tan(abs(np.deg2rad(pitch)))
+                
+                if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
+                    yaw += 180
+                    if pitch > PITCH_TOL: # Pitch 양수 # 1
+                        print(1)
+                        x_move = - move_dis * np.cos(np.deg2rad(yaw))  
+                        y_move = - move_dis * np.sin(np.deg2rad(yaw))
+                        
+                    elif pitch < - PITCH_TOL: # Pitch 음수 # 2
+                        print(2)
+                        x_move =   move_dis * np.cos(np.deg2rad(yaw))  
+                        y_move =   move_dis * np.sin(np.deg2rad(yaw))
+                        
+                    else: # 그냥 평평할 경우
+                        x_move, y_move = 0.0, 0.0
+                        
+                elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
+                    if pitch > PITCH_TOL: # Pitch 양수 # 3
+                        print(3)
+                        x_move = - move_dis * np.cos(np.deg2rad(yaw))  
+                        y_move =   move_dis * np.sin(np.deg2rad(yaw))
+                        
+                    elif pitch < - PITCH_TOL: # Pitch 음수 # 4
+                        print(4)
+                        x_move = - move_dis * np.cos(np.deg2rad(yaw))  
+                        y_move =   move_dis * np.sin(np.deg2rad(yaw))
+                        
+                    else: # 그냥 평평할 경우
+                        x_move, y_move = 0.0, 0.0
+                        
+                print(f'\n x : {x_move}, y : {y_move}\n')
+                
+                pose = [B_P[0] + x_move, B_P[1] + y_move, Z_OFFSET, rz, ry, rx]
+                with self.lock:
+                    pose[3:] = self.xy_coor[3:]
+                
+                print(f'POSE : {pose}')
+                self.block_list[idx] = ['l'] + pose
+                self.send_next_command()
                 
                 with self.lock:
-                    self.block_pose = pose
                     self.topic_flag = False
-                    self.idx = 3
                     
-            # Orientation
             elif idx == 3:
                 with self.lock:
-                    block_pose = self.block_pose
+                    _, yaw, pitch, _ = self.block_pose
                     
-                block = block_pose.copy()
+                if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
+                    yaw += 90
+                    yaw = abs(yaw)
+                    if pitch > PITCH_TOL or pitch < - PITCH_TOL:
+                        pass
+                    else: # 그냥 평평할 경우
+                        pitch = 0.0
+                        
+                elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
+                    yaw += 90
+                    yaw = -abs(yaw)
+                    if pitch > PITCH_TOL or pitch < - PITCH_TOL:
+                        pass
+                    else: # 그냥 평평할 경우
+                        pitch = 0.0
                 
-                Z_HI = block - 
-                
-                target_P = [(block[0]-]
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                with self.lock:
-                    self.idx = 4
+                print(f'\n\n yaw : {yaw}, pitch : {pitch} \n\n')
+                    
+                pose = [0.0, 0.0, 0.0, yaw, pitch, 0.0]
+                self.block_list[idx] = ['t'] + pose
+                self.send_next_command()
                     
             # 블록 집고 상승
             elif idx == 4:
                 with self.lock:
-                    self.block_list[3] = self.block_list[1].copy
-                    if self.block_list[3] != self.block_list[1]:
-                        return
+                    P, rz, ry, rx = self.block_pose
                     
+                    pose = [P[0], P[1], 5.0, rz, ry, rx]
+                    pose[3:] = self.xy_coor[3:]
+                 
+                self.block_list[idx] = ['l'] + pose
                 self.send_next_command()
+
                 
-            # Drop 위치로 이동    
-            elif idx == 5:
-                self.send_next_command()
+            # # Drop 위치로 이동    
+            # elif idx == 5:
+            #     self.send_next_command()
             
         elif trigger and is_busy:
             # self.get_logger().info(f"[ZEUS] I'm moving! ")
@@ -345,8 +379,8 @@ class ZeusClientNode(Node):
         P = T_BO[:3, 3]    
         R = T_BO[:3,:3]
         
-        print(R)
-        print(P)
+        # print(R)
+        # print(P)
         
         rz, ry, rx = rot_to_euler_zyx(R)
         

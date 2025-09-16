@@ -10,6 +10,7 @@ setup.py
 ../../build/zeus_controller/zeus_controller.egg-info/zip-safe
 resource/zeus_controller
 zeus_controller/__init__.py
+zeus_controller/make_best_rpy.py
 zeus_controller/read_json.py
 zeus_controller/zeus_client.py
 zeus_controller/zeus_connect.py

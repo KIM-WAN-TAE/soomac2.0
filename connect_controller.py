@@ -17,6 +17,12 @@ PORT    = 5000
 def main():
     rb = i611Robot()
     _BASE = Base()
+
+    tool_settings = {
+        1: dict(id=1, offx=0, offy=0, offz=160, offrz=0, offry=0, offrx=0), # Block Gripper
+        2: dict(id=2, offx=0, offy=0, offz=150, offrz=0, offry=0, offrx=0)
+    }
+    current_tool_id = 1
     
     try:
         rb.open()
@@ -30,6 +36,9 @@ def main():
     
     print('[ZEUS] Robot is Ready! ')
     IOinit(rb)
+    
+    rb.settool(**tool_settings[1])
+    rb.changetool(1)
     
     current_motion_param = MotionParam(jnt_speed=5, lin_speed=5, pose_speed=5, overlap=30)
     rb.motionparam(current_motion_param)
@@ -71,6 +80,35 @@ def main():
 
                         try:
                             rb.asyncm(1)
+                            if cmd == u'blockgripper':
+                                # 1번 tool로 변경
+                                rb.settool(**tool_settings[1])
+                                rb.changetool(1)
+                                current_tool_id = 1
+                                cli.send('ok\n'); cli.send('done\n')
+                                continue
+                            elif cmd == u'twofingergripper':
+                                rb.settool(**tool_settings[2])
+                                rb.changetool(2)
+                                current_tool_id = 2
+                                cli.send('ok\n'); cli.send('done\n')
+                                continue
+                            
+                            elif cmd == u'tool_move':
+                                if not payload:
+                                    cli.send('ERR:missing payload\n')
+                                    cli.send('done\n'); continue
+                                try:
+                                    vals = [float(x) for x in payload.split(',')]
+                                    if len(vals) != 6:
+                                        raise ValueError('toolmove needs 6 values (dx,dy,dz,drz,dry,drx)')
+                                    # tool 좌표계 기준 상대이동
+                                    rb.toolmove(dx=vals[0], dy=vals[1], dz=vals[2],
+                                                drz=vals[3], dry=vals[4], drx=vals[5])
+                                    cli.send('ok\n'); cli.send('done\n'); continue
+                                except Exception as e:
+                                    cli.send(('ERR:{0}\n'.format(e))); cli.send('done\n'); continue
+                            
                             if cmd == u'start':
                                 cli.send('ready\n')
                                 cli.send('done\n') # 어떠한 명령/오류 든 통신이 완료되면 'done' 전송
