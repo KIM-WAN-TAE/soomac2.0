@@ -56,15 +56,18 @@ class ZeusClientNode(Node):
         CAM_INIT        = ['j', -86.16, -10.96, -99.0, 0.0, -69.34, -86.16]
         BLOCK_DROP_INIT = ['j', -70.83, 1.51, -127.07, -0.03, -84.16, -84.16]
         BLOCK_PICK_TOP  = []
+        BLOCK_MAKE_ORI  = []
         BLOCK_PICK      = []
         GRIPPER_TIME    = []
+        
         
         self.block_list = [
             CAM_INIT,
             BLOCK_PICK_TOP,
+            BLOCK_MAKE_ORI,
             BLOCK_PICK,
             GRIPPER_TIME,
-            BLOCK_PICK_TOP,
+            BLOCK_MAKE_ORI,
             BLOCK_DROP_INIT
         ]
         
@@ -228,16 +231,42 @@ class ZeusClientNode(Node):
                     
                     P, rz, ry, rx = self.block_pose
                 self.get_logger().info(f'rz : {rz} / ry : {ry} / rx : {rx}')
-                pose = [P[0], P[1], 240.0, rz, ry, rx]
-                self.block_list[2] = ['l'] + pose
-   
-                self.send_next_command()
+                pose = [P[0], P[1], P[2], rz, ry, rx]                
                 
                 with self.lock:
+                    self.block_pose = pose
                     self.topic_flag = False
+                    self.idx = 3
                     
-            # Gripper Command        
+            # Orientation
             elif idx == 3:
+                with self.lock:
+                    block_pose = self.block_pose
+                    
+                block = block_pose.copy()
+                
+                Z_HI = block - 
+                
+                target_P = [(block[0]-]
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 with self.lock:
                     self.idx = 4
                     
@@ -316,13 +345,18 @@ class ZeusClientNode(Node):
         P = T_BO[:3, 3]    
         R = T_BO[:3,:3]
         
+        print(R)
+        print(P)
+        
         rz, ry, rx = rot_to_euler_zyx(R)
+        
+        print(f'rz : {rz}')
         
         with self.lock:
             self.block_pose = [P, rz, ry, rx]
             
-        print(rz, ry, rx)
-        print(P[0], P[1], P[2])
+        # print(rz, ry, rx)
+        # print(P[0], P[1], P[2])
             
 def main(args=None):
     rclpy.init(args=args)
