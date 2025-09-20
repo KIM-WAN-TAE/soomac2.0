@@ -14,6 +14,8 @@ test/test_copyright.py
 test/test_flake8.py
 test/test_pep257.py
 vision_node/__init__.py
+vision_node/block_detect.py
+vision_node/block_detect_node.py
 vision_node/tool_detect.py
 vision_node/tool_detect_.py
 vision_node/tool_detect_pre.py

@@ -192,9 +192,6 @@ def choose_handle_tip(mask_bin, mask_head, mask_tail, centered, pts, u_major, v_
         conf = min(1.0, 0.5 + 0.5*abs(combined))
         return mask_tail, mask_head, conf
 
-
-
-
 # ---------- 컨벡스 헐 + minAreaRect 기반 OBB ----------
 def obb_handle_tip_from_mask(mask, out_size_hw, end_band_ratio=0.18, min_pts=30, force_width_only=False):
     """
@@ -600,7 +597,7 @@ class VisionNode(Node):
                         payload = {
                             "class_name": cls_name,
                             "confidence": conf,
-                            "position": center_3d,                  # [x,y,z] (m)
+                            "position": center_3d,                 
                             "roll_deg": float(roll_deg)
                         }
                         found_payload = payload
@@ -650,7 +647,6 @@ class VisionNode(Node):
             self.detection_active = False
             self.get_logger().info("도구 탐지 중단")
 
-    # --- 자원 정리 ---
     def destroy_node(self):
         try:
             cv2.destroyAllWindows()

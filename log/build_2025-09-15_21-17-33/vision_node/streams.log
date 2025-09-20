@@ -1,0 +1,52 @@
+[0.846s] Invoking command in '/home/wt/zeus_ws/src/vision_node': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/wt/zeus_ws/build/vision_node/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/vision_node build --build-base /home/wt/zeus_ws/build/vision_node/build install --record /home/wt/zeus_ws/build/vision_node/install.log --single-version-externally-managed install_data
+[1.059s] running egg_info
+[1.060s] creating ../../build/vision_node/vision_node.egg-info
+[1.060s] writing ../../build/vision_node/vision_node.egg-info/PKG-INFO
+[1.060s] writing dependency_links to ../../build/vision_node/vision_node.egg-info/dependency_links.txt
+[1.061s] writing entry points to ../../build/vision_node/vision_node.egg-info/entry_points.txt
+[1.061s] writing requirements to ../../build/vision_node/vision_node.egg-info/requires.txt
+[1.062s] writing top-level names to ../../build/vision_node/vision_node.egg-info/top_level.txt
+[1.062s] writing manifest file '../../build/vision_node/vision_node.egg-info/SOURCES.txt'
+[1.062s] reading manifest file '../../build/vision_node/vision_node.egg-info/SOURCES.txt'
+[1.062s] adding license file 'LICENSE'
+[1.062s] writing manifest file '../../build/vision_node/vision_node.egg-info/SOURCES.txt'
+[1.062s] running build
+[1.062s] running build_py
+[1.062s] creating /home/wt/zeus_ws/build/vision_node/build
+[1.062s] creating /home/wt/zeus_ws/build/vision_node/build/lib
+[1.063s] creating /home/wt/zeus_ws/build/vision_node/build/lib/vision_node
+[1.063s] copying vision_node/tool_detect_pre.py -> /home/wt/zeus_ws/build/vision_node/build/lib/vision_node
+[1.063s] copying vision_node/tool_detect_.py -> /home/wt/zeus_ws/build/vision_node/build/lib/vision_node
+[1.063s] copying vision_node/tool_detect.py -> /home/wt/zeus_ws/build/vision_node/build/lib/vision_node
+[1.063s] copying vision_node/block_detect_node.py -> /home/wt/zeus_ws/build/vision_node/build/lib/vision_node
+[1.063s] copying vision_node/__init__.py -> /home/wt/zeus_ws/build/vision_node/build/lib/vision_node
+[1.063s] copying vision_node/block_detect.py -> /home/wt/zeus_ws/build/vision_node/build/lib/vision_node
+[1.063s] running install
+[1.063s] running install_lib
+[1.063s] creating /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node
+[1.063s] copying /home/wt/zeus_ws/build/vision_node/build/lib/vision_node/tool_detect_pre.py -> /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node
+[1.063s] copying /home/wt/zeus_ws/build/vision_node/build/lib/vision_node/tool_detect_.py -> /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node
+[1.064s] copying /home/wt/zeus_ws/build/vision_node/build/lib/vision_node/tool_detect.py -> /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node
+[1.064s] copying /home/wt/zeus_ws/build/vision_node/build/lib/vision_node/block_detect_node.py -> /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node
+[1.064s] copying /home/wt/zeus_ws/build/vision_node/build/lib/vision_node/__init__.py -> /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node
+[1.064s] copying /home/wt/zeus_ws/build/vision_node/build/lib/vision_node/block_detect.py -> /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node
+[1.064s] byte-compiling /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node/tool_detect_pre.py to tool_detect_pre.cpython-310.pyc
+[1.070s] byte-compiling /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node/tool_detect_.py to tool_detect_.cpython-310.pyc
+[1.073s] byte-compiling /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node/tool_detect.py to tool_detect.cpython-310.pyc
+[1.077s] byte-compiling /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node/block_detect_node.py to block_detect_node.cpython-310.pyc
+[1.079s] byte-compiling /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node/__init__.py to __init__.cpython-310.pyc
+[1.079s] byte-compiling /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node/block_detect.py to block_detect.cpython-310.pyc
+[1.084s] running install_data
+[1.084s] creating /home/wt/zeus_ws/install/vision_node/share/ament_index
+[1.084s] creating /home/wt/zeus_ws/install/vision_node/share/ament_index/resource_index
+[1.084s] creating /home/wt/zeus_ws/install/vision_node/share/ament_index/resource_index/packages
+[1.084s] copying resource/vision_node -> /home/wt/zeus_ws/install/vision_node/share/ament_index/resource_index/packages
+[1.084s] copying package.xml -> /home/wt/zeus_ws/install/vision_node/share/vision_node
+[1.084s] running install_egg_info
+[1.086s] Copying ../../build/vision_node/vision_node.egg-info to /home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages/vision_node-0.0.0-py3.10.egg-info
+[1.086s] running install_scripts
+[1.104s] Installing block_detect script to /home/wt/zeus_ws/install/vision_node/lib/vision_node
+[1.104s] Installing block_detect_node script to /home/wt/zeus_ws/install/vision_node/lib/vision_node
+[1.104s] Installing vision_node script to /home/wt/zeus_ws/install/vision_node/lib/vision_node
+[1.104s] writing list of installed files to '/home/wt/zeus_ws/build/vision_node/install.log'
+[1.122s] Invoked command in '/home/wt/zeus_ws/src/vision_node' returned '0': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/wt/zeus_ws/build/vision_node/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/wt/zeus_ws/install/vision_node/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/vision_node build --build-base /home/wt/zeus_ws/build/vision_node/build install --record /home/wt/zeus_ws/build/vision_node/install.log --single-version-externally-managed install_data
