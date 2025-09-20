@@ -1,3 +1,1 @@
-# zeus_interfaces/srv/ZeusExecutor.srv
-string frame
-float32[6] coordinate
+/home/pc/soomac_ws/build/zeus_interfaces/rosidl_cmake/srv/ZeusExecutor_Request.msg

@@ -1,3 +1,1 @@
-# zeus_interfaces/msg/ZeusMainCommand.msg
-string frame
-float32[6] position
+/home/pc/soomac_ws/src/zeus_interfaces/msg/ZeusMainCommand.msg

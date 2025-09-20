@@ -1,0 +1,1 @@
+/home/pc/soomac_ws/build/zeus_interfaces/rosidl_generator_py/zeus_interfaces/__init__.py

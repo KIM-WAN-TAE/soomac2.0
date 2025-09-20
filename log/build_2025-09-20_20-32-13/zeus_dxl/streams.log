@@ -1,0 +1,25 @@
+[0.276s] Invoking command in '/home/pc/soomac_ws/build/zeus_dxl': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_dxl/build --no-deps symlink_data
+[0.396s] running develop
+[0.469s] running egg_info
+[0.469s] creating zeus_dxl.egg-info
+[0.469s] writing zeus_dxl.egg-info/PKG-INFO
+[0.469s] writing dependency_links to zeus_dxl.egg-info/dependency_links.txt
+[0.469s] writing entry points to zeus_dxl.egg-info/entry_points.txt
+[0.469s] writing requirements to zeus_dxl.egg-info/requires.txt
+[0.469s] writing top-level names to zeus_dxl.egg-info/top_level.txt
+[0.469s] writing manifest file 'zeus_dxl.egg-info/SOURCES.txt'
+[0.470s] reading manifest file 'zeus_dxl.egg-info/SOURCES.txt'
+[0.470s] writing manifest file 'zeus_dxl.egg-info/SOURCES.txt'
+[0.470s] running build_ext
+[0.471s] Creating /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus-dxl.egg-link (link to .)
+[0.471s] Installing block_run script to /home/pc/soomac_ws/install/zeus_dxl/lib/zeus_dxl
+[0.471s] Installing gripper_run script to /home/pc/soomac_ws/install/zeus_dxl/lib/zeus_dxl
+[0.471s] 
+[0.471s] Installed /home/pc/soomac_ws/build/zeus_dxl
+[0.471s] running symlink_data
+[0.471s] creating /home/pc/soomac_ws/install/zeus_dxl/share/ament_index
+[0.471s] creating /home/pc/soomac_ws/install/zeus_dxl/share/ament_index/resource_index
+[0.471s] creating /home/pc/soomac_ws/install/zeus_dxl/share/ament_index/resource_index/packages
+[0.471s] symbolically linking /home/pc/soomac_ws/build/zeus_dxl/resource/zeus_dxl -> /home/pc/soomac_ws/install/zeus_dxl/share/ament_index/resource_index/packages
+[0.471s] symbolically linking /home/pc/soomac_ws/build/zeus_dxl/package.xml -> /home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl
+[0.483s] Invoked command in '/home/pc/soomac_ws/build/zeus_dxl' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_dxl/build --no-deps symlink_data

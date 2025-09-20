@@ -10,11 +10,13 @@ from zeus_interfaces.srv import ZeusExecutor
 import threading, time
 import numpy as np
 from .read_json import CameraDHParameters
-from .make_best_rpy import pick_best_rpy
+import copy
 
 Z_OFFSET  = 200.0
 PITCH_TOL = 3.0
 YAW_TOL   = 3.0
+ROLL_TOL  = 10.0
+PICK_Z_OFFSET = 10.0
 
 def dh_transform(theta, d, a, alpha):
     ct, st = np.cos(theta), np.sin(theta)
@@ -59,23 +61,31 @@ class ZeusClientNode(Node):
         self.lock = threading.Lock()
         
         CAM_INIT        = ['j', -86.16, -10.96, -99.0, 0.0, -69.34, -86.16]
-        BLOCK_DROP_INIT = ['j', -70.83, 1.51, -127.07, -0.03, -84.16, -84.16]
-        BLOCK_PICK_TOP  = []
-        BLOCK_SPECIAL   = []
-        BLOCK_MAKE_ORI  = []
-        BLOCK_PICK      = []
-        GRIPPER_TIME    = []
+        BLOCK_DROP_INIT = ['j', -6.16, -10.96, -99.0, 0.0, -69.34, -86.16]
+        self.GRIPPER_TIME    = ['t', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         
+        self.BLOCK_PICK_TOP  = []
+        self.BLOCK_SPECIAL   = []
+        self.BLOCK_MAKE_ORI  = []
+        self.BLOCK_PICK      = []
+        
+        self.BLOCK_DROP_TOP  = []
+        self.BLOCK_DROP      = []
         
         self.block_list = [
-            CAM_INIT,       # 0 Joint
-            BLOCK_PICK_TOP, # 1 Linear
-            BLOCK_SPECIAL,  # 2 Linear
-            BLOCK_MAKE_ORI, # 3 tool-rel -> 여기서 현 Pose Memo
-            BLOCK_PICK,     # 4 Linear
-            GRIPPER_TIME,   # 5 etc
-            BLOCK_MAKE_ORI, # 6 Linear   -> 현 Pose 불러오기
-            BLOCK_DROP_INIT # 7 Joint
+            CAM_INIT,             # 0 Joint -> jntspd = 10
+            self.BLOCK_PICK_TOP,  # 1 Linear linspd = 
+            self.BLOCK_SPECIAL,   # 2 Linear
+            self.BLOCK_MAKE_ORI,  # 3 tool-rel -> 여기서 현 Pose Memo
+            self.BLOCK_PICK,      # 4 Linear
+            self.GRIPPER_TIME,    # 5 etc
+            self.BLOCK_MAKE_ORI,  # 6 Linear   -> 현 Pose 불러오기
+            BLOCK_DROP_INIT,      # 7 Joint
+            self.BLOCK_DROP_TOP,  # 8 Joint 놓는 곳 수직 위치
+            self.BLOCK_DROP,      # 9 Joint 놓는 곳 
+            self.BLOCK_DROP_TOP,  # 10 Joint 놓는 곳 수직 위치
+            BLOCK_DROP_INIT,      # 11 Joint jntspd = 8
+            CAM_INIT              # 12 Joint jntspd = 20
         ]
         
         self.idx = 0
@@ -100,11 +110,15 @@ class ZeusClientNode(Node):
         
         self.block_pose_order_pub = self.create_publisher(String, '/zeus/string/block_order', 10)
         self.base_to_camera_pub = self.create_publisher(Float32MultiArray, '/zeus/array/base_to_cam_matrix', 10)
+        self.gripper_command_pub = self.create_publisher(String, '/zeus/string/gripper_command', 10)
+        self.gripper_wall_command_pub = self.create_publisher(String, '/zeus/string/target_angle', 10)
+        self.color_count_pub = self.create_publisher(String, '/zeus/string/drop_done', 10)
+        self.binary_cmd = self.create_publisher(String, '/zeus/string/binary_command', 10)
         
-        # self.create_subscription(Float32MultiArray, '/zeus/xyzrpy/block_rpy', self.block_rpy_callback, 10, callback_group=self.sub_cb_group)
         self.create_subscription(Float32MultiArray, '/zeus/array/block_pose', self.block_pose_callback, 10, callback_group=self.sub_cb_group)
         self.create_subscription(Float32MultiArray, '/zeus/array/xy_state', self.xy_state_callback, 10, callback_group=self.sub_cb_group)
         self.create_subscription(Float32MultiArray, '/zeus/array/joint_state', self.joint_state_callback, 10, callback_group=self.sub_cb_group)
+        self.create_subscription(Float32MultiArray, '/zeus/array/drop_point', self.drop_zone_callback, 10, callback_group=self.sub_cb_group)
         
         self.create_timer(1/10, self.timer, callback_group=self.timer_cb_group)
         self.create_timer(1/10, self.dh_timer, callback_group=self.dh_timer_cb_group)
@@ -114,6 +128,20 @@ class ZeusClientNode(Node):
         self.get_logger().info('[ZEUS] 서비스 연결 완료')
         
         self.send_next_command()
+        
+    def speend_control(self, cmd):
+        msg = String()
+        msg.data = cmd
+        self.binary_cmd.publish(msg)
+        
+    def drop_zone_callback(self, msg : Float32MultiArray):
+        if len(msg.data) != 6:
+            self.get_logger().warn('[ZEUS] 잘못된 데이터 길이입니다.')
+            return
+        
+        with self.lock:
+            self.drop_zone_point = msg.data
+            self.get_logger().info(f'[ZEUS] Drop Zone Point : {self.drop_zone_point}')
         
     def joint_state_callback(self, msg):
         with self.lock:
@@ -140,7 +168,6 @@ class ZeusClientNode(Node):
                 return
             
             T = self.base_to_camera_matrix
-        
         rows, cols = T.shape
         
         msg = Float32MultiArray()
@@ -148,7 +175,6 @@ class ZeusClientNode(Node):
         msg.layout.dim.append(MultiArrayDimension(label='cols', size=cols, stride=1))
         msg.layout.data_offset = 0
         msg.data = T.flatten().tolist()
-        
         self.base_to_camera_pub.publish(msg)
         
     def response_callback(self, future):
@@ -177,12 +203,18 @@ class ZeusClientNode(Node):
             is_busy = self.is_busy
             
         if trigger and not is_busy:
-            # 카메라 초기 포즈
             if idx == 0:
-                self.send_next_command()
+                cmd = mparam_command_string('jntspd', 10)
+                self.speend_control(cmd)
+                cmd = mparam_command_string('posspd', 25)
+                self.speend_control(cmd)
                 
-            # 블록 집기 전 위치    
+                self.send_next_command()
+                  
             elif idx == 1:
+                cmd = mparam_command_string('linspd', 40)
+                self.speend_control(cmd)
+                
                 with self.lock:
                     if self.topic_flag is False:
                         s_msg = String()
@@ -195,6 +227,10 @@ class ZeusClientNode(Node):
                     if self.block_pose is None:
                         # self.get_logger().info('[ZEUS] Waiting Block Pose')
                         return
+                
+                wall_msg = String()
+                wall_msg.data = 'down'
+                self.gripper_wall_command_pub.publish(wall_msg)
                 
                 with self.lock:
                     P, rz, ry, rx = self.block_pose
@@ -218,13 +254,11 @@ class ZeusClientNode(Node):
                         self.block_pose_order_pub.publish(s_msg)
                         self.topic_flag = True
                 
-                # 값을 받지않으면 return 
                 with self.lock:
                     if self.block_pose is None:
                         # self.get_logger().info('[ZEUS] Waiting Block Pose')
                         return
                     
-                # 값 받으면 다음과 우선 옆으로 기울임과 동시에 진입 위치로 이동
                 with self.lock:
                     B_P, rz, ry, rx = self.block_pose
             
@@ -237,13 +271,13 @@ class ZeusClientNode(Node):
                     yaw += 180
                     if pitch > PITCH_TOL: # Pitch 양수 # 1
                         print(1)
-                        x_move = - move_dis * np.cos(np.deg2rad(yaw))  
-                        y_move = - move_dis * np.sin(np.deg2rad(yaw))
+                        x_move =  move_dis * np.cos(np.deg2rad(yaw))  
+                        y_move =  move_dis * np.sin(np.deg2rad(yaw))
                         
                     elif pitch < - PITCH_TOL: # Pitch 음수 # 2
                         print(2)
-                        x_move =   move_dis * np.cos(np.deg2rad(yaw))  
-                        y_move =   move_dis * np.sin(np.deg2rad(yaw))
+                        x_move = - move_dis * np.cos(np.deg2rad(yaw))  
+                        y_move = - move_dis * np.sin(np.deg2rad(yaw))
                         
                     else: # 그냥 평평할 경우
                         x_move, y_move = 0.0, 0.0
@@ -251,13 +285,13 @@ class ZeusClientNode(Node):
                 elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
                     if pitch > PITCH_TOL: # Pitch 양수 # 3
                         print(3)
-                        x_move = - move_dis * np.cos(np.deg2rad(yaw))  
-                        y_move =   move_dis * np.sin(np.deg2rad(yaw))
+                        x_move =   move_dis * np.cos(np.deg2rad(yaw))  
+                        y_move = - move_dis * np.sin(np.deg2rad(yaw))
                         
                     elif pitch < - PITCH_TOL: # Pitch 음수 # 4
                         print(4)
-                        x_move = - move_dis * np.cos(np.deg2rad(yaw))  
-                        y_move =   move_dis * np.sin(np.deg2rad(yaw))
+                        x_move =   move_dis * np.cos(np.deg2rad(yaw))  
+                        y_move = - move_dis * np.sin(np.deg2rad(yaw))
                         
                     else: # 그냥 평평할 경우
                         x_move, y_move = 0.0, 0.0
@@ -277,62 +311,160 @@ class ZeusClientNode(Node):
                     
             elif idx == 3:
                 with self.lock:
-                    _, yaw, pitch, _ = self.block_pose
+                    _, yaw, pitch, roll = self.block_pose
+                    c_rz, c_ry, c_rx = self.xy_coor[3:]
                     
-                if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
-                    yaw += 90
-                    yaw = abs(yaw)
-                    if pitch > PITCH_TOL or pitch < - PITCH_TOL:
-                        pass
-                    else: # 그냥 평평할 경우
-                        pitch = 0.0
-                        
-                elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
-                    yaw += 90
-                    yaw = -abs(yaw)
-                    if pitch > PITCH_TOL or pitch < - PITCH_TOL:
-                        pass
-                    else: # 그냥 평평할 경우
-                        pitch = 0.0
+                e_rz, e_ry, e_rx = yaw - c_rz, pitch - c_ry, roll - c_rx
                 
-                print(f'\n\n yaw : {yaw}, pitch : {pitch} \n\n')
+                if abs(e_rx) > 30 and abs(e_rx) < 60:
+                    if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
+                        yaw += 90
+                        yaw = abs(yaw)
+                        
+                    elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
+                        yaw += 90
+                        yaw = -abs(yaw)
+                    pitch = 0.0
                     
+                else:
+                    if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
+                        yaw += 90
+                        yaw = abs(yaw)
+                        if pitch > PITCH_TOL or pitch < - PITCH_TOL:
+                            pass
+                        else: # 그냥 평평할 경우
+                            pitch = 0.0
+                        
+                    elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
+                        yaw += 90
+                        yaw = -abs(yaw)
+                        if pitch > PITCH_TOL or pitch < - PITCH_TOL:
+                            pass
+                        else: # 그냥 평평할 경우
+                            pitch = 0.0
+                            
+                    roll = 0.0
+                
+                print(f'\nyaw : {yaw}, pitch : {pitch}, roll : {roll}')
+                print(f'eyaw : {e_rz}, epitch : {e_ry}, eroll : {e_rx} \n')
+                  
                 pose = [0.0, 0.0, 0.0, yaw, pitch, 0.0]
                 self.block_list[idx] = ['t'] + pose
                 self.send_next_command()
                     
-            # 블록 집고 상승
             elif idx == 4:
                 with self.lock:
                     P, rz, ry, rx = self.block_pose
                     
-                    pose = [P[0], P[1], 5.0, rz, ry, rx]
+                    pose = [P[0], P[1], P[2] + PICK_Z_OFFSET, rz, ry, rx]
                     pose[3:] = self.xy_coor[3:]
                  
                 self.block_list[idx] = ['l'] + pose
                 self.send_next_command()
-
+ 
+            elif idx == 5:
+                cmd = mparam_command_string('posspd', 5)
+                self.speend_control(cmd)
                 
-            # # Drop 위치로 이동    
-            # elif idx == 5:
-            #     self.send_next_command()
+                gripper_msg = String()
+                gripper_msg.data = 's'
+                self.gripper_command_pub.publish(gripper_msg)
+                
+                grip_done_msg = String()
+                grip_done_msg.data = 'done'
+                self.color_count_pub.publish(grip_done_msg)
+                
+                time.sleep(2)
+                
+                self.send_next_command()
             
+            elif idx == 6:
+                with self.lock:
+                    self.block_list[idx] = copy.deepcopy(self.block_list[idx-4])
+                
+                self.send_next_command()
+                
+            elif idx == 7: # Move Drop Init Position
+                cmd = mparam_command_string('jntspd', 30)
+                self.speend_control(cmd)
+                
+                self.send_next_command()
+            
+            elif idx == 8: # Drop Top Zone
+                cmd = mparam_command_string('jntspd', 10)
+                self.speend_control(cmd)
+                
+                wall_msg = String()
+                wall_msg.data = 'up'
+                self.gripper_wall_command_pub.publish(wall_msg)
+                
+                with self.lock:
+                    self.block_list[idx] = ['j'] + list(self.drop_zone_point)
+                    
+                self.send_next_command()
+                
+            elif idx == 9:
+                cmd = mparam_command_string('linspd', 10)
+                self.speend_control(cmd)
+                
+                with self.lock:
+                    self.block_list[idx] = ['t'] + [0.0, 0.0, 10.0, 0.0, 0.0, 0.0]
+                    
+                self.send_next_command()
+                
+            elif idx == 10:
+                gripper_msg = String()
+                gripper_msg.data = 'e'
+                self.gripper_command_pub.publish(gripper_msg)
+                
+                time.sleep(2)
+                
+                with self.lock:
+                    self.block_list[idx] = ['j'] + list(self.drop_zone_point)
+                
+                self.send_next_command()
+                
+            elif idx == 11:
+                self.send_next_command()
+                
+            elif idx == 12:
+                cmd = mparam_command_string('jntspd', 30)
+                self.speend_control(cmd)
+                
+                self.send_next_command()
+                
+            elif idx == 13:
+                self.send_next_command()
+
         elif trigger and is_busy:
             # self.get_logger().info(f"[ZEUS] I'm moving! ")
             pass
             
         else:
-            self.get_logger().info(f"[ZEUS] Waiting For True Trigger ")
+            pass
+            # self.get_logger().info(f"[ZEUS] Waiting For True Trigger ")
         
     def send_next_command(self):
         if self.is_busy: # 이미 명령을 보낸 경우 
             return
         
-        if self.idx >= len(self.block_list):
-            self.get_logger().info('[ZEUS] All Coordinate Sended!')
-            self.block_trigger = False
-            self.idx = 0
-            return
+        with self.lock:
+            if self.idx >= len(self.block_list):
+                self.get_logger().info('[ZEUS] All Coordinate Sended!')
+                self.block_trigger = False
+                
+                self.idx = 0
+                
+                self.BLOCK_PICK_TOP  = []
+                self.BLOCK_SPECIAL   = []
+                self.BLOCK_MAKE_ORI  = []
+                self.BLOCK_PICK      = []
+                self.BLOCK_DROP_TOP  = []
+                self.BLOCK_DROP      = []
+                
+                self.block_trigger = True
+                
+                return
 
         block = self.block_list[self.idx]
         frame = block[0]
@@ -347,15 +479,6 @@ class ZeusClientNode(Node):
         future.add_done_callback(self.response_callback)
         
         self.is_busy = True
-        
-    # def block_rpy_callback(self, msg : Float32MultiArray):
-    #     if len(msg.data) != 6:
-    #         return
-
-    #     with self.lock:
-    #         self.block_rpy = msg.data
-            
-    #         print(f'{self.block_rpy}')
         
     def block_pose_callback(self, msg : Float32MultiArray):
         if len(msg.data) != 16:
@@ -379,12 +502,9 @@ class ZeusClientNode(Node):
         P = T_BO[:3, 3]    
         R = T_BO[:3,:3]
         
-        # print(R)
-        # print(P)
-        
         rz, ry, rx = rot_to_euler_zyx(R)
         
-        print(f'rz : {rz}')
+        # print(f'rz : {rz}')
         
         with self.lock:
             self.block_pose = [P, rz, ry, rx]

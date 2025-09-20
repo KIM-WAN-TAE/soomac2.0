@@ -1,1 +1,1 @@
-from zeus_interfaces.msg._zeus_main_command import ZeusMainCommand  # noqa: F401
+/home/pc/soomac_ws/build/zeus_interfaces/rosidl_generator_py/zeus_interfaces/msg/__init__.py

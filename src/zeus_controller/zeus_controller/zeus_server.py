@@ -8,7 +8,17 @@ from rclpy.executors import MultiThreadedExecutor
 from zeus_interfaces.srv import ZeusExecutor
 
 import numpy as np
-import threading, time 
+import threading, time
+
+def angle_diff(goal, current):
+    diff = goal - current
+    for i in range(len(diff)):
+        # x,y,z는 패스, rx,ry,rz(혹은 joint angle)만 보정
+        if i >= 3:  # rx, ry, rz 인덱스
+            d = diff[i]
+            d = (d + 180.0) % 360.0 - 180.0
+            diff[i] = d
+    return diff
 
 def dh_transform(theta, d, a, alpha):
     ct, st = np.cos(theta), np.sin(theta)
@@ -62,6 +72,7 @@ class ZeusServerNode(Node):
         
         self.tol_ang = 0.5
         self.tol_pos = 1.0
+        self.tol_tol = 2.0
         
     def xy_state_callback(self, msg):
         with self.lock:
@@ -116,9 +127,10 @@ class ZeusServerNode(Node):
                         
                     elif frame.lower() == 't':
                         current = np.array(self.xy_coor)
-                        error = np.linalg.norm(target - current)
+                        error_vec = angle_diff(target, current)
+                        error = np.linalg.norm(error_vec)
                         self.get_logger().info(f'target : {target}, Toolmove error : {error}')
-                        if error < self.tol_pos:
+                        if error < self.tol_tol:
                             res.success = True
                             break
                         

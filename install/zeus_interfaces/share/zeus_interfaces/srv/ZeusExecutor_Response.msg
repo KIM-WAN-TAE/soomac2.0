@@ -1,2 +1,1 @@
-
-bool success
+/home/pc/soomac_ws/build/zeus_interfaces/rosidl_cmake/srv/ZeusExecutor_Response.msg

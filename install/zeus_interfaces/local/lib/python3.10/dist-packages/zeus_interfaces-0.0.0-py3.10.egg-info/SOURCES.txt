@@ -1,8 +1,1 @@
-setup.py
-zeus_interfaces/__init__.py
-zeus_interfaces.egg-info/PKG-INFO
-zeus_interfaces.egg-info/SOURCES.txt
-zeus_interfaces.egg-info/dependency_links.txt
-zeus_interfaces.egg-info/top_level.txt
-zeus_interfaces/srv/__init__.py
-zeus_interfaces/srv/_zeus_executor.py
+/home/pc/soomac_ws/build/zeus_interfaces/ament_cmake_python/zeus_interfaces/zeus_interfaces.egg-info/SOURCES.txt

@@ -1,6 +1,1 @@
-msg/ZeusMainCommand.idl
-msg/ZeusMainCommand.msg
-srv/ZeusExecutor.idl
-srv/ZeusExecutor.srv
-srv/ZeusExecutor_Request.msg
-srv/ZeusExecutor_Response.msg
+/home/pc/soomac_ws/build/zeus_interfaces/ament_cmake_index/share/ament_index/resource_index/rosidl_interfaces/zeus_interfaces
