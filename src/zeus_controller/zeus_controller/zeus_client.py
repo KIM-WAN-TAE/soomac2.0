@@ -206,8 +206,6 @@ class ZeusClientNode(Node):
             if idx == 0:
                 cmd = mparam_command_string('jntspd', 10)
                 self.speend_control(cmd)
-                cmd = mparam_command_string('posspd', 25)
-                self.speend_control(cmd)
                 
                 self.send_next_command()
                   
@@ -246,6 +244,9 @@ class ZeusClientNode(Node):
                     self.topic_flag = False
                     
             elif idx == 2:
+                cmd = mparam_command_string('posspd', 40)
+                self.speend_control(cmd)
+                
                 with self.lock:
                     if self.topic_flag is False:
                         s_msg = String()
