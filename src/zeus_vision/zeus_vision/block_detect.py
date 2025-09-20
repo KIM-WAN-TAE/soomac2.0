@@ -12,6 +12,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import matplotlib
+import math
 def _safe_set_mpl_backend():
     try:
         if os.environ.get("DISPLAY", ""):
@@ -47,7 +48,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray, MultiArrayDimension, String
 
-WEIGHTS    = "src/zeus_vision/best_0920_greenplus_yellow100.pt"
+WEIGHTS    = "/home/wt/zeus_wt_ws/src/vision_node/vision_node/best_0919_rgbp.pt"
 DEVICE     = "0"       
 
 CONF_DET   = 0.28       # YOLO 추론 최소 conf
@@ -67,7 +68,7 @@ STAT_NB_NEIGHBORS, STAT_STD_RATIO = 20, 2.0
 RAD_RADIUS, RAD_MIN_POINTS = 0.03, 10
 
 # 제약/시각화
-# 추정된 Roll, Pitch 각도가 이 값보다 작으면 노이즈로 간주하여 0으로 처리
+# Roll, Pitch 각도가 이 값보다 작으면 노이즈로 간주하여 0으로 처리
 DEAD_ZONE_DEG = 3.0
 MIN_AREA_PX   = 800
 INLIER_RATIO_TH = 0.30    # plane_inlier / mask 비율
@@ -75,14 +76,12 @@ USE_DBSCAN_3D = True
 DBSCAN_EPS_M  = 0.015     # 15mm
 DBSCAN_MINPTS = 60
 
-# ---- 안정화 퍼블리시 게이트 설정 ----
 STAB_ANGLE_DEG = 1.0         # Δθ 임계각(도)
 STAB_MIN_FRAMES = 20          # 연속 안정 프레임 수 임계
 STAB_CENTER_JUMP_PX = 60      # 대상 변경/점프 감지용 중심 픽셀 허용 이동량
 PUBLISH_COOLDOWN_FRAMES = 10  # 퍼블리시 후 재퍼블리시까지 쿨다운 프레임
 
-# ==== 실제 블록 크기 (미터) ====
-# "세로 7.5cm, 가로 2.5cm" → 긴 변 L=0.075, 짧은 변 W=0.025
+# 세로 7.5cm, 가로 2.5cm → 긴 변 L=0.075, 짧은 변 W=0.025
 BLOCK_LEN_M = 0.075
 BLOCK_WID_M = 0.025
 
@@ -690,12 +689,18 @@ def main(args=None):
             if plane_accum_mask.any():
                 plane_vis = apply_mask_overlay(plane_vis, plane_accum_mask, color=(0,255,0), alpha=0.8)
 
-            # ---------- Nearest( origin_z 최소 ) 1개만 Orientation 계산/Publish ----------
-            chosen = None; min_z = +1e9
+            # ---------- 민재형 예시 ------
+            def calculate_distance(point):
+                return math.sqrt(point[0]**2 + point[1]**2 + point[2]**2)
+            
+            chosen = None; min_dis = +1e9
             for cand in candidates:
-                if cand['origin'] is None: continue
-                if cand['origin'][2] < min_z:
-                    min_z = cand['origin'][2]
+                if cand['origin'] is None: 
+                    continue
+            # min_z 대신 유클리디안 거리 계산
+                dis = calculate_distance(cand['origin'])
+                if dis < min_dis:
+                    min_dis = dis
                     chosen = cand
 
             mpl_raw_pose = final_pose = None
@@ -704,6 +709,7 @@ def main(args=None):
             if chosen is not None:
                 x_axis, y_axis, z_axis = chosen['axes']
                 origin_m = chosen['origin']
+
                 cx, cy = chosen['cx'], chosen['cy']
 
                 # [VIS] 최종 선택된 origin 빨간 십자
