@@ -48,7 +48,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray, MultiArrayDimension, String
 
-WEIGHTS    = "/home/wt/zeus_wt_ws/src/vision_node/vision_node/best_0919_rgbp.pt"
+WEIGHTS    = "src/zeus_vision/best_0920_greenplus_yellow100.pt"
 DEVICE     = "0"       
 
 CONF_DET   = 0.28       # YOLO 추론 최소 conf
