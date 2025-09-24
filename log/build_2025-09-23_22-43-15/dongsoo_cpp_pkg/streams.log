@@ -1,0 +1,26 @@
+[0.007s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/soomac_ws/install/dongsoo_free_mission:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[0.032s] [35m[1mConsolidate compiler generated dependencies of target test_motor_connect[0m
+[0.032s] [35m[1mConsolidate compiler generated dependencies of target motor_connect[0m
+[0.041s] [ 50%] Built target motor_connect
+[0.042s] [100%] Built target test_motor_connect
+[0.048s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/soomac_ws/install/dongsoo_free_mission:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[0.052s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/soomac_ws/install/dongsoo_free_mission:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_cpp_pkg
+[0.057s] -- Install configuration: ""
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/motor_connect
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/test_motor_connect
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/package_run_dependencies/dongsoo_cpp_pkg
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/parent_prefix_path/dongsoo_cpp_pkg
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/ament_prefix_path.sh
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/ament_prefix_path.dsv
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/path.sh
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/path.dsv
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.bash
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.sh
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.zsh
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.dsv
+[0.057s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.dsv
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/packages/dongsoo_cpp_pkg
+[0.057s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/cmake/dongsoo_cpp_pkgConfig.cmake
+[0.058s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/cmake/dongsoo_cpp_pkgConfig-version.cmake
+[0.058s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.xml
+[0.058s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/homework_pkg:/home/pc/soomac_ws/install/finger_test:/home/pc/soomac_ws/install/dx_motor_control:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/soomac_ws/install/dongsoo_free_mission:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_cpp_pkg

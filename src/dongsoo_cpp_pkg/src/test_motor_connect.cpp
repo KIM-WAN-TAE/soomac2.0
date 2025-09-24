@@ -253,10 +253,10 @@ public:
       uint16_t limit_raw;
       if (id == 4) {
         // XH430-V350-R: 0~689
-        limit_raw = static_cast<uint16_t>(std::clamp(500, 0, 689)); // 벤치용 500
+        limit_raw = static_cast<uint16_t>(std::clamp(600, 0, 689)); // 벤치용 500
       } else {
         // XH540-V270-R: 0~1188
-        limit_raw = static_cast<uint16_t>(std::clamp(900, 0, 1188)); // 벤치용 900
+        limit_raw = static_cast<uint16_t>(std::clamp(1000, 0, 1188)); // 벤치용 900
       }
       comm = packet_handler_->write2ByteTxRx(port_handler_, id, ADDR_CURRENT_LIMIT, limit_raw);
       if (comm != COMM_SUCCESS) {

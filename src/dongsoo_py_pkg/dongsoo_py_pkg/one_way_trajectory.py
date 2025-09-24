@@ -47,7 +47,7 @@ class OneWayTrajectoryNode(Node):
             10
         )
         
-        # 4자유도 궤적 정의: start -> end (편도)
+        # # 4자유도 궤적 정의: start -> end (편도)
         self.start_pos = [2048.0, 2048.0, 2048.0, 2048.0]  # 기본값 (현재 위치로 업데이트됨)
         self.end_pos = [2048.0, 2740.0, 700.0, 1700.0]     # 종료점 (목표 위치)
         self.current_position_received = False  # 현재 위치 수신 플래그
