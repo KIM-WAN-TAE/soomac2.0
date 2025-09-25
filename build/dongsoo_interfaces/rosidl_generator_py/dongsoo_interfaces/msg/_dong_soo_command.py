@@ -62,16 +62,19 @@ class DongSooCommand(metaclass=Metaclass_DongSooCommand):
     __slots__ = [
         '_position',
         '_look',
+        '_time',
     ]
 
     _fields_and_field_types = {
         'position': 'float[3]',
         'look': 'string',
+        'time': 'float',
     }
 
     SLOT_TYPES = (
         rosidl_parser.definition.Array(rosidl_parser.definition.BasicType('float'), 3),  # noqa: E501
         rosidl_parser.definition.UnboundedString(),  # noqa: E501
+        rosidl_parser.definition.BasicType('float'),  # noqa: E501
     )
 
     def __init__(self, **kwargs):
@@ -84,6 +87,7 @@ class DongSooCommand(metaclass=Metaclass_DongSooCommand):
             self.position = numpy.array(kwargs.get('position'), dtype=numpy.float32)
             assert self.position.shape == (3, )
         self.look = kwargs.get('look', str())
+        self.time = kwargs.get('time', float())
 
     def __repr__(self):
         typename = self.__class__.__module__.split('.')
@@ -117,6 +121,8 @@ class DongSooCommand(metaclass=Metaclass_DongSooCommand):
         if any(self.position != other.position):
             return False
         if self.look != other.look:
+            return False
+        if self.time != other.time:
             return False
         return True
 
@@ -168,3 +174,18 @@ class DongSooCommand(metaclass=Metaclass_DongSooCommand):
                 isinstance(value, str), \
                 "The 'look' field must be of type 'str'"
         self._look = value
+
+    @builtins.property
+    def time(self):
+        """Message field 'time'."""
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        if __debug__:
+            assert \
+                isinstance(value, float), \
+                "The 'time' field must be of type 'float'"
+            assert not (value < -3.402823466e+38 or value > 3.402823466e+38) or math.isinf(value), \
+                "The 'time' field must be a float in [-3.402823466e+38, 3.402823466e+38]"
+        self._time = value

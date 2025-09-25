@@ -1,5 +1,0 @@
-  File "/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages/dongsoo_py_pkg/dongsoo_client.py", line 33
-    req.p_x = 
-              ^
-SyntaxError: invalid syntax
-

@@ -80,7 +80,7 @@ void dongsoo_interfaces__msg__DongSooCommand__rosidl_typesupport_introspection_c
   *item = *value;
 }
 
-static rosidl_typesupport_introspection_c__MessageMember dongsoo_interfaces__msg__DongSooCommand__rosidl_typesupport_introspection_c__DongSooCommand_message_member_array[2] = {
+static rosidl_typesupport_introspection_c__MessageMember dongsoo_interfaces__msg__DongSooCommand__rosidl_typesupport_introspection_c__DongSooCommand_message_member_array[3] = {
   {
     "position",  // name
     rosidl_typesupport_introspection_c__ROS_TYPE_FLOAT,  // type
@@ -114,13 +114,30 @@ static rosidl_typesupport_introspection_c__MessageMember dongsoo_interfaces__msg
     NULL,  // fetch(index, &value) function pointer
     NULL,  // assign(index, value) function pointer
     NULL  // resize(index) function pointer
+  },
+  {
+    "time",  // name
+    rosidl_typesupport_introspection_c__ROS_TYPE_FLOAT,  // type
+    0,  // upper bound of string
+    NULL,  // members of sub message
+    false,  // is array
+    0,  // array size
+    false,  // is upper bound
+    offsetof(dongsoo_interfaces__msg__DongSooCommand, time),  // bytes offset in struct
+    NULL,  // default value
+    NULL,  // size() function pointer
+    NULL,  // get_const(index) function pointer
+    NULL,  // get(index) function pointer
+    NULL,  // fetch(index, &value) function pointer
+    NULL,  // assign(index, value) function pointer
+    NULL  // resize(index) function pointer
   }
 };
 
 static const rosidl_typesupport_introspection_c__MessageMembers dongsoo_interfaces__msg__DongSooCommand__rosidl_typesupport_introspection_c__DongSooCommand_message_members = {
   "dongsoo_interfaces__msg",  // message namespace
   "DongSooCommand",  // message name
-  2,  // number of fields
+  3,  // number of fields
   sizeof(dongsoo_interfaces__msg__DongSooCommand),
   dongsoo_interfaces__msg__DongSooCommand__rosidl_typesupport_introspection_c__DongSooCommand_message_member_array,  // message members
   dongsoo_interfaces__msg__DongSooCommand__rosidl_typesupport_introspection_c__DongSooCommand_init_function,  // function to initialize message memory (memory has to be allocated)

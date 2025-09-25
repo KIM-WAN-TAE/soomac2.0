@@ -1,6 +1,7 @@
-// src/motor_connect.cpp
+// test_motor_connect.cpp
 // ------------------------------------------------------------
-// XH540-V270-R (24V, RS-485) 3자유도 로봇팔: 전류모드 + 중력보상(피드포워드)
+// XH540-V270-R (24V, RS-485) 4자유도 로봇팔: 전류모드 + 중력보상(피드포워드)
+// 개선사항: DoM(Derivative on Measurement), 세트포인트 램핑, Anti-windup 개선, I항 리셋
 // - BulkRead(현재값) + SyncWrite(목표 전류)
 // - 중력보상 τg(q) = Σ Jv_i(q)^T (m_i * g)
 // - τ[Nm] -> I[A] -> raw(LSB) 변환 반영 (XH540-V270-R 스펙)
@@ -134,14 +135,14 @@ std::vector<LinkInertialData> loadLinkInertialData(const std::string& config_pat
   return links;
 }
 
-class DxlCurrentNode : public rclcpp::Node
+class TestDxlCurrentNode : public rclcpp::Node
 {
 public:
-  DxlCurrentNode()
-  : Node("dxl_current_node"),
+  TestDxlCurrentNode()
+  : Node("test_dxl_current_node"),
     device_name_("/dev/ttyUSB0"),
     protocol_version_(2.0),
-    // 4자유도 로봇팔: ID 1,2,3: XH540-V270-R, ID 4: XH430-V350-R, ID 5: 별도 제어용
+    // 4자유도 로봇팔: ID 1,2,3: XH540-V270-R, ID 4: XH430-V350-R, ID 5: 별도 제어용 (개선 버전)
     dxl_ids_{1, 2, 3, 4, 5},
 
     // ---- Control Table (X 시리즈 공통, V270 페이지 확인) ----
@@ -156,9 +157,9 @@ public:
     // ---- PID 게인 (출력 단위: "전류 raw 카운트") ----
     // 입력은 position/velocity raw(count) 단위이므로 게인은 raw->raw 스케일입니다.
     // 2,3축은 처짐 보상을 위해 더 높은 게인 적용 (개선된 버전)
-    KP_POS_GAINS({0.8f, 1.5f, 1.2f, 1.0f}), 
-    KI_POS_GAINS({0.05f, 0.08f, 0.06f, 0.03f}),  // I 게인 강화 (정상상태 오차 감소)
-    KD_POS_GAINS({0.02f, 0.025f, 0.02f, 0.015f}),
+    KP_POS_GAINS({1.0f, 2.0f, 1.8f, 1.5f}), 
+    KI_POS_GAINS({0.00f, 0.05f, 0.05f, 0.01f}),  // I 게인 강화 (정상상태 오차 감소)
+    KD_POS_GAINS({0.02f, 0.015f, 0.02f, 0.005f}),
 
     // ---- 전류 리밋(soft clamp + 레지스터(38) 설정) ----
     // XH540-V270-R: Current Limit(38) 범위 0~1188 (3.2A)
@@ -167,7 +168,7 @@ public:
     CURRENT_LIMIT_SOFT(1200),
 
     // ---- 적분 제한 (Anti-windup) 강화 ----
-    MAX_INTEGRAL_ERROR(5000.0f),  // 적분 누적 최대값 감소 [count*sec]
+    MAX_INTEGRAL_ERROR(2000.0f),  // 적분 누적 최대값 감소 [count*sec]
 
     // ---- 제어 주기[s] ----
     dt(0.005f),
@@ -175,7 +176,7 @@ public:
     // ==> 수정사항.md 문제점 해결 8: 중력보상 게인 조정 <==
     // 기존: K_GFF={1.0, 1.0, 1.0, 1.0} - 균등한 게인
     // 개선: 2,3축 강화로 중력보상 효과 극대화
-    K_GFF({1.2, 1.45, 1.4, 1.2})  // 중력보상 게인 조정 (2,3축 강화)
+    K_GFF({1.2, 1.6, 1.55, 1.5})  // 중력보상 게인 조정 (2,3축 강화)
   {
     // ---- JSON 설정 파일 로드 ----
     try {
@@ -252,10 +253,10 @@ public:
       uint16_t limit_raw;
       if (id == 4) {
         // XH430-V350-R: 0~689
-        limit_raw = static_cast<uint16_t>(std::clamp(500, 0, 689)); // 벤치용 500
+        limit_raw = static_cast<uint16_t>(std::clamp(600, 0, 689)); // 벤치용 500
       } else {
         // XH540-V270-R: 0~1188
-        limit_raw = static_cast<uint16_t>(std::clamp(900, 0, 1188)); // 벤치용 900
+        limit_raw = static_cast<uint16_t>(std::clamp(1000, 0, 1188)); // 벤치용 900
       }
       comm = packet_handler_->write2ByteTxRx(port_handler_, id, ADDR_CURRENT_LIMIT, limit_raw);
       if (comm != COMM_SUCCESS) {
@@ -277,9 +278,11 @@ public:
     publisher_velocity_ = create_publisher<std_msgs::msg::Float32MultiArray>("motor/velocity", 10);
     publisher_position_ = create_publisher<std_msgs::msg::Int32MultiArray>("motor/position", 10);
 
-    // 벡터 초기화 (4개 모터용)
+    // 벡터 초기화 (4개 모터용 + 개선 버퍼)
     desired_pos_.resize(4);  // 1,2,3,4번 모터만
+    desired_pos_slew_.resize(4);  // 개선점 2: 세트포인트 램핑용 버퍼 추가
     last_pos_error_.assign(4, 0.0f);
+    last_pos_count_meas_.assign(4, 0.0f);  // 개선점 1: DoM용 측정값 미분 버퍼 추가
     integral_error_.assign(4, 0.0f);  // 적분 오차 초기화
 
     // 5번 모터 별도 초기화
@@ -291,13 +294,15 @@ public:
     goal_current_bufs_.resize(dxl_ids_.size());
     for (auto &b : goal_current_bufs_) b = {0, 0};
 
-    // 초기 위치 홀드 (1,2,3,4번 모터)
+    // 초기 위치 홀드 및 개선 버퍼 초기화 (1,2,3,4번 모터)
     group_bulk_read_->txRxPacket();
     for (size_t i = 0; i < 4; ++i) {
       uint32_t raw_p = group_bulk_read_->getData(dxl_ids_[i], ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION);
       int32_t sp = static_cast<int32_t>(raw_p);
       if (sp & 0x80000000) sp -= 0x100000000;
       desired_pos_[i] = static_cast<float>(sp);  // count
+      desired_pos_slew_[i] = static_cast<float>(sp);  // 개선점 2: 램핑 버퍼 동기화
+      last_pos_count_meas_[i] = static_cast<float>(sp);  // 개선점 1: DoM 버퍼 초기화
     }
 
     // 5번 모터 초기 위치 홀드
@@ -309,23 +314,23 @@ public:
     // 서브스크립션
     subscription_position_ = create_subscription<std_msgs::msg::Int32MultiArray>(
       "motor/command_position", 10,
-      std::bind(&DxlCurrentNode::positionCallback, this, std::placeholders::_1)
+      std::bind(&TestDxlCurrentNode::positionCallback, this, std::placeholders::_1)
     );
 
     // 5번 모터 별도 서브스크립션
     subscription_dxl5_position_ = create_subscription<std_msgs::msg::Int32MultiArray>(
       "motor/command_dxl5_position", 10,
-      std::bind(&DxlCurrentNode::dxl5PositionCallback, this, std::placeholders::_1)
+      std::bind(&TestDxlCurrentNode::dxl5PositionCallback, this, std::placeholders::_1)
     );
 
     // 타이머
     timer_ = create_wall_timer(std::chrono::duration<double>(dt),
-                               std::bind(&DxlCurrentNode::readAndPublish, this));
+                               std::bind(&TestDxlCurrentNode::readAndPublish, this));
 
-    RCLCPP_INFO(get_logger(), ":: Motor Connected! (XH540-V270-R) ::");
+    RCLCPP_INFO(get_logger(), ":: Test Motor Connected! (개선된 버전) ::");
   }
 
-  ~DxlCurrentNode() {
+  ~TestDxlCurrentNode() {
     // 안전한 종료: 모든 모터 토크 비활성화
     RCLCPP_INFO(get_logger(), "모터 안전 종료 중...");
     if (port_handler_ && packet_handler_) {
@@ -366,7 +371,7 @@ private:
   // 전류 단위/전달계/토크상수 (런타임 설정)
   std::array<double,4> A_per_count_{ {0.00269, 0.00269, 0.00269, 0.00269} }; // [A/LSB] 모터별 동일
   std::array<double,4> N_{ {272.5, 272.5, 272.5, 353.5} }; // 기어비
-  std::array<double,4> eta_{ {0.80, 0.70, 0.60, 0.80} };  // 효율(초기치)
+  std::array<double,4> eta_{ {0.70, 0.70, 0.70, 0.70} };  // 효율(초기치)
   std::array<double,4> Kt_; // 모터측 Kt [Nm/A] (생성자에서 계산)
 
   // -------------------- 중력보상 계산 --------------------
@@ -431,14 +436,20 @@ private:
   }
 
   // -------------------- 콜백/메인 루프 --------------------
+  // 개선점 4: 세트포인트 변경 시 I항 리셋
   void positionCallback(const std_msgs::msg::Int32MultiArray::SharedPtr msg) {
     if (msg->data.size() >= 4) {
       for (size_t i = 0; i < 4; ++i) {
-        desired_pos_[i] = static_cast<float>(msg->data[i]); // int to float for internal processing
-        // 새로운 목표 위치 설정 시 적분 오차 리셋 (선택사항)
-        // integral_error_[i] = 0.0f;  // 주석 처리: 연속적인 적분 유지
+        float new_target = static_cast<float>(msg->data[i]);
+        // 큰 점프 감지: 200 count 이상 변경 시 I 리셋
+        if (std::fabs(new_target - desired_pos_slew_[i]) > 200.0f) {
+          integral_error_[i] = 0.0f;   // I 리셋
+          last_pos_count_meas_[i] = 0.0f; // 선택: D 초기화
+          RCLCPP_INFO(get_logger(), "큰 목표 변경 감지 - 축 %zu I항 리셋", i);
+        }
+        desired_pos_[i] = new_target;
       }
-      RCLCPP_INFO(get_logger(), "Position command received (motors 1-4): PID control");
+      RCLCPP_INFO(get_logger(), "Position command received (DoM + 램핑 + AW + I리셋)");
     }
   }
 
@@ -488,6 +499,16 @@ private:
       pos_count[i] = static_cast<float>(sp);  // 내부 계산용은 float 유지
     }
 
+    // 개선점 2: 세트포인트 램핑 (부드러운 목표 접근)
+    const float V_MAX_CNT_PER_SEC = 3000.0f;
+    const float MAX_STEP = V_MAX_CNT_PER_SEC * dt;
+
+    for (int i = 0; i < 4; ++i) {
+      float err_d = desired_pos_[i] - desired_pos_slew_[i];
+      float step = std::clamp(err_d, -MAX_STEP, +MAX_STEP);
+      desired_pos_slew_[i] += step;
+    }
+
     // q(rad) 4축 구성
     std::array<double,4> q_rad = {
       sign_[0] * ( (static_cast<int32_t>(pos_count[0]) - zero_count_[0]) * COUNT2RAD_ ),
@@ -506,25 +527,18 @@ private:
     static auto last_log_time = std::chrono::steady_clock::now();
     auto now = std::chrono::steady_clock::now();
     if (std::chrono::duration_cast<std::chrono::seconds>(now - last_log_time).count() >= 5) {
-      RCLCPP_INFO(get_logger(), "=== 제어 상태 모니터링 (nlohmann JSON 버전) ===");
-      RCLCPP_INFO(get_logger(), "DH Params - d1:%.3f, a2:%.3f, a3:%.3f, a4:%.3f, alpha1:%.3f", 
-                  d1_, a2_, a3_, a4_, alpha1_);
+      RCLCPP_INFO(get_logger(), "=== 개선된 제어 상태 모니터링 ===");
+      RCLCPP_INFO(get_logger(), "DH Params - d1:%.3f, a2:%.3f, a3:%.3f, a4:%.3f", 
+                  d1_, a2_, a3_, a4_);
       RCLCPP_INFO(get_logger(), "Gravity Vec - [%.3f, %.3f, %.3f]", 
                   gvec_.x(), gvec_.y(), gvec_.z());
       RCLCPP_INFO(get_logger(), "Joint Angles[rad] - [%.3f, %.3f, %.3f, %.3f]", 
                   q_rad[0], q_rad[1], q_rad[2], q_rad[3]);
-      RCLCPP_INFO(get_logger(), "Gravity Torque[Nm] - [%.3f, %.3f, %.3f, %.3f]", 
-                  tau_g[0], tau_g[1], tau_g[2], tau_g[3]);
+      RCLCPP_INFO(get_logger(), "Slewed Targets[cnt] - [%.1f, %.1f, %.1f, %.1f]", 
+                  desired_pos_slew_[0], desired_pos_slew_[1], desired_pos_slew_[2], desired_pos_slew_[3]);
       RCLCPP_INFO(get_logger(), "Position Errors[cnt] - [%.1f, %.1f, %.1f, %.1f]", 
-                  desired_pos_[0]-pos_count[0], desired_pos_[1]-pos_count[1], 
-                  desired_pos_[2]-pos_count[2], desired_pos_[3]-pos_count[3]);
-      RCLCPP_INFO(get_logger(), "FF Current[LSB] - [%d, %d, %d, %d]", 
-                  torqueNm_to_currentRaw(tau_g[0]*K_GFF[0], 0),
-                  torqueNm_to_currentRaw(tau_g[1]*K_GFF[1], 1),
-                  torqueNm_to_currentRaw(tau_g[2]*K_GFF[2], 2),
-                  torqueNm_to_currentRaw(tau_g[3]*K_GFF[3], 3));
-      RCLCPP_INFO(get_logger(), "Integral Terms - [%.1f, %.1f, %.1f, %.1f]", 
-                  integral_error_[0], integral_error_[1], integral_error_[2], integral_error_[3]);
+                  desired_pos_slew_[0]-pos_count[0], desired_pos_slew_[1]-pos_count[1], 
+                  desired_pos_slew_[2]-pos_count[2], desired_pos_slew_[3]-pos_count[3]);
       last_log_time = now;
     }
 
@@ -540,14 +554,21 @@ private:
     // SyncWrite 파라미터 초기화
     group_sync_write_->clearParam();
 
-    // 1,2,3,4번 모터 제어 (개선된 버전: 강화된 Anti-windup)
+    // 1,2,3,4번 모터 제어 (개선된 버전)
     for (size_t i = 0; i < 4; ++i) {
-      // PID 제어: 출력 단위 = "전류 raw"
-      float pos_err = desired_pos_[i] - pos_count[i];
-      float dpos = (pos_err - last_pos_error_[i]) / dt;
+      // 개선점 2: 램핑된 목표 사용
+      float pos_err = desired_pos_slew_[i] - pos_count[i];
       
-      // P, D 항 먼저 계산
-      float pid_raw = KP_POS_GAINS[i] * pos_err + KD_POS_GAINS[i] * dpos;
+      // 개선점 1: DoM (Derivative on Measurement) 적용
+      float vel_meas = (pos_count[i] - last_pos_count_meas_[i]) / dt;
+      last_pos_count_meas_[i] = pos_count[i];
+      float dterm = -KD_POS_GAINS[i] * vel_meas;  // 측정값 미분으로 D항 계산
+      
+      // D항 과도 억제 (선택)
+      const float D_LIMIT = 300.0f;
+      dterm = std::clamp(dterm, -D_LIMIT, +D_LIMIT);
+      
+      float pid_raw = KP_POS_GAINS[i] * pos_err + dterm;
       
       // 중력보상 개별 적용 (포화 전에 미리 합산)
       float ff_raw = static_cast<float>(tau_g_raw[i]);
@@ -561,19 +582,22 @@ private:
         limit = 900.0f; // XH540-V270-R
       }
       
-      // Back-calculation Anti-windup: 포화 전후 차이를 I 항에서 보상
       float cmd_raw_clamped = std::clamp(pre_sat_cmd, -limit, +limit);
+      
+      // 개선점 3: Anti-windup 개선 (표준 Back-calculation, dt 반영)
+      const float K_AW = 0.05f;
       float saturation_error = cmd_raw_clamped - pre_sat_cmd;
       
-      // 적분 항 계산 (Back-calculation Anti-windup 적용)
-      integral_error_[i] += pos_err * dt + (saturation_error * 0.1f / KI_POS_GAINS[i]); // Back-calculation factor
+      integral_error_[i] += pos_err * dt + K_AW * saturation_error * dt;
       integral_error_[i] = std::clamp(integral_error_[i], -MAX_INTEGRAL_ERROR, MAX_INTEGRAL_ERROR);
       
-      // I 항 추가 및 최종 명령값 계산
+      // 포화 근처에서 적분 완화 (선택)
+      if (std::fabs(pre_sat_cmd) > 0.95f * limit) {
+        integral_error_[i] *= 0.99f;
+      }
+      
       float cmd_raw = pid_raw + KI_POS_GAINS[i] * integral_error_[i] + ff_raw;
       cmd_raw = std::clamp(cmd_raw, -limit, +limit);
-      
-      last_pos_error_[i] = pos_err;
 
       // SyncWrite 버퍼(멤버에 유지: 포인터 수명 문제 방지)
       int32_t goal_current = static_cast<int32_t>(std::lround(cmd_raw));
@@ -675,8 +699,10 @@ private:
   const std::array<double,4> K_GFF;
 
   std::vector<float> desired_pos_;
+  std::vector<float> desired_pos_slew_;       // 개선점 2: 램핑용 버퍼
   std::vector<float> last_pos_error_;
-  std::vector<float> integral_error_;  // 적분 오차 누적
+  std::vector<float> last_pos_count_meas_;    // 개선점 1: DoM용 측정값 버퍼
+  std::vector<float> integral_error_;         // 적분 오차 누적
 
   // 5번 모터 별도 제어용 변수
   float desired_dxl5_pos_;
@@ -685,11 +711,11 @@ private:
 };
 
 // 시그널 핸들러: 안전한 종료를 위한 플래그
-std::shared_ptr<DxlCurrentNode> g_node = nullptr;
+std::shared_ptr<TestDxlCurrentNode> g_test_node = nullptr;
 
 void signalHandler(int signum) {
   RCLCPP_INFO(rclcpp::get_logger("signal_handler"), "시그널 %d 수신, 안전하게 종료합니다...", signum);
-  if (g_node) {
+  if (g_test_node) {
     rclcpp::shutdown();
   }
 }
@@ -700,15 +726,15 @@ int main(int argc, char** argv) {
   signal(SIGTERM, signalHandler);  // 종료 시그널
   
   rclcpp::init(argc, argv);
-  g_node = std::make_shared<DxlCurrentNode>();
+  g_test_node = std::make_shared<TestDxlCurrentNode>();
   
   try {
-    rclcpp::spin(g_node);
+    rclcpp::spin(g_test_node);
   } catch (const std::exception& e) {
     RCLCPP_ERROR(rclcpp::get_logger("main"), "예외 발생: %s", e.what());
   }
   
-  g_node.reset(); // 명시적으로 소멸자 호출
+  g_test_node.reset(); // 명시적으로 소멸자 호출
   rclcpp::shutdown();
   return 0;
 }

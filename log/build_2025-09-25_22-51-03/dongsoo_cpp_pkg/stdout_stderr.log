@@ -1,0 +1,26 @@
+[ 25%] [32mBuilding CXX object CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/test_motor_connect.dir/src/test_motor_connect.cpp.o[0m
+[ 75%] [32m[1mLinking CXX executable motor_connect[0m
+[100%] [32m[1mLinking CXX executable test_motor_connect[0m
+[100%] Built target test_motor_connect
+[100%] Built target motor_connect
+-- Install configuration: ""
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/motor_connect
+-- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/motor_connect" to ""
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/test_motor_connect
+-- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/test_motor_connect" to ""
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/package_run_dependencies/dongsoo_cpp_pkg
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/parent_prefix_path/dongsoo_cpp_pkg
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/ament_prefix_path.sh
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/ament_prefix_path.dsv
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/path.sh
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/path.dsv
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.bash
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.sh
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.zsh
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.dsv
+-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.dsv
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/packages/dongsoo_cpp_pkg
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/cmake/dongsoo_cpp_pkgConfig.cmake
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/cmake/dongsoo_cpp_pkgConfig-version.cmake
+-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.xml

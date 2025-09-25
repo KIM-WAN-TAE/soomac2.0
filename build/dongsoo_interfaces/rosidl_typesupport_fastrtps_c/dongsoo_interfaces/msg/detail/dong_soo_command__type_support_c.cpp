@@ -72,6 +72,11 @@ static bool _DongSooCommand__cdr_serialize(
     cdr << str->data;
   }
 
+  // Field name: time
+  {
+    cdr << ros_message->time;
+  }
+
   return true;
 }
 
@@ -107,6 +112,11 @@ static bool _DongSooCommand__cdr_deserialize(
     }
   }
 
+  // Field name: time
+  {
+    cdr >> ros_message->time;
+  }
+
   return true;
 }  // NOLINT(readability/fn_size)
 
@@ -137,6 +147,12 @@ size_t get_serialized_size_dongsoo_interfaces__msg__DongSooCommand(
   current_alignment += padding +
     eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
     (ros_message->look.size + 1);
+  // field.name time
+  {
+    size_t item_size = sizeof(ros_message->time);
+    current_alignment += item_size +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
+  }
 
   return current_alignment - initial_alignment;
 }
@@ -186,6 +202,14 @@ size_t max_serialized_size_dongsoo_interfaces__msg__DongSooCommand(
         1;
     }
   }
+  // member: time
+  {
+    size_t array_size = 1;
+
+    last_member_size = array_size * sizeof(uint32_t);
+    current_alignment += array_size * sizeof(uint32_t) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
+  }
 
   size_t ret_val = current_alignment - initial_alignment;
   if (is_plain) {
@@ -195,7 +219,7 @@ size_t max_serialized_size_dongsoo_interfaces__msg__DongSooCommand(
     using DataType = dongsoo_interfaces__msg__DongSooCommand;
     is_plain =
       (
-      offsetof(DataType, look) +
+      offsetof(DataType, time) +
       last_member_size
       ) == ret_val;
   }

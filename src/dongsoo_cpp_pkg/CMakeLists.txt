@@ -45,30 +45,30 @@ install(TARGETS motor_connect
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# test_motor_connect executable (improved version)
-add_executable(test_motor_connect src/test_motor_connect.cpp)
+# # test_motor_connect executable (improved version)
+# add_executable(test_motor_connect src/test_motor_connect.cpp)
 
-target_include_directories(test_motor_connect PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
+# target_include_directories(test_motor_connect PRIVATE
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#   $<INSTALL_INTERFACE:include>
+# )
 
-# Eigen & nlohmann_json 링크
-target_link_libraries(test_motor_connect Eigen3::Eigen)
-# nlohmann_json은 헤더 전용이므로 링크 불필요
-if(NOT TARGET Eigen3::Eigen)
-  message(WARNING "Eigen3::Eigen 타깃을 못 찾음 -> /usr/include/eigen3 수동 추가")
-  target_include_directories(test_motor_connect PRIVATE /usr/include/eigen3)
-endif()
+# # Eigen & nlohmann_json 링크
+# target_link_libraries(test_motor_connect Eigen3::Eigen)
+# # nlohmann_json은 헤더 전용이므로 링크 불필요
+# if(NOT TARGET Eigen3::Eigen)
+#   message(WARNING "Eigen3::Eigen 타깃을 못 찾음 -> /usr/include/eigen3 수동 추가")
+#   target_include_directories(test_motor_connect PRIVATE /usr/include/eigen3)
+# endif()
 
-ament_target_dependencies(test_motor_connect
-  rclcpp
-  std_msgs
-  dynamixel_sdk
-)
+# ament_target_dependencies(test_motor_connect
+#   rclcpp
+#   std_msgs
+#   dynamixel_sdk
+# )
 
-install(TARGETS test_motor_connect
-  DESTINATION lib/${PROJECT_NAME}
-)
+# install(TARGETS test_motor_connect
+#   DESTINATION lib/${PROJECT_NAME}
+# )
 
 ament_package()

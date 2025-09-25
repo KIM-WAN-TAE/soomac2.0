@@ -1,0 +1,4 @@
+Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/dongsoo_cpp_pkg -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/dongsoo_cpp_pkg
+Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/dongsoo_cpp_pkg -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/dongsoo_cpp_pkg
+Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32

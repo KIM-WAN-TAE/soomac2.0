@@ -40,6 +40,7 @@ struct DongSooExecutor_Request_
     {
       std::fill<typename std::array<float, 3>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
       this->look = "";
+      this->time = 0.0f;
     }
   }
 
@@ -52,6 +53,7 @@ struct DongSooExecutor_Request_
     {
       std::fill<typename std::array<float, 3>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
       this->look = "";
+      this->time = 0.0f;
     }
   }
 
@@ -62,6 +64,9 @@ struct DongSooExecutor_Request_
   using _look_type =
     std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>>;
   _look_type look;
+  using _time_type =
+    float;
+  _time_type time;
 
   // setters for named parameter idiom
   Type & set__position(
@@ -74,6 +79,12 @@ struct DongSooExecutor_Request_
     const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>> & _arg)
   {
     this->look = _arg;
+    return *this;
+  }
+  Type & set__time(
+    const float & _arg)
+  {
+    this->time = _arg;
     return *this;
   }
 
@@ -123,6 +134,9 @@ struct DongSooExecutor_Request_
       return false;
     }
     if (this->look != other.look) {
+      return false;
+    }
+    if (this->time != other.time) {
       return false;
     }
     return true;

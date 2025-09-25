@@ -21,16 +21,32 @@ namespace srv
 namespace builder
 {
 
+class Init_DongSooExecutor_Request_time
+{
+public:
+  explicit Init_DongSooExecutor_Request_time(::dongsoo_interfaces::srv::DongSooExecutor_Request & msg)
+  : msg_(msg)
+  {}
+  ::dongsoo_interfaces::srv::DongSooExecutor_Request time(::dongsoo_interfaces::srv::DongSooExecutor_Request::_time_type arg)
+  {
+    msg_.time = std::move(arg);
+    return std::move(msg_);
+  }
+
+private:
+  ::dongsoo_interfaces::srv::DongSooExecutor_Request msg_;
+};
+
 class Init_DongSooExecutor_Request_look
 {
 public:
   explicit Init_DongSooExecutor_Request_look(::dongsoo_interfaces::srv::DongSooExecutor_Request & msg)
   : msg_(msg)
   {}
-  ::dongsoo_interfaces::srv::DongSooExecutor_Request look(::dongsoo_interfaces::srv::DongSooExecutor_Request::_look_type arg)
+  Init_DongSooExecutor_Request_time look(::dongsoo_interfaces::srv::DongSooExecutor_Request::_look_type arg)
   {
     msg_.look = std::move(arg);
-    return std::move(msg_);
+    return Init_DongSooExecutor_Request_time(msg_);
   }
 
 private:

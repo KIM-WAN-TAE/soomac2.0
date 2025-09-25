@@ -27,6 +27,7 @@ dongsoo_interfaces__msg__DongSooCommand__init(dongsoo_interfaces__msg__DongSooCo
     dongsoo_interfaces__msg__DongSooCommand__fini(msg);
     return false;
   }
+  // time
   return true;
 }
 
@@ -39,6 +40,7 @@ dongsoo_interfaces__msg__DongSooCommand__fini(dongsoo_interfaces__msg__DongSooCo
   // position
   // look
   rosidl_runtime_c__String__fini(&msg->look);
+  // time
 }
 
 bool
@@ -57,6 +59,10 @@ dongsoo_interfaces__msg__DongSooCommand__are_equal(const dongsoo_interfaces__msg
   if (!rosidl_runtime_c__String__are_equal(
       &(lhs->look), &(rhs->look)))
   {
+    return false;
+  }
+  // time
+  if (lhs->time != rhs->time) {
     return false;
   }
   return true;
@@ -80,6 +86,8 @@ dongsoo_interfaces__msg__DongSooCommand__copy(
   {
     return false;
   }
+  // time
+  output->time = input->time;
   return true;
 }
 

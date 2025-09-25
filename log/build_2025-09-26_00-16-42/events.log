@@ -1,0 +1,102 @@
+[0.000000] (-) TimerEvent: {}
+[0.000287] (-) JobUnselected: {'identifier': 'dongsoo_description'}
+[0.000313] (-) JobUnselected: {'identifier': 'dongsoo_free_mission'}
+[0.000331] (-) JobUnselected: {'identifier': 'dongsoo_interfaces'}
+[0.000346] (-) JobUnselected: {'identifier': 'dongsoo_py_pkg'}
+[0.000360] (-) JobUnselected: {'identifier': 'finger_test'}
+[0.000377] (dongsoo_cpp_pkg) JobQueued: {'identifier': 'dongsoo_cpp_pkg', 'dependencies': OrderedDict()}
+[0.000394] (dongsoo_cpp_pkg) JobStarted: {'identifier': 'dongsoo_cpp_pkg'}
+[0.005109] (dongsoo_cpp_pkg) JobProgress: {'identifier': 'dongsoo_cpp_pkg', 'progress': 'cmake'}
+[0.005500] (dongsoo_cpp_pkg) JobProgress: {'identifier': 'dongsoo_cpp_pkg', 'progress': 'build'}
+[0.005988] (dongsoo_cpp_pkg) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/pc/soomac_ws/build/dongsoo_cpp_pkg', '--', '-j32', '-l32'], 'cwd': '/home/pc/soomac_ws/build/dongsoo_cpp_pkg', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'pc'), ('LC_TIME', 'ko_KR.UTF-8'), ('XDG_SESSION_TYPE', 'wayland'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/pc/soomac_ws/install/dongsoo_interfaces/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/home/pc'), ('OLDPWD', '/home/pc'), ('DESKTOP_SESSION', 'ubuntu'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('LC_MONETARY', 'ko_KR.UTF-8'), ('MANAGERPID', '1956'), ('SYSTEMD_EXEC_PID', '2316'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator25ef4b219e3b005583550f2b0f9f990c3'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '6927'), ('IM_CONFIG_PHASE', '1'), ('WAYLAND_DISPLAY', 'wayland-0'), ('COLCON_PREFIX_PATH', '/home/pc/soomac_ws/install'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'pc'), ('JOURNAL_STREAM', '8:8841'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'pc'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin'), ('SESSION_MANAGER', 'local/pc:@/tmp/.ICE-unix/2115,unix/pc:/tmp/.ICE-unix/2115'), ('INVOCATION_ID', '7d88408a56f14313a2ef7f0b4440b709'), ('XDG_MENU_PREFIX', 'gnome-'), ('LC_ADDRESS', 'ko_KR.UTF-8'), ('GNOME_SETUP_DISPLAY', ':1'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('IBUS_DISABLE_SNOOPER', '1'), ('LC_TELEPHONE', 'ko_KR.UTF-8'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/.mutter-Xwaylandauth.ZVFRD3'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SSH_AGENT_LAUNCHER', 'gnome-keyring'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('ROS_DOMAIN_ID', '27'), ('AMENT_PREFIX_PATH', '/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/opt/ros/humble'), ('SHELL', '/bin/bash'), ('LC_NAME', 'ko_KR.UTF-8'), ('TERMINATOR_UUID', 'urn:uuid:9ecd1775-9cc6-4d59-8185-5789107b3fdf'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('LC_MEASUREMENT', 'ko_KR.UTF-8'), ('LC_IDENTIFICATION', 'ko_KR.UTF-8'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/pc/soomac_ws/build/dongsoo_cpp_pkg'), ('LC_ALL', 'en_US.UTF-8'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/pc/soomac_ws/build/dongsoo_py_pkg:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('LC_NUMERIC', 'ko_KR.UTF-8'), ('LC_PAPER', 'ko_KR.UTF-8'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/usr/local::/home/pc/soomac_ws/install/dongsoo_py_pkg:/opt/ros/humble')]), 'shell': False}
+[0.033862] (dongsoo_cpp_pkg) StdoutLine: {'line': b'\x1b[35m\x1b[1mConsolidate compiler generated dependencies of target motor_connect\x1b[0m\n'}
+[0.044772] (dongsoo_cpp_pkg) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o\x1b[0m\n'}
+[0.099993] (-) TimerEvent: {}
+[0.200366] (-) TimerEvent: {}
+[0.300735] (-) TimerEvent: {}
+[0.401098] (-) TimerEvent: {}
+[0.501478] (-) TimerEvent: {}
+[0.601852] (-) TimerEvent: {}
+[0.702212] (-) TimerEvent: {}
+[0.802561] (-) TimerEvent: {}
+[0.902799] (-) TimerEvent: {}
+[1.003010] (-) TimerEvent: {}
+[1.103314] (-) TimerEvent: {}
+[1.203530] (-) TimerEvent: {}
+[1.303767] (-) TimerEvent: {}
+[1.404087] (-) TimerEvent: {}
+[1.504329] (-) TimerEvent: {}
+[1.604577] (-) TimerEvent: {}
+[1.704842] (-) TimerEvent: {}
+[1.805082] (-) TimerEvent: {}
+[1.905391] (-) TimerEvent: {}
+[2.005626] (-) TimerEvent: {}
+[2.105856] (-) TimerEvent: {}
+[2.206053] (-) TimerEvent: {}
+[2.306248] (-) TimerEvent: {}
+[2.406459] (-) TimerEvent: {}
+[2.506651] (-) TimerEvent: {}
+[2.606890] (-) TimerEvent: {}
+[2.707200] (-) TimerEvent: {}
+[2.807418] (-) TimerEvent: {}
+[2.907622] (-) TimerEvent: {}
+[3.007872] (-) TimerEvent: {}
+[3.108185] (-) TimerEvent: {}
+[3.208394] (-) TimerEvent: {}
+[3.308628] (-) TimerEvent: {}
+[3.408840] (-) TimerEvent: {}
+[3.509077] (-) TimerEvent: {}
+[3.609302] (-) TimerEvent: {}
+[3.709528] (-) TimerEvent: {}
+[3.809754] (-) TimerEvent: {}
+[3.909942] (-) TimerEvent: {}
+[4.010123] (-) TimerEvent: {}
+[4.110330] (-) TimerEvent: {}
+[4.210540] (-) TimerEvent: {}
+[4.310833] (-) TimerEvent: {}
+[4.411059] (-) TimerEvent: {}
+[4.511270] (-) TimerEvent: {}
+[4.611448] (-) TimerEvent: {}
+[4.711712] (-) TimerEvent: {}
+[4.811929] (-) TimerEvent: {}
+[4.912137] (-) TimerEvent: {}
+[5.012412] (-) TimerEvent: {}
+[5.112685] (-) TimerEvent: {}
+[5.212975] (-) TimerEvent: {}
+[5.313206] (-) TimerEvent: {}
+[5.413498] (-) TimerEvent: {}
+[5.513767] (-) TimerEvent: {}
+[5.614038] (-) TimerEvent: {}
+[5.714248] (-) TimerEvent: {}
+[5.814462] (-) TimerEvent: {}
+[5.914662] (-) TimerEvent: {}
+[6.014967] (-) TimerEvent: {}
+[6.087194] (dongsoo_cpp_pkg) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX executable motor_connect\x1b[0m\n'}
+[6.115133] (-) TimerEvent: {}
+[6.215378] (-) TimerEvent: {}
+[6.315577] (-) TimerEvent: {}
+[6.319128] (dongsoo_cpp_pkg) StdoutLine: {'line': b'[100%] Built target motor_connect\n'}
+[6.325600] (dongsoo_cpp_pkg) CommandEnded: {'returncode': 0}
+[6.326318] (dongsoo_cpp_pkg) JobProgress: {'identifier': 'dongsoo_cpp_pkg', 'progress': 'install'}
+[6.330826] (dongsoo_cpp_pkg) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/pc/soomac_ws/build/dongsoo_cpp_pkg'], 'cwd': '/home/pc/soomac_ws/build/dongsoo_cpp_pkg', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'pc'), ('LC_TIME', 'ko_KR.UTF-8'), ('XDG_SESSION_TYPE', 'wayland'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/pc/soomac_ws/install/dongsoo_interfaces/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/home/pc'), ('OLDPWD', '/home/pc'), ('DESKTOP_SESSION', 'ubuntu'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('LC_MONETARY', 'ko_KR.UTF-8'), ('MANAGERPID', '1956'), ('SYSTEMD_EXEC_PID', '2316'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator25ef4b219e3b005583550f2b0f9f990c3'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '6927'), ('IM_CONFIG_PHASE', '1'), ('WAYLAND_DISPLAY', 'wayland-0'), ('COLCON_PREFIX_PATH', '/home/pc/soomac_ws/install'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'pc'), ('JOURNAL_STREAM', '8:8841'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'pc'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin'), ('SESSION_MANAGER', 'local/pc:@/tmp/.ICE-unix/2115,unix/pc:/tmp/.ICE-unix/2115'), ('INVOCATION_ID', '7d88408a56f14313a2ef7f0b4440b709'), ('XDG_MENU_PREFIX', 'gnome-'), ('LC_ADDRESS', 'ko_KR.UTF-8'), ('GNOME_SETUP_DISPLAY', ':1'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('IBUS_DISABLE_SNOOPER', '1'), ('LC_TELEPHONE', 'ko_KR.UTF-8'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/.mutter-Xwaylandauth.ZVFRD3'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SSH_AGENT_LAUNCHER', 'gnome-keyring'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('ROS_DOMAIN_ID', '27'), ('AMENT_PREFIX_PATH', '/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/opt/ros/humble'), ('SHELL', '/bin/bash'), ('LC_NAME', 'ko_KR.UTF-8'), ('TERMINATOR_UUID', 'urn:uuid:9ecd1775-9cc6-4d59-8185-5789107b3fdf'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('LC_MEASUREMENT', 'ko_KR.UTF-8'), ('LC_IDENTIFICATION', 'ko_KR.UTF-8'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/pc/soomac_ws/build/dongsoo_cpp_pkg'), ('LC_ALL', 'en_US.UTF-8'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/pc/soomac_ws/build/dongsoo_py_pkg:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('LC_NUMERIC', 'ko_KR.UTF-8'), ('LC_PAPER', 'ko_KR.UTF-8'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/usr/local::/home/pc/soomac_ws/install/dongsoo_py_pkg:/opt/ros/humble')]), 'shell': False}
+[6.335391] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[6.335468] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/motor_connect\n'}
+[6.338144] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/motor_connect" to ""\n'}
+[6.338227] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/package_run_dependencies/dongsoo_cpp_pkg\n'}
+[6.338263] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/parent_prefix_path/dongsoo_cpp_pkg\n'}
+[6.338295] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/ament_prefix_path.sh\n'}
+[6.338318] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/ament_prefix_path.dsv\n'}
+[6.338341] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/path.sh\n'}
+[6.338362] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/path.dsv\n'}
+[6.338383] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.bash\n'}
+[6.338403] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.sh\n'}
+[6.338425] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.zsh\n'}
+[6.338446] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.dsv\n'}
+[6.338468] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.dsv\n'}
+[6.338489] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/packages/dongsoo_cpp_pkg\n'}
+[6.338510] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/cmake/dongsoo_cpp_pkgConfig.cmake\n'}
+[6.338532] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/cmake/dongsoo_cpp_pkgConfig-version.cmake\n'}
+[6.338553] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.xml\n'}
+[6.339551] (dongsoo_cpp_pkg) CommandEnded: {'returncode': 0}
+[6.346555] (dongsoo_cpp_pkg) JobEnded: {'identifier': 'dongsoo_cpp_pkg', 'rc': 0}
+[6.346829] (-) EventReactorShutdown: {}

@@ -38,6 +38,8 @@ cdr_serialize(
   }
   // Member: look
   cdr << ros_message.look;
+  // Member: time
+  cdr << ros_message.time;
   return true;
 }
 
@@ -54,6 +56,9 @@ cdr_deserialize(
 
   // Member: look
   cdr >> ros_message.look;
+
+  // Member: time
+  cdr >> ros_message.time;
 
   return true;
 }
@@ -82,6 +87,12 @@ get_serialized_size(
   current_alignment += padding +
     eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
     (ros_message.look.size() + 1);
+  // Member: time
+  {
+    size_t item_size = sizeof(ros_message.time);
+    current_alignment += item_size +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
+  }
 
   return current_alignment - initial_alignment;
 }
@@ -128,6 +139,15 @@ max_serialized_size_DongSooCommand(
     }
   }
 
+  // Member: time
+  {
+    size_t array_size = 1;
+
+    last_member_size = array_size * sizeof(uint32_t);
+    current_alignment += array_size * sizeof(uint32_t) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
+  }
+
   size_t ret_val = current_alignment - initial_alignment;
   if (is_plain) {
     // All members are plain, and type is not empty.
@@ -136,7 +156,7 @@ max_serialized_size_DongSooCommand(
     using DataType = dongsoo_interfaces::msg::DongSooCommand;
     is_plain =
       (
-      offsetof(DataType, look) +
+      offsetof(DataType, time) +
       last_member_size
       ) == ret_val;
   }

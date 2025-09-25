@@ -1,0 +1,2 @@
+Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/dongsoo_cpp_pkg -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/dongsoo_cpp_pkg
+Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '1': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/dongsoo_cpp_pkg -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/dongsoo_cpp_pkg

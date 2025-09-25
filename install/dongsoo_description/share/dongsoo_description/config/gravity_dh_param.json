@@ -25,9 +25,9 @@
           "theta": "q2 + π/2",
           "theta_offset": 1.5707963267948966,
           "d": 0.0,
-          "a": 0.250,
+          "a": 0.25875,
           "alpha": 0.0,
-          "description": "Shoulder joint, a2=250.0mm, theta2_offset=π/2"
+          "description": "Shoulder joint, a2=258.75mm, theta2_offset=π/2"
         }
       },
       {
@@ -36,9 +36,9 @@
         "dh_params": {
           "theta": "q3",
           "d": 0.0,
-          "a": 0.250,
+          "a": 0.23865,
           "alpha": 0.0,
-          "description": "Elbow joint, a3=250.0mm"
+          "description": "Elbow joint, a3=238.65mm"
         }
       },
       {
@@ -47,9 +47,9 @@
         "dh_params": {
           "theta": "q4",
           "d": 0.0,
-          "a": 0.2159,
+          "a": 0.185898,
           "alpha": 0.0,
-          "description": "End-effector joint with gripper, a4=215.9mm"
+          "description": "End-effector joint with gripper, a4=185.898mm"
         }
       }
     ],

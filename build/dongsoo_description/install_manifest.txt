@@ -1,7 +1,7 @@
-/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/base_to_gripper_dh.json
-/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/base_to_camera_dh.json
 /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/link_inertial.json
+/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/base_to_camera_dh.json
 /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/README.md
+/home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/base_to_gripper_dh.json
 /home/pc/soomac_ws/install/dongsoo_description/share/dongsoo_description/config/gravity_dh_param.json
 /home/pc/soomac_ws/install/dongsoo_description/share/ament_index/resource_index/package_run_dependencies/dongsoo_description
 /home/pc/soomac_ws/install/dongsoo_description/share/ament_index/resource_index/parent_prefix_path/dongsoo_description

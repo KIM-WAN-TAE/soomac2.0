@@ -24,17 +24,20 @@ class DongsooClient(Node):
         
         self.target_Position = np.array([])
         self.target_look = None
+        self.target_time = None
         self.target_flag = False
         
         timer_period = 1/10
         self.client_timer = self.create_timer(timer_period, self.client_timer)
         
-    def target_pose_callback(self, msg: Float32MultiArray):
+    def target_pose_callback(self, msg: DongSooCommand):
         P = np.array(msg.position, dtype=np.float32)
         LOOK = msg.look
+        TIME = msg.time
         
         self.target_Position= P
         self.target_look = LOOK
+        self.target_time = TIME
         self.target_flag = True
         
     def client_timer(self):
@@ -48,10 +51,11 @@ class DongsooClient(Node):
             if self.target_flag and self.target_Position.size != 0:
                 copy_target = self.target_Position
                 copy_look   = self.target_look
+                copy_time   = self.target_time
                 self.target_flag = False
-                self.send_next_pose(copy_target, copy_look)
+                self.send_next_pose(copy_target, copy_look, copy_time)
         
-    def send_next_pose(self, position, look):
+    def send_next_pose(self, position, look, time):
         if position.size < 3:
             self.get_logger().warn(' Wrong Array Size Target Pose')
             return
@@ -59,6 +63,7 @@ class DongsooClient(Node):
         req = DongSooExecutor.Request()
         req.position = position
         req.look     = look
+        req.time     = time
                 
         future = self.dongsoo_client.call_async(req)
         future.add_done_callback(self.response_callback)

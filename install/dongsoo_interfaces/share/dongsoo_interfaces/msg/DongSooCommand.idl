@@ -12,6 +12,8 @@ module dongsoo_interfaces {
       float__3 position;
 
       string look;
+
+      float time;
     };
   };
 };

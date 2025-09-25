@@ -1,0 +1,30 @@
+[0.006s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[0.038s] [ 25%] [32mBuilding CXX object CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o[0m
+[0.038s] [ 50%] [32mBuilding CXX object CMakeFiles/test_motor_connect.dir/src/test_motor_connect.cpp.o[0m
+[5.890s] [ 75%] [32m[1mLinking CXX executable motor_connect[0m
+[5.893s] [100%] [32m[1mLinking CXX executable test_motor_connect[0m
+[6.149s] [100%] Built target test_motor_connect
+[6.149s] [100%] Built target motor_connect
+[6.158s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[6.166s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_cpp_pkg
+[6.170s] -- Install configuration: ""
+[6.170s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/motor_connect
+[6.172s] -- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/motor_connect" to ""
+[6.172s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/test_motor_connect
+[6.174s] -- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_cpp_pkg/lib/dongsoo_cpp_pkg/test_motor_connect" to ""
+[6.174s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/package_run_dependencies/dongsoo_cpp_pkg
+[6.174s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/parent_prefix_path/dongsoo_cpp_pkg
+[6.174s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/ament_prefix_path.sh
+[6.174s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/ament_prefix_path.dsv
+[6.174s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/path.sh
+[6.174s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/environment/path.dsv
+[6.174s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.bash
+[6.174s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.sh
+[6.175s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.zsh
+[6.175s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/local_setup.dsv
+[6.175s] -- Up-to-date: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.dsv
+[6.175s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/ament_index/resource_index/packages/dongsoo_cpp_pkg
+[6.175s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/cmake/dongsoo_cpp_pkgConfig.cmake
+[6.175s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/cmake/dongsoo_cpp_pkgConfig-version.cmake
+[6.175s] -- Installing: /home/pc/soomac_ws/install/dongsoo_cpp_pkg/share/dongsoo_cpp_pkg/package.xml
+[6.176s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_cpp_pkg

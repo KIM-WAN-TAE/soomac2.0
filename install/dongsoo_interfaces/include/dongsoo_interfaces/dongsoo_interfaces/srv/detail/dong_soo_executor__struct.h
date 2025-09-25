@@ -26,6 +26,7 @@ typedef struct dongsoo_interfaces__srv__DongSooExecutor_Request
 {
   float position[3];
   rosidl_runtime_c__String look;
+  float time;
 } dongsoo_interfaces__srv__DongSooExecutor_Request;
 
 // Struct for a sequence of dongsoo_interfaces__srv__DongSooExecutor_Request.

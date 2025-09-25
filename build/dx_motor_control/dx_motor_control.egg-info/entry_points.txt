@@ -1,3 +1,0 @@
-[console_scripts]
-motor_connect = dx_motor_control.motor_connect:main
-

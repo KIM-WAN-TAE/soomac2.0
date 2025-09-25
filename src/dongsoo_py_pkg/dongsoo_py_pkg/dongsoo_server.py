@@ -121,6 +121,7 @@ class DongsooServer(Node):
                     start_point = start_point.reshape(1, -1)
             end_point = req.position
             end_look  = req.look
+            work_time = req.time
 
             self.last_end_point = end_point
 
@@ -144,11 +145,16 @@ class DongsooServer(Node):
             for i, _ in enumerate(q_end):
                 self.get_logger().info(f'[Q_list_{i+1}] : {np.degrees(q_end[i]):7.2f}')
             
-            sleep_time = 0.01
-            
+            # 200Hz pub frequency: 1/200 = 0.005s per step
+            pub_frequency = 200.0  # Hz
+            sleep_time = 1.0 / pub_frequency  # 0.005s
+
+            # Calculate trajectory steps based on work_time and publish frequency
+            total_steps = int(work_time * pub_frequency)
+
             q_msg = Int32MultiArray()
-            q_list = plan_joint_trajectory(q_start, q_end, steps=500, traj_type='smooth')
-            
+            q_list = plan_joint_trajectory(q_start, q_end, steps=total_steps, traj_type='smooth')
+
             import time
             # rad -> pulse 변환 함수 사용
             for i, q_s in enumerate(q_list):

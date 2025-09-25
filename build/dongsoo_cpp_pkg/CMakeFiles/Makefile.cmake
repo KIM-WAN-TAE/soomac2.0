@@ -618,5 +618,4 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/uninstall.dir/DependInfo.cmake"
   "CMakeFiles/dongsoo_cpp_pkg_uninstall.dir/DependInfo.cmake"
   "CMakeFiles/motor_connect.dir/DependInfo.cmake"
-  "CMakeFiles/test_motor_connect.dir/DependInfo.cmake"
   )

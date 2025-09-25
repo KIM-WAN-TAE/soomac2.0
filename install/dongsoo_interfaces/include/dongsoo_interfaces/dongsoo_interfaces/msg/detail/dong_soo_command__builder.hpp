@@ -21,16 +21,32 @@ namespace msg
 namespace builder
 {
 
+class Init_DongSooCommand_time
+{
+public:
+  explicit Init_DongSooCommand_time(::dongsoo_interfaces::msg::DongSooCommand & msg)
+  : msg_(msg)
+  {}
+  ::dongsoo_interfaces::msg::DongSooCommand time(::dongsoo_interfaces::msg::DongSooCommand::_time_type arg)
+  {
+    msg_.time = std::move(arg);
+    return std::move(msg_);
+  }
+
+private:
+  ::dongsoo_interfaces::msg::DongSooCommand msg_;
+};
+
 class Init_DongSooCommand_look
 {
 public:
   explicit Init_DongSooCommand_look(::dongsoo_interfaces::msg::DongSooCommand & msg)
   : msg_(msg)
   {}
-  ::dongsoo_interfaces::msg::DongSooCommand look(::dongsoo_interfaces::msg::DongSooCommand::_look_type arg)
+  Init_DongSooCommand_time look(::dongsoo_interfaces::msg::DongSooCommand::_look_type arg)
   {
     msg_.look = std::move(arg);
-    return std::move(msg_);
+    return Init_DongSooCommand_time(msg_);
   }
 
 private:

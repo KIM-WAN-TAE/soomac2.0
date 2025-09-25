@@ -30,63 +30,64 @@
       {
         "link_id": 2,
         "motor_id": 2,
-        "name": "Link2_v4",
-        "mass": 0.277998,
+        "name": "Link2_v7",
+        "mass": 0.290844,
         "center_of_mass": {
-          "x": 0.0,
-          "y": -0.000361,
-          "z": 0.182326,
+          "x": 0.000274,
+          "y": -0.000417,
+          "z": 0.175257,
           "description": "COM relative to link frame [m]"
         },
         "original_cad_data": {
-          "mass_grams": 277.998,
+          "mass_grams": 290.844,
           "com_mm": {
-            "x": 0.0,
-            "y": -0.361,
-            "z": 182.326
+            "x": 0.274,
+            "y": -0.417,
+            "z": 175.257
           }
         }
       },
       {
         "link_id": 3,
         "motor_id": 3,
-        "name": "Link3_v5",
-        "mass": 0.195515,
+        "name": "Link3_v6",
+        "mass": 0.201463,
         "center_of_mass": {
-          "x": 0.0,
-          "y": -0.000161,
-          "z": 0.163246,
+          "x": 0.000354,
+          "y": -0.000223,
+          "z": 0.138167,
           "description": "COM relative to link frame [m]"
         },
         "original_cad_data": {
-          "mass_grams": 195.515,
+          "mass_grams": 201.463,
           "com_mm": {
-            "x": 0.0,
-            "y": -0.161,
-            "z": 163.246
+            "x": 0.354,
+            "y": -0.223,
+            "z": 138.167
           }
         }
       },
       {
         "link_id": 4,
         "motor_id": 4,
-        "name": "Link4_EndEffector",
-        "mass": 0.346561,
+        "name": "Link4_EndEffector_v2",
+        "mass": 0.464477,
         "center_of_mass": {
-          "x": -0.003365,
-          "y": -0.00013,
-          "z": 0.108851,
+          "x": 0.011741,
+          "y": 0.000182,
+          "z": 0.077594,
           "description": "COM relative to link frame [m] - includes gripper and camera"
         },
         "original_cad_data": {
-          "mass_grams": 346.561,
+          "mass_grams": 464.477,
           "com_mm": {
-            "x": -3.365,
-            "y": -0.13,
-            "z": 108.851
+            "x": 11.741,
+            "y": 0.182,
+            "z": 77.594
           }
         },
         "components": [
+          "Link 4 base",
           "Link 5 base",
           "Gripper mechanism",
           "Camera assembly"
@@ -98,7 +99,7 @@
       "length": "meters"
     },
     "coordinate_system": "DH frame convention",
-    "total_mass": 1.063855
+    "total_mass": 1.200565
   },
   "gravity_compensation": {
     "enabled": true,
