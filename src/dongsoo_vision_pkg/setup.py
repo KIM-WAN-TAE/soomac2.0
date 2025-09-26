@@ -24,6 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+        'tool_detect = dongsoo_vision_pkg.tool_detect:main'
         ],
     },
 )
