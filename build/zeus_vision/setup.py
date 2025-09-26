@@ -1,1 +1,0 @@
-/home/pc/soomac_ws/src/zeus_vision/setup.py

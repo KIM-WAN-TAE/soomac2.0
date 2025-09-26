@@ -1,0 +1,374 @@
+[0.065s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.065s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=32, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x749e7d37ece0>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x749e7d334ee0>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x749e7d334ee0>>, mixin_verb=('build',))
+[0.171s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.171s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.171s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.171s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.171s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.171s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.171s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/pc/soomac_ws'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_controller) by extensions ['ignore', 'ignore_ament_install']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_controller) by extension 'ignore'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_controller) by extension 'ignore_ament_install'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_controller) by extensions ['colcon_pkg']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_controller) by extension 'colcon_pkg'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_controller) by extensions ['colcon_meta']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_controller) by extension 'colcon_meta'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_controller) by extensions ['ros']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_controller) by extension 'ros'
+[0.182s] DEBUG:colcon.colcon_core.package_identification:Package 'src/zeus_controller' with type 'ros.ament_python' and name 'zeus_controller'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_description) by extensions ['ignore', 'ignore_ament_install']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_description) by extension 'ignore'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_description) by extension 'ignore_ament_install'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_description) by extensions ['colcon_pkg']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_description) by extension 'colcon_pkg'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_description) by extensions ['colcon_meta']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_description) by extension 'colcon_meta'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_description) by extensions ['ros']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_description) by extension 'ros'
+[0.182s] DEBUG:colcon.colcon_core.package_identification:Package 'src/zeus_description' with type 'ros.ament_cmake' and name 'zeus_description'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_dxl) by extensions ['ignore', 'ignore_ament_install']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_dxl) by extension 'ignore'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_dxl) by extension 'ignore_ament_install'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_dxl) by extensions ['colcon_pkg']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_dxl) by extension 'colcon_pkg'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_dxl) by extensions ['colcon_meta']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_dxl) by extension 'colcon_meta'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_dxl) by extensions ['ros']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_dxl) by extension 'ros'
+[0.183s] DEBUG:colcon.colcon_core.package_identification:Package 'src/zeus_dxl' with type 'ros.ament_python' and name 'zeus_dxl'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_interfaces) by extensions ['ignore', 'ignore_ament_install']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_interfaces) by extension 'ignore'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_interfaces) by extension 'ignore_ament_install'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_interfaces) by extensions ['colcon_pkg']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_interfaces) by extension 'colcon_pkg'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_interfaces) by extensions ['colcon_meta']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_interfaces) by extension 'colcon_meta'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_interfaces) by extensions ['ros']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_interfaces) by extension 'ros'
+[0.183s] DEBUG:colcon.colcon_core.package_identification:Package 'src/zeus_interfaces' with type 'ros.ament_cmake' and name 'zeus_interfaces'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_vision) by extensions ['ignore', 'ignore_ament_install']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_vision) by extension 'ignore'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_vision) by extension 'ignore_ament_install'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_vision) by extensions ['colcon_pkg']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_vision) by extension 'colcon_pkg'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_vision) by extensions ['colcon_meta']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_vision) by extension 'colcon_meta'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_vision) by extensions ['ros']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(src/zeus_vision) by extension 'ros'
+[0.184s] DEBUG:colcon.colcon_core.package_identification:Package 'src/zeus_vision' with type 'ros.ament_python' and name 'zeus_vision'
+[0.184s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.184s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.184s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.184s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.184s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.195s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.195s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.196s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 0 installed packages in /home/pc/teensy_ws/install
+[0.197s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 4 installed packages in /home/pc/cont_ws/install
+[0.197s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 5 installed packages in /home/pc/mg_motor_ws/install
+[0.197s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 5 installed packages in /home/pc/soomac_ws/install
+[0.197s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 272 installed packages in /opt/ros/humble
+[0.198s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'zeus_controller' build argument 'cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_controller' build argument 'cmake_target' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_controller' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_controller' build argument 'cmake_clean_cache' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_controller' build argument 'cmake_clean_first' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_controller' build argument 'cmake_force_configure' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_controller' build argument 'ament_cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_controller' build argument 'catkin_cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_controller' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.214s] DEBUG:colcon.colcon_core.verb:Building package 'zeus_controller' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/zeus_controller', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/zeus_controller', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/zeus_controller', 'symlink_install': False, 'test_result_base': None}
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_description' build argument 'cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_description' build argument 'cmake_target' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_description' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_description' build argument 'cmake_clean_cache' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_description' build argument 'cmake_clean_first' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_description' build argument 'cmake_force_configure' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_description' build argument 'ament_cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_description' build argument 'catkin_cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_description' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.214s] DEBUG:colcon.colcon_core.verb:Building package 'zeus_description' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/zeus_description', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/zeus_description', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/zeus_description', 'symlink_install': False, 'test_result_base': None}
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_dxl' build argument 'cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_dxl' build argument 'cmake_target' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_dxl' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_dxl' build argument 'cmake_clean_cache' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_dxl' build argument 'cmake_clean_first' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_dxl' build argument 'cmake_force_configure' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_dxl' build argument 'ament_cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_dxl' build argument 'catkin_cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_dxl' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.214s] DEBUG:colcon.colcon_core.verb:Building package 'zeus_dxl' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/zeus_dxl', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/zeus_dxl', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/zeus_dxl', 'symlink_install': False, 'test_result_base': None}
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_interfaces' build argument 'cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_interfaces' build argument 'cmake_target' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_interfaces' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_interfaces' build argument 'cmake_clean_cache' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_interfaces' build argument 'cmake_clean_first' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_interfaces' build argument 'cmake_force_configure' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_interfaces' build argument 'ament_cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_interfaces' build argument 'catkin_cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_interfaces' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.214s] DEBUG:colcon.colcon_core.verb:Building package 'zeus_interfaces' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/zeus_interfaces', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/zeus_interfaces', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/zeus_interfaces', 'symlink_install': False, 'test_result_base': None}
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_vision' build argument 'cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_vision' build argument 'cmake_target' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_vision' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_vision' build argument 'cmake_clean_cache' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_vision' build argument 'cmake_clean_first' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_vision' build argument 'cmake_force_configure' from command line to 'False'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_vision' build argument 'ament_cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_vision' build argument 'catkin_cmake_args' from command line to 'None'
+[0.214s] Level 5:colcon.colcon_core.verb:set package 'zeus_vision' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.214s] DEBUG:colcon.colcon_core.verb:Building package 'zeus_vision' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/pc/soomac_ws/build/zeus_vision', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/pc/soomac_ws/install/zeus_vision', 'merge_install': False, 'path': '/home/pc/soomac_ws/src/zeus_vision', 'symlink_install': False, 'test_result_base': None}
+[0.215s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.215s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.215s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/pc/soomac_ws/src/zeus_controller' with build type 'ament_python'
+[0.215s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_controller', 'ament_prefix_path')
+[0.217s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.217s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/hook/ament_prefix_path.ps1'
+[0.217s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/hook/ament_prefix_path.dsv'
+[0.217s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/hook/ament_prefix_path.sh'
+[0.218s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.218s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.220s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/pc/soomac_ws/src/zeus_description' with build type 'ament_cmake'
+[0.220s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/pc/soomac_ws/src/zeus_description'
+[0.220s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.220s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.222s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/pc/soomac_ws/src/zeus_dxl' with build type 'ament_python'
+[0.222s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_dxl', 'ament_prefix_path')
+[0.222s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/hook/ament_prefix_path.ps1'
+[0.222s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/hook/ament_prefix_path.dsv'
+[0.222s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/hook/ament_prefix_path.sh'
+[0.222s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.222s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.224s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/pc/soomac_ws/src/zeus_interfaces' with build type 'ament_cmake'
+[0.224s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/pc/soomac_ws/src/zeus_interfaces'
+[0.224s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.224s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.226s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/pc/soomac_ws/src/zeus_vision' with build type 'ament_python'
+[0.226s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_vision', 'ament_prefix_path')
+[0.226s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/hook/ament_prefix_path.ps1'
+[0.226s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/hook/ament_prefix_path.dsv'
+[0.226s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/hook/ament_prefix_path.sh'
+[0.226s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.226s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.343s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/pc/soomac_ws/src/zeus_controller'
+[0.344s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.344s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.347s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/zeus_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/zeus_description -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/zeus_description
+[0.469s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/pc/soomac_ws/src/zeus_dxl'
+[0.470s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.470s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.473s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/zeus_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/zeus_interfaces -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/zeus_interfaces
+[0.594s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/pc/soomac_ws/src/zeus_vision'
+[0.595s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.595s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.601s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/zeus_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/zeus_description -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/zeus_description
+[0.601s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/zeus_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/zeus_description -- -j32 -l32
+[0.623s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/zeus_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/zeus_description -- -j32 -l32
+[0.629s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/zeus_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/zeus_description
+[0.637s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(zeus_description)
+[0.637s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/zeus_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/zeus_description
+[0.640s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description' for CMake module files
+[0.641s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description' for CMake config files
+[0.641s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_description', 'cmake_prefix_path')
+[0.641s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/hook/cmake_prefix_path.ps1'
+[0.641s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/hook/cmake_prefix_path.dsv'
+[0.642s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/hook/cmake_prefix_path.sh'
+[0.642s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description/bin'
+[0.642s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description/lib/pkgconfig/zeus_description.pc'
+[0.642s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description/lib/python3.10/site-packages'
+[0.642s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description/bin'
+[0.643s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.ps1'
+[0.643s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.dsv'
+[0.644s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.sh'
+[0.644s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.bash'
+[0.645s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.zsh'
+[0.645s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/zeus_description/share/colcon-core/packages/zeus_description)
+[0.646s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(zeus_description)
+[0.646s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description' for CMake module files
+[0.646s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description' for CMake config files
+[0.646s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_description', 'cmake_prefix_path')
+[0.646s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/hook/cmake_prefix_path.ps1'
+[0.646s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/hook/cmake_prefix_path.dsv'
+[0.646s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/hook/cmake_prefix_path.sh'
+[0.647s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description/bin'
+[0.647s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description/lib/pkgconfig/zeus_description.pc'
+[0.647s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description/lib/python3.10/site-packages'
+[0.647s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_description/bin'
+[0.647s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.ps1'
+[0.647s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.dsv'
+[0.647s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.sh'
+[0.647s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.bash'
+[0.648s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_description/share/zeus_description/package.zsh'
+[0.648s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/zeus_description/share/colcon-core/packages/zeus_description)
+[0.759s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/zeus_vision': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_vision/build
+[0.760s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/zeus_controller': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_controller/build
+[0.761s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/zeus_dxl': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_dxl/build
+[0.970s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/zeus_dxl' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_dxl/build
+[0.971s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/src/zeus_dxl': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_dxl build --build-base /home/pc/soomac_ws/build/zeus_dxl/build install --record /home/pc/soomac_ws/build/zeus_dxl/install.log --single-version-externally-managed install_data --force
+[0.972s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/zeus_vision' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_vision/build
+[0.972s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/src/zeus_vision': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_vision build --build-base /home/pc/soomac_ws/build/zeus_vision/build install --record /home/pc/soomac_ws/build/zeus_vision/install.log --single-version-externally-managed install_data --force
+[0.973s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/zeus_controller' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_controller/build
+[0.974s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/src/zeus_controller': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_controller build --build-base /home/pc/soomac_ws/build/zeus_controller/build install --record /home/pc/soomac_ws/build/zeus_controller/install.log --single-version-externally-managed install_data --force
+[1.051s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/zeus_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/zeus_interfaces -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/zeus_interfaces
+[1.051s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/zeus_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/zeus_interfaces -- -j32 -l32
+[1.110s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_dxl' for CMake module files
+[1.111s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/src/zeus_dxl' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_dxl build --build-base /home/pc/soomac_ws/build/zeus_dxl/build install --record /home/pc/soomac_ws/build/zeus_dxl/install.log --single-version-externally-managed install_data --force
+[1.111s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_dxl' for CMake config files
+[1.111s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_dxl/lib'
+[1.112s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_dxl/bin'
+[1.112s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_dxl/lib/pkgconfig/zeus_dxl.pc'
+[1.112s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages'
+[1.112s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_dxl', 'pythonpath')
+[1.112s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/hook/pythonpath.ps1'
+[1.113s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/hook/pythonpath.dsv'
+[1.113s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/hook/pythonpath.sh'
+[1.113s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_dxl/bin'
+[1.113s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(zeus_dxl)
+[1.113s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/package.ps1'
+[1.114s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/package.dsv'
+[1.114s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/package.sh'
+[1.114s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/package.bash'
+[1.115s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl/package.zsh'
+[1.115s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/zeus_dxl/share/colcon-core/packages/zeus_dxl)
+[1.116s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_controller' for CMake module files
+[1.117s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/src/zeus_controller' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_controller build --build-base /home/pc/soomac_ws/build/zeus_controller/build install --record /home/pc/soomac_ws/build/zeus_controller/install.log --single-version-externally-managed install_data --force
+[1.117s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_controller' for CMake config files
+[1.117s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_controller/lib'
+[1.117s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_controller/bin'
+[1.117s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_controller/lib/pkgconfig/zeus_controller.pc'
+[1.117s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages'
+[1.117s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_controller', 'pythonpath')
+[1.117s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/hook/pythonpath.ps1'
+[1.118s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/hook/pythonpath.dsv'
+[1.118s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/hook/pythonpath.sh'
+[1.118s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_controller/bin'
+[1.118s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(zeus_controller)
+[1.118s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/package.ps1'
+[1.118s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/package.dsv'
+[1.118s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/package.sh'
+[1.118s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/package.bash'
+[1.119s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_controller/share/zeus_controller/package.zsh'
+[1.119s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/zeus_controller/share/colcon-core/packages/zeus_controller)
+[1.119s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_vision' for CMake module files
+[1.119s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/src/zeus_vision' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_vision build --build-base /home/pc/soomac_ws/build/zeus_vision/build install --record /home/pc/soomac_ws/build/zeus_vision/install.log --single-version-externally-managed install_data --force
+[1.120s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_vision' for CMake config files
+[1.120s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_vision/lib'
+[1.120s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_vision/bin'
+[1.120s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_vision/lib/pkgconfig/zeus_vision.pc'
+[1.120s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages'
+[1.120s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_vision', 'pythonpath')
+[1.120s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/hook/pythonpath.ps1'
+[1.121s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/hook/pythonpath.dsv'
+[1.121s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/hook/pythonpath.sh'
+[1.121s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_vision/bin'
+[1.121s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(zeus_vision)
+[1.121s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/package.ps1'
+[1.122s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/package.dsv'
+[1.122s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/package.sh'
+[1.122s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/package.bash'
+[1.122s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_vision/share/zeus_vision/package.zsh'
+[1.122s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/zeus_vision/share/colcon-core/packages/zeus_vision)
+[1.543s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/zeus_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/zeus_interfaces -- -j32 -l32
+[1.545s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/pc/soomac_ws/build/zeus_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/zeus_interfaces
+[1.584s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(zeus_interfaces)
+[1.585s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces' for CMake module files
+[1.585s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/pc/soomac_ws/build/zeus_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/zeus_interfaces
+[1.585s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces' for CMake config files
+[1.585s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_interfaces', 'cmake_prefix_path')
+[1.585s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/cmake_prefix_path.ps1'
+[1.586s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/cmake_prefix_path.dsv'
+[1.586s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/cmake_prefix_path.sh'
+[1.586s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces/lib'
+[1.586s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_interfaces', 'ld_library_path_lib')
+[1.586s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/ld_library_path_lib.ps1'
+[1.586s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/ld_library_path_lib.dsv'
+[1.586s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/ld_library_path_lib.sh'
+[1.587s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces/bin'
+[1.587s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces/lib/pkgconfig/zeus_interfaces.pc'
+[1.587s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces/lib/python3.10/site-packages'
+[1.587s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces/bin'
+[1.587s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.ps1'
+[1.587s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.dsv'
+[1.587s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.sh'
+[1.587s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.bash'
+[1.588s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.zsh'
+[1.588s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/zeus_interfaces/share/colcon-core/packages/zeus_interfaces)
+[1.588s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(zeus_interfaces)
+[1.588s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces' for CMake module files
+[1.588s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces' for CMake config files
+[1.588s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_interfaces', 'cmake_prefix_path')
+[1.588s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/cmake_prefix_path.ps1'
+[1.589s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/cmake_prefix_path.dsv'
+[1.589s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/cmake_prefix_path.sh'
+[1.589s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces/lib'
+[1.589s] Level 1:colcon.colcon_core.shell:create_environment_hook('zeus_interfaces', 'ld_library_path_lib')
+[1.589s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/ld_library_path_lib.ps1'
+[1.589s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/ld_library_path_lib.dsv'
+[1.589s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/hook/ld_library_path_lib.sh'
+[1.589s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces/bin'
+[1.589s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces/lib/pkgconfig/zeus_interfaces.pc'
+[1.589s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces/lib/python3.10/site-packages'
+[1.589s] Level 1:colcon.colcon_core.environment:checking '/home/pc/soomac_ws/install/zeus_interfaces/bin'
+[1.590s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.ps1'
+[1.590s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.dsv'
+[1.590s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.sh'
+[1.590s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.bash'
+[1.590s] INFO:colcon.colcon_core.shell:Creating package script '/home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.zsh'
+[1.590s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/pc/soomac_ws/install/zeus_interfaces/share/colcon-core/packages/zeus_interfaces)
+[1.590s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[1.591s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[1.591s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[1.591s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[1.595s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[1.595s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[1.595s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[1.602s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[1.602s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/pc/soomac_ws/install/local_setup.ps1'
+[1.603s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/pc/soomac_ws/install/_local_setup_util_ps1.py'
+[1.604s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/pc/soomac_ws/install/setup.ps1'
+[1.605s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/pc/soomac_ws/install/local_setup.sh'
+[1.605s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/pc/soomac_ws/install/_local_setup_util_sh.py'
+[1.605s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/pc/soomac_ws/install/setup.sh'
+[1.606s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/pc/soomac_ws/install/local_setup.bash'
+[1.606s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/pc/soomac_ws/install/setup.bash'
+[1.607s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/pc/soomac_ws/install/local_setup.zsh'
+[1.607s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/pc/soomac_ws/install/setup.zsh'

@@ -1,0 +1,4 @@
+[console_scripts]
+detect = zeus_vision.block_detect:main
+position = zeus_vision.block_position:main
+

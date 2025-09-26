@@ -1,0 +1,40 @@
+[0.539s] Invoking command in '/home/pc/soomac_ws/build/zeus_dxl': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_dxl/build
+[0.657s] running develop
+[0.735s] Removing /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus-dxl.egg-link (link to .)
+[0.748s] Invoked command in '/home/pc/soomac_ws/build/zeus_dxl' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_dxl/build
+[0.749s] Invoking command in '/home/pc/soomac_ws/src/zeus_dxl': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_dxl build --build-base /home/pc/soomac_ws/build/zeus_dxl/build install --record /home/pc/soomac_ws/build/zeus_dxl/install.log --single-version-externally-managed install_data --force
+[0.859s] running egg_info
+[0.860s] writing ../../build/zeus_dxl/zeus_dxl.egg-info/PKG-INFO
+[0.860s] writing dependency_links to ../../build/zeus_dxl/zeus_dxl.egg-info/dependency_links.txt
+[0.860s] writing entry points to ../../build/zeus_dxl/zeus_dxl.egg-info/entry_points.txt
+[0.860s] writing requirements to ../../build/zeus_dxl/zeus_dxl.egg-info/requires.txt
+[0.860s] writing top-level names to ../../build/zeus_dxl/zeus_dxl.egg-info/top_level.txt
+[0.861s] reading manifest file '../../build/zeus_dxl/zeus_dxl.egg-info/SOURCES.txt'
+[0.861s] writing manifest file '../../build/zeus_dxl/zeus_dxl.egg-info/SOURCES.txt'
+[0.862s] running build
+[0.862s] running build_py
+[0.862s] creating /home/pc/soomac_ws/build/zeus_dxl/build
+[0.862s] creating /home/pc/soomac_ws/build/zeus_dxl/build/lib
+[0.862s] creating /home/pc/soomac_ws/build/zeus_dxl/build/lib/zeus_dxl
+[0.862s] copying zeus_dxl/__init__.py -> /home/pc/soomac_ws/build/zeus_dxl/build/lib/zeus_dxl
+[0.862s] copying zeus_dxl/controller_node.py -> /home/pc/soomac_ws/build/zeus_dxl/build/lib/zeus_dxl
+[0.862s] copying zeus_dxl/zeus_gripper.py -> /home/pc/soomac_ws/build/zeus_dxl/build/lib/zeus_dxl
+[0.863s] running install
+[0.863s] running install_lib
+[0.863s] creating /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus_dxl
+[0.863s] copying /home/pc/soomac_ws/build/zeus_dxl/build/lib/zeus_dxl/__init__.py -> /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus_dxl
+[0.863s] copying /home/pc/soomac_ws/build/zeus_dxl/build/lib/zeus_dxl/controller_node.py -> /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus_dxl
+[0.863s] copying /home/pc/soomac_ws/build/zeus_dxl/build/lib/zeus_dxl/zeus_gripper.py -> /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus_dxl
+[0.863s] byte-compiling /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus_dxl/__init__.py to __init__.cpython-310.pyc
+[0.863s] byte-compiling /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus_dxl/controller_node.py to controller_node.cpython-310.pyc
+[0.864s] byte-compiling /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus_dxl/zeus_gripper.py to zeus_gripper.cpython-310.pyc
+[0.865s] running install_data
+[0.865s] copying resource/zeus_dxl -> /home/pc/soomac_ws/install/zeus_dxl/share/ament_index/resource_index/packages
+[0.865s] copying package.xml -> /home/pc/soomac_ws/install/zeus_dxl/share/zeus_dxl
+[0.865s] running install_egg_info
+[0.866s] Copying ../../build/zeus_dxl/zeus_dxl.egg-info to /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus_dxl-0.0.0-py3.10.egg-info
+[0.866s] running install_scripts
+[0.875s] Installing block_run script to /home/pc/soomac_ws/install/zeus_dxl/lib/zeus_dxl
+[0.875s] Installing gripper_run script to /home/pc/soomac_ws/install/zeus_dxl/lib/zeus_dxl
+[0.876s] writing list of installed files to '/home/pc/soomac_ws/build/zeus_dxl/install.log'
+[0.889s] Invoked command in '/home/pc/soomac_ws/src/zeus_dxl' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_dxl build --build-base /home/pc/soomac_ws/build/zeus_dxl/build install --record /home/pc/soomac_ws/build/zeus_dxl/install.log --single-version-externally-managed install_data --force

@@ -5,6 +5,7 @@ from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray, String, MultiArrayDimension
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 from zeus_interfaces.srv import ZeusExecutor
 
 import threading, time
@@ -60,19 +61,25 @@ class ZeusClientNode(Node):
         
         self.lock = threading.Lock()
         
+        gripper_qos_profile = QoSProfile(
+            reliability=ReliabilityPolicy.RELIABLE,  # 메시지 전달 보장
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,  # 늦게 연결된 구독자도 메시지 수신
+            history=HistoryPolicy.KEEP_LAST,  # 마지막 N개 메시지 유지
+            depth=1  # 큐에 보관할 메시지 개수
+        )
+        
         self.speed_cmd_idx_map = {
-            0: ['jntspd', 10],
-            1: ['linspd', 40],
-            2: ['linspd', 40],
-            3: ['posspd', 80],
-            4: ['linspd', 5],
-            5: ['posspd', 30],
-            6: ['linspd', 80],
-            7: ['jntspd', 40],
+            0: ['jntspd', 20],
+            1: ['linspd', 150],
+            2: ['posspd', 100],
+            3: ['linspd', 10],
+            4: ['posspd', 30],
+            5: ['linspd', 100],
+            6: ['jntspd', 60],
+            7: ['linspd', 100],
             8: ['jntspd', 10],
-            9: ['jntspd', 5],
-            10: ['jntspd', 10],
-            12: ['jntspd', 40]
+            9 : ['linspd', 100],
+            10: ['jntspd', 80]
         }
         self.sent_speed_cmd_idx = set()
         
@@ -90,6 +97,7 @@ class ZeusClientNode(Node):
         self.joint_coor = None
         self.block_pose = None
         self.topic_flag = False
+        self.suction_flag = False
         
         self.service_cb_group = ReentrantCallbackGroup()
         self.sub_cb_group = ReentrantCallbackGroup()
@@ -100,7 +108,7 @@ class ZeusClientNode(Node):
         
         self.block_pose_order_pub = self.create_publisher(String, '/zeus/string/block_order', 10)
         self.base_to_camera_pub = self.create_publisher(Float32MultiArray, '/zeus/array/base_to_cam_matrix', 10)
-        self.gripper_command_pub = self.create_publisher(String, '/zeus/string/gripper_command', 10)
+        self.gripper_command_pub = self.create_publisher(String, '/zeus/string/gripper_command', gripper_qos_profile)
         self.gripper_wall_command_pub = self.create_publisher(String, '/zeus/string/target_angle', 10)
         self.color_count_pub = self.create_publisher(String, '/zeus/string/drop_done', 10)
         self.binary_cmd = self.create_publisher(String, '/zeus/string/binary_command', 10)
@@ -121,7 +129,6 @@ class ZeusClientNode(Node):
         
     def reset_block_list(self):
         # 동적 리스트들 초기화
-        self.BLOCK_PICK_TOP  = []
         self.BLOCK_SPECIAL   = []
         self.BLOCK_MAKE_ORI  = []
         self.BLOCK_PICK      = []
@@ -130,7 +137,7 @@ class ZeusClientNode(Node):
 
         # 고정값들 정의
         CAM_INIT = ['j', -97.57, -11.23, -73.43, 0.14, -94.65, -97.56]
-        BLOCK_DROP_INIT = ['j', -6.16, -10.96, -99.0, 0.0, -69.34, -86.16]
+        BLOCK_DROP_INIT = ['j', -15.75, -27.47, -95.23, 0.20, -57.54, -102.09]
         GRIPPER_TIME    = ['t', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
         self.block_pose = None
@@ -141,18 +148,16 @@ class ZeusClientNode(Node):
         # block_list 재구성
         self.block_list = [
             CAM_INIT,             # 0 Joint -> jntspd = 10
-            self.BLOCK_PICK_TOP,  # 1 Linear linspd = 
             self.BLOCK_SPECIAL,   # 2 Linear
             self.BLOCK_MAKE_ORI,  # 3 tool-rel -> 여기서 현 Pose Memo
             self.BLOCK_PICK,      # 4 Linear
-            GRIPPER_TIME,    # 5 etc
+            GRIPPER_TIME,         # 5 etc
             self.BLOCK_MAKE_ORI,  # 6 Linear   -> 현 Pose 불러오기
             BLOCK_DROP_INIT,      # 7 Joint
-            self.BLOCK_DROP_TOP,  # 8 Joint 놓는 곳 수직 위치
-            self.BLOCK_DROP,      # 9 Joint 놓는 곳 
+            self.BLOCK_DROP_TOP,  # 8 lin 놓는 곳 수직 위치
+            self.BLOCK_DROP,      # 9 tool 놓는 곳 
             self.BLOCK_DROP_TOP,  # 10 Joint 놓는 곳 수직 위치
-            BLOCK_DROP_INIT,      # 11 Joint jntspd = 8
-            CAM_INIT              # 12 Joint jntspd = 20
+            CAM_INIT              # 11 Joint jntspd = 20
         ]
         
         self.sent_speed_cmd_idx.clear()
@@ -250,7 +255,6 @@ class ZeusClientNode(Node):
                 self.send_next_command()
                   
             elif idx == 1:
-                
                 if self.base_to_camera_matrix is None:
                     self.get_logger().info('[ZEUS] Waiting for base_to_camera_matrix...')
                     return
@@ -273,34 +277,12 @@ class ZeusClientNode(Node):
                 
                 P, rz, ry, rx = block_pose
                     
-                pose = [P[0]-85.0, P[1], Z_OFFSET, rz, ry, rx]
+                pose = [0.0, 0.0, 0.0, rz, ry, rx]
                 pose[3:] = self.xy_coor[3:]
-                 
-                self.block_list[idx] = ['l'] + pose
-                self.send_next_command()
-            
-                with self.lock:
-                    self.block_pose = None
-                    self.topic_flag = False
-                    
-            elif idx == 2:
-                with self.lock:
-                    if self.topic_flag is False:
-                        s_msg = String()
-                        print('block')
-                        s_msg.data = 'block'
-                        self.block_pose_order_pub.publish(s_msg)
-                        self.topic_flag = True
                 
-                    if self.block_pose is None:
-                        # self.get_logger().info('[ZEUS] Waiting Block Pose')
-                        return
-                    
-                    B_P, rz, ry, rx = self.block_pose
-            
                 yaw, pitch, roll = rz, ry, rx               
                 
-                Z_HEIGHT = Z_OFFSET - B_P[2]
+                Z_HEIGHT = Z_OFFSET - P[2]
                 move_dis = Z_HEIGHT * np.tan(abs(np.deg2rad(pitch)))
                 
                 if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
@@ -334,7 +316,7 @@ class ZeusClientNode(Node):
                         
                 print(f'\n x : {x_move}, y : {y_move}\n')
                 
-                pose = [B_P[0] + x_move, B_P[1] + y_move, Z_OFFSET, rz, ry, rx]
+                pose = [P[0] + x_move, P[1] + y_move, Z_OFFSET, rz, ry, rx]
                 with self.lock:
                     pose[3:] = self.xy_coor[3:]
                 
@@ -345,7 +327,7 @@ class ZeusClientNode(Node):
                 with self.lock:
                     self.topic_flag = False
                     
-            elif idx == 3:
+            elif idx == 2:
                 with self.lock:
                     c_rz, c_ry, c_rx = self.xy_coor[3:]
                 _, yaw, pitch, roll = block_pose
@@ -388,74 +370,79 @@ class ZeusClientNode(Node):
                 self.block_list[idx] = ['t'] + pose
                 self.send_next_command()
                     
-            elif idx == 4:
+            elif idx == 3:
                 self.send_speed('linspd', 10)
                 P, rz, ry, rx = block_pose
                     
                 pose = [P[0], P[1], P[2] + PICK_Z_OFFSET, rz, ry, rx]
                 with self.lock:
                     pose[3:] = self.xy_coor[3:]
-                 
+                
+                if self.suction_flag == False:
+                    gripper_msg = String()
+                    gripper_msg.data = 's'
+                    self.gripper_command_pub.publish(gripper_msg)
+                    
+                    grip_done_msg = String()
+                    grip_done_msg.data = 'done'
+                    self.color_count_pub.publish(grip_done_msg)
+                    
+                    self.suction_flag = True
+                
                 self.block_list[idx] = ['l'] + pose
                 self.send_next_command()
  
+            elif idx == 4:
+                time.sleep(0.5)
+                self.send_next_command()
+            
             elif idx == 5:
-                gripper_msg = String()
-                gripper_msg.data = 's'
-                self.gripper_command_pub.publish(gripper_msg)
-                
-                grip_done_msg = String()
-                grip_done_msg.data = 'done'
-                self.color_count_pub.publish(grip_done_msg)
-                
-                time.sleep(2)
-                
-                self.send_next_command()
-            
-            elif idx == 6:
                 with self.lock:
+                    
                     self.block_list[idx] = copy.deepcopy(self.block_list[idx-4])
+                    self.suction_flag = False
                 
                 self.send_next_command()
                 
-            elif idx == 7: # Move Drop Init Position
+            elif idx == 6: # Move Drop Init Position
                 self.send_next_command()
             
-            elif idx == 8: # Drop Top Zone
+            elif idx == 7: # Drop Top Zone
                 wall_msg = String()
                 wall_msg.data = 'up'
                 self.gripper_wall_command_pub.publish(wall_msg)
                 
                 with self.lock:
-                    self.block_list[idx] = ['j'] + list(self.drop_zone_point)
+                    self.block_list[idx] = ['l'] + list(self.drop_zone_point)
+                    
+                self.send_next_command()
+                
+            elif idx == 8:
+                with self.lock:
+                    self.block_list[idx] = ['t'] + [0.0, 0.0, 50.0, 0.0, 0.0, 0.0]
+                    
+                if self.suction_flag == False:
+                    gripper_msg = String()
+                    gripper_msg.data = 'e'
+                    self.gripper_command_pub.publish(gripper_msg)
+                    
+                    self.suction_flag = True
                     
                 self.send_next_command()
                 
             elif idx == 9:
+                
                 with self.lock:
-                    self.block_list[idx] = ['t'] + [0.0, 0.0, 10.0, 0.0, 0.0, 0.0]
-                    
+                    self.block_list[idx] = ['t'] + [0.0, 0.0, -100.0, 0.0, 0.0, 0.0]
+                time.sleep(0.7)
                 self.send_next_command()
                 
             elif idx == 10:
-                gripper_msg = String()
-                gripper_msg.data = 'e'
-                self.gripper_command_pub.publish(gripper_msg)
-                
-                time.sleep(2)
-                
-                with self.lock:
-                    self.block_list[idx] = ['j'] + list(self.drop_zone_point)
+                self.suction_flag = False
                 
                 self.send_next_command()
                 
             elif idx == 11:
-                self.send_next_command()
-                
-            elif idx == 12:
-                self.send_next_command()
-                
-            elif idx == 13:
                 self.send_next_command()
 
         elif trigger and is_busy:

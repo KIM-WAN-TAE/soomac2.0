@@ -1,0 +1,211 @@
+[0.249s] Invoking command in '/home/pc/soomac_ws/build/zeus_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/zeus_interfaces -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/zeus_interfaces
+[0.254s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.322s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.326s] -- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[0.328s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.330s] -- Found rosidl_adapter: 3.1.7 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.348s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.505s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[0.621s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.755s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.768s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[0.784s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.784s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[0.785s] -- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+[0.797s] -- Configuring done
+[0.816s] -- Generating done
+[0.823s] -- Build files have been written to: /home/pc/soomac_ws/build/zeus_interfaces
+[0.826s] Invoked command in '/home/pc/soomac_ws/build/zeus_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/zeus_interfaces -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/zeus_interfaces
+[0.827s] Invoking command in '/home/pc/soomac_ws/build/zeus_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/zeus_interfaces -- -j32 -l32
+[0.856s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_generator_c[0m
+[0.856s] [  2%] Built target zeus_interfaces__cpp
+[0.862s] [  2%] Built target ament_cmake_python_symlink_zeus_interfaces
+[0.862s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_typesupport_cpp[0m
+[0.863s] [  5%] [32mBuilding C object CMakeFiles/zeus_interfaces__rosidl_generator_c.dir/rosidl_generator_c/zeus_interfaces/srv/detail/zeus_executor__functions.c.o[0m
+[0.863s] [  7%] [32mBuilding C object CMakeFiles/zeus_interfaces__rosidl_generator_c.dir/rosidl_generator_c/zeus_interfaces/msg/detail/zeus_main_command__functions.c.o[0m
+[0.864s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_typesupport_fastrtps_cpp[0m
+[0.867s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_typesupport_introspection_cpp[0m
+[0.868s] [ 10%] [32mBuilding CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/zeus_interfaces/srv/zeus_executor__type_support.cpp.o[0m
+[0.870s] [ 12%] [32mBuilding CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/zeus_interfaces/msg/zeus_main_command__type_support.cpp.o[0m
+[0.871s] [ 15%] [32mBuilding CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/zeus_interfaces/srv/detail/dds_fastrtps/zeus_executor__type_support.cpp.o[0m
+[0.871s] [ 17%] [32mBuilding CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/zeus_interfaces/msg/detail/dds_fastrtps/zeus_main_command__type_support.cpp.o[0m
+[0.876s] [ 23%] [32mBuilding CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/zeus_interfaces/srv/detail/zeus_executor__type_support.cpp.o[0m
+[0.876s] [ 23%] [32mBuilding CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/zeus_interfaces/msg/detail/zeus_main_command__type_support.cpp.o[0m
+[0.908s] [ 25%] [32m[1mLinking C shared library libzeus_interfaces__rosidl_generator_c.so[0m
+[0.929s] [ 28%] Built target zeus_interfaces__rosidl_generator_c
+[0.937s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_typesupport_c[0m
+[0.937s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_typesupport_introspection_c[0m
+[0.937s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_typesupport_fastrtps_c[0m
+[0.943s] [ 30%] [32mBuilding CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/zeus_interfaces/srv/zeus_executor__type_support.cpp.o[0m
+[0.944s] [ 33%] [32mBuilding C object CMakeFiles/zeus_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/zeus_interfaces/srv/detail/zeus_executor__type_support.c.o[0m
+[0.944s] [ 35%] [32mBuilding CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/srv/detail/zeus_executor__type_support_c.cpp.o[0m
+[0.944s] [ 41%] [32mBuilding CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/zeus_interfaces/msg/zeus_main_command__type_support.cpp.o[0m
+[0.944s] [ 41%] [32mBuilding C object CMakeFiles/zeus_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/zeus_interfaces/msg/detail/zeus_main_command__type_support.c.o[0m
+[0.944s] [ 43%] [32mBuilding CXX object CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/zeus_interfaces/msg/detail/zeus_main_command__type_support_c.cpp.o[0m
+[0.964s] [ 46%] [32m[1mLinking C shared library libzeus_interfaces__rosidl_typesupport_introspection_c.so[0m
+[0.966s] [ 48%] [32m[1mLinking CXX shared library libzeus_interfaces__rosidl_typesupport_c.so[0m
+[0.984s] [ 51%] Built target zeus_interfaces__rosidl_typesupport_introspection_c
+[0.990s] [ 53%] Built target zeus_interfaces__rosidl_typesupport_c
+[1.020s] running egg_info
+[1.020s] writing zeus_interfaces.egg-info/PKG-INFO
+[1.021s] writing dependency_links to zeus_interfaces.egg-info/dependency_links.txt
+[1.021s] writing top-level names to zeus_interfaces.egg-info/top_level.txt
+[1.022s] reading manifest file 'zeus_interfaces.egg-info/SOURCES.txt'
+[1.022s] writing manifest file 'zeus_interfaces.egg-info/SOURCES.txt'
+[1.038s] [ 56%] Built target ament_cmake_python_build_zeus_interfaces_egg
+[1.038s] [ 56%] [32m[1mLinking CXX shared library libzeus_interfaces__rosidl_typesupport_cpp.so[0m
+[1.038s] [ 58%] [32m[1mLinking CXX shared library libzeus_interfaces__rosidl_typesupport_introspection_cpp.so[0m
+[1.038s] [ 61%] [32m[1mLinking CXX shared library libzeus_interfaces__rosidl_typesupport_fastrtps_cpp.so[0m
+[1.063s] [ 64%] Built target zeus_interfaces__rosidl_typesupport_cpp
+[1.074s] [ 66%] Built target zeus_interfaces__rosidl_typesupport_fastrtps_cpp
+[1.075s] [ 69%] Built target zeus_interfaces__rosidl_typesupport_introspection_cpp
+[1.089s] [ 71%] [32m[1mLinking CXX shared library libzeus_interfaces__rosidl_typesupport_fastrtps_c.so[0m
+[1.125s] [ 74%] Built target zeus_interfaces__rosidl_typesupport_fastrtps_c
+[1.135s] [ 74%] Built target zeus_interfaces
+[1.146s] [ 76%] Built target zeus_interfaces__py
+[1.150s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_generator_py[0m
+[1.158s] [ 79%] [32mBuilding C object CMakeFiles/zeus_interfaces__rosidl_generator_py.dir/rosidl_generator_py/zeus_interfaces/srv/_zeus_executor_s.c.o[0m
+[1.158s] [ 82%] [32mBuilding C object CMakeFiles/zeus_interfaces__rosidl_generator_py.dir/rosidl_generator_py/zeus_interfaces/msg/_zeus_main_command_s.c.o[0m
+[1.214s] [ 84%] [32m[1mLinking C shared library rosidl_generator_py/zeus_interfaces/libzeus_interfaces__rosidl_generator_py.so[0m
+[1.234s] [ 84%] Built target zeus_interfaces__rosidl_generator_py
+[1.240s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_typesupport_fastrtps_c__pyext[0m
+[1.240s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_typesupport_introspection_c__pyext[0m
+[1.241s] [35m[1mConsolidate compiler generated dependencies of target zeus_interfaces__rosidl_typesupport_c__pyext[0m
+[1.247s] [ 87%] [32mBuilding C object CMakeFiles/zeus_interfaces__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[1.247s] [ 89%] [32mBuilding C object CMakeFiles/zeus_interfaces__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[1.247s] [ 92%] [32mBuilding C object CMakeFiles/zeus_interfaces__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_c.c.o[0m
+[1.292s] [ 97%] [32m[1mLinking C shared library rosidl_generator_py/zeus_interfaces/zeus_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so[0m
+[1.292s] [ 97%] [32m[1mLinking C shared library rosidl_generator_py/zeus_interfaces/zeus_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so[0m
+[1.294s] [100%] [32m[1mLinking C shared library rosidl_generator_py/zeus_interfaces/zeus_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so[0m
+[1.312s] [100%] Built target zeus_interfaces__rosidl_typesupport_c__pyext
+[1.312s] [100%] Built target zeus_interfaces__rosidl_typesupport_introspection_c__pyext
+[1.312s] [100%] Built target zeus_interfaces__rosidl_typesupport_fastrtps_c__pyext
+[1.319s] Invoked command in '/home/pc/soomac_ws/build/zeus_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/zeus_interfaces -- -j32 -l32
+[1.321s] Invoking command in '/home/pc/soomac_ws/build/zeus_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/zeus_interfaces
+[1.323s] -- Install configuration: ""
+[1.324s] -- Execute custom install script
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/ament_index/resource_index/rosidl_interfaces/zeus_interfaces
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__functions.h
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__struct.h
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__type_support.h
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/rosidl_generator_c__visibility_control.h
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/zeus_main_command.h
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__functions.h
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__struct.h
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__type_support.h
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/zeus_executor.h
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/environment/library_path.sh
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/environment/library_path.dsv
+[1.324s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__rosidl_typesupport_fastrtps_c.h
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_fastrtps_c.h
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__rosidl_typesupport_introspection_c.h
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_introspection_c.h
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__builder.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__struct.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__traits.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__type_support.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/zeus_main_command.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__builder.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__struct.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__traits.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__type_support.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/zeus_executor.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__rosidl_typesupport_fastrtps_cpp.hpp
+[1.325s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_fastrtps_cpp.hpp
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/msg/detail/zeus_main_command__rosidl_typesupport_introspection_cpp.hpp
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/include/zeus_interfaces/zeus_interfaces/srv/detail/zeus_executor__rosidl_typesupport_introspection_cpp.hpp
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/environment/pythonpath.sh
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/environment/pythonpath.dsv
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces-0.0.0-py3.10.egg-info/PKG-INFO
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces-0.0.0-py3.10.egg-info/SOURCES.txt
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces-0.0.0-py3.10.egg-info/dependency_links.txt
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces-0.0.0-py3.10.egg-info/top_level.txt
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/__init__.py
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_c.c
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/_zeus_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/libzeus_interfaces__rosidl_generator_py.so
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/msg/__init__.py
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/msg/_zeus_main_command.py
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/msg/_zeus_main_command_s.c
+[1.326s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/srv/__init__.py
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/srv/_zeus_executor.py
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/srv/_zeus_executor_s.c
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/zeus_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/zeus_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/zeus_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/zeus_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/zeus_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/zeus_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/srv/ZeusExecutor.idl
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/msg/ZeusMainCommand.idl
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/srv/ZeusExecutor.srv
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/srv/ZeusExecutor_Request.msg
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/srv/ZeusExecutor_Response.msg
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/msg/ZeusMainCommand.msg
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/ament_index/resource_index/package_run_dependencies/zeus_interfaces
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/ament_index/resource_index/parent_prefix_path/zeus_interfaces
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/environment/ament_prefix_path.sh
+[1.327s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/environment/ament_prefix_path.dsv
+[1.328s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/environment/path.sh
+[1.328s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/environment/path.dsv
+[1.328s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/local_setup.bash
+[1.328s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/local_setup.sh
+[1.328s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/local_setup.zsh
+[1.328s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/local_setup.dsv
+[1.328s] -- Symlinking: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.dsv
+[1.331s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/ament_index/resource_index/packages/zeus_interfaces
+[1.331s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/rosidl_cmake-extras.cmake
+[1.331s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake
+[1.331s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/ament_cmake_export_libraries-extras.cmake
+[1.331s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/ament_cmake_export_targets-extras.cmake
+[1.331s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[1.332s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake
+[1.332s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[1.332s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/zeus_interfacesConfig.cmake
+[1.332s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/zeus_interfacesConfig-version.cmake
+[1.332s] -- Up-to-date symlink: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/package.xml
+[1.332s] -- Installing: /home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_generator_c.so
+[1.332s] -- Set runtime path of "/home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_generator_c.so" to ""
+[1.332s] -- Installing: /home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_fastrtps_c.so
+[1.332s] -- Set runtime path of "/home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_fastrtps_c.so" to ""
+[1.332s] -- Installing: /home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_introspection_c.so
+[1.332s] -- Set runtime path of "/home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_introspection_c.so" to ""
+[1.332s] -- Installing: /home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_c.so
+[1.332s] -- Set runtime path of "/home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_c.so" to ""
+[1.332s] -- Installing: /home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_fastrtps_cpp.so
+[1.332s] -- Set runtime path of "/home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_fastrtps_cpp.so" to ""
+[1.332s] -- Installing: /home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_introspection_cpp.so
+[1.333s] -- Set runtime path of "/home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_introspection_cpp.so" to ""
+[1.333s] -- Installing: /home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_cpp.so
+[1.333s] -- Set runtime path of "/home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_typesupport_cpp.so" to ""
+[1.356s] Listing '/home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces'...
+[1.357s] Compiling '/home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/__init__.py'...
+[1.357s] Listing '/home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/msg'...
+[1.357s] Compiling '/home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/msg/__init__.py'...
+[1.357s] Compiling '/home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/msg/_zeus_main_command.py'...
+[1.357s] Listing '/home/pc/soomac_ws/install/zeus_interfaces/local/lib/python3.10/dist-packages/zeus_interfaces/srv'...
+[1.359s] -- Installing: /home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_generator_py.so
+[1.359s] -- Set runtime path of "/home/pc/soomac_ws/install/zeus_interfaces/lib/libzeus_interfaces__rosidl_generator_py.so" to ""
+[1.359s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/export_zeus_interfaces__rosidl_generator_cExport.cmake
+[1.359s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/export_zeus_interfaces__rosidl_generator_cExport-noconfig.cmake
+[1.359s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/export_zeus_interfaces__rosidl_typesupport_fastrtps_cExport.cmake
+[1.359s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/export_zeus_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[1.359s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/zeus_interfaces__rosidl_typesupport_introspection_cExport.cmake
+[1.359s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/zeus_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[1.359s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/zeus_interfaces__rosidl_typesupport_cExport.cmake
+[1.359s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/zeus_interfaces__rosidl_typesupport_cExport-noconfig.cmake
+[1.359s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/export_zeus_interfaces__rosidl_generator_cppExport.cmake
+[1.359s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/export_zeus_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake
+[1.360s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/export_zeus_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[1.360s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/zeus_interfaces__rosidl_typesupport_introspection_cppExport.cmake
+[1.360s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/zeus_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[1.360s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/zeus_interfaces__rosidl_typesupport_cppExport.cmake
+[1.360s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/zeus_interfaces__rosidl_typesupport_cppExport-noconfig.cmake
+[1.360s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/export_zeus_interfaces__rosidl_generator_pyExport.cmake
+[1.360s] -- Up-to-date: /home/pc/soomac_ws/install/zeus_interfaces/share/zeus_interfaces/cmake/export_zeus_interfaces__rosidl_generator_pyExport-noconfig.cmake
+[1.361s] Invoked command in '/home/pc/soomac_ws/build/zeus_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/zeus_interfaces

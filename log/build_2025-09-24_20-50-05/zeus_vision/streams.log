@@ -1,0 +1,40 @@
+[0.533s] Invoking command in '/home/pc/soomac_ws/build/zeus_vision': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_vision/build
+[0.653s] running develop
+[0.732s] Removing /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus-vision.egg-link (link to .)
+[0.746s] Invoked command in '/home/pc/soomac_ws/build/zeus_vision' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_vision/build
+[0.746s] Invoking command in '/home/pc/soomac_ws/src/zeus_vision': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_vision build --build-base /home/pc/soomac_ws/build/zeus_vision/build install --record /home/pc/soomac_ws/build/zeus_vision/install.log --single-version-externally-managed install_data --force
+[0.856s] running egg_info
+[0.857s] writing ../../build/zeus_vision/zeus_vision.egg-info/PKG-INFO
+[0.857s] writing dependency_links to ../../build/zeus_vision/zeus_vision.egg-info/dependency_links.txt
+[0.857s] writing entry points to ../../build/zeus_vision/zeus_vision.egg-info/entry_points.txt
+[0.857s] writing requirements to ../../build/zeus_vision/zeus_vision.egg-info/requires.txt
+[0.857s] writing top-level names to ../../build/zeus_vision/zeus_vision.egg-info/top_level.txt
+[0.858s] reading manifest file '../../build/zeus_vision/zeus_vision.egg-info/SOURCES.txt'
+[0.858s] writing manifest file '../../build/zeus_vision/zeus_vision.egg-info/SOURCES.txt'
+[0.859s] running build
+[0.859s] running build_py
+[0.859s] creating /home/pc/soomac_ws/build/zeus_vision/build
+[0.859s] creating /home/pc/soomac_ws/build/zeus_vision/build/lib
+[0.859s] creating /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision
+[0.859s] copying zeus_vision/__init__.py -> /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision
+[0.859s] copying zeus_vision/block_detect.py -> /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision
+[0.859s] copying zeus_vision/block_position.py -> /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision
+[0.859s] running install
+[0.859s] running install_lib
+[0.860s] creating /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision
+[0.860s] copying /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision/__init__.py -> /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision
+[0.860s] copying /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision/block_detect.py -> /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision
+[0.860s] copying /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision/block_position.py -> /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision
+[0.860s] byte-compiling /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision/__init__.py to __init__.cpython-310.pyc
+[0.860s] byte-compiling /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision/block_detect.py to block_detect.cpython-310.pyc
+[0.863s] byte-compiling /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision/block_position.py to block_position.cpython-310.pyc
+[0.864s] running install_data
+[0.864s] copying resource/zeus_vision -> /home/pc/soomac_ws/install/zeus_vision/share/ament_index/resource_index/packages
+[0.864s] copying package.xml -> /home/pc/soomac_ws/install/zeus_vision/share/zeus_vision
+[0.864s] running install_egg_info
+[0.865s] Copying ../../build/zeus_vision/zeus_vision.egg-info to /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision-0.0.0-py3.10.egg-info
+[0.865s] running install_scripts
+[0.875s] Installing detect script to /home/pc/soomac_ws/install/zeus_vision/lib/zeus_vision
+[0.875s] Installing position script to /home/pc/soomac_ws/install/zeus_vision/lib/zeus_vision
+[0.876s] writing list of installed files to '/home/pc/soomac_ws/build/zeus_vision/install.log'
+[0.893s] Invoked command in '/home/pc/soomac_ws/src/zeus_vision' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_vision build --build-base /home/pc/soomac_ws/build/zeus_vision/build install --record /home/pc/soomac_ws/build/zeus_vision/install.log --single-version-externally-managed install_data --force

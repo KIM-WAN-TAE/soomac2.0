@@ -1,0 +1,51 @@
+[0.544s] Invoking command in '/home/pc/soomac_ws/build/zeus_controller': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_controller/build
+[0.664s] running develop
+[0.741s] Removing /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus-controller.egg-link (link to .)
+[0.757s] Invoked command in '/home/pc/soomac_ws/build/zeus_controller' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/pc/soomac_ws/build/zeus_controller/build
+[0.758s] Invoking command in '/home/pc/soomac_ws/src/zeus_controller': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_controller build --build-base /home/pc/soomac_ws/build/zeus_controller/build install --record /home/pc/soomac_ws/build/zeus_controller/install.log --single-version-externally-managed install_data --force
+[0.868s] running egg_info
+[0.868s] writing ../../build/zeus_controller/zeus_controller.egg-info/PKG-INFO
+[0.869s] writing dependency_links to ../../build/zeus_controller/zeus_controller.egg-info/dependency_links.txt
+[0.869s] writing entry points to ../../build/zeus_controller/zeus_controller.egg-info/entry_points.txt
+[0.869s] writing requirements to ../../build/zeus_controller/zeus_controller.egg-info/requires.txt
+[0.869s] writing top-level names to ../../build/zeus_controller/zeus_controller.egg-info/top_level.txt
+[0.870s] reading manifest file '../../build/zeus_controller/zeus_controller.egg-info/SOURCES.txt'
+[0.870s] writing manifest file '../../build/zeus_controller/zeus_controller.egg-info/SOURCES.txt'
+[0.870s] running build
+[0.870s] running build_py
+[0.871s] creating /home/pc/soomac_ws/build/zeus_controller/build
+[0.871s] creating /home/pc/soomac_ws/build/zeus_controller/build/lib
+[0.871s] creating /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller
+[0.871s] copying zeus_controller/__init__.py -> /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller
+[0.871s] copying zeus_controller/read_json.py -> /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller
+[0.871s] copying zeus_controller/gripper_controller.py -> /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller
+[0.871s] copying zeus_controller/zeus_server.py -> /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller
+[0.871s] copying zeus_controller/zeus_connect.py -> /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller
+[0.871s] copying zeus_controller/zeus_client.py -> /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller
+[0.871s] running install
+[0.871s] running install_lib
+[0.871s] creating /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller
+[0.871s] copying /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller/__init__.py -> /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller
+[0.872s] copying /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller/read_json.py -> /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller
+[0.872s] copying /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller/gripper_controller.py -> /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller
+[0.872s] copying /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller/zeus_server.py -> /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller
+[0.872s] copying /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller/zeus_connect.py -> /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller
+[0.872s] copying /home/pc/soomac_ws/build/zeus_controller/build/lib/zeus_controller/zeus_client.py -> /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller
+[0.872s] byte-compiling /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller/__init__.py to __init__.cpython-310.pyc
+[0.872s] byte-compiling /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller/read_json.py to read_json.cpython-310.pyc
+[0.872s] byte-compiling /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller/gripper_controller.py to gripper_controller.cpython-310.pyc
+[0.872s] byte-compiling /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller/zeus_server.py to zeus_server.cpython-310.pyc
+[0.872s] byte-compiling /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller/zeus_connect.py to zeus_connect.cpython-310.pyc
+[0.873s] byte-compiling /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller/zeus_client.py to zeus_client.cpython-310.pyc
+[0.874s] running install_data
+[0.875s] copying resource/zeus_controller -> /home/pc/soomac_ws/install/zeus_controller/share/ament_index/resource_index/packages
+[0.875s] copying package.xml -> /home/pc/soomac_ws/install/zeus_controller/share/zeus_controller
+[0.875s] running install_egg_info
+[0.876s] Copying ../../build/zeus_controller/zeus_controller.egg-info to /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus_controller-0.0.0-py3.10.egg-info
+[0.876s] running install_scripts
+[0.886s] Installing client_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.886s] Installing connect_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.886s] Installing gripper_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.887s] Installing server_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.887s] writing list of installed files to '/home/pc/soomac_ws/build/zeus_controller/install.log'
+[0.901s] Invoked command in '/home/pc/soomac_ws/src/zeus_controller' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_controller build --build-base /home/pc/soomac_ws/build/zeus_controller/build install --record /home/pc/soomac_ws/build/zeus_controller/install.log --single-version-externally-managed install_data --force

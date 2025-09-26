@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 from std_msgs.msg import String
 import serial
 import time
@@ -7,12 +8,19 @@ import time
 class GripperControllerNode(Node):
     def __init__(self):
         super().__init__('gripper_controller_node')
+        
+        qos_profile = QoSProfile(
+            reliability=ReliabilityPolicy.RELIABLE,  # 메시지 전달 보장
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,  # 늦게 연결된 구독자도 메시지 수신
+            history=HistoryPolicy.KEEP_LAST,  # 마지막 N개 메시지 유지
+            depth=1  # 큐에 보관할 메시지 개수
+        )
 
         self.subscription = self.create_subscription(
             String,
             '/zeus/string/gripper_command',
             self.listener_callback,
-            10)
+            qos_profile)
 
         try:
             # 1단계에서 확인한 아두이노 포트 이름을 여기에 적어주세요.
@@ -24,10 +32,6 @@ class GripperControllerNode(Node):
             self.ser = None
 
     def listener_callback(self, msg):
-        if self.ser is None:
-            self.get_logger().warn('Serial port not available. Command ignored.')
-            return
-
         command = ''
         if msg.data == 'suction' or msg.data == 's':
             command = 's'
@@ -39,9 +43,15 @@ class GripperControllerNode(Node):
             self.get_logger().warn(f'Invalid command received: {msg.data}')
             return
 
-        self.ser.write(command.encode('utf-8'))
         self.get_logger().info(f'Sent command "{command}" for ROS message "{msg.data}"')
-
+        print(time.time())
+        if self.ser is None:
+            self.get_logger().warn('Serial port not available. Command ignored.')
+            return
+        print(time.time())
+        self.ser.write(command.encode('utf-8'))
+        print(time.time())
+        
 def main(args=None):
     rclpy.init(args=args)
     node = GripperControllerNode()
