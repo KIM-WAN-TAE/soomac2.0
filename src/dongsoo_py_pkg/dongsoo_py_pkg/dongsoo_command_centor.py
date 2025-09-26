@@ -166,6 +166,7 @@ class CommandCentorNode(Node):
                 self._start_ev.clear()
                 tar_msg.position = [0.25, 0.0, 0.25]
                 tar_msg.look = 'down'
+                tar_msg.time = 3.0
                 self.target_pose_pub.publish(tar_msg)
             if move_done == 'done':
                 self.get_logger().info('move is done')
