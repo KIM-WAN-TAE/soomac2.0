@@ -157,7 +157,7 @@ public:
     // ---- PID 게인 (출력 단위: "전류 raw 카운트") ----
     // 입력은 position/velocity raw(count) 단위이므로 게인은 raw->raw 스케일입니다.
     // 2,3축은 처짐 보상을 위해 더 높은 게인 적용 (개선된 버전)
-    KP_POS_GAINS({1.0f, 2.0f, 1.8f, 1.5f}), 
+    KP_POS_GAINS({1.0f, 1.8f, 1.8f, 1.6f}), 
     KI_POS_GAINS({0.00f, 0.05f, 0.05f, 0.01f}),  // I 게인 강화 (정상상태 오차 감소)
     KD_POS_GAINS({0.02f, 0.015f, 0.02f, 0.005f}),
 

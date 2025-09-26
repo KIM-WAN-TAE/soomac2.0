@@ -41,6 +41,7 @@ struct DongSooExecutor_Request_
       std::fill<typename std::array<float, 3>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
       this->look = "";
       this->time = 0.0f;
+      this->wrist = 0.0f;
     }
   }
 
@@ -54,6 +55,7 @@ struct DongSooExecutor_Request_
       std::fill<typename std::array<float, 3>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
       this->look = "";
       this->time = 0.0f;
+      this->wrist = 0.0f;
     }
   }
 
@@ -67,6 +69,9 @@ struct DongSooExecutor_Request_
   using _time_type =
     float;
   _time_type time;
+  using _wrist_type =
+    float;
+  _wrist_type wrist;
 
   // setters for named parameter idiom
   Type & set__position(
@@ -85,6 +90,12 @@ struct DongSooExecutor_Request_
     const float & _arg)
   {
     this->time = _arg;
+    return *this;
+  }
+  Type & set__wrist(
+    const float & _arg)
+  {
+    this->wrist = _arg;
     return *this;
   }
 
@@ -137,6 +148,9 @@ struct DongSooExecutor_Request_
       return false;
     }
     if (this->time != other.time) {
+      return false;
+    }
+    if (this->wrist != other.wrist) {
       return false;
     }
     return true;

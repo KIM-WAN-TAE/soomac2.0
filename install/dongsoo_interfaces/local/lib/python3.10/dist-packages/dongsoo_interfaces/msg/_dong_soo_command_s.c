@@ -104,6 +104,15 @@ bool dongsoo_interfaces__msg__dong_soo_command__convert_from_py(PyObject * _pyms
     ros_message->time = (float)PyFloat_AS_DOUBLE(field);
     Py_DECREF(field);
   }
+  {  // wrist
+    PyObject * field = PyObject_GetAttrString(_pymsg, "wrist");
+    if (!field) {
+      return false;
+    }
+    assert(PyFloat_Check(field));
+    ros_message->wrist = (float)PyFloat_AS_DOUBLE(field);
+    Py_DECREF(field);
+  }
 
   return true;
 }
@@ -166,6 +175,17 @@ PyObject * dongsoo_interfaces__msg__dong_soo_command__convert_to_py(void * raw_r
     field = PyFloat_FromDouble(ros_message->time);
     {
       int rc = PyObject_SetAttrString(_pymessage, "time", field);
+      Py_DECREF(field);
+      if (rc) {
+        return NULL;
+      }
+    }
+  }
+  {  // wrist
+    PyObject * field = NULL;
+    field = PyFloat_FromDouble(ros_message->wrist);
+    {
+      int rc = PyObject_SetAttrString(_pymessage, "wrist", field);
       Py_DECREF(field);
       if (rc) {
         return NULL;

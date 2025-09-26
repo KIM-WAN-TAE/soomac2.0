@@ -30,6 +30,7 @@ typedef struct dongsoo_interfaces__msg__DongSooCommand
   float position[3];
   rosidl_runtime_c__String look;
   float time;
+  float wrist;
 } dongsoo_interfaces__msg__DongSooCommand;
 
 // Struct for a sequence of dongsoo_interfaces__msg__DongSooCommand.

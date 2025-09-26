@@ -167,6 +167,7 @@ class CommandCentorNode(Node):
                 tar_msg.position = [0.25, 0.0, 0.25]
                 tar_msg.look = 'down'
                 tar_msg.time = 3.0
+                tar_msg.wrist = 0.0
                 self.target_pose_pub.publish(tar_msg)
             if move_done == 'done':
                 self.get_logger().info('move is done')
@@ -187,6 +188,7 @@ class CommandCentorNode(Node):
             time.sleep(1)
             self.get_logger().info(f"{state}")
             detect_position = obj_pos.tolist()
+            detect_position[0] -= 0.08
             detect_position[2] = 0.25
             
             tar_msg.position = detect_position
@@ -229,12 +231,8 @@ class CommandCentorNode(Node):
             
             tar_msg.position = pick_position
             tar_msg.look = 'down'
-            tar_msg.time = 3.0
-            
-            yaw_msg = Int32MultiArray()
-            yaw_msg.data = [deg_to_pulse(float(yaw))]
-            
-            self.yaw_pose_pub.publish(yaw_msg)
+            tar_msg.time = 5.0
+            tar_msg.wrist = yaw
             self.target_pose_pub.publish(tar_msg)
             
             with self.lock:

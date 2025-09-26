@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import time
 import threading
 import rclpy
 from rclpy.node import Node
@@ -16,6 +17,27 @@ def rad_to_pulse(rad_values):
         pulse_val = int((rad_val * 4096.0 / (2 * np.pi)) + 2048)
         pulse_values.append(pulse_val)
     return pulse_values
+
+def deg_to_pulse(degree):
+    p = int(np.round(-degree * (4096.0 / 360.0) + 2048))
+    return max(0, min(4095, p))
+
+def pulse_to_deg(pulse):
+    degree = -(pulse - 2048) * (360.0 / 4096.0)
+    return degree
+
+def plan_wrist_trajectory(start_deg, end_deg, steps=80, traj_type='smooth'):
+    """Plan wrist trajectory in degrees."""
+    if traj_type == 'linear':
+        alphas = np.linspace(0.0, 1.0, steps)
+        wrist_traj = (1 - alphas) * start_deg + alphas * end_deg
+    elif traj_type == 'smooth':
+        t = np.linspace(0.0, 1.0, steps)
+        alphas = 3 * t**2 - 2 * t**3
+        wrist_traj = (1 - alphas) * start_deg + alphas * end_deg
+    else:
+        raise ValueError("traj_type은 'linear' 또는 'smooth'")
+    return wrist_traj
 
 def plan_joint_trajectory(q_start, q_end, steps=80, traj_type='smooth'):
     q_start = np.asarray(q_start, dtype=float)
@@ -58,6 +80,7 @@ class DongsooServer(Node):
         )
 
         self.motor_control_pub = self.create_publisher(Int32MultiArray, '/motor/command_position', 10)
+        self.wrist_pub         = self.create_publisher(Int32MultiArray, '/motor/command_dxl5_position', 10)
         self.ik_done_pub       = self.create_publisher(String, '/info/string/movement_done', 10)
         
         self.present_position = np.array([])
@@ -65,8 +88,10 @@ class DongsooServer(Node):
         # Track latest joint pulses and active joint angles (J1..J4) in radians
         self.latest_pulses = np.array([2048, 2048, 2048, 2048, 2048], dtype=np.int32)
         self.q_current_active = np.zeros(4, dtype=float)
+        self.wrist_current_deg = 0.0  # Current wrist angle in degrees
         self.last_joint_update = None
-        
+        self.last_wrist_target = None  # Track last wrist target to detect changes
+
         self.last_end_point = None
         
         self.create_service(DongSooExecutor, 'dongsoo_executor', self.service_callback, callback_group = self.srv_cb_group)
@@ -95,7 +120,7 @@ class DongsooServer(Node):
             # print(f'Orientation : {self.present_orientation:8.4f}')
             
     def joint_position_callback(self, msg: Int32MultiArray):
-        """Update latest joint positions and compute current active joint angles (J1..J4)."""
+        """Update latest joint positions and compute current active joint angles (J1..J4) and wrist."""
         with self.data_lock:
             data = list(msg.data)
             if len(data) >= 4:
@@ -106,6 +131,11 @@ class DongsooServer(Node):
                 # 4096 cnt/rev, 2*pi rad/rev
                 cnt2rad = 2.0 * np.pi / 4096.0
                 self.q_current_active = ((self.latest_pulses[:4] - 2048).astype(float)) * cnt2rad
+
+                # Update wrist current angle in degrees (Joint 5)
+                if len(data) >= 5:
+                    self.wrist_current_deg = pulse_to_deg(self.latest_pulses[4])
+
                 self.last_joint_update = self.get_clock().now()
 
     def service_callback(self, req, response):
@@ -122,12 +152,14 @@ class DongsooServer(Node):
             end_point = req.position
             end_look  = req.look
             work_time = req.time
+            wrist     = req.wrist
 
             self.last_end_point = end_point
 
             # Use current joint angles (from /motor/position) as start state to avoid initial jerk
             with self.data_lock:
                 q_start = self.q_current_active.copy()
+                wrist_start = self.wrist_current_deg
 
             # Solve only for end configuration, warm-starting from current joints
             if end_look == 'down':
@@ -144,23 +176,45 @@ class DongsooServer(Node):
             print(' ')
             for i, _ in enumerate(q_end):
                 self.get_logger().info(f'[Q_list_{i+1}] : {np.degrees(q_end[i]):7.2f}')
-            
+
+
             # 200Hz pub frequency: 1/200 = 0.005s per step
-            pub_frequency = 200.0  # Hz
+            pub_frequency = 5  # Hz
             sleep_time = 1.0 / pub_frequency  # 0.005s
 
             # Calculate trajectory steps based on work_time and publish frequency
             total_steps = int(work_time * pub_frequency)
 
             q_msg = Int32MultiArray()
+            w_msg = Int32MultiArray()
             q_list = plan_joint_trajectory(q_start, q_end, steps=total_steps, traj_type='smooth')
 
-            import time
-            # rad -> pulse 변환 함수 사용
-            for i, q_s in enumerate(q_list):
+            # Check if wrist target has changed (absolute angle comparison)
+            if self.last_wrist_target is None or abs(wrist - self.last_wrist_target) > 0.01:
+                # New absolute wrist target detected - plan trajectory to new absolute position
+                wrist_target = wrist  # Use absolute target angle
+                self.last_wrist_target = wrist
+                self.get_logger().info(f'[Wrist] : {wrist_start:7.2f}° -> {wrist_target:7.2f}° (절대 각도 목표)')
+            else:
+                # No change in wrist target - maintain current position
+                wrist_target = wrist_start
+                self.get_logger().info(f'[Wrist] : {wrist_start:7.2f}° (현재 위치 유지)')
+
+            # Plan wrist trajectory
+            wrist_list = plan_wrist_trajectory(wrist_start, wrist_target, steps=total_steps, traj_type='smooth')
+
+
+            # Combined trajectory execution with 5-joint control
+            for i, (q_s, wrist_deg) in enumerate(zip(q_list, wrist_list)):
+                # Convert Joint 1-4 from radians to pulse
                 q_pulse = rad_to_pulse(q_s)
+                # Convert Joint 5 (wrist) from degrees to pulse
+                wrist_pulse = deg_to_pulse(wrist_deg)
+                # Combine all 5 joints
                 q_msg.data = q_pulse
+                w_msg.data = [int(wrist_pulse)]
                 self.motor_control_pub.publish(q_msg)
+                self.wrist_pub.publish(w_msg)
                 time.sleep(sleep_time)
             
             response.success = True

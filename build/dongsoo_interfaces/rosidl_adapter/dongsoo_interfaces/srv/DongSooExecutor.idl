@@ -14,6 +14,8 @@ module dongsoo_interfaces {
       string look;
 
       float time;
+
+      float wrist;
     };
     struct DongSooExecutor_Response {
       boolean success;

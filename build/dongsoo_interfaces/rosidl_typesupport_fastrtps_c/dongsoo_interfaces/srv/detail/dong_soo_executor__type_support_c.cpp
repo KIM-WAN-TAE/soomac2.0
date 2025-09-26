@@ -77,6 +77,11 @@ static bool _DongSooExecutor_Request__cdr_serialize(
     cdr << ros_message->time;
   }
 
+  // Field name: wrist
+  {
+    cdr << ros_message->wrist;
+  }
+
   return true;
 }
 
@@ -117,6 +122,11 @@ static bool _DongSooExecutor_Request__cdr_deserialize(
     cdr >> ros_message->time;
   }
 
+  // Field name: wrist
+  {
+    cdr >> ros_message->wrist;
+  }
+
   return true;
 }  // NOLINT(readability/fn_size)
 
@@ -150,6 +160,12 @@ size_t get_serialized_size_dongsoo_interfaces__srv__DongSooExecutor_Request(
   // field.name time
   {
     size_t item_size = sizeof(ros_message->time);
+    current_alignment += item_size +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
+  }
+  // field.name wrist
+  {
+    size_t item_size = sizeof(ros_message->wrist);
     current_alignment += item_size +
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
   }
@@ -210,6 +226,14 @@ size_t max_serialized_size_dongsoo_interfaces__srv__DongSooExecutor_Request(
     current_alignment += array_size * sizeof(uint32_t) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
   }
+  // member: wrist
+  {
+    size_t array_size = 1;
+
+    last_member_size = array_size * sizeof(uint32_t);
+    current_alignment += array_size * sizeof(uint32_t) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
+  }
 
   size_t ret_val = current_alignment - initial_alignment;
   if (is_plain) {
@@ -219,7 +243,7 @@ size_t max_serialized_size_dongsoo_interfaces__srv__DongSooExecutor_Request(
     using DataType = dongsoo_interfaces__srv__DongSooExecutor_Request;
     is_plain =
       (
-      offsetof(DataType, time) +
+      offsetof(DataType, wrist) +
       last_member_size
       ) == ret_val;
   }

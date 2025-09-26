@@ -24,7 +24,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String, Float32MultiArray
 
-WEIGHTS = "/home/wt/Downloads/best.pt"  # seg/det 둘 다 허용
+WEIGHTS = "/home/pc/soomac_ws/src/dongsoo_vision_pkg/dongsoo_vision_pkg/tool_final.pt"  # seg/det 둘 다 허용
 DEVICE = "0"
 CONF_TH = 0.28
 IOU_TH  = 0.45
@@ -627,7 +627,7 @@ class VisionNode(Node):
         msg = Float32MultiArray()
         x, y, z = det["position"]
         roll = float(det.get("roll_deg", 0.0))
-        msg.data = [float(x)*1000, float(y)*1000, float(z)*1000, roll]
+        msg.data = [float(x), float(y), float(z), roll]
         self.detection_pub.publish(msg)
         self.get_logger().info(
             f"탐지 전송: {det['class_name']} | pos=({x:.3f},{y:.3f},{z:.3f}) m | roll={roll:.1f}° | conf={det['confidence']:.2f}"

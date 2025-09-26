@@ -40,6 +40,8 @@ cdr_serialize(
   cdr << ros_message.look;
   // Member: time
   cdr << ros_message.time;
+  // Member: wrist
+  cdr << ros_message.wrist;
   return true;
 }
 
@@ -59,6 +61,9 @@ cdr_deserialize(
 
   // Member: time
   cdr >> ros_message.time;
+
+  // Member: wrist
+  cdr >> ros_message.wrist;
 
   return true;
 }
@@ -90,6 +95,12 @@ get_serialized_size(
   // Member: time
   {
     size_t item_size = sizeof(ros_message.time);
+    current_alignment += item_size +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
+  }
+  // Member: wrist
+  {
+    size_t item_size = sizeof(ros_message.wrist);
     current_alignment += item_size +
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
   }
@@ -148,6 +159,15 @@ max_serialized_size_DongSooCommand(
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
   }
 
+  // Member: wrist
+  {
+    size_t array_size = 1;
+
+    last_member_size = array_size * sizeof(uint32_t);
+    current_alignment += array_size * sizeof(uint32_t) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
+  }
+
   size_t ret_val = current_alignment - initial_alignment;
   if (is_plain) {
     // All members are plain, and type is not empty.
@@ -156,7 +176,7 @@ max_serialized_size_DongSooCommand(
     using DataType = dongsoo_interfaces::msg::DongSooCommand;
     is_plain =
       (
-      offsetof(DataType, time) +
+      offsetof(DataType, wrist) +
       last_member_size
       ) == ret_val;
   }
