@@ -70,20 +70,20 @@
       {
         "link_id": 4,
         "motor_id": 4,
-        "name": "Link4_EndEffector_v2",
-        "mass": 0.464477,
+        "name": "4번+5번+그리퍼 v3",
+        "mass": 0.457595,
         "center_of_mass": {
-          "x": 0.011741,
-          "y": 0.000182,
-          "z": 0.077594,
+          "x": 0.016616,
+          "y": 0.000258,
+          "z": 0.081916,
           "description": "COM relative to link frame [m] - includes gripper and camera"
         },
         "original_cad_data": {
-          "mass_grams": 464.477,
+          "mass_grams": 457.595,
           "com_mm": {
-            "x": 11.741,
-            "y": 0.182,
-            "z": 77.594
+            "x": 16.616,
+            "y": 0.258,
+            "z": 81.916
           }
         },
         "components": [
@@ -99,7 +99,7 @@
       "length": "meters"
     },
     "coordinate_system": "DH frame convention",
-    "total_mass": 1.200565
+    "total_mass": 1.193683
   },
   "gravity_compensation": {
     "enabled": true,

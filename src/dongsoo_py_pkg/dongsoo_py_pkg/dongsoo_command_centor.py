@@ -139,11 +139,11 @@ class CommandCentorNode(Node):
         T_CO = pos_as_T(P)                                # 4x4
         with self.lock:
             T_BO = self.cam_mat @ T_CO
-            self.obj_pos = T_BO[:3, 3].astype(np.float32) # np.array([x,y,z], dtype=float32)
+            self.obj_pos = T_BO[:3, 3].astype(np.float32)
             self.yaw = float(msg.data[3])
 
         out = Float32MultiArray()
-        out.data = self.obj_pos.tolist()                  # 또는 [*self.obj_pos, self.yaw]
+        out.data = self.obj_pos.tolist()
         self.obj_coor_pub.publish(out)
 
         self.get_logger().info(
@@ -191,6 +191,7 @@ class CommandCentorNode(Node):
             
             tar_msg.position = detect_position
             tar_msg.look = 'down'
+            tar_msg.time = 3.0
             
             self.target_pose_pub.publish(tar_msg)
             with self.lock:
@@ -228,6 +229,7 @@ class CommandCentorNode(Node):
             
             tar_msg.position = pick_position
             tar_msg.look = 'down'
+            tar_msg.time = 3.0
             
             yaw_msg = Int32MultiArray()
             yaw_msg.data = [deg_to_pulse(float(yaw))]

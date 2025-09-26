@@ -95,6 +95,15 @@ bool dongsoo_interfaces__srv__dong_soo_executor__request__convert_from_py(PyObje
     Py_DECREF(encoded_field);
     Py_DECREF(field);
   }
+  {  // time
+    PyObject * field = PyObject_GetAttrString(_pymsg, "time");
+    if (!field) {
+      return false;
+    }
+    assert(PyFloat_Check(field));
+    ros_message->time = (float)PyFloat_AS_DOUBLE(field);
+    Py_DECREF(field);
+  }
 
   return true;
 }
@@ -146,6 +155,17 @@ PyObject * dongsoo_interfaces__srv__dong_soo_executor__request__convert_to_py(vo
     }
     {
       int rc = PyObject_SetAttrString(_pymessage, "look", field);
+      Py_DECREF(field);
+      if (rc) {
+        return NULL;
+      }
+    }
+  }
+  {  // time
+    PyObject * field = NULL;
+    field = PyFloat_FromDouble(ros_message->time);
+    {
+      int rc = PyObject_SetAttrString(_pymessage, "time", field);
       Py_DECREF(field);
       if (rc) {
         return NULL;
