@@ -1,4 +1,0 @@
-[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/test_motor_connect.cpp:[m[K In member function ‘[01m[Kvoid {anonymous}::TestMotorConnectNode::update_velocity_filters(double)[m[K’:
-[01m[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/test_motor_connect.cpp:423:39:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kdt[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
-  423 |   void update_velocity_filters([01;35m[Kdouble dt[m[K)
-      |                                [01;35m[K~~~~~~~^~[m[K

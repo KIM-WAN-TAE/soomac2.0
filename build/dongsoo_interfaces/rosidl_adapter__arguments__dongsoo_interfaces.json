@@ -1,7 +1,0 @@
-{
-  "package_name": "dongsoo_interfaces",
-  "non_idl_tuples": [
-    "/home/pc/soomac_ws/src/dongsoo_interfaces:srv/DongSooExecutor.srv",
-    "/home/pc/soomac_ws/src/dongsoo_interfaces:msg/DongSooCommand.msg"
-  ]
-}

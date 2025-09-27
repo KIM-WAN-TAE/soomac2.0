@@ -1,4 +1,0 @@
-Invoking command in '/home/pc/soomac_ws/build/dongsoo_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/dongsoo_py_pkg:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_interfaces -- -j32 -l32
-Invoked command in '/home/pc/soomac_ws/build/dongsoo_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/dongsoo_py_pkg:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_interfaces -- -j32 -l32
-Invoking command in '/home/pc/soomac_ws/build/dongsoo_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/dongsoo_py_pkg:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_interfaces
-Invoked command in '/home/pc/soomac_ws/build/dongsoo_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/dongsoo_py_pkg:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_interfaces

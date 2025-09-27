@@ -1,9 +1,0 @@
-[0.000000] (-) TimerEvent: {}
-[0.000117] (-) JobUnselected: {'identifier': 'dongsoo_cpp_pkg'}
-[0.000139] (-) JobUnselected: {'identifier': 'dongsoo_description'}
-[0.000153] (-) JobUnselected: {'identifier': 'dongsoo_free_mission'}
-[0.000167] (-) JobUnselected: {'identifier': 'dongsoo_interfaces'}
-[0.000179] (-) JobUnselected: {'identifier': 'dongsoo_py_pkg'}
-[0.000192] (-) JobUnselected: {'identifier': 'dongsoo_vision_pkg'}
-[0.000204] (-) JobUnselected: {'identifier': 'finger_test'}
-[0.000217] (-) EventReactorShutdown: {}
