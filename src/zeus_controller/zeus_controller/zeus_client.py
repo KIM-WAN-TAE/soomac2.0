@@ -17,7 +17,7 @@ Z_OFFSET  = 200.0
 PITCH_TOL = 3.0
 YAW_TOL   = 3.0
 ROLL_TOL  = 10.0
-PICK_Z_OFFSET = 10.0
+PICK_Z_OFFSET = 13.0
 
 def dh_transform(theta, d, a, alpha):
     ct, st = np.cos(theta), np.sin(theta)
@@ -72,7 +72,7 @@ class ZeusClientNode(Node):
             0: ['jntspd', 20],
             1: ['linspd', 150],
             2: ['posspd', 100],
-            3: ['linspd', 10],
+            3: ['linspd', 180],
             4: ['posspd', 30],
             5: ['linspd', 100],
             6: ['jntspd', 60],
@@ -136,7 +136,7 @@ class ZeusClientNode(Node):
         self.BLOCK_DROP      = []
 
         # 고정값들 정의
-        CAM_INIT = ['j', -97.57, -11.23, -73.43, 0.14, -94.65, -97.56]
+        CAM_INIT = ['j', -97.57, -16.01, -82.24, 0.20, -81.89, -97.33]
         BLOCK_DROP_INIT = ['j', -15.75, -27.47, -95.23, 0.20, -57.54, -102.09]
         GRIPPER_TIME    = ['t', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
@@ -144,12 +144,13 @@ class ZeusClientNode(Node):
         self.topic_flag = False
         self.block_mat = None
         self.idx = 0
+        self.is_it_flat = False
         
         # block_list 재구성
         self.block_list = [
             CAM_INIT,             # 0 Joint -> jntspd = 10
-            self.BLOCK_SPECIAL,   # 2 Linear
-            self.BLOCK_MAKE_ORI,  # 3 tool-rel -> 여기서 현 Pose Memo
+            self.BLOCK_SPECIAL,   # 1 Linear
+            self.BLOCK_MAKE_ORI,  # 2 tool-rel -> 여기서 현 Pose Memo
             self.BLOCK_PICK,      # 4 Linear
             GRIPPER_TIME,         # 5 etc
             self.BLOCK_MAKE_ORI,  # 6 Linear   -> 현 Pose 불러오기
@@ -238,7 +239,7 @@ class ZeusClientNode(Node):
                 param_type, value = self.speed_cmd_idx_map[idx]
                 self.send_speed(param_type, value)
                 self.sent_speed_cmd_idx.add(idx)
-                print(f'Speeeeeeeeeeeed : {idx}, {value}')
+                # print(f'Speeeeeeeeeeeed : {idx}, {value}')
         
     def timer(self):
         with self.lock:
@@ -299,6 +300,7 @@ class ZeusClientNode(Node):
                         
                     else: # 그냥 평평할 경우
                         x_move, y_move = 0.0, 0.0
+                        self.is_it_flat = True
                         
                 elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
                     if pitch > PITCH_TOL: # Pitch 양수 # 3
@@ -313,6 +315,7 @@ class ZeusClientNode(Node):
                         
                     else: # 그냥 평평할 경우
                         x_move, y_move = 0.0, 0.0
+                        self.is_it_flat = True
                         
                 print(f'\n x : {x_move}, y : {y_move}\n')
                 
@@ -371,12 +374,7 @@ class ZeusClientNode(Node):
                 self.send_next_command()
                     
             elif idx == 3:
-                self.send_speed('linspd', 10)
                 P, rz, ry, rx = block_pose
-                    
-                pose = [P[0], P[1], P[2] + PICK_Z_OFFSET, rz, ry, rx]
-                with self.lock:
-                    pose[3:] = self.xy_coor[3:]
                 
                 if self.suction_flag == False:
                     gripper_msg = String()
@@ -389,9 +387,24 @@ class ZeusClientNode(Node):
                     
                     self.suction_flag = True
                 
-                self.block_list[idx] = ['l'] + pose
-                self.send_next_command()
- 
+                if self.is_it_flat:
+                    with self.lock:
+                        pre_z = self.xy_coor[2]
+                    
+                    move_z = pre_z - (P[2] + PICK_Z_OFFSET)
+                    pose = [0.0, 0.0, move_z, 0.0, 0.0, 0.0]
+                        
+                    self.block_list[idx] = ['t'] + pose
+                    self.send_next_command()
+                
+                else:
+                    pose = [P[0], P[1], P[2] + PICK_Z_OFFSET, rz, ry, rx]
+                    with self.lock:
+                        pose[3:] = self.xy_coor[3:]
+                    
+                    self.block_list[idx] = ['l'] + pose
+                    self.send_next_command()
+                
             elif idx == 4:
                 time.sleep(0.5)
                 self.send_next_command()
@@ -400,6 +413,8 @@ class ZeusClientNode(Node):
                 with self.lock:
                     
                     self.block_list[idx] = copy.deepcopy(self.block_list[idx-4])
+                    block_coor = copy.deepcopy(self.block_list[idx-4])
+                    
                     self.suction_flag = False
                 
                 self.send_next_command()
@@ -427,6 +442,7 @@ class ZeusClientNode(Node):
                     self.gripper_command_pub.publish(gripper_msg)
                     
                     self.suction_flag = True
+                    time.sleep(0.5)
                     
                 self.send_next_command()
                 
@@ -434,7 +450,7 @@ class ZeusClientNode(Node):
                 
                 with self.lock:
                     self.block_list[idx] = ['t'] + [0.0, 0.0, -100.0, 0.0, 0.0, 0.0]
-                time.sleep(0.7)
+                # time.sleep(0.3)
                 self.send_next_command()
                 
             elif idx == 10:

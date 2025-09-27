@@ -1,0 +1,31 @@
+[0.553s] Invoking command in '/home/pc/soomac_ws/src/zeus_vision': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_vision build --build-base /home/pc/soomac_ws/build/zeus_vision/build install --record /home/pc/soomac_ws/build/zeus_vision/install.log --single-version-externally-managed install_data
+[0.664s] running egg_info
+[0.664s] writing ../../build/zeus_vision/zeus_vision.egg-info/PKG-INFO
+[0.664s] writing dependency_links to ../../build/zeus_vision/zeus_vision.egg-info/dependency_links.txt
+[0.664s] writing entry points to ../../build/zeus_vision/zeus_vision.egg-info/entry_points.txt
+[0.664s] writing requirements to ../../build/zeus_vision/zeus_vision.egg-info/requires.txt
+[0.664s] writing top-level names to ../../build/zeus_vision/zeus_vision.egg-info/top_level.txt
+[0.665s] reading manifest file '../../build/zeus_vision/zeus_vision.egg-info/SOURCES.txt'
+[0.665s] writing manifest file '../../build/zeus_vision/zeus_vision.egg-info/SOURCES.txt'
+[0.665s] running build
+[0.665s] running build_py
+[0.666s] copying zeus_vision/block_detect_second.py -> /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision
+[0.666s] copying zeus_vision/block_detect_.py -> /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision
+[0.666s] copying zeus_vision/block_detect_original.py -> /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision
+[0.666s] running install
+[0.666s] running install_lib
+[0.666s] copying /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision/block_detect_second.py -> /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision
+[0.666s] copying /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision/block_detect_.py -> /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision
+[0.666s] copying /home/pc/soomac_ws/build/zeus_vision/build/lib/zeus_vision/block_detect_original.py -> /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision
+[0.666s] byte-compiling /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision/block_detect_second.py to block_detect_second.cpython-310.pyc
+[0.670s] byte-compiling /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision/block_detect_.py to block_detect_.cpython-310.pyc
+[0.673s] byte-compiling /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision/block_detect_original.py to block_detect_original.cpython-310.pyc
+[0.676s] running install_data
+[0.676s] running install_egg_info
+[0.676s] removing '/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision-0.0.0-py3.10.egg-info' (and everything under it)
+[0.677s] Copying ../../build/zeus_vision/zeus_vision.egg-info to /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus_vision-0.0.0-py3.10.egg-info
+[0.677s] running install_scripts
+[0.686s] Installing detect_ script to /home/pc/soomac_ws/install/zeus_vision/lib/zeus_vision
+[0.686s] Installing position script to /home/pc/soomac_ws/install/zeus_vision/lib/zeus_vision
+[0.686s] writing list of installed files to '/home/pc/soomac_ws/build/zeus_vision/install.log'
+[0.697s] Invoked command in '/home/pc/soomac_ws/src/zeus_vision' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/zeus_vision build --build-base /home/pc/soomac_ws/build/zeus_vision/build install --record /home/pc/soomac_ws/build/zeus_vision/install.log --single-version-externally-managed install_data

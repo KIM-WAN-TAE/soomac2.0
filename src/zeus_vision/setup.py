@@ -25,7 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             'position = zeus_vision.block_position:main',
-            'detect = zeus_vision.block_detect:main'
+            'detect_= zeus_vision.block_detect_:main',
+            'detect_org = zeus_vision.block_detect_original:main'
         ],
     },
 )

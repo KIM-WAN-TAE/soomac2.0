@@ -1,10 +1,10 @@
 #!/usr/bin/python3
-# EASY-INSTALL-ENTRY-SCRIPT: 'zeus-controller','console_scripts','gripper_zeus'
+# EASY-INSTALL-ENTRY-SCRIPT: 'zeus-controller==0.0.0','console_scripts','gripper_zeus'
 import re
 import sys
 
 # for compatibility with easy_install; see #2198
-__requires__ = 'zeus-controller'
+__requires__ = 'zeus-controller==0.0.0'
 
 try:
     from importlib.metadata import distribution
@@ -30,4 +30,4 @@ globals().setdefault('load_entry_point', importlib_load_entry_point)
 
 if __name__ == '__main__':
     sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
-    sys.exit(load_entry_point('zeus-controller', 'console_scripts', 'gripper_zeus')())
+    sys.exit(load_entry_point('zeus-controller==0.0.0', 'console_scripts', 'gripper_zeus')())
