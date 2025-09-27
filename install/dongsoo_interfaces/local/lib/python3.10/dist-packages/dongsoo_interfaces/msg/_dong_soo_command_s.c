@@ -1,0 +1,1 @@
+/home/pc/soomac_ws/build/dongsoo_interfaces/rosidl_generator_py/dongsoo_interfaces/msg/_dong_soo_command_s.c

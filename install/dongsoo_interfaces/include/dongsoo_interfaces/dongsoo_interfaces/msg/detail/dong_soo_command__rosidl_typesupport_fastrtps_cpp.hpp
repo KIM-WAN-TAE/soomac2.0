@@ -1,0 +1,1 @@
+/home/pc/soomac_ws/build/dongsoo_interfaces/rosidl_typesupport_fastrtps_cpp/dongsoo_interfaces/msg/detail/dong_soo_command__rosidl_typesupport_fastrtps_cpp.hpp

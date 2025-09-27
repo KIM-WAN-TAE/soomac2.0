@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/home/pc/soomac_ws/build/dongsoo_interfaces/rosidl_generator_py/dongsoo_interfaces/dongsoo_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so" "TARGETS" "dongsoo_interfaces__rosidl_typesupport_c__pyext" "DESTINATION" "local/lib/python3.10/dist-packages/dongsoo_interfaces")

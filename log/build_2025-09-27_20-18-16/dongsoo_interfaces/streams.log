@@ -1,0 +1,229 @@
+[0.006s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/dongsoo_interfaces -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/dongsoo_interfaces
+[0.059s] -- The C compiler identification is GNU 11.4.0
+[0.096s] -- The CXX compiler identification is GNU 11.4.0
+[0.101s] -- Detecting C compiler ABI info
+[0.148s] -- Detecting C compiler ABI info - done
+[0.153s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.153s] -- Detecting C compile features
+[0.153s] -- Detecting C compile features - done
+[0.155s] -- Detecting CXX compiler ABI info
+[0.210s] -- Detecting CXX compiler ABI info - done
+[0.214s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.214s] -- Detecting CXX compile features
+[0.214s] -- Detecting CXX compile features - done
+[0.216s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.298s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[0.327s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.342s] -- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[0.344s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.348s] -- Found rosidl_adapter: 3.1.7 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.367s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.539s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[0.655s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.816s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.831s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+[0.832s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[0.852s] -- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+[0.852s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.852s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[0.852s] -- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+[0.867s] -- Found PythonExtra: .so  
+[0.893s] -- Configuring done
+[0.908s] -- Generating done
+[0.913s] -- Build files have been written to: /home/pc/soomac_ws/build/dongsoo_interfaces
+[0.917s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /home/pc/soomac_ws/src/dongsoo_interfaces -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/pc/soomac_ws/install/dongsoo_interfaces
+[0.919s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_interfaces -- -j32 -l32
+[0.948s] [  2%] [34m[1mGenerating C code for ROS interfaces[0m
+[0.956s] [  5%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[0.961s] [  5%] Built target ament_cmake_python_symlink_dongsoo_interfaces
+[1.098s] running egg_info
+[1.098s] creating dongsoo_interfaces.egg-info
+[1.098s] writing dongsoo_interfaces.egg-info/PKG-INFO
+[1.099s] writing dependency_links to dongsoo_interfaces.egg-info/dependency_links.txt
+[1.099s] writing top-level names to dongsoo_interfaces.egg-info/top_level.txt
+[1.099s] writing manifest file 'dongsoo_interfaces.egg-info/SOURCES.txt'
+[1.100s] reading manifest file 'dongsoo_interfaces.egg-info/SOURCES.txt'
+[1.100s] writing manifest file 'dongsoo_interfaces.egg-info/SOURCES.txt'
+[1.118s] [  5%] Built target ament_cmake_python_build_dongsoo_interfaces_egg
+[1.170s] [  7%] [32mBuilding C object CMakeFiles/dongsoo_interfaces__rosidl_generator_c.dir/rosidl_generator_c/dongsoo_interfaces/srv/detail/dong_soo_executor__functions.c.o[0m
+[1.170s] [ 10%] [32mBuilding C object CMakeFiles/dongsoo_interfaces__rosidl_generator_c.dir/rosidl_generator_c/dongsoo_interfaces/msg/detail/dong_soo_command__functions.c.o[0m
+[1.171s] [ 10%] Built target dongsoo_interfaces__cpp
+[1.178s] [ 15%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[1.179s] [ 15%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[1.179s] [ 17%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[1.210s] [ 20%] [32m[1mLinking C shared library libdongsoo_interfaces__rosidl_generator_c.so[0m
+[1.238s] [ 20%] Built target dongsoo_interfaces__rosidl_generator_c
+[1.245s] [ 23%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[1.246s] [ 25%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[1.246s] [ 28%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[1.361s] [ 30%] [32mBuilding CXX object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/dongsoo_interfaces/msg/detail/dong_soo_command__type_support.cpp.o[0m
+[1.362s] [ 33%] [32mBuilding CXX object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/dongsoo_interfaces/srv/detail/dong_soo_executor__type_support.cpp.o[0m
+[1.365s] [ 35%] [32mBuilding CXX object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/dongsoo_interfaces/srv/dong_soo_executor__type_support.cpp.o[0m
+[1.365s] [ 38%] [32mBuilding CXX object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/dongsoo_interfaces/msg/dong_soo_command__type_support.cpp.o[0m
+[1.372s] [ 41%] [32mBuilding CXX object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/dongsoo_interfaces/srv/detail/dds_fastrtps/dong_soo_executor__type_support.cpp.o[0m
+[1.373s] [ 43%] [32mBuilding CXX object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/dongsoo_interfaces/msg/detail/dds_fastrtps/dong_soo_command__type_support.cpp.o[0m
+[1.430s] [ 46%] [32mBuilding CXX object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/dongsoo_interfaces/msg/dong_soo_command__type_support.cpp.o[0m
+[1.432s] [ 48%] [32mBuilding CXX object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_c.dir/rosidl_typesupport_c/dongsoo_interfaces/srv/dong_soo_executor__type_support.cpp.o[0m
+[1.444s] [ 51%] [32mBuilding C object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/dongsoo_interfaces/msg/detail/dong_soo_command__type_support.c.o[0m
+[1.446s] [ 53%] [32mBuilding C object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/dongsoo_interfaces/srv/detail/dong_soo_executor__type_support.c.o[0m
+[1.452s] [ 58%] [32mBuilding CXX object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/dongsoo_interfaces/srv/detail/dong_soo_executor__type_support_c.cpp.o[0m
+[1.452s] [ 58%] [32mBuilding CXX object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/dongsoo_interfaces/msg/detail/dong_soo_command__type_support_c.cpp.o[0m
+[1.455s] [ 61%] [32m[1mLinking CXX shared library libdongsoo_interfaces__rosidl_typesupport_c.so[0m
+[1.476s] [ 64%] [32m[1mLinking C shared library libdongsoo_interfaces__rosidl_typesupport_introspection_c.so[0m
+[1.484s] [ 64%] Built target dongsoo_interfaces__rosidl_typesupport_c
+[1.502s] [ 64%] Built target dongsoo_interfaces__rosidl_typesupport_introspection_c
+[1.583s] [ 66%] [32m[1mLinking CXX shared library libdongsoo_interfaces__rosidl_typesupport_introspection_cpp.so[0m
+[1.605s] [ 69%] [32m[1mLinking CXX shared library libdongsoo_interfaces__rosidl_typesupport_fastrtps_cpp.so[0m
+[1.620s] [ 71%] [32m[1mLinking CXX shared library libdongsoo_interfaces__rosidl_typesupport_cpp.so[0m
+[1.641s] [ 71%] Built target dongsoo_interfaces__rosidl_typesupport_introspection_cpp
+[1.653s] [ 71%] Built target dongsoo_interfaces__rosidl_typesupport_cpp
+[1.657s] [ 71%] Built target dongsoo_interfaces__rosidl_typesupport_fastrtps_cpp
+[1.684s] [ 74%] [32m[1mLinking CXX shared library libdongsoo_interfaces__rosidl_typesupport_fastrtps_c.so[0m
+[1.731s] [ 74%] Built target dongsoo_interfaces__rosidl_typesupport_fastrtps_c
+[1.747s] [ 74%] Built target dongsoo_interfaces
+[1.763s] [ 76%] [34m[1mGenerating Python code for ROS interfaces[0m
+[2.049s] [ 76%] Built target dongsoo_interfaces__py
+[2.062s] [ 79%] [32mBuilding C object CMakeFiles/dongsoo_interfaces__rosidl_generator_py.dir/rosidl_generator_py/dongsoo_interfaces/srv/_dong_soo_executor_s.c.o[0m
+[2.062s] [ 82%] [32mBuilding C object CMakeFiles/dongsoo_interfaces__rosidl_generator_py.dir/rosidl_generator_py/dongsoo_interfaces/msg/_dong_soo_command_s.c.o[0m
+[2.133s] [ 84%] [32m[1mLinking C shared library rosidl_generator_py/dongsoo_interfaces/libdongsoo_interfaces__rosidl_generator_py.so[0m
+[2.164s] [ 84%] Built target dongsoo_interfaces__rosidl_generator_py
+[2.179s] [ 87%] [32mBuilding C object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/dongsoo_interfaces/_dongsoo_interfaces_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[2.179s] [ 89%] [32mBuilding C object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/dongsoo_interfaces/_dongsoo_interfaces_s.ep.rosidl_typesupport_c.c.o[0m
+[2.181s] [ 92%] [32mBuilding C object CMakeFiles/dongsoo_interfaces__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/dongsoo_interfaces/_dongsoo_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[2.242s] [ 94%] [32m[1mLinking C shared library rosidl_generator_py/dongsoo_interfaces/dongsoo_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so[0m
+[2.244s] [ 97%] [32m[1mLinking C shared library rosidl_generator_py/dongsoo_interfaces/dongsoo_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so[0m
+[2.249s] [100%] [32m[1mLinking C shared library rosidl_generator_py/dongsoo_interfaces/dongsoo_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so[0m
+[2.267s] [100%] Built target dongsoo_interfaces__rosidl_typesupport_c__pyext
+[2.268s] [100%] Built target dongsoo_interfaces__rosidl_typesupport_introspection_c__pyext
+[2.270s] [100%] Built target dongsoo_interfaces__rosidl_typesupport_fastrtps_c__pyext
+[2.278s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_interfaces -- -j32 -l32
+[2.284s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_interfaces
+[2.290s] -- Install configuration: ""
+[2.290s] -- Execute custom install script
+[2.290s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/ament_index/resource_index/rosidl_interfaces/dongsoo_interfaces
+[2.296s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__functions.h
+[2.301s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__struct.h
+[2.306s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__type_support.h
+[2.313s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/dong_soo_command.h
+[2.318s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/rosidl_generator_c__visibility_control.h
+[2.324s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__functions.h
+[2.330s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__struct.h
+[2.336s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__type_support.h
+[2.341s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/dong_soo_executor.h
+[2.347s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/environment/library_path.sh
+[2.352s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/environment/library_path.dsv
+[2.358s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__rosidl_typesupport_fastrtps_c.h
+[2.363s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[2.369s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__rosidl_typesupport_fastrtps_c.h
+[2.374s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__rosidl_typesupport_introspection_c.h
+[2.380s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[2.386s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__rosidl_typesupport_introspection_c.h
+[2.391s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__builder.hpp
+[2.396s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__struct.hpp
+[2.401s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__traits.hpp
+[2.406s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__type_support.hpp
+[2.412s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/dong_soo_command.hpp
+[2.418s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp
+[2.424s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__builder.hpp
+[2.430s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__struct.hpp
+[2.436s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__traits.hpp
+[2.442s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__type_support.hpp
+[2.448s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/dong_soo_executor.hpp
+[2.454s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__rosidl_typesupport_fastrtps_cpp.hpp
+[2.460s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[2.466s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__rosidl_typesupport_fastrtps_cpp.hpp
+[2.471s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/msg/detail/dong_soo_command__rosidl_typesupport_introspection_cpp.hpp
+[2.476s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/include/dongsoo_interfaces/dongsoo_interfaces/srv/detail/dong_soo_executor__rosidl_typesupport_introspection_cpp.hpp
+[2.481s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/environment/pythonpath.sh
+[2.487s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/environment/pythonpath.dsv
+[2.491s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces-0.0.0-py3.10.egg-info/PKG-INFO
+[2.495s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces-0.0.0-py3.10.egg-info/SOURCES.txt
+[2.502s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces-0.0.0-py3.10.egg-info/dependency_links.txt
+[2.507s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces-0.0.0-py3.10.egg-info/top_level.txt
+[2.512s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/__init__.py
+[2.519s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/_dongsoo_interfaces_s.ep.rosidl_typesupport_c.c
+[2.524s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/_dongsoo_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+[2.531s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/_dongsoo_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+[2.536s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/dongsoo_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[2.540s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/dongsoo_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[2.547s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/dongsoo_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[2.551s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/libdongsoo_interfaces__rosidl_generator_py.so
+[2.557s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/msg/__init__.py
+[2.563s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/msg/_dong_soo_command.py
+[2.567s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/msg/_dong_soo_command_s.c
+[2.573s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/srv/__init__.py
+[2.577s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/srv/_dong_soo_executor.py
+[2.582s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/srv/_dong_soo_executor_s.c
+[2.588s] -- Up-to-date symlink: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/dongsoo_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[2.588s] -- Up-to-date symlink: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/dongsoo_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[2.589s] -- Up-to-date symlink: /home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/dongsoo_interfaces_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[2.589s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/srv/DongSooExecutor.idl
+[2.594s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/msg/DongSooCommand.idl
+[2.600s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/srv/DongSooExecutor.srv
+[2.605s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/srv/DongSooExecutor_Request.msg
+[2.609s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/srv/DongSooExecutor_Response.msg
+[2.615s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/msg/DongSooCommand.msg
+[2.621s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/ament_index/resource_index/package_run_dependencies/dongsoo_interfaces
+[2.627s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/ament_index/resource_index/parent_prefix_path/dongsoo_interfaces
+[2.631s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/environment/ament_prefix_path.sh
+[2.636s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/environment/ament_prefix_path.dsv
+[2.641s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/environment/path.sh
+[2.646s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/environment/path.dsv
+[2.652s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/local_setup.bash
+[2.658s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/local_setup.sh
+[2.664s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/local_setup.zsh
+[2.669s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/local_setup.dsv
+[2.674s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.dsv
+[2.679s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/ament_index/resource_index/packages/dongsoo_interfaces
+[2.684s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/rosidl_cmake-extras.cmake
+[2.690s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake
+[2.696s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/ament_cmake_export_libraries-extras.cmake
+[2.701s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/ament_cmake_export_targets-extras.cmake
+[2.706s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[2.710s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake
+[2.716s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[2.722s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/dongsoo_interfacesConfig.cmake
+[2.728s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/dongsoo_interfacesConfig-version.cmake
+[2.733s] -- Symlinking: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/package.xml
+[2.738s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_generator_c.so
+[2.738s] -- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_generator_c.so" to ""
+[2.738s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_fastrtps_c.so
+[2.739s] -- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_fastrtps_c.so" to ""
+[2.739s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_introspection_c.so
+[2.739s] -- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_introspection_c.so" to ""
+[2.739s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_c.so
+[2.739s] -- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_c.so" to ""
+[2.739s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_fastrtps_cpp.so
+[2.739s] -- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_fastrtps_cpp.so" to ""
+[2.739s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_introspection_cpp.so
+[2.739s] -- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_introspection_cpp.so" to ""
+[2.739s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_cpp.so
+[2.739s] -- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_typesupport_cpp.so" to ""
+[2.762s] Listing '/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces'...
+[2.762s] Compiling '/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/__init__.py'...
+[2.762s] Listing '/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/msg'...
+[2.763s] Compiling '/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/msg/__init__.py'...
+[2.763s] Compiling '/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/msg/_dong_soo_command.py'...
+[2.763s] Listing '/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/srv'...
+[2.763s] Compiling '/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/srv/__init__.py'...
+[2.763s] Compiling '/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages/dongsoo_interfaces/srv/_dong_soo_executor.py'...
+[2.765s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_generator_py.so
+[2.765s] -- Set runtime path of "/home/pc/soomac_ws/install/dongsoo_interfaces/lib/libdongsoo_interfaces__rosidl_generator_py.so" to ""
+[2.765s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/export_dongsoo_interfaces__rosidl_generator_cExport.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/export_dongsoo_interfaces__rosidl_generator_cExport-noconfig.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/export_dongsoo_interfaces__rosidl_typesupport_fastrtps_cExport.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/export_dongsoo_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/dongsoo_interfaces__rosidl_typesupport_introspection_cExport.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/dongsoo_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/dongsoo_interfaces__rosidl_typesupport_cExport.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/dongsoo_interfaces__rosidl_typesupport_cExport-noconfig.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/export_dongsoo_interfaces__rosidl_generator_cppExport.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/export_dongsoo_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/export_dongsoo_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/dongsoo_interfaces__rosidl_typesupport_introspection_cppExport.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/dongsoo_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/dongsoo_interfaces__rosidl_typesupport_cppExport.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/dongsoo_interfaces__rosidl_typesupport_cppExport-noconfig.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/export_dongsoo_interfaces__rosidl_generator_pyExport.cmake
+[2.766s] -- Installing: /home/pc/soomac_ws/install/dongsoo_interfaces/share/dongsoo_interfaces/cmake/export_dongsoo_interfaces__rosidl_generator_pyExport-noconfig.cmake
+[2.768s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/pc/soomac_ws/build/dongsoo_interfaces

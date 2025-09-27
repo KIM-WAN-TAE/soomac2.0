@@ -1,0 +1,1 @@
+/home/pc/soomac_ws/build/dongsoo_interfaces/rosidl_generator_py/dongsoo_interfaces/_dongsoo_interfaces_s.ep.rosidl_typesupport_introspection_c.c

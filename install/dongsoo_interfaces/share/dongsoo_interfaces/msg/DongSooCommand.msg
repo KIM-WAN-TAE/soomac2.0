@@ -1,0 +1,1 @@
+/home/pc/soomac_ws/src/dongsoo_interfaces/msg/DongSooCommand.msg

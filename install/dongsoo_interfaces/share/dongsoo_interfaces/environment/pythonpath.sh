@@ -1,0 +1,1 @@
+/home/pc/soomac_ws/build/dongsoo_interfaces/ament_cmake_environment_hooks/pythonpath.sh

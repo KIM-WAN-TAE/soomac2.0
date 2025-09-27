@@ -1,0 +1,1 @@
+/home/pc/soomac_ws/build/dongsoo_interfaces/rosidl_typesupport_introspection_c/dongsoo_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h

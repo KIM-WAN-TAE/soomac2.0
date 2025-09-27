@@ -1,0 +1,1 @@
+/home/pc/soomac_ws/build/dongsoo_interfaces/ament_cmake_core/dongsoo_interfacesConfig-version.cmake

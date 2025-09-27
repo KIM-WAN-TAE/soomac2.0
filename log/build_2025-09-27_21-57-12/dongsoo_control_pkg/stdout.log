@@ -1,0 +1,21 @@
+running develop
+running egg_info
+creating dongsoo_control_pkg.egg-info
+writing dongsoo_control_pkg.egg-info/PKG-INFO
+writing dependency_links to dongsoo_control_pkg.egg-info/dependency_links.txt
+writing entry points to dongsoo_control_pkg.egg-info/entry_points.txt
+writing requirements to dongsoo_control_pkg.egg-info/requires.txt
+writing top-level names to dongsoo_control_pkg.egg-info/top_level.txt
+writing manifest file 'dongsoo_control_pkg.egg-info/SOURCES.txt'
+reading manifest file 'dongsoo_control_pkg.egg-info/SOURCES.txt'
+writing manifest file 'dongsoo_control_pkg.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/pc/soomac_ws/install/dongsoo_control_pkg/lib/python3.10/site-packages/dongsoo-control-pkg.egg-link (link to .)
+
+Installed /home/pc/soomac_ws/build/dongsoo_control_pkg
+running symlink_data
+creating /home/pc/soomac_ws/install/dongsoo_control_pkg/share/ament_index
+creating /home/pc/soomac_ws/install/dongsoo_control_pkg/share/ament_index/resource_index
+creating /home/pc/soomac_ws/install/dongsoo_control_pkg/share/ament_index/resource_index/packages
+symbolically linking /home/pc/soomac_ws/build/dongsoo_control_pkg/resource/dongsoo_control_pkg -> /home/pc/soomac_ws/install/dongsoo_control_pkg/share/ament_index/resource_index/packages
+symbolically linking /home/pc/soomac_ws/build/dongsoo_control_pkg/package.xml -> /home/pc/soomac_ws/install/dongsoo_control_pkg/share/dongsoo_control_pkg

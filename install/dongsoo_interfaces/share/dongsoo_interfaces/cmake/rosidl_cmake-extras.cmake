@@ -1,0 +1,1 @@
+/home/pc/soomac_ws/build/dongsoo_interfaces/rosidl_cmake/rosidl_cmake-extras.cmake

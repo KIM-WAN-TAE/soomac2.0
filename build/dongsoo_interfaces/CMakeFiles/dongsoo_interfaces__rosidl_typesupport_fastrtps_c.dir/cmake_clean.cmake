@@ -1,0 +1,17 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/dongsoo_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/dongsoo_interfaces/msg/detail/dong_soo_command__type_support_c.cpp.o"
+  "CMakeFiles/dongsoo_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/dongsoo_interfaces/msg/detail/dong_soo_command__type_support_c.cpp.o.d"
+  "CMakeFiles/dongsoo_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/dongsoo_interfaces/srv/detail/dong_soo_executor__type_support_c.cpp.o"
+  "CMakeFiles/dongsoo_interfaces__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/dongsoo_interfaces/srv/detail/dong_soo_executor__type_support_c.cpp.o.d"
+  "libdongsoo_interfaces__rosidl_typesupport_fastrtps_c.pdb"
+  "libdongsoo_interfaces__rosidl_typesupport_fastrtps_c.so"
+  "rosidl_typesupport_fastrtps_c/dongsoo_interfaces/msg/detail/dong_soo_command__rosidl_typesupport_fastrtps_c.h"
+  "rosidl_typesupport_fastrtps_c/dongsoo_interfaces/msg/detail/dong_soo_command__type_support_c.cpp"
+  "rosidl_typesupport_fastrtps_c/dongsoo_interfaces/srv/detail/dong_soo_executor__rosidl_typesupport_fastrtps_c.h"
+  "rosidl_typesupport_fastrtps_c/dongsoo_interfaces/srv/detail/dong_soo_executor__type_support_c.cpp"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/dongsoo_interfaces__rosidl_typesupport_fastrtps_c.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

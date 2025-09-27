@@ -1,0 +1,1 @@
+/home/pc/soomac_ws/build/dongsoo_description/ament_cmake_environment_hooks/local_setup.zsh
