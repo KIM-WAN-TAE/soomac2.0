@@ -70,7 +70,7 @@ BLOCK_WID_M = 0.025
 
 # 선택 규칙 파라미터
 SAME_LAYER_EPS_M   = 0.003      # 같은 층(z) 판정 오차
-WIDTH_THRESHOLD_MM = 25.0       # 폭(mm) 기준: 작으면 length면으로 간주
+WIDTH_THRESHOLD_MM = 24.0       # 폭(mm) 기준: 작으면 length면으로 간주
 
 # =========================
 # 유틸
@@ -592,13 +592,8 @@ def main(args=None):
             # -------------------------
             chosen = None
 
-            if mode == 'block':
-                # -------------------------
-                # 1) 후보 생성은 위에서 완료됨 (candidates 리스트)
-                #    block0 규칙으로 선별:
-                #    (a) length_area 제외 → (b) 최소 z 층(± SAME_LAYER_EPS_M)
-                #    → (c) (x,y) 거리 최소 → 동률이면 z 더 작음 → 그래도 동률이면 |x|+|y| 최소
-                # -------------------------
+            if mode == 'block0':
+                # 1) length_area 제외
                 valid = []
                 for c in candidates:
                     if c.get('origin') is None:
@@ -607,38 +602,28 @@ def main(args=None):
                         continue
                     valid.append(c)
 
-                chosen = None
+                # 2) 가장 낮은 z의 층 선택(± SAME_LAYER_EPS_M)
                 if valid:
                     min_z_val = min([float(v['origin'][2]) for v in valid])
-                    same_layer = [v for v in valid
-                                if abs(float(v['origin'][2]) - min_z_val) <= SAME_LAYER_EPS_M]
+                    same_layer = [v for v in valid if abs(float(v['origin'][2]) - min_z_val) <= SAME_LAYER_EPS_M]
 
-                    def _xy_norm(x, y):
-                        return math.sqrt(x*x + y*y)
-
-                    def key_block(v):
+                    # 3) (x,y) 거리 최소 → 동률이면 z 더 작은 것 → 그래도 동률이면 |x|+|y| 작은 것
+                    def key_block0(v):
                         ox, oy, oz = map(float, v['origin'])
                         dxy = _xy_norm(ox, oy)
                         l1  = abs(ox) + abs(oy)
                         return (dxy, oz, l1)
+                    chosen = min(same_layer, key=key_block0) if same_layer else None
 
-                    chosen = min(same_layer, key=key_block) if same_layer else None
-
-                # -------------------------
-                # 2) 퍼블리시: block1 방식(RPY 포함) + 폴백
-                #    - 축 추정 성공: 추정 회전 사용
-                #    - 축 추정 실패: R=I로 폴백(필요 시 z=0으로 바꾸려면 final_matrix[:3,3] 마지막 항만 0.0으로 수정)
-                #    - 안정화 게이트: 센터 점프, Δθ 적용
-                # -------------------------
-                mpl_raw_pose = final_pose = None
-                mpl_inliers = None
-
+                # --- block0: R=I, t=[x_mm, y_mm, 0] 로 1회 발행 ---
                 if chosen is not None:
-                    x_axis, y_axis, z_axis = chosen['axes']
-                    origin_m = chosen['origin']          # [m]
-                    cx, cy = chosen['cx'], chosen['cy']  # 이미지 중심(픽셀)
+                    x_axis, y_axis, z_axis = chosen['axes']   # (미사용)
+                    origin_m = chosen['origin']
+                    cx, cy = chosen['cx'], chosen['cy']
 
-                    # 화면 표시
+                    # block1 선호 라벨로 저장
+                    node.cls = chosen['label']
+
                     final_px = project_point_to_pixel(origin_m, node.intr)
                     draw_cross(overlay, final_px, color=(0,0,255), size=7, thickness=2)
                     if final_px is not None:
@@ -649,18 +634,103 @@ def main(args=None):
                                     (max(0, final_px[0]-60), min(COLOR_H-5, final_px[1]+18)),
                                     FONT, 0.5, (0,0,255), 1, cv2.LINE_AA)
 
-                    # ------ 회전 추정 / 폴백 ------
-                    if all(v is not None for v in [x_axis, y_axis, z_axis]):
+                    x_mm = float(origin_m[0] * 1000.0)
+                    y_mm = float(origin_m[1] * 1000.0)
+                    final_matrix = np.eye(4, dtype=np.float64)
+                    final_matrix[:3, :3] = np.eye(3, dtype=np.float64)
+                    final_matrix[:3, 3]  = [x_mm, y_mm, 0.0]
+
+                    # 안정화(센터 점프만)
+                    if node.last_center is not None:
+                        center_jump = math.hypot(cx - node.last_center[0], cy - node.last_center[1])
+                    else:
+                        center_jump = 0.0
+                    same_target = (center_jump <= STAB_CENTER_JUMP_PX)
+                    node.stable_count = node.stable_count + 1 if same_target else 0
+                    node.cooldown = max(0, node.cooldown - 1)
+                    node.last_center = (cx, cy)
+
+                    if node.detect_signal != "":
+                        # 4x4 행렬 퍼블리시
+                        msg = Float32MultiArray()
+                        rows, cols = 4, 4
+                        msg.layout.dim.append(MultiArrayDimension(label='rows', size=rows, stride=cols))
+                        msg.layout.dim.append(MultiArrayDimension(label='cols', size=cols, stride=1))
+                        msg.layout.data_offset = 0
+                        msg.data = final_matrix.flatten().astype(np.float32).tolist()
+                        node.publisher_.publish(msg)
+
+                        # 블록 라벨 알림
+                        node.publish_block(chosen['label'])
+
+                        node.cooldown = PUBLISH_COOLDOWN_FRAMES
+                        node.stable_count = 0
+                        node.detect_signal = ""  # 1회 발행 후 게이트 닫기
+
+                    cv2.putText(
+                        overlay,
+                        f"BLOCK0 XY: {origin_m[0]:.3f},{origin_m[1]:.3f} m | jump:{center_jump:.1f}px | stab:{node.stable_count} | cd:{node.cooldown}",
+                        (max(0, cx-220), max(20, cy-20)),
+                        FONT, 0.5, (255,255,255), 4, cv2.LINE_AA
+                    )
+                    cv2.putText(
+                        overlay,
+                        f"BLOCK0 XY: {origin_m[0]:.3f},{origin_m[1]:.3f} m | jump:{center_jump:.1f}px | stab:{node.stable_count} | cd:{node.cooldown}",
+                        (max(0, cx-220), max(20, cy-20)),
+                        FONT, 0.5, (0,0,0), 2, cv2.LINE_AA
+                    )
+
+                # block0에서는 자세 추정/Matplotlib 갱신 없음
+                mpl_raw_pose = None
+                final_pose   = None
+                mpl_inliers  = None
+
+            elif mode == 'block1':
+                # 선호 라벨 우선 후보 선택 → 없으면 중앙가까움 기준 백업
+                preferred = node.cls
+                chosen = select_candidate_block1(candidates, preferred_label=preferred, img_w=COLOR_W, img_h=COLOR_H)
+                if chosen is None:
+                    pool = [c for c in candidates if c.get('origin') is not None]
+                    if pool:
+                        cx0 = (COLOR_W - 1) * 0.5
+                        cy0 = (COLOR_H - 1) * 0.5
+                        def key(v):
+                            cx, cy = v.get('cx'), v.get('cy')
+                            center_dist = float('inf') if (cx is None or cy is None) else math.hypot(cx - cx0, cy - cy0)
+                            ox, oy, oz = map(float, v['origin'])
+                            l1_xy = abs(ox) + abs(oy)
+                            return (center_dist, oz, l1_xy)
+                        chosen = min(pool, key=key)
+
+                mpl_raw_pose = final_pose = None
+                mpl_inliers = None
+
+                if chosen is not None:
+                    x_axis, y_axis, z_axis = chosen['axes']
+                    origin_m = chosen['origin']
+                    cx, cy = chosen['cx'], chosen['cy']
+
+                    final_px = project_point_to_pixel(origin_m, node.intr)
+                    draw_cross(overlay, final_px, color=(0,0,255), size=7, thickness=2)
+                    if final_px is not None:
+                        cv2.putText(overlay, f"CHOSEN z={origin_m[2]:.3f}m src={chosen['src']}",
+                                    (max(0, final_px[0]-60), min(COLOR_H-5, final_px[1]+18)),
+                                    FONT, 0.5, (0,0,0), 3, cv2.LINE_AA)
+                        cv2.putText(overlay, f"CHOSEN z={origin_m[2]:.3f}m src={chosen['src']}",
+                                    (max(0, final_px[0]-60), min(COLOR_H-5, final_px[1]+18)),
+                                    FONT, 0.5, (0,0,255), 1, cv2.LINE_AA)
+
+                    if all(v is not None for v in [x_axis, y_axis, z_axis, origin_m]):
                         raw_rot_matrix = np.stack([x_axis, y_axis, z_axis], axis=1)
                         mpl_raw_pose = (origin_m, raw_rot_matrix, None, None)
                         mpl_inliers  = chosen['inliers']
 
-                        # ZYX(yaw,pitch,roll) → dead-zone 적용
                         raw_quat = SciRot.from_matrix(raw_rot_matrix).as_quat()
                         raw_rotation = SciRot.from_quat(raw_quat)
                         ypr = raw_rotation.as_euler('zyx', degrees=True)
                         yaw, pitch, roll = float(ypr[0]), float(ypr[1]), float(ypr[2])
 
+                        # dead-zone 적용
                         is_roll_high  = abs(roll)  >= DEAD_ZONE_DEG
                         is_pitch_high = abs(pitch) >= DEAD_ZONE_DEG
                         if is_roll_high and is_pitch_high:
@@ -674,93 +744,84 @@ def main(args=None):
                         final_rotation   = SciRot.from_euler('zyx', [yaw, pitch, roll], degrees=True)
                         final_rot_matrix = final_rotation.as_matrix()
                         final_quat       = final_rotation.as_quat()
-                    else:
-                        # 폴백: 회전 불가 → 항등 회전
-                        final_rot_matrix = np.eye(3, dtype=np.float64)
-                        final_quat       = SciRot.from_matrix(final_rot_matrix).as_quat()
-                        final_rpy        = (0.0, 0.0, 0.0)
 
-                    # ------ 4x4 T (mm 변환) ------
-                    origin_mm = origin_m * 1000.0
-                    final_matrix = np.eye(4, dtype=np.float64)
-                    final_matrix[:3, :3] = final_rot_matrix
-                    final_matrix[:3, 3]  = origin_mm   # z를 0으로 고정하려면 여기서 origin_mm[2]를 0.0으로 변경
+                        origin_mm = origin_m * 1000.0
+                        final_matrix = np.eye(4, dtype=np.float64)
+                        final_matrix[:3, :3] = final_rot_matrix
+                        final_matrix[:3, 3]  = origin_mm
 
-                    # ------ 안정화 게이트 ------
-                    if node.last_center is not None:
-                        dx = cx - node.last_center[0]
-                        dy = cy - node.last_center[1]
-                        center_jump = (dx*dx + dy*dy) ** 0.5
-                    else:
-                        center_jump = 0.0
-                    same_target = (center_jump <= STAB_CENTER_JUMP_PX)
-
-                    def quat_delta_deg(q1, q2):
-                        if q1 is None or q2 is None:
-                            return np.inf
-                        dot = float(np.dot(q1, q2))
-                        if dot < 0.0: dot = -dot
-                        dot = np.clip(dot, -1.0, 1.0)
-                        return 2.0 * np.degrees(np.arccos(dot))
-
-                    dtheta = quat_delta_deg(node.last_quat, final_quat)
-
-                    if not same_target:
-                        node.stable_count = 0
-                        node.cooldown = max(0, node.cooldown - 1)
-                    else:
-                        if dtheta < STAB_ANGLE_DEG:
-                            node.stable_count += 1
+                        # 안정화(센터+자세)
+                        if node.last_center is not None:
+                            dx = cx - node.last_center[0]
+                            dy = cy - node.last_center[1]
+                            center_jump = (dx*dx + dy*dy) ** 0.5
                         else:
+                            center_jump = 0.0
+                        same_target = (center_jump <= STAB_CENTER_JUMP_PX)
+
+                        def quat_delta_deg(q1, q2):
+                            if q1 is None or q2 is None:
+                                return np.inf
+                            dot = float(np.dot(q1, q2))
+                            if dot < 0.0: dot = -dot
+                            dot = np.clip(dot, -1.0, 1.0)
+                            return 2.0 * np.degrees(np.arccos(dot))
+
+                        dtheta = quat_delta_deg(node.last_quat, final_quat)
+
+                        if not same_target:
                             node.stable_count = 0
-                        node.cooldown = max(0, node.cooldown - 1)
+                            node.cooldown = max(0, node.cooldown - 1)
+                        else:
+                            if dtheta < STAB_ANGLE_DEG:
+                                node.stable_count += 1
+                            else:
+                                node.stable_count = 0
+                            node.cooldown = max(0, node.cooldown - 1)
 
-                    node.last_quat = final_quat
-                    node.last_center = (cx, cy)
+                        node.last_quat = final_quat
+                        node.last_center = (cx, cy)
 
-                    # ------ 퍼블리시 (게이트: node.detect_signal 비어있지 않을 때 1회 발행) ------
-                    if node.detect_signal != "":
-                        # 4x4 행렬
-                        msg = Float32MultiArray()
-                        rows, cols = 4, 4
-                        msg.layout.dim.append(MultiArrayDimension(label='rows', size=rows, stride=cols))
-                        msg.layout.dim.append(MultiArrayDimension(label='cols', size=cols, stride=1))
-                        msg.layout.data_offset = 0
-                        msg.data = final_matrix.flatten().astype(np.float32).tolist()
-                        node.publisher_.publish(msg)
+                        if node.detect_signal != "":
+                            # 4x4 행렬 퍼블리시
+                            msg = Float32MultiArray()
+                            rows, cols = 4, 4
+                            msg.layout.dim.append(MultiArrayDimension(label='rows', size=rows, stride=cols))
+                            msg.layout.dim.append(MultiArrayDimension(label='cols', size=cols, stride=1))
+                            msg.layout.data_offset = 0
+                            msg.data = final_matrix.flatten().astype(np.float32).tolist()
+                            node.publisher_.publish(msg)
 
-                        # RPY
-                        msg2 = Float32MultiArray()
-                        roll, pitch, yaw = final_rpy
-                        msg2.data = [roll, pitch, yaw]
-                        node.pose_pubisher.publish(msg2)
-                        node.get_logger().info(f'Published Pose: {msg2.data}')
+                            # RPY 퍼블리시
+                            msg2 = Float32MultiArray()
+                            msg2.data = [roll, pitch, yaw]
+                            node.pose_pubisher.publish(msg2)
+                            node.get_logger().info(f'Published Pose: {msg2.data}')
 
-                        # 라벨
-                        node.publish_block(chosen['label'])
+                            node.get_logger().info(
+                                f"[STABLE PUBLISH] z={origin_m[2]:.3f} m | Δθ={dtheta:.3f}° | R:{roll:.1f} P:{pitch:.1f} Y:{yaw:.1f}"
+                            )
+                            node.publish_block(chosen['label'])
+                            node.cooldown = PUBLISH_COOLDOWN_FRAMES
+                            node.stable_count = 0
+                            node.detect_signal = ""
 
-                        node.cooldown = PUBLISH_COOLDOWN_FRAMES
-                        node.stable_count = 0
-                        node.detect_signal = ""  # 1회 발행 후 게이트 닫기
+                        cv2.putText(
+                            overlay,
+                            f"NEAREST  R:{roll:.1f} P:{pitch:.1f} Y:{yaw:.1f} | dθ:{(dtheta if np.isfinite(dtheta) else 999):.3f}° "
+                            f"| stab:{node.stable_count}/{STAB_MIN_FRAMES} | cd:{node.cooldown}",
+                            (max(0, cx-180), max(20, cy-20)),
+                            FONT, 0.55, (255,255,255), 4, cv2.LINE_AA
+                        )
+                        cv2.putText(
+                            overlay,
+                            f"NEAREST  R:{roll:.1f} P:{pitch:.1f} Y:{yaw:.1f} | dθ:{(dtheta if np.isfinite(dtheta) else 999):.3f}° "
+                            f"| stab:{node.stable_count}/{STAB_MIN_FRAMES} | cd:{node.cooldown}",
+                            (max(0, cx-180), max(20, cy-20)),
+                            FONT, 0.55, (0,0,0), 2, cv2.LINE_AA
+                        )
 
-                    # ------ OSD ------
-                    cv2.putText(
-                        overlay,
-                        f"BLOCK  R:{final_rpy[0]:.1f} P:{final_rpy[1]:.1f} Y:{final_rpy[2]:.1f} | dθ:{(dtheta if np.isfinite(dtheta) else 999):.3f}° "
-                        f"| jump:{center_jump:.1f}px | stab:{node.stable_count}/{STAB_MIN_FRAMES} | cd:{node.cooldown}",
-                        (max(0, cx-220), max(20, cy-20)),
-                        FONT, 0.55, (255,255,255), 4, cv2.LINE_AA
-                    )
-                    cv2.putText(
-                        overlay,
-                        f"BLOCK  R:{final_rpy[0]:.1f} P:{final_rpy[1]:.1f} Y:{final_rpy[2]:.1f} | dθ:{(dtheta if np.isfinite(dtheta) else 999):.3f}° "
-                        f"| jump:{center_jump:.1f}px | stab:{node.stable_count}/{STAB_MIN_FRAMES} | cd:{node.cooldown}",
-                        (max(0, cx-220), max(20, cy-20)),
-                        FONT, 0.55, (0,0,0), 2, cv2.LINE_AA
-                    )
-
-                    final_pose = (origin_m, final_rot_matrix, final_rpy, final_quat)
-
+                        final_pose = (origin_m, final_rot_matrix, final_rpy, final_quat)
 
             else:
                 # 기본 모드: 카메라 원점에서 가장 가까운 블록 표시만
