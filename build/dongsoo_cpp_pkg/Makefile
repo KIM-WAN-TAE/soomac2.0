@@ -210,6 +210,19 @@ motor_connect/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_connect.dir/build.make CMakeFiles/motor_connect.dir/build
 .PHONY : motor_connect/fast
 
+#=============================================================================
+# Target rules for targets named test_motor_connect
+
+# Build rule for target.
+test_motor_connect: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_motor_connect
+.PHONY : test_motor_connect
+
+# fast build rule for target.
+test_motor_connect/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_motor_connect.dir/build.make CMakeFiles/test_motor_connect.dir/build
+.PHONY : test_motor_connect/fast
+
 src/motor_connect.o: src/motor_connect.cpp.o
 .PHONY : src/motor_connect.o
 
@@ -234,6 +247,30 @@ src/motor_connect.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/motor_connect.dir/build.make CMakeFiles/motor_connect.dir/src/motor_connect.cpp.s
 .PHONY : src/motor_connect.cpp.s
 
+src/test_motor_connect.o: src/test_motor_connect.cpp.o
+.PHONY : src/test_motor_connect.o
+
+# target to build an object file
+src/test_motor_connect.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_motor_connect.dir/build.make CMakeFiles/test_motor_connect.dir/src/test_motor_connect.cpp.o
+.PHONY : src/test_motor_connect.cpp.o
+
+src/test_motor_connect.i: src/test_motor_connect.cpp.i
+.PHONY : src/test_motor_connect.i
+
+# target to preprocess a source file
+src/test_motor_connect.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_motor_connect.dir/build.make CMakeFiles/test_motor_connect.dir/src/test_motor_connect.cpp.i
+.PHONY : src/test_motor_connect.cpp.i
+
+src/test_motor_connect.s: src/test_motor_connect.cpp.s
+.PHONY : src/test_motor_connect.s
+
+# target to generate assembly for a file
+src/test_motor_connect.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_motor_connect.dir/build.make CMakeFiles/test_motor_connect.dir/src/test_motor_connect.cpp.s
+.PHONY : src/test_motor_connect.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -250,9 +287,13 @@ help:
 	@echo "... dongsoo_cpp_pkg_uninstall"
 	@echo "... uninstall"
 	@echo "... motor_connect"
+	@echo "... test_motor_connect"
 	@echo "... src/motor_connect.o"
 	@echo "... src/motor_connect.i"
 	@echo "... src/motor_connect.s"
+	@echo "... src/test_motor_connect.o"
+	@echo "... src/test_motor_connect.i"
+	@echo "... src/test_motor_connect.s"
 .PHONY : help
 
 

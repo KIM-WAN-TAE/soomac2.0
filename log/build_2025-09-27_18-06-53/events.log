@@ -1,0 +1,111 @@
+[0.000000] (-) TimerEvent: {}
+[0.000133] (-) JobUnselected: {'identifier': 'dongsoo_description'}
+[0.000149] (-) JobUnselected: {'identifier': 'dongsoo_free_mission'}
+[0.000156] (-) JobUnselected: {'identifier': 'dongsoo_interfaces'}
+[0.000162] (-) JobUnselected: {'identifier': 'dongsoo_py_pkg'}
+[0.000167] (-) JobUnselected: {'identifier': 'dongsoo_vision_pkg'}
+[0.000172] (-) JobUnselected: {'identifier': 'finger_test'}
+[0.000179] (dongsoo_cpp_pkg) JobQueued: {'identifier': 'dongsoo_cpp_pkg', 'dependencies': OrderedDict()}
+[0.000328] (dongsoo_cpp_pkg) JobStarted: {'identifier': 'dongsoo_cpp_pkg'}
+[0.004881] (dongsoo_cpp_pkg) JobProgress: {'identifier': 'dongsoo_cpp_pkg', 'progress': 'cmake'}
+[0.005234] (dongsoo_cpp_pkg) JobProgress: {'identifier': 'dongsoo_cpp_pkg', 'progress': 'build'}
+[0.005487] (dongsoo_cpp_pkg) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/pc/soomac_ws/build/dongsoo_cpp_pkg', '--', '-j32', '-l32'], 'cwd': '/home/pc/soomac_ws/build/dongsoo_cpp_pkg', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'pc'), ('LC_TIME', 'ko_KR.UTF-8'), ('XDG_SESSION_TYPE', 'x11'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/pc/soomac_ws/install/dongsoo_interfaces/lib:/home/pc/mg_motor_ws/install/brobot_interfaces/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/home/pc'), ('OLDPWD', '/home/pc'), ('DESKTOP_SESSION', 'ubuntu'), ('NVM_BIN', '/home/pc/.nvm/versions/node/v22.18.0/bin'), ('NVM_INC', '/home/pc/.nvm/versions/node/v22.18.0/include/node'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('LC_MONETARY', 'ko_KR.UTF-8'), ('MANAGERPID', '1872'), ('SYSTEMD_EXEC_PID', '2385'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator23558193cd9818af7fe4d2c2f5bd9d00f'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '7217'), ('NVM_DIR', '/home/pc/.nvm'), ('COLCON_PREFIX_PATH', '/home/pc/teensy_ws/install:/home/pc/cont_ws/install:/home/pc/mg_motor_ws/install:/home/pc/soomac_ws/install'), ('ROS_DISTRO', 'humble'), ('GTK_IM_MODULE', 'ibus'), ('LOGNAME', 'pc'), ('JOURNAL_STREAM', '8:15623'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'pc'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/opt/ros/humble/bin:/home/pc/.nvm/versions/node/v22.18.0/bin:/home/pc/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin'), ('SESSION_MANAGER', 'local/pc:@/tmp/.ICE-unix/2126,unix/pc:/tmp/.ICE-unix/2126'), ('INVOCATION_ID', '32050c5c7ed54cbea0ce71d03c2654c3'), ('XDG_MENU_PREFIX', 'gnome-'), ('LC_ADDRESS', 'ko_KR.UTF-8'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':1'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('IBUS_DISABLE_SNOOPER', '1'), ('LC_TELEPHONE', 'ko_KR.UTF-8'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SSH_AGENT_LAUNCHER', 'gnome-keyring'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('ROS_DOMAIN_ID', '27'), ('AMENT_PREFIX_PATH', '/home/pc/soomac_ws/install/dongsoo_vision_pkg:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/dxl_cpp_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/mg_motor_ws/install/brobot_interfaces:/opt/ros/humble'), ('SHELL', '/bin/bash'), ('LC_NAME', 'ko_KR.UTF-8'), ('TERMINATOR_UUID', 'urn:uuid:aed05a0a-cdec-4c4a-a97d-2f5ec090626c'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('LC_MEASUREMENT', 'ko_KR.UTF-8'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('LC_IDENTIFICATION', 'ko_KR.UTF-8'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/pc/soomac_ws/build/dongsoo_cpp_pkg'), ('LC_ALL', 'en_US.UTF-8'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('NVM_CD_FLAGS', ''), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/pc/soomac_ws/build/dongsoo_vision_pkg:/home/pc/soomac_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages:/home/pc/soomac_ws/build/dongsoo_py_pkg:/home/pc/soomac_ws/install/dongsoo_py_pkg/lib/python3.10/site-packages:/home/pc/soomac_ws/install/dongsoo_interfaces/local/lib/python3.10/dist-packages:/home/pc/cont_ws/build/torque_test_pkg:/home/pc/cont_ws/install/torque_test_pkg/lib/python3.10/site-packages:/home/pc/cont_ws/build/finger_pkg:/home/pc/cont_ws/install/finger_pkg/lib/python3.10/site-packages:/home/pc/cont_ws/build/control_continuum:/home/pc/cont_ws/install/control_continuum/lib/python3.10/site-packages:/home/pc/mg_motor_ws/build/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_test_pkg/lib/python3.10/site-packages:/home/pc/mg_motor_ws/build/mg_motor_test:/home/pc/mg_motor_ws/install/mg_motor_test/lib/python3.10/site-packages:/home/pc/mg_motor_ws/build/homework_pkg:/home/pc/mg_motor_ws/install/homework_pkg/lib/python3.10/site-packages:/home/pc/mg_motor_ws/install/head_moving/lib/python3.10/site-packages:/home/pc/mg_motor_ws/install/brobot_interfaces/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('LC_NUMERIC', 'ko_KR.UTF-8'), ('LC_PAPER', 'ko_KR.UTF-8'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/home/pc/soomac_ws/install/dongsoo_interfaces:/home/pc/soomac_ws/install/dongsoo_description:/home/pc/soomac_ws/install/dongsoo_cpp_pkg:/home/pc/cont_ws/install/dxl_cpp_pkg:/home/pc/mg_motor_ws/install/brobot_interfaces:/home/pc/soomac_ws/install/dongsoo_vision_pkg:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/opt/ros/humble')]), 'shell': False}
+[0.020844] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[0.088944] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Found rclcpp: 16.0.15 (/opt/ros/humble/share/rclcpp/cmake)\n'}
+[0.099961] (-) TimerEvent: {}
+[0.100985] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Found rosidl_generator_c: 3.1.7 (/opt/ros/humble/share/rosidl_generator_c/cmake)\n'}
+[0.101989] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Found rosidl_adapter: 3.1.7 (/opt/ros/humble/share/rosidl_adapter/cmake)\n'}
+[0.104384] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 3.1.7 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)\n'}
+[0.108407] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.113552] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.127519] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)\n'}
+[0.128269] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 6.2.8 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)\n'}
+[0.176657] (dongsoo_cpp_pkg) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[0.197873] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Found dynamixel_sdk: 3.8.4 (/opt/ros/humble/share/dynamixel_sdk/cmake)\n'}
+[0.200107] (-) TimerEvent: {}
+[0.233631] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Configuring done\n'}
+[0.238237] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Generating done\n'}
+[0.240172] (dongsoo_cpp_pkg) StdoutLine: {'line': b'-- Build files have been written to: /home/pc/soomac_ws/build/dongsoo_cpp_pkg\n'}
+[0.254807] (dongsoo_cpp_pkg) StdoutLine: {'line': b'\x1b[35m\x1b[1mConsolidate compiler generated dependencies of target motor_connect\x1b[0m\n'}
+[0.259776] (dongsoo_cpp_pkg) StdoutLine: {'line': b'[ 25%] \x1b[32mBuilding CXX object CMakeFiles/chat_motor_connect.dir/src/chat_motor_connect.cpp.o\x1b[0m\n'}
+[0.264273] (dongsoo_cpp_pkg) StdoutLine: {'line': b'[ 75%] Built target motor_connect\n'}
+[0.300271] (-) TimerEvent: {}
+[0.400570] (-) TimerEvent: {}
+[0.500877] (-) TimerEvent: {}
+[0.601173] (-) TimerEvent: {}
+[0.701483] (-) TimerEvent: {}
+[0.801790] (-) TimerEvent: {}
+[0.902119] (-) TimerEvent: {}
+[1.002441] (-) TimerEvent: {}
+[1.102760] (-) TimerEvent: {}
+[1.203076] (-) TimerEvent: {}
+[1.303503] (-) TimerEvent: {}
+[1.403764] (-) TimerEvent: {}
+[1.503965] (-) TimerEvent: {}
+[1.604122] (-) TimerEvent: {}
+[1.701032] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:\x1b[m\x1b[K In member function \xe2\x80\x98\x1b[01m\x1b[Kvoid GravityArmNode::buildPlanFromCurrent()\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[1.701178] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:336:43:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[Kno matching function for call to \xe2\x80\x98\x1b[01m\x1b[Kmax(double&, float)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[1.701208] (dongsoo_cpp_pkg) StderrLine: {'line': b'  336 |       for(int i=0;i<4;++i) dmax = \x1b[01;31m\x1b[Kstd::max(dmax, std::fabs(wps[k+1][i]-wps[k][i]))\x1b[m\x1b[K;\n'}
+[1.701231] (dongsoo_cpp_pkg) StderrLine: {'line': b'      |                                   \x1b[01;31m\x1b[K~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[1.701255] (dongsoo_cpp_pkg) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/usr/include/c++/11/memory:63\x1b[m\x1b[K,\n'}
+[1.701277] (dongsoo_cpp_pkg) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:3\x1b[m\x1b[K:\n'}
+[1.701299] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/c++/11/bits/stl_algobase.h:254:5:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Ktemplate<class _Tp> constexpr const _Tp& std::max(const _Tp&, const _Tp&)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[1.701380] (dongsoo_cpp_pkg) StderrLine: {'line': b'  254 |     \x1b[01;36m\x1b[Kmax\x1b[m\x1b[K(const _Tp& __a, const _Tp& __b)\n'}
+[1.701400] (dongsoo_cpp_pkg) StderrLine: {'line': b'      |     \x1b[01;36m\x1b[K^~~\x1b[m\x1b[K\n'}
+[1.701419] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/c++/11/bits/stl_algobase.h:254:5:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  template argument deduction/substitution failed:\n'}
+[1.701438] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:336:43:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  deduced conflicting types for parameter \xe2\x80\x98\x1b[01m\x1b[Kconst _Tp\x1b[m\x1b[K\xe2\x80\x99 (\xe2\x80\x98\x1b[01m\x1b[Kdouble\x1b[m\x1b[K\xe2\x80\x99 and \xe2\x80\x98\x1b[01m\x1b[Kfloat\x1b[m\x1b[K\xe2\x80\x99)\n'}
+[1.701459] (dongsoo_cpp_pkg) StderrLine: {'line': b'  336 |       for(int i=0;i<4;++i) dmax = \x1b[01;36m\x1b[Kstd::max(dmax, std::fabs(wps[k+1][i]-wps[k][i]))\x1b[m\x1b[K;\n'}
+[1.701477] (dongsoo_cpp_pkg) StderrLine: {'line': b'      |                                   \x1b[01;36m\x1b[K~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[1.701495] (dongsoo_cpp_pkg) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/usr/include/c++/11/memory:63\x1b[m\x1b[K,\n'}
+[1.701514] (dongsoo_cpp_pkg) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:3\x1b[m\x1b[K:\n'}
+[1.701532] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/c++/11/bits/stl_algobase.h:300:5:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Ktemplate<class _Tp, class _Compare> constexpr const _Tp& std::max(const _Tp&, const _Tp&, _Compare)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[1.701555] (dongsoo_cpp_pkg) StderrLine: {'line': b'  300 |     \x1b[01;36m\x1b[Kmax\x1b[m\x1b[K(const _Tp& __a, const _Tp& __b, _Compare __comp)\n'}
+[1.701574] (dongsoo_cpp_pkg) StderrLine: {'line': b'      |     \x1b[01;36m\x1b[K^~~\x1b[m\x1b[K\n'}
+[1.701593] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/c++/11/bits/stl_algobase.h:300:5:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  template argument deduction/substitution failed:\n'}
+[1.701611] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:336:43:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  deduced conflicting types for parameter \xe2\x80\x98\x1b[01m\x1b[Kconst _Tp\x1b[m\x1b[K\xe2\x80\x99 (\xe2\x80\x98\x1b[01m\x1b[Kdouble\x1b[m\x1b[K\xe2\x80\x99 and \xe2\x80\x98\x1b[01m\x1b[Kfloat\x1b[m\x1b[K\xe2\x80\x99)\n'}
+[1.701629] (dongsoo_cpp_pkg) StderrLine: {'line': b'  336 |       for(int i=0;i<4;++i) dmax = \x1b[01;36m\x1b[Kstd::max(dmax, std::fabs(wps[k+1][i]-wps[k][i]))\x1b[m\x1b[K;\n'}
+[1.701646] (dongsoo_cpp_pkg) StderrLine: {'line': b'      |                                   \x1b[01;36m\x1b[K~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[1.701666] (dongsoo_cpp_pkg) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/usr/include/c++/11/algorithm:62\x1b[m\x1b[K,\n'}
+[1.701684] (dongsoo_cpp_pkg) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:8\x1b[m\x1b[K:\n'}
+[1.701705] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/c++/11/bits/stl_algo.h:3461:5:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Ktemplate<class _Tp> constexpr _Tp std::max(std::initializer_list<_Tp>)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[1.701726] (dongsoo_cpp_pkg) StderrLine: {'line': b' 3461 |     \x1b[01;36m\x1b[Kmax\x1b[m\x1b[K(initializer_list<_Tp> __l)\n'}
+[1.701743] (dongsoo_cpp_pkg) StderrLine: {'line': b'      |     \x1b[01;36m\x1b[K^~~\x1b[m\x1b[K\n'}
+[1.701761] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/c++/11/bits/stl_algo.h:3461:5:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  template argument deduction/substitution failed:\n'}
+[1.701781] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:336:43:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  mismatched types \xe2\x80\x98\x1b[01m\x1b[Kstd::initializer_list<_Tp>\x1b[m\x1b[K\xe2\x80\x99 and \xe2\x80\x98\x1b[01m\x1b[Kdouble\x1b[m\x1b[K\xe2\x80\x99\n'}
+[1.701800] (dongsoo_cpp_pkg) StderrLine: {'line': b'  336 |       for(int i=0;i<4;++i) dmax = \x1b[01;36m\x1b[Kstd::max(dmax, std::fabs(wps[k+1][i]-wps[k][i]))\x1b[m\x1b[K;\n'}
+[1.701818] (dongsoo_cpp_pkg) StderrLine: {'line': b'      |                                   \x1b[01;36m\x1b[K~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[1.701836] (dongsoo_cpp_pkg) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/usr/include/c++/11/algorithm:62\x1b[m\x1b[K,\n'}
+[1.701853] (dongsoo_cpp_pkg) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:8\x1b[m\x1b[K:\n'}
+[1.701871] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/c++/11/bits/stl_algo.h:3467:5:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Ktemplate<class _Tp, class _Compare> constexpr _Tp std::max(std::initializer_list<_Tp>, _Compare)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[1.701891] (dongsoo_cpp_pkg) StderrLine: {'line': b' 3467 |     \x1b[01;36m\x1b[Kmax\x1b[m\x1b[K(initializer_list<_Tp> __l, _Compare __comp)\n'}
+[1.701909] (dongsoo_cpp_pkg) StderrLine: {'line': b'      |     \x1b[01;36m\x1b[K^~~\x1b[m\x1b[K\n'}
+[1.701926] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/c++/11/bits/stl_algo.h:3467:5:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  template argument deduction/substitution failed:\n'}
+[1.701944] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:336:43:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  mismatched types \xe2\x80\x98\x1b[01m\x1b[Kstd::initializer_list<_Tp>\x1b[m\x1b[K\xe2\x80\x99 and \xe2\x80\x98\x1b[01m\x1b[Kdouble\x1b[m\x1b[K\xe2\x80\x99\n'}
+[1.701962] (dongsoo_cpp_pkg) StderrLine: {'line': b'  336 |       for(int i=0;i<4;++i) dmax = \x1b[01;36m\x1b[Kstd::max(dmax, std::fabs(wps[k+1][i]-wps[k][i]))\x1b[m\x1b[K;\n'}
+[1.701980] (dongsoo_cpp_pkg) StderrLine: {'line': b'      |                                   \x1b[01;36m\x1b[K~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[1.702275] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:\x1b[m\x1b[K In static member function \xe2\x80\x98\x1b[01m\x1b[Kstatic double GravityArmNode::sampleS(const GravityArmNode::Segment&, double, double&)\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[1.702298] (dongsoo_cpp_pkg) StderrLine: {'line': b'\x1b[01m\x1b[K/home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/chat_motor_connect.cpp:409:16:\x1b[m\x1b[K \x1b[01;35m\x1b[Kwarning: \x1b[m\x1b[Kunused variable \xe2\x80\x98\x1b[01m\x1b[Ka\x1b[m\x1b[K\xe2\x80\x99 [\x1b[01;35m\x1b[K\x1b]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-variable\x07-Wunused-variable\x1b]8;;\x07\x1b[m\x1b[K]\n'}
+[1.702318] (dongsoo_cpp_pkg) StderrLine: {'line': b'  409 |         double \x1b[01;35m\x1b[Ka\x1b[m\x1b[K = s.a;\n'}
+[1.702336] (dongsoo_cpp_pkg) StderrLine: {'line': b'      |                \x1b[01;35m\x1b[K^\x1b[m\x1b[K\n'}
+[1.704169] (-) TimerEvent: {}
+[1.804305] (-) TimerEvent: {}
+[1.904507] (-) TimerEvent: {}
+[2.004746] (-) TimerEvent: {}
+[2.105046] (-) TimerEvent: {}
+[2.205393] (-) TimerEvent: {}
+[2.305664] (-) TimerEvent: {}
+[2.405913] (-) TimerEvent: {}
+[2.506215] (-) TimerEvent: {}
+[2.606429] (-) TimerEvent: {}
+[2.706680] (-) TimerEvent: {}
+[2.806956] (-) TimerEvent: {}
+[2.907269] (-) TimerEvent: {}
+[3.007518] (-) TimerEvent: {}
+[3.107833] (-) TimerEvent: {}
+[3.208102] (-) TimerEvent: {}
+[3.220322] (dongsoo_cpp_pkg) StderrLine: {'line': b'gmake[2]: *** [CMakeFiles/chat_motor_connect.dir/build.make:76: CMakeFiles/chat_motor_connect.dir/src/chat_motor_connect.cpp.o] Error 1\n'}
+[3.220619] (dongsoo_cpp_pkg) StderrLine: {'line': b'gmake[1]: *** [CMakeFiles/Makefile2:165: CMakeFiles/chat_motor_connect.dir/all] Error 2\n'}
+[3.220766] (dongsoo_cpp_pkg) StderrLine: {'line': b'gmake: *** [Makefile:146: all] Error 2\n'}
+[3.222323] (dongsoo_cpp_pkg) CommandEnded: {'returncode': 2}
+[3.227040] (dongsoo_cpp_pkg) JobEnded: {'identifier': 'dongsoo_cpp_pkg', 'rc': 2}
+[3.237233] (-) EventReactorShutdown: {}

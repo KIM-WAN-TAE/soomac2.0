@@ -1,0 +1,76 @@
+[0.007s] Invoking command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/dongsoo_vision_pkg:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32
+[0.034s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.109s] -- Found rclcpp: 16.0.15 (/opt/ros/humble/share/rclcpp/cmake)
+[0.126s] -- Found rosidl_generator_c: 3.1.7 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[0.127s] -- Found rosidl_adapter: 3.1.7 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.131s] -- Found rosidl_generator_cpp: 3.1.7 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[0.136s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.143s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.162s] -- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[0.163s] -- Found rmw_fastrtps_cpp: 6.2.8 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[0.216s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.242s] -- Found dynamixel_sdk: 3.8.4 (/opt/ros/humble/share/dynamixel_sdk/cmake)
+[0.277s] -- Configuring done
+[0.282s] -- Generating done
+[0.283s] -- Build files have been written to: /home/pc/soomac_ws/build/dongsoo_cpp_pkg
+[0.300s] Consolidate compiler generated dependencies of target motor_connect
+[0.316s] [ 50%] Building CXX object CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o
+[1.986s] /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp: In member function ‘void TestDxlCurrentNode::readAndPublish()’:
+[1.986s] /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:567:28: error: no matching function for call to ‘clamp(double, float, float)’
+[1.986s]   567 |       v_set[i] = std::clamp(v_set[i] + a_cmd * dt_use, -VMAX, +VMAX);
+[1.986s]       |                  ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[1.986s] In file included from /usr/include/c++/11/algorithm:62,
+[1.986s]                  from /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:15:
+[1.986s] /usr/include/c++/11/bits/stl_algo.h:3656:5: note: candidate: ‘template<class _Tp> constexpr const _Tp& std::clamp(const _Tp&, const _Tp&, const _Tp&)’
+[1.986s]  3656 |     clamp(const _Tp& __val, const _Tp& __lo, const _Tp& __hi)
+[1.986s]       |     ^~~~~
+[1.986s] /usr/include/c++/11/bits/stl_algo.h:3656:5: note:   template argument deduction/substitution failed:
+[1.986s] /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:567:28: note:   deduced conflicting types for parameter ‘const _Tp’ (‘double’ and ‘float’)
+[1.986s]   567 |       v_set[i] = std::clamp(v_set[i] + a_cmd * dt_use, -VMAX, +VMAX);
+[1.986s]       |                  ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[1.986s] In file included from /usr/include/c++/11/algorithm:62,
+[1.986s]                  from /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:15:
+[1.986s] /usr/include/c++/11/bits/stl_algo.h:3674:5: note: candidate: ‘template<class _Tp, class _Compare> constexpr const _Tp& std::clamp(const _Tp&, const _Tp&, const _Tp&, _Compare)’
+[1.986s]  3674 |     clamp(const _Tp& __val, const _Tp& __lo, const _Tp& __hi, _Compare __comp)
+[1.986s]       |     ^~~~~
+[1.986s] /usr/include/c++/11/bits/stl_algo.h:3674:5: note:   template argument deduction/substitution failed:
+[1.986s] /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:567:28: note:   deduced conflicting types for parameter ‘const _Tp’ (‘double’ and ‘float’)
+[1.986s]   567 |       v_set[i] = std::clamp(v_set[i] + a_cmd * dt_use, -VMAX, +VMAX);
+[1.986s]       |                  ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[1.988s] /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:675:42: error: no matching function for call to ‘clamp(double, float, float)’
+[1.988s]   675 |           integral_error_[i] = std::clamp(integral_error_[i] + pos_err * dt_use,
+[1.988s]       |                                ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[1.988s]   676 |                                           -MAX_INTEGRAL_ERROR, +MAX_INTEGRAL_ERROR);
+[1.988s]       |                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[1.988s] In file included from /usr/include/c++/11/algorithm:62,
+[1.988s]                  from /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:15:
+[1.988s] /usr/include/c++/11/bits/stl_algo.h:3656:5: note: candidate: ‘template<class _Tp> constexpr const _Tp& std::clamp(const _Tp&, const _Tp&, const _Tp&)’
+[1.988s]  3656 |     clamp(const _Tp& __val, const _Tp& __lo, const _Tp& __hi)
+[1.988s]       |     ^~~~~
+[1.988s] /usr/include/c++/11/bits/stl_algo.h:3656:5: note:   template argument deduction/substitution failed:
+[1.988s] /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:675:42: note:   deduced conflicting types for parameter ‘const _Tp’ (‘double’ and ‘float’)
+[1.988s]   675 |           integral_error_[i] = std::clamp(integral_error_[i] + pos_err * dt_use,
+[1.988s]       |                                ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[1.988s]   676 |                                           -MAX_INTEGRAL_ERROR, +MAX_INTEGRAL_ERROR);
+[1.988s]       |                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[1.988s] In file included from /usr/include/c++/11/algorithm:62,
+[1.988s]                  from /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:15:
+[1.988s] /usr/include/c++/11/bits/stl_algo.h:3674:5: note: candidate: ‘template<class _Tp, class _Compare> constexpr const _Tp& std::clamp(const _Tp&, const _Tp&, const _Tp&, _Compare)’
+[1.988s]  3674 |     clamp(const _Tp& __val, const _Tp& __lo, const _Tp& __hi, _Compare __comp)
+[1.988s]       |     ^~~~~
+[1.988s] /usr/include/c++/11/bits/stl_algo.h:3674:5: note:   template argument deduction/substitution failed:
+[1.988s] /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:675:42: note:   deduced conflicting types for parameter ‘const _Tp’ (‘double’ and ‘float’)
+[1.988s]   675 |           integral_error_[i] = std::clamp(integral_error_[i] + pos_err * dt_use,
+[1.988s]       |                                ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[1.988s]   676 |                                           -MAX_INTEGRAL_ERROR, +MAX_INTEGRAL_ERROR);
+[1.988s]       |                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[1.988s] /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:655:13: warning: unused variable ‘pre_sat_cmd’ [-Wunused-variable]
+[1.988s]   655 |       float pre_sat_cmd = pid_raw + ff_raw;
+[1.988s]       |             ^~~~~~~~~~~
+[1.988s] /home/pc/soomac_ws/src/dongsoo_cpp_pkg/src/motor_connect.cpp:670:13: warning: unused variable ‘u_sat’ [-Wunused-variable]
+[1.988s]   670 |       float u_sat = std::clamp(u_unsat, -limit, +limit);
+[1.988s]       |             ^~~~~
+[3.567s] gmake[2]: *** [CMakeFiles/motor_connect.dir/build.make:76: CMakeFiles/motor_connect.dir/src/motor_connect.cpp.o] Error 1
+[3.567s] gmake[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/motor_connect.dir/all] Error 2
+[3.567s] gmake: *** [Makefile:146: all] Error 2
+[3.569s] Invoked command in '/home/pc/soomac_ws/build/dongsoo_cpp_pkg' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/dongsoo_vision_pkg:/home/pc/soomac_ws/install/dongsoo_py_pkg:/home/pc/mg_motor_ws/install/mg_test_pkg:/home/pc/mg_motor_ws/install/mg_motor_test:/home/pc/mg_motor_ws/install/homework_pkg:/home/pc/mg_motor_ws/install/head_moving:/home/pc/cont_ws/install/torque_test_pkg:/home/pc/cont_ws/install/finger_pkg:/home/pc/cont_ws/install/control_continuum:/opt/ros/humble /usr/bin/cmake --build /home/pc/soomac_ws/build/dongsoo_cpp_pkg -- -j32 -l32

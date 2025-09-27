@@ -40,184 +40,196 @@
 				"parent" : 0
 			},
 			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 70,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 88,
+				"parent" : 0
+			},
+			{
 				"command" : 5,
 				"file" : 0,
-				"line" : 74,
+				"line" : 92,
 				"parent" : 0
 			},
 			{
 				"command" : 4,
 				"file" : 4,
 				"line" : 66,
-				"parent" : 2
+				"parent" : 4
 			},
 			{
 				"command" : 3,
 				"file" : 3,
 				"line" : 48,
-				"parent" : 3
+				"parent" : 5
 			},
 			{
 				"file" : 2,
-				"parent" : 4
+				"parent" : 6
 			},
 			{
 				"command" : 2,
 				"file" : 2,
 				"line" : 47,
-				"parent" : 5
+				"parent" : 7
 			},
 			{
 				"command" : 1,
 				"file" : 2,
 				"line" : 29,
-				"parent" : 6
+				"parent" : 8
 			},
 			{
 				"command" : 0,
 				"file" : 1,
 				"line" : 105,
-				"parent" : 7
+				"parent" : 9
 			},
 			{
 				"command" : 6,
 				"file" : 2,
 				"line" : 48,
-				"parent" : 5
+				"parent" : 7
 			},
 			{
 				"command" : 1,
 				"file" : 2,
 				"line" : 43,
-				"parent" : 9
+				"parent" : 11
 			},
 			{
 				"command" : 0,
 				"file" : 1,
 				"line" : 105,
-				"parent" : 10
+				"parent" : 12
 			},
 			{
 				"command" : 3,
 				"file" : 3,
 				"line" : 48,
-				"parent" : 3
+				"parent" : 5
 			},
 			{
 				"file" : 6,
-				"parent" : 12
+				"parent" : 14
 			},
 			{
 				"command" : 7,
 				"file" : 6,
 				"line" : 20,
-				"parent" : 13
+				"parent" : 15
 			},
 			{
 				"command" : 0,
 				"file" : 5,
 				"line" : 70,
-				"parent" : 14
+				"parent" : 16
 			},
 			{
 				"command" : 0,
 				"file" : 5,
 				"line" : 87,
-				"parent" : 14
+				"parent" : 16
 			},
 			{
 				"command" : 0,
 				"file" : 5,
 				"line" : 70,
-				"parent" : 14
+				"parent" : 16
 			},
 			{
 				"command" : 0,
 				"file" : 5,
 				"line" : 87,
-				"parent" : 14
+				"parent" : 16
 			},
 			{
 				"command" : 8,
 				"file" : 6,
 				"line" : 26,
-				"parent" : 13
+				"parent" : 15
 			},
 			{
 				"command" : 0,
 				"file" : 7,
 				"line" : 91,
-				"parent" : 19
+				"parent" : 21
 			},
 			{
 				"command" : 0,
 				"file" : 7,
 				"line" : 91,
-				"parent" : 19
+				"parent" : 21
 			},
 			{
 				"command" : 0,
 				"file" : 7,
 				"line" : 91,
-				"parent" : 19
+				"parent" : 21
 			},
 			{
 				"command" : 0,
 				"file" : 7,
 				"line" : 107,
-				"parent" : 19
+				"parent" : 21
 			},
 			{
 				"command" : 0,
 				"file" : 7,
 				"line" : 119,
-				"parent" : 19
+				"parent" : 21
 			},
 			{
 				"command" : 3,
 				"file" : 3,
 				"line" : 48,
-				"parent" : 3
+				"parent" : 5
 			},
 			{
 				"file" : 9,
-				"parent" : 25
+				"parent" : 27
 			},
 			{
 				"command" : 9,
 				"file" : 9,
 				"line" : 16,
-				"parent" : 26
+				"parent" : 28
 			},
 			{
 				"command" : 1,
 				"file" : 8,
 				"line" : 29,
-				"parent" : 27
+				"parent" : 29
 			},
 			{
 				"command" : 0,
 				"file" : 1,
 				"line" : 105,
-				"parent" : 28
+				"parent" : 30
 			},
 			{
 				"command" : 10,
 				"file" : 4,
 				"line" : 68,
-				"parent" : 2
+				"parent" : 4
 			},
 			{
 				"command" : 0,
 				"file" : 4,
 				"line" : 150,
-				"parent" : 30
+				"parent" : 32
 			},
 			{
 				"command" : 0,
 				"file" : 4,
 				"line" : 157,
-				"parent" : 30
+				"parent" : 32
 			}
 		]
 	},
@@ -236,7 +248,31 @@
 			"type" : "target"
 		},
 		{
-			"backtrace" : 8,
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "lib/dongsoo_cpp_pkg",
+			"paths" : 
+			[
+				"test_motor_connect"
+			],
+			"targetId" : "test_motor_connect::@6890427a1f51a3e7e1df",
+			"targetIndex" : 2,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "lib/dongsoo_cpp_pkg",
+			"paths" : 
+			[
+				"test_motor_connect"
+			],
+			"targetId" : "test_motor_connect::@6890427a1f51a3e7e1df",
+			"targetIndex" : 2,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 10,
 			"component" : "Unspecified",
 			"destination" : "share/ament_index/resource_index/package_run_dependencies",
 			"paths" : 
@@ -246,7 +282,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 11,
+			"backtrace" : 13,
 			"component" : "Unspecified",
 			"destination" : "share/ament_index/resource_index/parent_prefix_path",
 			"paths" : 
@@ -256,7 +292,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 15,
+			"backtrace" : 17,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg/environment",
 			"paths" : 
@@ -266,7 +302,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 16,
+			"backtrace" : 18,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg/environment",
 			"paths" : 
@@ -276,7 +312,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 17,
+			"backtrace" : 19,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg/environment",
 			"paths" : 
@@ -286,7 +322,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 18,
+			"backtrace" : 20,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg/environment",
 			"paths" : 
@@ -296,7 +332,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 20,
+			"backtrace" : 22,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg",
 			"paths" : 
@@ -306,7 +342,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 21,
+			"backtrace" : 23,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg",
 			"paths" : 
@@ -316,7 +352,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 22,
+			"backtrace" : 24,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg",
 			"paths" : 
@@ -326,7 +362,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 23,
+			"backtrace" : 25,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg",
 			"paths" : 
@@ -336,7 +372,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 24,
+			"backtrace" : 26,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg",
 			"paths" : 
@@ -346,7 +382,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 29,
+			"backtrace" : 31,
 			"component" : "Unspecified",
 			"destination" : "share/ament_index/resource_index/packages",
 			"paths" : 
@@ -356,7 +392,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 31,
+			"backtrace" : 33,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg/cmake",
 			"paths" : 
@@ -367,7 +403,7 @@
 			"type" : "file"
 		},
 		{
-			"backtrace" : 32,
+			"backtrace" : 34,
 			"component" : "Unspecified",
 			"destination" : "share/dongsoo_cpp_pkg",
 			"paths" : 
