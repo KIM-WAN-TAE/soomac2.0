@@ -29,6 +29,7 @@ setup(
             'monitoring_node=dongsoo_control_pkg.dongsoo_monitoring_node:main',
             'server_node=dongsoo_control_pkg.dongsoo_server_node:main',
             'client_node=dongsoo_control_pkg.dongsoo_client_node:main',
+            'gripper_node=dongsoo_control_pkg.dongsoo_gripper_node:main'
         ],
     },
 )
