@@ -116,7 +116,7 @@ class DongsooServer(Node):
         self.create_subscription(
             Int32MultiArray,
             '/aiot/array/present_motor_pulse',
-            self.joint_deg_callback, 10,
+            self.joint_pulse_callback, 10,
             callback_group=self.sub_cb_gp)
         
         self.motor_command_pub = self.create_publisher(Float32MultiArray, '/aiot/array/target_motor_deg', 10)
@@ -149,7 +149,7 @@ class DongsooServer(Node):
             self.present_position = np.array([grip_mat[:3,3]])
             self.present_orientation = np.array([grip_mat[:3,:3]])
             
-    def joint_deg_callback(self, msg : Int32MultiArray):
+    def joint_pulse_callback(self, msg : Int32MultiArray):
         data = list(msg.data)
 
         if len(data) != 5:
@@ -169,6 +169,7 @@ class DongsooServer(Node):
                 start_point = self.present_position
             
             end_point = req.position
+            print(f'end : {end_point}')
             end_look  = req.look
             work_time = req.time
             wrist     = req.wrist

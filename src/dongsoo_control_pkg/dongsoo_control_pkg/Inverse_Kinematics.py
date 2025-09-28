@@ -6,8 +6,8 @@ from ikpy.link import OriginLink, DHLink
 from scipy.optimize import least_squares
 from dongsoo_control_pkg.read_json import GravityDH
 
-MIN_LIMITS = np.array([0.0, np.deg2rad(-135), np.deg2rad(-135), np.deg2rad(-135), np.deg2rad(-135)])
-MAX_LIMITS = np.array([0.0, np.deg2rad( 135), np.deg2rad( 135), np.deg2rad( 135), np.deg2rad( 135)])
+MIN_LIMITS = np.array([0.0, np.deg2rad(-100), np.deg2rad(-110), np.deg2rad(-115), np.deg2rad(-100)])
+MAX_LIMITS = np.array([0.0, np.deg2rad( 100), np.deg2rad( 110), np.deg2rad( 115), np.deg2rad( 100)])
 
 POS_TOL = 2e-3
 FALLBACK_TOL = 5e-3

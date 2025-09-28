@@ -26,7 +26,7 @@ RATE = 10
 CURR_UNIT_A = 0.00269
 
 RELEASE_POSITION = 2150
-GRIP_CURRENT     = 50
+GRIP_CURRENT     = 100
 
 class GripperNode(Node):
     def __init__(self):
