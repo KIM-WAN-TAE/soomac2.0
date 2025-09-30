@@ -14,7 +14,7 @@ from .read_json import CameraDHParameters
 import copy
 
 Z_OFFSET  = 200.0
-PITCH_TOL = 3.0
+PITCH_TOL = 500.0
 YAW_TOL   = 3.0
 ROLL_TOL  = 10.0
 PICK_Z_OFFSET = 13.0
@@ -69,16 +69,16 @@ class ZeusClientNode(Node):
         )
         
         self.speed_cmd_idx_map = {
-            0: ['jntspd', 20],
-            1: ['linspd', 150],
-            2: ['posspd', 100],
+            0: ['jntspd', 30],
+            1: ['linspd', 180],
+            2: ['posspd', 150],
             3: ['linspd', 180],
             4: ['posspd', 30],
-            5: ['linspd', 100],
-            6: ['jntspd', 60],
-            7: ['linspd', 100],
-            8: ['jntspd', 10],
-            9 : ['linspd', 100],
+            5: ['jntspd', 150],
+            6: ['linspd', 150],
+            7: ['linspd', 180],
+            8: ['jntspd', 20],
+            9 : ['linspd', 180],
             10: ['jntspd', 80]
         }
         self.sent_speed_cmd_idx = set()
@@ -136,7 +136,7 @@ class ZeusClientNode(Node):
         self.BLOCK_DROP      = []
 
         # 고정값들 정의
-        CAM_INIT = ['j', -97.57, -16.01, -82.24, 0.20, -81.89, -97.33]
+        CAM_INIT = ['j', -97.53,  -17.19,  -88.52,    0.20,  -74.43,  -97.32]
         BLOCK_DROP_INIT = ['j', -15.75, -27.47, -95.23, 0.20, -57.54, -102.09]
         GRIPPER_TIME    = ['t', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
@@ -172,6 +172,7 @@ class ZeusClientNode(Node):
         
         with self.lock:
             self.drop_zone_point = msg.data
+            self.block_list[7] = ['l'] + list(self.drop_zone_point)
             self.get_logger().info(f'[ZEUS] Drop Zone Point : {self.drop_zone_point}')
         
     def joint_state_callback(self, msg):
@@ -326,6 +327,7 @@ class ZeusClientNode(Node):
                 print(f'POSE : {pose}')
                 self.block_list[idx] = ['l'] + pose
                 self.send_next_command()
+                print(f"PITCH : {pitch}")
                 
                 with self.lock:
                     self.topic_flag = False
@@ -398,7 +400,7 @@ class ZeusClientNode(Node):
                     self.send_next_command()
                 
                 else:
-                    pose = [P[0], P[1], P[2] + PICK_Z_OFFSET, rz, ry, rx]
+                    pose = [P[0], P[1], P[2] + PICK_Z_OFFSET - 70.0, rz, ry, rx]
                     with self.lock:
                         pose[3:] = self.xy_coor[3:]
                     
@@ -406,14 +408,21 @@ class ZeusClientNode(Node):
                     self.send_next_command()
                 
             elif idx == 4:
+                if self.drop_zone_point is None:
+                    again_msg = String()
+                    again_msg.data = 'again'
+                    self.color_count_pub.publish(again_msg)
+                    
                 time.sleep(0.5)
                 self.send_next_command()
             
             elif idx == 5:
                 with self.lock:
                     
-                    self.block_list[idx] = copy.deepcopy(self.block_list[idx-4])
-                    block_coor = copy.deepcopy(self.block_list[idx-4])
+                    # self.block_list[idx] = copy.deepcopy(self.block_list[idx-4])
+                    # block_coor = copy.deepcopy(self.block_list[idx-4])
+                    
+                    self.block_list[idx] = ['t'] + [0.0, 0.0, -100.0, 0.0, 0.0, 0.0]
                     
                     self.suction_flag = False
                 
@@ -442,7 +451,6 @@ class ZeusClientNode(Node):
                     self.gripper_command_pub.publish(gripper_msg)
                     
                     self.suction_flag = True
-                    time.sleep(0.5)
                     
                 self.send_next_command()
                 
@@ -450,7 +458,7 @@ class ZeusClientNode(Node):
                 
                 with self.lock:
                     self.block_list[idx] = ['t'] + [0.0, 0.0, -100.0, 0.0, 0.0, 0.0]
-                # time.sleep(0.3)
+                time.sleep(0.6)
                 self.send_next_command()
                 
             elif idx == 10:

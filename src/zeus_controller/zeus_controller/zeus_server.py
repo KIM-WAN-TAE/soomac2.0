@@ -70,9 +70,9 @@ class ZeusServerNode(Node):
         self.xy_coor = np.zeros(6, dtype=np.float32)
         self.joint_coor = np.zeros(6, dtype=np.float32)   
         
-        self.tol_ang = 0.5
-        self.tol_pos = 1.0
-        self.tol_tol = 2.0
+        self.tol_ang = 1.0
+        self.tol_pos = 2.0
+        self.tol_tol = 10.0
         
     def xy_state_callback(self, msg):
         with self.lock:
@@ -94,46 +94,73 @@ class ZeusServerNode(Node):
             goal_coor = np.array(req.coordinate)
 
             com_str = command_string(frame, goal_coor)
-            
+
             com_msg = String()
             com_msg.data = com_str
             self.command_pub.publish(com_msg)
-            
+
             target = None
             if frame.lower() == 't':
                 with self.lock:
                     current = np.array(self.xy_coor)
                     target = current - goal_coor  # 상대좌표
-            
+
+            # 안정화 모니터링 변수들
+            stable_start_time = None
+            last_error = None
+            stable_threshold = 3.0  # 3초
+            error_tolerance = 0.1   # 오차 변화 허용 범위
+
             while True:
                 with self.lock:
                     if frame.lower() == 'l':
                         current = np.array(self.xy_coor)
                         error = np.linalg.norm(goal_coor - current)
                         self.get_logger().info(f'Linear error : {error}')
-                        
-                        if error < self.tol_pos:
+
+                        if int(error) <= self.tol_pos:
                             res.success = True
                             break
-                        
+
                     elif frame.lower() == 'j':
                         current = np.array(self.joint_coor)
                         error = np.linalg.norm(goal_coor - current)
                         self.get_logger().info(f'Joint error : {error}')
-                        
-                        if error < self.tol_ang:
+
+                        if int(error) <= self.tol_ang:
                             res.success = True
                             break
-                        
+
                     elif frame.lower() == 't':
                         current = np.array(self.xy_coor)
                         error_vec = angle_diff(target, current)
                         error = np.linalg.norm(error_vec)
                         self.get_logger().info(f'target : {target}, Toolmove error : {error}')
-                        if error < self.tol_tol:
+
+                        # 정상 완료 조건
+                        if int(error) <= self.tol_tol:
                             res.success = True
                             break
-                        
+
+                        # 안정화 모니터링
+                        current_time = time.time()
+                        if last_error is not None:
+                            error_change = abs(error - last_error)
+
+                            if error_change <= error_tolerance:
+                                # 오차가 안정적으로 유지됨
+                                if stable_start_time is None:
+                                    stable_start_time = current_time
+                                elif current_time - stable_start_time >= stable_threshold:
+                                    self.get_logger().info(f'[ZEUS] Tool move completed by stable error (3+ seconds)')
+                                    res.success = True
+                                    break
+                            else:
+                                # 오차가 변화함 - 안정화 시간 리셋
+                                stable_start_time = None
+
+                        last_error = error
+
                 time.sleep(0.05)
 
         except Exception as e:

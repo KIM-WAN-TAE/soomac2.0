@@ -1,0 +1,20 @@
+[0.288s] Invoking command in '/home/pc/soomac_ws/build/zeus_vision': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_vision/build --no-deps symlink_data
+[0.409s] running develop
+[0.485s] running egg_info
+[0.485s] writing zeus_vision.egg-info/PKG-INFO
+[0.485s] writing dependency_links to zeus_vision.egg-info/dependency_links.txt
+[0.485s] writing entry points to zeus_vision.egg-info/entry_points.txt
+[0.485s] writing requirements to zeus_vision.egg-info/requires.txt
+[0.485s] writing top-level names to zeus_vision.egg-info/top_level.txt
+[0.486s] reading manifest file 'zeus_vision.egg-info/SOURCES.txt'
+[0.493s] writing manifest file 'zeus_vision.egg-info/SOURCES.txt'
+[0.494s] running build_ext
+[0.494s] Creating /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus-vision.egg-link (link to .)
+[0.495s] Installing cls_detect script to /home/pc/soomac_ws/install/zeus_vision/lib/zeus_vision
+[0.495s] Installing detect_ script to /home/pc/soomac_ws/install/zeus_vision/lib/zeus_vision
+[0.495s] Installing detect_org script to /home/pc/soomac_ws/install/zeus_vision/lib/zeus_vision
+[0.495s] Installing position script to /home/pc/soomac_ws/install/zeus_vision/lib/zeus_vision
+[0.495s] 
+[0.495s] Installed /home/pc/soomac_ws/build/zeus_vision
+[0.495s] running symlink_data
+[0.506s] Invoked command in '/home/pc/soomac_ws/build/zeus_vision' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_vision/build --no-deps symlink_data

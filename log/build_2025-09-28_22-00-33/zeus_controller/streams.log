@@ -1,0 +1,22 @@
+[0.298s] Invoking command in '/home/pc/soomac_ws/build/zeus_controller': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_controller/build --no-deps symlink_data --force
+[0.436s] running develop
+[0.513s] running egg_info
+[0.513s] writing zeus_controller.egg-info/PKG-INFO
+[0.513s] writing dependency_links to zeus_controller.egg-info/dependency_links.txt
+[0.513s] writing entry points to zeus_controller.egg-info/entry_points.txt
+[0.513s] writing requirements to zeus_controller.egg-info/requires.txt
+[0.513s] writing top-level names to zeus_controller.egg-info/top_level.txt
+[0.514s] reading manifest file 'zeus_controller.egg-info/SOURCES.txt'
+[0.522s] writing manifest file 'zeus_controller.egg-info/SOURCES.txt'
+[0.522s] running build_ext
+[0.523s] Creating /home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages/zeus-controller.egg-link (link to .)
+[0.523s] Installing client_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.523s] Installing connect_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.523s] Installing gripper_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.523s] Installing server_zeus script to /home/pc/soomac_ws/install/zeus_controller/lib/zeus_controller
+[0.523s] 
+[0.523s] Installed /home/pc/soomac_ws/build/zeus_controller
+[0.523s] running symlink_data
+[0.523s] symbolically linking /home/pc/soomac_ws/build/zeus_controller/resource/zeus_controller -> /home/pc/soomac_ws/install/zeus_controller/share/ament_index/resource_index/packages
+[0.523s] symbolically linking /home/pc/soomac_ws/build/zeus_controller/package.xml -> /home/pc/soomac_ws/install/zeus_controller/share/zeus_controller
+[0.535s] Invoked command in '/home/pc/soomac_ws/build/zeus_controller' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_controller/build --no-deps symlink_data --force

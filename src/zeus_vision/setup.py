@@ -26,7 +26,8 @@ setup(
         'console_scripts': [
             'position = zeus_vision.block_position:main',
             'detect_= zeus_vision.block_detect_:main',
-            'detect_org = zeus_vision.block_detect_original:main'
+            'detect_org = zeus_vision.block_detect_original:main',
+            'cls_detect = zeus_vision.detect_cube_color:main'
         ],
     },
 )
