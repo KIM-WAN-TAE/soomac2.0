@@ -44,18 +44,17 @@ class ZeusClientNode(Node):
         self.client_timer = self.create_timer(timer_period, self.client_timer_callback)
     
     def send_speed(self, frame, value):
-        cmd = mparam_command_string(frame, value)
+        if frame.lower() == 'j':
+            raw_frame = 'jntspd'
+        elif frame.lower() == 'l':
+            raw_frame = 'linspd'
+        elif frame.lower() == 't':
+            raw_frame = 'linspd'
+        
+        cmd = mparam_command_string(raw_frame, value)
         msg = String()
         msg.data = str(cmd)
         self.binary_cmd.publish(msg)
-        
-    def send_speed_command_for_idx(self, idx):
-        with self.lock:
-            if idx in self.speed_cmd_idx_map and idx not in self.sent_speed_cmd_idx:
-                param_type, value = self.speed_cmd_idx_map[idx]
-                self.send_speed(param_type, value)
-                self.sent_speed_cmd_idx.add(idx)
-                # print(f'Speeeeeeeeeeeed : {idx}, {value}')
     
     def target_pose_callback(self, msg : ZeusMainCommand):
         with self.lock:
@@ -63,6 +62,7 @@ class ZeusClientNode(Node):
             self.target_point = np.array(msg.position)
             self.target_speed = msg.speed
             self.target_flag = True
+            
             
             self.get_logger().info(f'[AIOT] Target Point Received : {self.target_point}, Frame : {self.target_frame}, Speed : {self.target_speed}')
     
@@ -78,6 +78,10 @@ class ZeusClientNode(Node):
             copy_target_frame = self.target_frame
             copy_target_speed = self.target_speed
             self.target_flag = False
+            
+            self.send_speed(copy_target_frame, copy_target_speed)
+            time.sleep(0.5)
+            self.send_next_command(copy_target_point, copy_target_frame)
             
     def send_next_command(self, point, frame):
         if point.size != 6:
