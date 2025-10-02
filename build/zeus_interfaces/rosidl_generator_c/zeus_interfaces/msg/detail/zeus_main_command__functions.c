@@ -27,6 +27,7 @@ zeus_interfaces__msg__ZeusMainCommand__init(zeus_interfaces__msg__ZeusMainComman
     return false;
   }
   // position
+  // speed
   return true;
 }
 
@@ -39,6 +40,7 @@ zeus_interfaces__msg__ZeusMainCommand__fini(zeus_interfaces__msg__ZeusMainComman
   // frame
   rosidl_runtime_c__String__fini(&msg->frame);
   // position
+  // speed
 }
 
 bool
@@ -58,6 +60,10 @@ zeus_interfaces__msg__ZeusMainCommand__are_equal(const zeus_interfaces__msg__Zeu
     if (lhs->position[i] != rhs->position[i]) {
       return false;
     }
+  }
+  // speed
+  if (lhs->speed != rhs->speed) {
+    return false;
   }
   return true;
 }
@@ -80,6 +86,8 @@ zeus_interfaces__msg__ZeusMainCommand__copy(
   for (size_t i = 0; i < 6; ++i) {
     output->position[i] = input->position[i];
   }
+  // speed
+  output->speed = input->speed;
   return true;
 }
 

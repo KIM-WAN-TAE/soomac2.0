@@ -21,16 +21,32 @@ namespace msg
 namespace builder
 {
 
+class Init_ZeusMainCommand_speed
+{
+public:
+  explicit Init_ZeusMainCommand_speed(::zeus_interfaces::msg::ZeusMainCommand & msg)
+  : msg_(msg)
+  {}
+  ::zeus_interfaces::msg::ZeusMainCommand speed(::zeus_interfaces::msg::ZeusMainCommand::_speed_type arg)
+  {
+    msg_.speed = std::move(arg);
+    return std::move(msg_);
+  }
+
+private:
+  ::zeus_interfaces::msg::ZeusMainCommand msg_;
+};
+
 class Init_ZeusMainCommand_position
 {
 public:
   explicit Init_ZeusMainCommand_position(::zeus_interfaces::msg::ZeusMainCommand & msg)
   : msg_(msg)
   {}
-  ::zeus_interfaces::msg::ZeusMainCommand position(::zeus_interfaces::msg::ZeusMainCommand::_position_type arg)
+  Init_ZeusMainCommand_speed position(::zeus_interfaces::msg::ZeusMainCommand::_position_type arg)
   {
     msg_.position = std::move(arg);
-    return std::move(msg_);
+    return Init_ZeusMainCommand_speed(msg_);
   }
 
 private:

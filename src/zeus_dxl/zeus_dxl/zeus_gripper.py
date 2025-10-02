@@ -1,180 +1,175 @@
-#/usr/bin/env python3
+#!/usr/bin/env python3
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String, Int32
-from rclpy.callback_groups import ReentrantCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
+from std_msgs.msg import String, Float32
+from dynamixel_sdk import PortHandler, PacketHandler
+import time
 
-from dynamixel_sdk import *
-import numpy as np
-import threading
-import os
+DEVICENAME            = '/dev/ttyUSB0'
+BAUDRATE              = 3000000
+PROTOCOL_VERSION      = 2.0
 
-DEVICE = '/dev/ttyUSB0'
-BAUDRATE = 3000000
-PROTOCOL_VER = 2.0
-GRIPPER_ID = 6
+ID = 6
 
 ADDR_TORQUE_ENABLE    = 64
 ADDR_OPERATING_MODE   = 11
 ADDR_GOAL_CURRENT     = 102
-ADDR_PRESENT_CURRENT  = 126
-ADDR_PRESENT_POSITION = 132
+ADDR_GOAL_POSITION    = 116
+ADDR_PRESENT_POSITION  = 132
+ADDR_PRESENT_CURRENT   = 126
 
-CURRENT_CONTROL_MODE = 0
+CURRENT_MODE  = 0
+POSITION_MODE = 3
 
-MAX_CURRENT_LIMIT = 80
+RATE = 10
+CURR_UNIT_A = 0.00269
+
+RELEASE_POSITION = 2150
+GRIP_CURRENT     = 100
 
 class GripperNode(Node):
     def __init__(self):
-        super().__init__('zeus_gripper_node')
+        super().__init__('gripper_node')
         
-        self.sub_callback_group = ReentrantCallbackGroup()
-        self.read_write_callback_group = ReentrantCallbackGroup()
-
-        self.data_lock = threading.Lock()  # 데이터 보호용
-        self.port_lock = threading.Lock()  # 포트 접근 동기화용
+        self.porthandler = PortHandler(DEVICENAME)
+        self.packethandler = PacketHandler(PROTOCOL_VERSION)
         
-        self.portHandler = PortHandler(DEVICE)
-        self.packetHandler = PacketHandler(PROTOCOL_VER)
-        
-        self.initialize()
-        
-        self.pre_position, dxl_comm_result, _ = self.packetHandler.read4ByteTxRx(
-                self.portHandler, GRIPPER_ID, ADDR_PRESENT_POSITION)
-        
-        self.goal_position = self.pre_position
-        self.previous_error = 0
-
-        self.kp = 0.0105
-        self.kd = 0.0
-        
-        self.create_subscription(String, '/zeus/gripper/grip', self.goal_callback, 10, callback_group=self.sub_callback_group)
-        self.create_timer(0.01, self.read_write_callback, callback_group=self.read_write_callback_group)
-        
-        self.get_logger().info('Zeus Gripper Node initialized')
-        
-    def initialize(self):  
-        if not self.portHandler.openPort():
-            self.get_logger().error("Failed to open the port")
+        if not self.porthandler.openPort():
+            self.get_logger().error(f"[AIOT] 포트를 열 수 없습니다: {DEVICENAME}")
             return
 
-        if not self.portHandler.setBaudRate(BAUDRATE):
-            self.get_logger().error("Failed to change the baudrate")
+        if not self.porthandler.setBaudRate(BAUDRATE):
+            self.get_logger().error(f"[AIOT] 보드레이트 설정 실패: {BAUDRATE}")
             return
         
-        dxl_comm_result, _ = self.packetHandler.write1ByteTxRx(
-            self.portHandler, GRIPPER_ID, ADDR_TORQUE_ENABLE, 0)
-
-        if dxl_comm_result != COMM_SUCCESS:
-            self.get_logger().error(f"Failed to disable torque: {self.packetHandler.getTxRxResult(dxl_comm_result)}")
-            return False
-
-        dxl_comm_result, _ = self.packetHandler.write1ByteTxRx(
-            self.portHandler, GRIPPER_ID, ADDR_OPERATING_MODE, CURRENT_CONTROL_MODE)
-
-        if dxl_comm_result != COMM_SUCCESS:
-            self.get_logger().error(f"Failed to set current control mode: {self.packetHandler.getTxRxResult(dxl_comm_result)}")
-            return False
-
-        dxl_comm_result, _ = self.packetHandler.write1ByteTxRx(
-            self.portHandler, GRIPPER_ID, ADDR_TORQUE_ENABLE, 1)
-
-        if dxl_comm_result != COMM_SUCCESS:
-            self.get_logger().error(f"Failed to enable torque: {self.packetHandler.getTxRxResult(dxl_comm_result)}")
-            return False
-
-        self.get_logger().info("Motor initialized successfully in current control mode")
+        self.motor_init()
+        self.create_subscription(String, '/aiot/string/gripper_command', self.gripper_callback, 10)
         
-    def goal_callback(self, msg : String):
-        if msg.data == 'block_grip':
-            goal_position = 3100
+        self.status_timer = self.create_timer(1/RATE, self.timer_callback)
+        self.current_pub = self.create_publisher(Float32, '/aiot/float/gripper_present_current', 10)
         
-        elif msg.data == 'block_leave':
-            goal_position = 3900
+    def motor_init(self):
+        _, dxl_error = self.packethandler.write1ByteTxRx(
+            self.porthandler, ID,
+            ADDR_TORQUE_ENABLE, 0
+        )
+        if dxl_error != 0:
+            self.get_logger().warn(f"[AIOT] ID {ID}: 토크 비활성화 오류 ({dxl_error})")
+
+        _, dxl_error = self.packethandler.write1ByteTxRx(
+            self.porthandler, ID,
+            ADDR_OPERATING_MODE, POSITION_MODE
+        )
+        if dxl_error != 0:
+            self.get_logger().warn(f"[AIOT] ID {ID}: 운영 모드 설정 오류 ({dxl_error})")
+
+        _, dxl_error = self.packethandler.write1ByteTxRx(
+            self.porthandler, ID,
+            ADDR_TORQUE_ENABLE, 1
+        )
+        if dxl_error != 0:
+            self.get_logger().warn(f"[AIOT] ID {ID}: 토크 활성화 오류 ({dxl_error})")
         
+        # 초기에 Gripper 개방 상태로 유지    
+        _, dxl_error = self.packethandler.write4ByteTxRx(
+            self.porthandler, ID, ADDR_GOAL_POSITION, RELEASE_POSITION
+        )
+        
+        if dxl_error != 0:
+            self.get_logger().warn(f"[AIOT] ID {ID}: Gripper 개방 오류 ({dxl_error})")
+            
+    def make_position_mode(self):
+        _, dxl_error = self.packethandler.write1ByteTxRx(
+            self.porthandler, ID,
+            ADDR_TORQUE_ENABLE, 0
+        )
+        if dxl_error != 0:
+            self.get_logger().warn(f"[AIOT] ID {ID}: 토크 비활성화 오류 ({dxl_error})")
+
+        _, dxl_error = self.packethandler.write1ByteTxRx(
+            self.porthandler, ID,
+            ADDR_OPERATING_MODE, POSITION_MODE
+        )
+        if dxl_error != 0:
+            self.get_logger().warn(f"[AIOT] ID {ID}: 운영 모드 설정 오류 ({dxl_error})")
+
+        _, dxl_error = self.packethandler.write1ByteTxRx(
+            self.porthandler, ID,
+            ADDR_TORQUE_ENABLE, 1
+        )
+        if dxl_error != 0:
+            self.get_logger().warn(f"[AIOT] ID {ID}: 토크 활성화 오류 ({dxl_error})")
+        
+    def make_current_mode(self):
+        _, dxl_error = self.packethandler.write1ByteTxRx(
+            self.porthandler, ID,
+            ADDR_TORQUE_ENABLE, 0
+        )
+        if dxl_error != 0:
+            self.get_logger().warn(f"[AIOT] ID {ID}: 토크 비활성화 오류 ({dxl_error})")
+
+        _, dxl_error = self.packethandler.write1ByteTxRx(
+            self.porthandler, ID,
+            ADDR_OPERATING_MODE, CURRENT_MODE
+        )
+        if dxl_error != 0:
+            self.get_logger().warn(f"[AIOT] ID {ID}: 운영 모드 설정 오류 ({dxl_error})")
+
+        _, dxl_error = self.packethandler.write1ByteTxRx(
+            self.porthandler, ID,
+            ADDR_TORQUE_ENABLE, 1
+        )
+        if dxl_error != 0:
+            self.get_logger().warn(f"[AIOT] ID {ID}: 토크 활성화 오류 ({dxl_error})")
+        
+    def gripper_callback(self, msg : String):
+        cmd = msg.data
+        if cmd == 'open':
+            self.make_position_mode()
+            
+            time.sleep(0.1)
+            
+            _, dxl_error = self.packethandler.write4ByteTxRx(
+            self.porthandler, ID, ADDR_GOAL_POSITION, RELEASE_POSITION
+            )
+        
+            if dxl_error != 0:
+                self.get_logger().warn(f"[AIOT] ID {ID}: Gripper 개방 오류 ({dxl_error})")
+            
+        elif cmd == 'close':
+            self.make_current_mode()
+            time.sleep(0.1)
+            
+            _, dxl_error = self.packethandler.write2ByteTxRx(
+                self.porthandler, ID, ADDR_GOAL_CURRENT, GRIP_CURRENT & 0xFFFF
+            )
+            
         else:
-            return
+            self.get_logger().warn('[AIOT] Wrong Command!')
+            
+    def timer_callback(self):
+        raw_cur, _, dxl_error = self.packethandler.read2ByteTxRx(
+            self.porthandler, ID, ADDR_PRESENT_CURRENT)
         
-        with self.data_lock:
-            self.goal_position = goal_position
-
-        # self.get_logger().info(f'[ZEUS] GOAL Position: {self.goal_position}')
+        if raw_cur > 32767:
+            raw_cur = raw_cur - 65536
         
-    def read_sensor(self):
-        """포트 락을 사용하여 안전하게 센서값 읽기"""
-        with self.port_lock:
-            dxl_present_position, dxl_comm_result, _ = self.packetHandler.read4ByteTxRx(
-                    self.portHandler, GRIPPER_ID, ADDR_PRESENT_POSITION)
-
-            if dxl_comm_result != COMM_SUCCESS:
-                return None, None
-
-            dxl_present_current, dxl_comm_result, _ = self.packetHandler.read2ByteTxRx(
-                    self.portHandler, GRIPPER_ID, ADDR_PRESENT_CURRENT)
-
-            if dxl_comm_result != COMM_SUCCESS:
-                return dxl_present_position, None
-
-            return dxl_present_position, dxl_present_current
+        present_current = raw_cur * CURR_UNIT_A * 1000
         
-    def write_goal(self, current_mA):
-        """포트 락을 사용하여 안전하게 목표 전류 설정"""
-        limited_current = max(-MAX_CURRENT_LIMIT, min(MAX_CURRENT_LIMIT, current_mA))
-        current_units = int(limited_current * 2.69)
-
-        with self.port_lock:
-            dxl_comm_result, _ = self.packetHandler.write2ByteTxRx(
-                self.portHandler, GRIPPER_ID, ADDR_GOAL_CURRENT, current_units)
-
-            if dxl_comm_result != COMM_SUCCESS:
-                self.get_logger().error(f"Failed to write goal current: {self.packetHandler.getTxRxResult(dxl_comm_result)}")
-                return False
-
-        return True
+        print(f"[AIOT] Current: {present_current:.1f} mA")
         
-    def pd_control(self, goal_pos, current_pos):
-        error = goal_pos - current_pos
-        p_term = self.kp * error
-        d_term = self.kd * (error - self.previous_error)
-        output_current = p_term + d_term
-        self.previous_error = error
-        # self.get_logger().info(f'\n error : {error}')
-        return output_current
-        
-    def read_write_callback(self):
-        # 센서값 읽기 (포트 락 사용)
-        pre_position, pre_current = self.read_sensor()
-
-        # 데이터 유효성 확인 및 저장
-        if pre_position is not None and pre_current is not None:
-            with self.data_lock:
-                self.pre_position = pre_position
-                self.pre_current = pre_current
-
-        # 목표값 복사 (데이터 락 사용)
-        with self.data_lock:
-            goal_pose = self.goal_position
-
-        # 현재 위치가 유효한 경우에만 제어 수행
-        if hasattr(self, 'pre_position') and self.pre_position is not None:
-            goal_current = self.pd_control(goal_pose, self.pre_position)
-
-            # 목표 전류 설정 (포트 락 사용)
-            success = self.write_goal(goal_current)
-            if not success:
-                self.get_logger().warn(f'[ZEUS] Gripper Error')
-
-        self.get_logger().info(f'\n Present Pos : {pre_position} \n Present Cur : {pre_current / 2.69}')
-        
+        cur_msg = Float32()
+        cur_msg.data = present_current
+        self.current_pub.publish(cur_msg)
+            
 def main(args=None):
     rclpy.init(args=args)
     node = GripperNode()
-    executor = MultiThreadedExecutor(num_threads=4)
-    executor.add_node(node)
     try:
-        executor.spin()
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        print("\n\nShutting down Dongsoo Gripper Node...")
     finally:
         node.destroy_node()
         rclpy.shutdown()

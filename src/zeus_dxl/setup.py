@@ -21,8 +21,6 @@ setup(
     entry_points={
         'console_scripts': [
             'gripper_run = zeus_dxl.zeus_gripper:main',
-            'block_run = zeus_dxl.controller_node:main',
-            
         ],
     },
 )

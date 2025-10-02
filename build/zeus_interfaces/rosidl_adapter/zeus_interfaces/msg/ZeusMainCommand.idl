@@ -12,6 +12,8 @@ module zeus_interfaces {
       string frame;
 
       float__6 position;
+
+      float speed;
     };
   };
 };

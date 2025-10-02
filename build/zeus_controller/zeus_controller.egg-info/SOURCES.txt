@@ -12,6 +12,7 @@ resource/zeus_controller
 zeus_controller/__init__.py
 zeus_controller/gripper_controller.py
 zeus_controller/read_json.py
+zeus_controller/zeus_client copy.py
 zeus_controller/zeus_client.py
 zeus_controller/zeus_connect.py
 zeus_controller/zeus_server.py

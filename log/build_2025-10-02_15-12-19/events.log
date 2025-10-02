@@ -1,0 +1,7 @@
+[0.000000] (-) TimerEvent: {}
+[0.000326] (-) JobUnselected: {'identifier': 'zeus_controller'}
+[0.000353] (-) JobUnselected: {'identifier': 'zeus_description'}
+[0.000368] (-) JobUnselected: {'identifier': 'zeus_dxl'}
+[0.000382] (-) JobUnselected: {'identifier': 'zeus_interfaces'}
+[0.000394] (-) JobUnselected: {'identifier': 'zeus_vision'}
+[0.000407] (-) EventReactorShutdown: {}

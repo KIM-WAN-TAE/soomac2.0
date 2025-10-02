@@ -80,7 +80,7 @@ void zeus_interfaces__msg__ZeusMainCommand__rosidl_typesupport_introspection_c__
   *item = *value;
 }
 
-static rosidl_typesupport_introspection_c__MessageMember zeus_interfaces__msg__ZeusMainCommand__rosidl_typesupport_introspection_c__ZeusMainCommand_message_member_array[2] = {
+static rosidl_typesupport_introspection_c__MessageMember zeus_interfaces__msg__ZeusMainCommand__rosidl_typesupport_introspection_c__ZeusMainCommand_message_member_array[3] = {
   {
     "frame",  // name
     rosidl_typesupport_introspection_c__ROS_TYPE_STRING,  // type
@@ -114,13 +114,30 @@ static rosidl_typesupport_introspection_c__MessageMember zeus_interfaces__msg__Z
     zeus_interfaces__msg__ZeusMainCommand__rosidl_typesupport_introspection_c__fetch_function__ZeusMainCommand__position,  // fetch(index, &value) function pointer
     zeus_interfaces__msg__ZeusMainCommand__rosidl_typesupport_introspection_c__assign_function__ZeusMainCommand__position,  // assign(index, value) function pointer
     NULL  // resize(index) function pointer
+  },
+  {
+    "speed",  // name
+    rosidl_typesupport_introspection_c__ROS_TYPE_FLOAT,  // type
+    0,  // upper bound of string
+    NULL,  // members of sub message
+    false,  // is array
+    0,  // array size
+    false,  // is upper bound
+    offsetof(zeus_interfaces__msg__ZeusMainCommand, speed),  // bytes offset in struct
+    NULL,  // default value
+    NULL,  // size() function pointer
+    NULL,  // get_const(index) function pointer
+    NULL,  // get(index) function pointer
+    NULL,  // fetch(index, &value) function pointer
+    NULL,  // assign(index, value) function pointer
+    NULL  // resize(index) function pointer
   }
 };
 
 static const rosidl_typesupport_introspection_c__MessageMembers zeus_interfaces__msg__ZeusMainCommand__rosidl_typesupport_introspection_c__ZeusMainCommand_message_members = {
   "zeus_interfaces__msg",  // message namespace
   "ZeusMainCommand",  // message name
-  2,  // number of fields
+  3,  // number of fields
   sizeof(zeus_interfaces__msg__ZeusMainCommand),
   zeus_interfaces__msg__ZeusMainCommand__rosidl_typesupport_introspection_c__ZeusMainCommand_message_member_array,  // message members
   zeus_interfaces__msg__ZeusMainCommand__rosidl_typesupport_introspection_c__ZeusMainCommand_init_function,  // function to initialize message memory (memory has to be allocated)

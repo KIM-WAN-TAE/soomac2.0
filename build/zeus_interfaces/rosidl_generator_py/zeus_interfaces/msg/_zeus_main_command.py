@@ -62,16 +62,19 @@ class ZeusMainCommand(metaclass=Metaclass_ZeusMainCommand):
     __slots__ = [
         '_frame',
         '_position',
+        '_speed',
     ]
 
     _fields_and_field_types = {
         'frame': 'string',
         'position': 'float[6]',
+        'speed': 'float',
     }
 
     SLOT_TYPES = (
         rosidl_parser.definition.UnboundedString(),  # noqa: E501
         rosidl_parser.definition.Array(rosidl_parser.definition.BasicType('float'), 6),  # noqa: E501
+        rosidl_parser.definition.BasicType('float'),  # noqa: E501
     )
 
     def __init__(self, **kwargs):
@@ -84,6 +87,7 @@ class ZeusMainCommand(metaclass=Metaclass_ZeusMainCommand):
         else:
             self.position = numpy.array(kwargs.get('position'), dtype=numpy.float32)
             assert self.position.shape == (6, )
+        self.speed = kwargs.get('speed', float())
 
     def __repr__(self):
         typename = self.__class__.__module__.split('.')
@@ -117,6 +121,8 @@ class ZeusMainCommand(metaclass=Metaclass_ZeusMainCommand):
         if self.frame != other.frame:
             return False
         if any(self.position != other.position):
+            return False
+        if self.speed != other.speed:
             return False
         return True
 
@@ -168,3 +174,18 @@ class ZeusMainCommand(metaclass=Metaclass_ZeusMainCommand):
                  all(not (val < -3.402823466e+38 or val > 3.402823466e+38) or math.isinf(val) for val in value)), \
                 "The 'position' field must be a set or sequence with length 6 and each value of type 'float' and each float in [-340282346600000016151267322115014000640.000000, 340282346600000016151267322115014000640.000000]"
         self._position = numpy.array(value, dtype=numpy.float32)
+
+    @builtins.property
+    def speed(self):
+        """Message field 'speed'."""
+        return self._speed
+
+    @speed.setter
+    def speed(self, value):
+        if __debug__:
+            assert \
+                isinstance(value, float), \
+                "The 'speed' field must be of type 'float'"
+            assert not (value < -3.402823466e+38 or value > 3.402823466e+38) or math.isinf(value), \
+                "The 'speed' field must be a float in [-3.402823466e+38, 3.402823466e+38]"
+        self._speed = value
