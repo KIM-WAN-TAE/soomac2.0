@@ -1,0 +1,21 @@
+[0.260s] Invoking command in '/home/pc/soomac_ws/build/zeus_dxl': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_dxl/build --no-deps symlink_data
+[0.376s] running develop
+[0.445s] running egg_info
+[0.445s] writing zeus_dxl.egg-info/PKG-INFO
+[0.445s] writing dependency_links to zeus_dxl.egg-info/dependency_links.txt
+[0.445s] writing entry points to zeus_dxl.egg-info/entry_points.txt
+[0.445s] writing requirements to zeus_dxl.egg-info/requires.txt
+[0.445s] writing top-level names to zeus_dxl.egg-info/top_level.txt
+[0.446s] reading manifest file 'zeus_dxl.egg-info/SOURCES.txt'
+[0.446s] writing manifest file 'zeus_dxl.egg-info/SOURCES.txt'
+[0.446s] running build_ext
+[0.447s] Creating /home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages/zeus-dxl.egg-link (link to .)
+[0.447s] Installing gripper_run script to /home/pc/soomac_ws/install/zeus_dxl/lib/zeus_dxl
+[0.447s] 
+[0.447s] Installed /home/pc/soomac_ws/build/zeus_dxl
+[0.447s] running symlink_data
+[0.447s] creating /home/pc/soomac_ws/install/zeus_dxl/share/ament_index
+[0.447s] creating /home/pc/soomac_ws/install/zeus_dxl/share/ament_index/resource_index
+[0.447s] creating /home/pc/soomac_ws/install/zeus_dxl/share/ament_index/resource_index/packages
+[0.447s] error: can't copy '/home/pc/soomac_ws/build/zeus_dxl/resource/zeus_dxl': doesn't exist or not a regular file
+[0.458s] Invoked command in '/home/pc/soomac_ws/build/zeus_dxl' returned '1': PYTHONPATH=/home/pc/soomac_ws/build/zeus_dxl/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_dxl/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_dxl/build --no-deps symlink_data

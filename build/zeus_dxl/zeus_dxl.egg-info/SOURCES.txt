@@ -8,6 +8,7 @@ setup.py
 ../../build/zeus_dxl/zeus_dxl.egg-info/requires.txt
 ../../build/zeus_dxl/zeus_dxl.egg-info/top_level.txt
 ../../build/zeus_dxl/zeus_dxl.egg-info/zip-safe
+resource/zeus_dxl
 zeus_dxl/__init__.py
 zeus_dxl/controller_node.py
 zeus_dxl/zeus_gripper.py
