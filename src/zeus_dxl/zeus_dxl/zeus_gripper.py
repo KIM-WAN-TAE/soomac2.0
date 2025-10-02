@@ -44,10 +44,10 @@ class GripperNode(Node):
             return
         
         self.motor_init()
-        self.create_subscription(String, '/aiot/string/gripper_command', self.gripper_callback, 10)
+        self.create_subscription(String, '/zeus/string/gripper_command', self.gripper_callback, 10)
         
         self.status_timer = self.create_timer(1/RATE, self.timer_callback)
-        self.current_pub = self.create_publisher(Float32, '/aiot/float/gripper_present_current', 10)
+        self.current_pub = self.create_publisher(Float32, '/zeus/float/gripper_present_current', 10)
         
     def motor_init(self):
         _, dxl_error = self.packethandler.write1ByteTxRx(
