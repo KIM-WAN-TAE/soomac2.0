@@ -12,8 +12,8 @@ import math
 import time
 
 # ===== 시각화/클러스터링 스위치 =====
-USE_MPL = False          # Matplotlib 실시간 3D 시각화 비활성화
-USE_DBSCAN_3D = False    # Open3D DBSCAN 비활성화
+USE_MPL = False
+USE_DBSCAN_3D = False
 
 try:
     import open3d as o3d
@@ -70,9 +70,9 @@ BLOCK_LEN_M = 0.075
 BLOCK_WID_M = 0.025
 
 # 선택 규칙 파라미터
-SAME_LAYER_EPS_M   = 0.003      # 같은 층(z) 판정 오차
-WIDTH_THRESHOLD_MM = 24.0       # 폭(mm) 기준
-AREA_THRESHOLD_MM2 = 1700.0     # 면적 임계(mm^2)
+SAME_LAYER_EPS_M   = 0.003
+WIDTH_THRESHOLD_MM = 24.0
+AREA_THRESHOLD_MM2 = 1750.0  # mm^2
 
 # =========================
 # 유틸
@@ -127,7 +127,7 @@ def keep_largest_component(mask_bin):
     i = np.argmax(areas) + 1
     return (labels == i).astype(np.uint8)
 
-# ---- 새로 추가: RealSense 왜곡 포함 역투영 ----
+# ---- RealSense 왜곡 포함 역투영 ----
 def deproject_points_from_mask_rs(mask_bin, depth_frame, intr_full, depth_scale, stride=PCL_STRIDE):
     depth = np.asanyarray(depth_frame.get_data())
     H, W = depth.shape[:2]
@@ -149,18 +149,16 @@ def deproject_points_from_mask_rs(mask_bin, depth_frame, intr_full, depth_scale,
     pts = np.empty((xs.size, 3), dtype=np.float32)
     for i, (u, v, zz) in enumerate(zip(xs, ys, z)):
         X, Y, Z = rs.rs2_deproject_pixel_to_point(intr_full, [float(u), float(v)], float(zz))
-        pts[i, 0] = X; pts[i, 1] = Y; pts[i, 2] = Z
+        pts[i] = (X, Y, Z)
     return pts, xs, ys
 
 # =========================
-# [VIS] 투영/마커
+# [VIS] 투영/마커 (왜곡 포함)
 # =========================
-def project_point_to_pixel(P, intr):
-    X, Y, Z = float(P[0]), float(P[1]), float(P[2])
-    if Z <= 1e-9 or not np.isfinite(Z):
+def project_point_to_pixel_rs(P, intr_full):
+    if not np.isfinite(P[2]) or P[2] <= 1e-9:
         return None
-    u = intr.fx * (X / Z) + intr.ppx
-    v = intr.fy * (Y / Z) + intr.ppy
+    u, v = rs.rs2_project_point_to_pixel(intr_full, [float(P[0]), float(P[1]), float(P[2])])
     return (int(round(u)), int(round(v)))
 
 def draw_cross(img, pt, color=(0,0,255), size=6, thickness=2):
@@ -213,7 +211,8 @@ def segment_plane_and_axes(pts):
     return x_axis.astype(np.float32), y_axis.astype(np.float32), z_axis.astype(np.float32), \
            origin.astype(np.float32), np.asarray(inlier_cloud.points, dtype=np.float32), (a,b,c,d)
 
-def plane_inlier_mask_from_model(mask_bin, depth_frame, intr, depth_scale, plane_model, dist_th=PLANE_DIST_BASE*1.5):
+def plane_inlier_mask_from_model(mask_bin, depth_frame, intr_full, depth_scale,
+                                 plane_model, dist_th=PLANE_DIST_BASE*1.5, stride=1):
     if plane_model is None:
         return np.zeros_like(mask_bin, dtype=np.uint8)
     a, b, c, d = plane_model
@@ -221,34 +220,38 @@ def plane_inlier_mask_from_model(mask_bin, depth_frame, intr, depth_scale, plane
     H, W = depth.shape[:2]
     if mask_bin.shape[:2] != (H, W):
         mask_bin = cv2.resize(mask_bin, (W, H), interpolation=cv2.INTER_NEAREST)
+
     ys, xs = np.where(mask_bin > 0)
     if ys.size == 0:
         return np.zeros((H, W), dtype=np.uint8)
+
+    ys = ys[::max(1, stride)]
+    xs = xs[::max(1, stride)]
     zs = depth[ys, xs].astype(np.float32) * depth_scale
-    valid = (zs > 1e-6)
+    valid = zs > 1e-6
     if not np.any(valid):
         return np.zeros((H, W), dtype=np.uint8)
-    xs, ys, zs = xs[valid], ys[valid], zs[valid]
-    X = (xs - intr.ppx) * zs / intr.fx
-    Y = (ys - intr.ppy) * zs / intr.fy
-    numer = np.abs(a*X + b*Y + c*zs + d)
+    ys, xs, zs = ys[valid], xs[valid], zs[valid]
+
+    pts = np.empty((zs.size, 3), dtype=np.float32)
+    for i, (u, v, z) in enumerate(zip(xs, ys, zs)):
+        X, Y, Z = rs.rs2_deproject_pixel_to_point(intr_full, [float(u), float(v)], float(z))
+        pts[i] = (X, Y, Z)
+
+    numer = np.abs(a*pts[:,0] + b*pts[:,1] + c*pts[:,2] + d)
     denom = (a*a + b*b + c*c) ** 0.5 + 1e-9
     dist = numer / denom
-    inliers = (dist <= dist_th)
+    inliers = dist <= dist_th
+
     out = np.zeros((H, W), dtype=np.uint8)
     out[ys[inliers], xs[inliers]] = 1
     return out
 
-def largest_cluster_dbscan(inlier_points, eps=DBSCAN_EPS_M, min_points=DBSCAN_MINPTS):
-    return None  # 비활성화
-
-def ray_plane_intersect(cx, cy, intr, plane_model):
+def ray_plane_intersect(cx, cy, intr_full, plane_model):
     if plane_model is None:
         return None
     a,b,c,d = plane_model
-    vx = (cx - intr.ppx) / intr.fx
-    vy = (cy - intr.ppy) / intr.fy
-    vz = 1.0
+    vx, vy, vz = rs.rs2_deproject_pixel_to_point(intr_full, [float(cx), float(cy)], 1.0)
     denom = a*vx + b*vy + c*vz
     if abs(denom) < 1e-9:
         return None
@@ -268,33 +271,52 @@ def _rasterize_rotated_rect(shape_hw, rect):
     cv2.fillPoly(mask, [box], 1)
     return mask, box
 
-# ---- 수정: 3D 인라이어 중심을 중앙값으로, 덮어쓰기 금지 ----
-def refine_center_minarearect_with_size(mask_bin, depth_frame, intr, intr_full_rs, depth_scale, L_m, W_m,
+# ---- 2D 중심 → 3D 변환(왜곡 포함 교차 우선) ----
+def get_3d_center_from_2d_pixel(rect_center_px, depth_frame, intr_full_rs, depth_scale, plane_model):
+    cx, cy = rect_center_px
+    pt_3d = ray_plane_intersect(cx, cy, intr_full_rs, plane_model)
+    if pt_3d is not None:
+        return pt_3d.astype(np.float32), "A-ray-plane"
+
+    H, W = depth_frame.get_height(), depth_frame.get_width()
+    cx_i, cy_i = int(round(cx)), int(round(cy))
+    x0, x1 = max(0, cx_i - 2), min(W - 1, cx_i + 2)
+    y0, y1 = max(0, cy_i - 2), min(H - 1, cy_i + 2)
+    depth = np.asanyarray(depth_frame.get_data())
+    patch = depth[y0:y1+1, x0:x1+1].astype(np.float32) * depth_scale
+    patch = patch[patch > 1e-6]
+    if patch.size > 0:
+        z_med = float(np.median(patch))
+        X, Y, Z = rs.rs2_deproject_pixel_to_point(intr_full_rs, [float(cx), float(cy)], float(z_med))
+        return np.array([X, Y, Z], dtype=np.float32), "B-depth-median"
+    return None, None
+
+# ---- 중심 정제 ----
+def refine_center_minarearect_with_size(mask_bin, depth_frame, intr_full_rs, depth_scale, L_m, W_m,
                                         plane_model, x_axis, y_axis):
     H, W = mask_bin.shape[:2]
     cnt = _largest_contour(mask_bin)
     if cnt is None or cv2.contourArea(cnt) < 10:
-        return None, None, None, None, None, None, None, None  # + pts 반환
+        return [None] * 8
 
-    rect = cv2.minAreaRect(cnt)  # ((cx,cy),(w0,h0),angle)
+    rect = cv2.minAreaRect(cnt)
     (cx, cy), (w0, h0), ang = rect
     rect_orig_box_pts = cv2.boxPoints(rect).astype(np.int32)
 
+    depth = np.asanyarray(depth_frame.get_data())
     ys, xs = np.where(mask_bin > 0)
     if xs.size == 0:
-        return None, None, None, None, None, None, None, None
-
-    depth = np.asanyarray(depth_frame.get_data())
+        return [None] * 8
     z_vals = depth[ys, xs].astype(np.float32) * depth_scale
     z_vals = z_vals[z_vals > 1e-6]
     if z_vals.size == 0:
-        return None, None, None, None, None, None, None, None
+        return [None] * 8
     z_med = float(np.median(z_vals))
 
     scale_x = float(np.sqrt(x_axis[0]**2 + x_axis[1]**2)) if x_axis is not None else 1.0
     scale_y = float(np.sqrt(y_axis[0]**2 + y_axis[1]**2)) if y_axis is not None else 1.0
 
-    fx, fy = intr.fx, intr.fy
+    fx = intr_full_rs.fx; fy = intr_full_rs.fy
     w_exp1 = (L_m * fx / max(z_med, 1e-6)) * scale_x
     h_exp1 = (W_m * fy / max(z_med, 1e-6)) * scale_y
     w_exp2 = (W_m * fx / max(z_med, 1e-6)) * scale_x
@@ -302,38 +324,15 @@ def refine_center_minarearect_with_size(mask_bin, depth_frame, intr, intr_full_r
 
     err1 = abs(w0 - w_exp1)/(w_exp1+1e-6) + abs(h0 - h_exp1)/(h_exp1+1e-6)
     err2 = abs(w0 - w_exp2)/(w_exp2+1e-6) + abs(h0 - h_exp2)/(h_exp2+1e-6)
-    if err2 < err1:
-        w_snap, h_snap = w_exp2, h_exp2
-    else:
-        w_snap, h_snap = w_exp1, h_exp1
+    w_snap, h_snap = (w_exp2, h_exp2) if err2 < err1 else (w_exp1, h_exp1)
 
     rect_snap = ((cx, cy), (w_snap, h_snap), ang)
-    mask_rect, rect_snap_box_pts = _rasterize_rotated_rect((H, W), rect_snap)
-    roi = (mask_bin.astype(np.uint8) & mask_rect.astype(np.uint8))
+    _, rect_snap_box_pts = _rasterize_rotated_rect((H, W), rect_snap)
 
-    # 왜곡 포함 역투영으로 인라이어 포인트 추출
-    pts, _, _ = deproject_points_from_mask_rs(roi, depth_frame, intr_full_rs, depth_scale, stride=PCL_STRIDE)
-
-    if pts is None or pts.shape[0] < 20:
-        pt = ray_plane_intersect(cx, cy, intr, plane_model)
-        if pt is not None:
-            return pt.astype(np.float32), (cx, cy), z_med, rect_snap, rect_snap_box_pts, rect_orig_box_pts, "A-ray-plane", None
-        cx_i, cy_i = int(round(cx)), int(round(cy))
-        x0, x1 = max(0, cx_i-2), min(W-1, cx_i+2)
-        y0, y1 = max(0, cy_i-2), min(H-1, cy_i+2)
-        patch = depth[y0:y1+1, x0:x1+1].astype(np.float32) * depth_scale
-        patch = patch[patch > 1e-6]
-        if patch.size == 0:
-            return None, None, None, rect_snap, rect_snap_box_pts, rect_orig_box_pts, None, None
-        zc = float(np.median(patch))
-        X = (cx - intr.ppx) * zc / intr.fx
-        Y = (cy - intr.ppy) * zc / intr.fy
-        refined_origin = np.array([X, Y, zc], dtype=np.float32)
-        return refined_origin, (cx, cy), z_med, rect_snap, rect_snap_box_pts, rect_orig_box_pts, "A-depth-median", None
-
-    # 중앙값 중심. 덮어쓰기 금지
-    refined_origin = np.median(pts, axis=0).astype(np.float32)
-    return refined_origin, (cx, cy), z_med, rect_snap, rect_snap_box_pts, rect_orig_box_pts, "B-ROI-robust", pts
+    refined_origin, origin_src = get_3d_center_from_2d_pixel(
+        (cx, cy), depth_frame, intr_full_rs, depth_scale, plane_model
+    )
+    return refined_origin, (cx, cy), z_med, rect_snap, rect_snap_box_pts, rect_orig_box_pts, origin_src, None
 
 def plane_center_from_points(points_xyz, plane_origin, x_axis, y_axis):
     if points_xyz is None or len(points_xyz) == 0:
@@ -386,13 +385,13 @@ def area_mm2_from_inliers(inliers_xyz, plane_origin, x_axis, y_axis):
     xa = x_axis.reshape(3, 1).astype(np.float32, copy=False)
     ya = y_axis.reshape(3, 1).astype(np.float32, copy=False)
     rel = P - o
-    X = (rel @ xa).reshape(-1)
-    Y = (rel @ ya).reshape(-1)
-    pts2 = np.stack([X, Y], axis=1)
-    hull = cv2.convexHull(pts2.astype(np.float32), returnPoints=True)
+    X = (rel @ xa).reshape(-1) * 1000.0
+    Y = (rel @ ya).reshape(-1) * 1000.0
+    pts2 = np.stack([X, Y], axis=1).astype(np.float32)
+    hull = cv2.convexHull(pts2, returnPoints=True)
     hull = hull.reshape(-1, 2)
-    area_m2 = _polygon_area_2d(hull)
-    return float(area_m2 * 1e6)
+    area_mm2 = _polygon_area_2d(hull)
+    return float(area_mm2)
 
 def block_pass_filter(width_mm, area_mm2, width_thr_mm, area_thr_mm2):
     if width_mm is None or area_mm2 is None:
@@ -404,14 +403,14 @@ def block_pass_filter(width_mm, area_mm2, width_thr_mm, area_thr_mm2):
     return True
 
 # =========================
-# Matplotlib 시각화 스텁 (비활성화)
+# Matplotlib 시각화 스텁
 # =========================
 class MPLLiveOne:
     def __init__(self): pass
     def update(self, raw_pose, final_pose, inliers): return
 
 # =========================
-# HSV 색상 보정 유틸 (평균 사용)
+# HSV 색상 보정
 # =========================
 COLOR_NORMALIZE_SET = {"red", "pink", "purple", "green"}
 
@@ -459,16 +458,13 @@ class BlockPosePublisher(Node):
         config.enable_stream(rs.stream.color, COLOR_W, COLOR_H, rs.format.bgr8, COLOR_FPS)
         config.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, DEPTH_FPS)
 
-        # 파이프라인 시작 및 보정값 확보
         profile = self.pipeline.start(config)
         self.align = rs.align(rs.stream.color)
         self.depth_scale = profile.get_device().first_depth_sensor().get_depth_scale()
 
-        # 왜곡 포함 intrinsics (RealSense 구조체 그대로 보관)
         self.color_stream = profile.get_stream(rs.stream.color).as_video_stream_profile()
         self.intr_full = self.color_stream.get_intrinsics()  # rs.intrinsics
 
-        # 투영 편의를 위한 단순 intrinsics
         class SimpleIntr:
             __slots__ = ("fx","fy","ppx","ppy")
             def __init__(self, fx, fy, ppx, ppy):
@@ -587,7 +583,7 @@ def main(args=None):
                     if origin_m is None:
                         continue
 
-                    plane_inlier_mask = plane_inlier_mask_from_model(mask_bin, depth_frame, node.intr, node.depth_scale, plane_model)
+                    plane_inlier_mask = plane_inlier_mask_from_model(mask_bin, depth_frame, node.intr_full, node.depth_scale, plane_model, stride=1)
                     plane_inlier_mask = keep_largest_component(plane_inlier_mask)
                     ratio = float(plane_inlier_mask.sum()) / (float(mask_bin.sum()) + 1e-9)
                     if ratio < INLIER_RATIO_TH:
@@ -596,10 +592,10 @@ def main(args=None):
                     if plane_inlier_mask.any():
                         plane_accum_mask = np.clip(plane_accum_mask + plane_inlier_mask, 0, 1)
 
-                    # 스냅 크기 추정 + ROI 인라이어 중앙값 중심
+                    # 스냅 크기 추정 + 2D중심→3D
                     refined_origin, rect_center_px, z_med, rect_snap, rect_snap_box_pts, rect_orig_box_pts, origin_src, roi_pts = \
                         refine_center_minarearect_with_size(
-                            plane_inlier_mask, depth_frame, node.intr, node.intr_full, node.depth_scale,
+                            plane_inlier_mask, depth_frame, node.intr_full, node.depth_scale,
                             BLOCK_LEN_M, BLOCK_WID_M, plane_model, x_axis, y_axis
                         )
 
@@ -610,7 +606,7 @@ def main(args=None):
                     if rect_center_px is not None:
                         cv2.circle(overlay, (int(rect_center_px[0]), int(rect_center_px[1])), 3, (0,255,255), -1, cv2.LINE_AA)
 
-                    # 평면 좌표계 중앙값으로 한 번 더 보정
+                    # 평면 좌표계 중앙값으로 보정 시도
                     if roi_pts is not None and roi_pts.shape[0] >= 10:
                         po = plane_center_from_points(roi_pts, origin_m, x_axis, y_axis)
                         if po is not None:
@@ -619,14 +615,8 @@ def main(args=None):
 
                     if refined_origin is not None:
                         origin_m = refined_origin
-                    else:
-                        origin_src = origin_src or "-"
 
-                    # 폭(mm) 계산 및 face 분류
-                    min_width_mm = detect_area(inliers, origin_m, x_axis, y_axis)
-                    face = classify_by_min_width_threshold(min_width_mm, WIDTH_THRESHOLD_MM)
-
-                    origin_px = project_point_to_pixel(origin_m, node.intr)
+                    origin_px = project_point_to_pixel_rs(origin_m, node.intr_full)
                     draw_cross(overlay, origin_px, color=(255,255,0), size=5, thickness=2)
                     if origin_px is not None:
                         cv2.putText(overlay, f"{label[:6]}:{origin_src or '-'}",
@@ -636,81 +626,76 @@ def main(args=None):
                                     (max(0, origin_px[0]-40), max(12, origin_px[1]-10)),
                                     FONT, 0.45, (255,255,0), 1, cv2.LINE_AA)
 
+                    # ===== 면적(mm^2) & pitch(도)
+                    pitch_deg = None
+                    if all(v is not None for v in [x_axis, y_axis, z_axis]):
+                        raw_rot_matrix = np.stack([x_axis, y_axis, z_axis], axis=1)
+                        ypr = SciRot.from_matrix(raw_rot_matrix).as_euler('zyx', degrees=True)
+                        pitch_deg = float(ypr[1])
+
+                    area_mm2 = None
+                    pts_for_area = inliers  # roi_pts가 None이므로 inliers 사용
+                    area_mm2 = area_mm2_from_inliers(pts_for_area, origin_m, x_axis, y_axis)
+                    if area_mm2 is None:
+                        area_mm2 = 0.0
+
+                    area_txt = f"area_mm2:{int(round(area_mm2))}"
+                    cv2.putText(overlay, area_txt, (x1, max(0, y1 - 24)),
+                                FONT, 0.6, (255,255,255), 3, cv2.LINE_AA)
+                    cv2.putText(overlay, area_txt, (x1, max(0, y1 - 24)),
+                                FONT, 0.6, (0,0,255), 1, cv2.LINE_AA)
+
                     candidates.append(dict(
                         label=label,
                         conf=conf_i, box=(x1,y1,x2,y2),
                         origin=origin_m, axes=(x_axis, y_axis, z_axis),
                         inliers=inliers, plane_model=plane_model, cx=cx, cy=cy,
                         src=origin_src or "-",
-                        face=face,
-                        width_mm=min_width_mm,
-                        hsv=(Hm, Sm, Vm)
+                        hsv=(Hm, Sm, Vm),
+                        area_mm2=float(area_mm2),
+                        pitch_deg=pitch_deg
                     ))
 
             if plane_accum_mask.any():
                 plane_vis = apply_mask_overlay(plane_vis, plane_accum_mask, color=(0,255,0), alpha=0.8)
 
             # -------------------------
-            # 모드별 후보 선택 & 퍼블리시
+            # 선택 & 퍼블리시
             # -------------------------
             chosen = None
             pre_time = time.time()
             if mode == 'block':
-                valid = []
-                for c in candidates:
-                    if c.get('origin') is None:
+                CLASS_ORDER = ['blue', 'green', 'pink', 'purple', 'red', 'yellow']
+                AREA_TH_MM2  = float(AREA_THRESHOLD_MM2)
+
+                def xy_dist_cam(c):
+                    o = c.get('origin', None)
+                    if o is None or not np.isfinite(o[0]) or not np.isfinite(o[1]):
+                        return float('inf')
+                    return math.hypot(float(o[0]), float(o[1]))
+
+                def area_mm2_of(c):
+                    return float(c.get('area_mm2', 0.0))
+
+                for cls in CLASS_ORDER:
+                    cand_cls = [c for c in candidates if str(c.get('label', '')).lower() == cls]
+                    cand_sel = [c for c in cand_cls if area_mm2_of(c) >= AREA_TH_MM2]
+                    if not cand_sel:
                         continue
-                    if c.get('face', 'uncertain') != 'width_area':
-                        continue
-
-                    width_mm = c.get('width_mm', None)
-                    inliers = c.get('inliers', None)
-                    x_axis, y_axis, _ = c.get('axes', (None, None, None))
-                    origin_m = c.get('origin', None)
-                    area_mm2 = area_mm2_from_inliers(inliers, origin_m, x_axis, y_axis)
-
-                    if not block_pass_filter(width_mm=width_mm,
-                                            area_mm2=area_mm2,
-                                            width_thr_mm=WIDTH_THRESHOLD_MM,
-                                            area_thr_mm2=AREA_THRESHOLD_MM2):
-                        continue
-                    c['area_mm2'] = area_mm2
-                    valid.append(c)
-
-                chosen = None
-                if valid:
-                    min_z_val = min(float(v['origin'][2]) for v in valid)
-                    same_layer = [v for v in valid
-                                  if abs(float(v['origin'][2]) - min_z_val) <= SAME_LAYER_EPS_M]
-
-                    def key_block(v):
-                        ox, oy, oz = map(float, v['origin'])
-                        dxy = math.hypot(ox, oy)
-                        l1  = abs(ox) + abs(oy)
-                        return (dxy, oz, l1)
-
-                    chosen = min(same_layer, key=key_block) if same_layer else None
-
-                mpl_raw_pose = final_pose = None
-                mpl_inliers = None
+                    chosen = min(cand_sel, key=xy_dist_cam)
+                    break
 
                 if chosen is not None:
                     x_axis, y_axis, z_axis = chosen['axes']
                     origin_m = chosen['origin']
                     label = chosen.get('label', None)
                     cx, cy = chosen['cx'], chosen['cy']
-                    width_mm = chosen.get('width_mm', None)
-                    area_mm2 = chosen.get('area_mm2', None)
-                    H, S, V = chosen.get('hsv', (None, None, None))
 
-                    final_px = project_point_to_pixel(origin_m, node.intr)
+                    final_px = project_point_to_pixel_rs(origin_m, node.intr_full)
                     draw_cross(overlay, final_px, color=(0, 0, 255), size=7, thickness=2)
 
                     if all(v is not None for v in [x_axis, y_axis, z_axis]):
                         raw_rot_matrix = np.stack([x_axis, y_axis, z_axis], axis=1)
-                        mpl_raw_pose = (origin_m, raw_rot_matrix, None, None)
-                        mpl_inliers  = chosen['inliers']
-
                         raw_quat = SciRot.from_matrix(raw_rot_matrix).as_quat()
                         raw_rotation = SciRot.from_quat(raw_quat)
                         ypr = raw_rotation.as_euler('zyx', degrees=True)
@@ -771,7 +756,6 @@ def main(args=None):
                     node.last_center = (cx, cy)
 
                     if node.detect_signal != "":
-                        # 4x4 행렬
                         msg = Float32MultiArray()
                         rows, cols = 4, 4
                         msg.layout.dim.append(MultiArrayDimension(label='rows', size=rows, stride=cols))
@@ -780,57 +764,26 @@ def main(args=None):
                         msg.data = final_matrix.flatten().astype(np.float32).tolist()
                         node.publisher_.publish(msg)
 
-                        # RPY
                         msg2 = Float32MultiArray()
                         roll, pitch, yaw = final_rpy
                         msg2.data = [roll, pitch, yaw]
                         node.pose_pubisher.publish(msg2)
                         node.get_logger().info(f'Published Pose: {msg2.data}')
 
-                        # 라벨
-                        node.publish_block(chosen['label'])
+                        node.publish_block(label if label is not None else "")
 
                         node.cooldown = PUBLISH_COOLDOWN_FRAMES
                         node.stable_count = 0
-                        node.detect_signal = ""  # 1회 발행 후 닫기
+                        node.detect_signal = ""
 
-                    # OSD
                     if final_px is not None:
-                        info1 = f"CHOSEN w={width_mm:.2f} mm" if (width_mm is not None) else "CHOSEN"
+                        info1 = "CHOSEN (class→area_mm2≥thr→min XY)"
                         cv2.putText(overlay, info1,
-                                    (max(0, final_px[0]-70), min(COLOR_H-8, final_px[1]+18)),
-                                    FONT, 0.55, (255,255,255), 3, cv2.LINE_AA)
+                                    (max(0, final_px[0]-160), min(COLOR_H-8, final_px[1]+18)),
+                                    FONT, 0.50, (255,255,255), 3, cv2.LINE_AA)
                         cv2.putText(overlay, info1,
-                                    (max(0, final_px[0]-70), min(COLOR_H-8, final_px[1]+18)),
-                                    FONT, 0.55, (0,0,255), 1, cv2.LINE_AA)
-
-                    if area_mm2 is not None and final_px is not None:
-                        info2 = f"area={area_mm2:.0f} mm^2"
-                        cv2.putText(overlay, info2,
-                                    (max(0, final_px[0]-70), min(COLOR_H-8, final_px[1]+36)),
-                                    FONT, 0.55, (255,255,255), 3, cv2.LINE_AA)
-                        cv2.putText(overlay, info2,
-                                    (max(0, final_px[0]-70), min(COLOR_H-8, final_px[1]+36)),
-                                    FONT, 0.55, (0,0,0), 1, cv2.LINE_AA)
-
-                    cv2.putText(
-                        overlay,
-                        f"BLOCK  R:{final_rpy[0]:.1f} P:{final_rpy[1]:.1f} Y:{final_rpy[2]:.1f} "
-                        f"| dθ:{(dtheta if np.isfinite(dtheta) else 999):.3f}° | jump:{center_jump:.1f}px | "
-                        f"stab:{node.stable_count}/{STAB_MIN_FRAMES} | cd:{node.cooldown}",
-                        (max(0, cx-260), max(20, cy-20)),
-                        FONT, 0.5, (255,255,255), 4, cv2.LINE_AA
-                    )
-                    cv2.putText(
-                        overlay,
-                        f"BLOCK  R:{final_rpy[0]:.1f} P:{final_rpy[1]:.1f} Y:{final_rpy[2]:.1f} "
-                        f"| dθ:{(dtheta if np.isfinite(dtheta) else 999):.3f}° | jump:{center_jump:.1f}px | "
-                        f"stab:{node.stable_count}/{STAB_MIN_FRAMES} | cd:{node.cooldown}",
-                        (max(0, cx-260), max(20, cy-20)),
-                        FONT, 0.5, (0,0,0), 2, cv2.LINE_AA
-                    )
-
-                    final_pose = (origin_m, final_rot_matrix, final_rpy, final_quat)
+                                    (max(0, final_px[0]-160), min(COLOR_H-8, final_px[1]+18)),
+                                    FONT, 0.50, (0,0,255), 1, cv2.LINE_AA)
                     print(time.time() - pre_time)
 
             cv2.imshow("Detections (mask+box + centers)", overlay)
