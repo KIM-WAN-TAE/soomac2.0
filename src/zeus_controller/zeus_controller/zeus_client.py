@@ -30,6 +30,7 @@ class ZeusClientNode(Node):
         while not self.zeus_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().warn('Service not available, waiting again...')
         
+        self.service_done = self.create_publisher(String, '/zeus/string/service_done', 10)
         self.binary_cmd = self.create_publisher(String, '/zeus/string/binary_command', 10)
         
         self.create_subscription(ZeusMainCommand, '/zeus/custom/client_command', self.target_pose_callback, 10)
@@ -98,11 +99,20 @@ class ZeusClientNode(Node):
             res = future.result()
         except Exception as e:
             self.get_logger().warn(f'[ZEUS] 서비스 호출 실패: {e}')
+            srv_msg = String()
+            srv_msg.data = 'Fail'
+            self.service_done.publish(srv_msg)
             return
         if res.success:
             self.get_logger().info(f'[ZEUS] 명령 성공')
+            srv_msg = String()
+            srv_msg.data = 'Success'
+            self.service_done.publish(srv_msg)
         else:
             self.get_logger().warn(f'[ZEUS] 명령 실패')
+            srv_msg = String()
+            srv_msg.data = 'Fail'
+            self.service_done.publish(srv_msg)
             
 def main(args=None):
     rclpy.init(args=args)

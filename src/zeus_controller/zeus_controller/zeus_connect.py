@@ -54,9 +54,9 @@ class TCPClient:
             lines.append(line)
 
 
-class ZeusConnectTestNode(Node):
+class ZeusConnectNode(Node):
     def __init__(self):
-        super().__init__('zeus_connect_test_node')
+        super().__init__('zeus_connect_node')
         self.declare_parameter('server_ip', DEFAULT_IP)
         self.declare_parameter('server_port', DEFAULT_PORT)
         ip = self.get_parameter('server_ip').get_parameter_value().string_value
@@ -189,7 +189,7 @@ class ZeusConnectTestNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = ZeusConnectTestNode()
+    node = ZeusConnectNode()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:

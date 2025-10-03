@@ -23,7 +23,6 @@ setup(
             'connect_zeus = zeus_controller.zeus_connect:main',
             'server_zeus = zeus_controller.zeus_server:main',
             'client_zeus = zeus_controller.zeus_client:main',
-            'gripper_zeus = zeus_controller.gripper_controller:main'
         ],
     },
 )
