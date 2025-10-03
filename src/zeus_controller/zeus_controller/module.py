@@ -10,80 +10,90 @@ class Start:
     def step(self, step):
         if step == 'step_1':
             ans = {
-                'frame'    : 'j',
-                'potition' : [],
-                'speed'    : 10.0,
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -30.0, 0.0, 0.0, 0.0],
+                'speed'    : 60.0,
+                'requires_ack' : True,
                 'next_step': 'step_2'
             }
             return ans
             
         elif step == 'step_2':
             ans = {
-                'frame'    : 'j',
-                'potition' : [],
-                'speed'    : 10.0,
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 100.0, 0.0, 0.0, 0.0],
+                'speed'    : 60.0,
+                'requires_ack' : True,
                 'next_step': 'step_3'
             }
             return ans
         
         elif step == 'step_3':
             ans = {
-                'frame'    : 'j',
-                'potition' : [],
-                'speed'    : 10.0,
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
+                'speed'    : 60.0,
+                'requires_ack' : True,
                 'next_step': 'step_4'
             }
             return ans
             
         elif step == 'step_4':
             ans = {
-                'frame'    : 'j',
-                'potition' : [],
-                'speed'    : 10.0,
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 30.0, 0.0, 0.0, 0.0],
+                'speed'    : 60.0,
+                'requires_ack' : True,
                 'next_step': 'None'
             }
             return ans
         
         else:
             print('[ZEUS] Wrong Step')
+            return None
             
 class Finish:
     def step(self, step):
         if step == 'step_1':
             ans = {
-                'frame'    : 'j',
-                'potition' : [],
-                'speed'    : 10.0,
+                'frame'    : 't',
+                'position' : [50.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 60.0,
+                'requires_ack' : True,
                 'next_step': 'step_2'
             }
             return ans
             
         elif step == 'step_2':
             ans = {
-                'frame'    : 'j',
-                'potition' : [],
-                'speed'    : 10.0,
+                'frame'    : 't',
+                'position' : [-50.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 60.0,
+                'requires_ack' : True,
                 'next_step': 'step_3'
             }
             return ans
         
         elif step == 'step_3':
             ans = {
-                'frame'    : 'j',
-                'potition' : [],
-                'speed'    : 10.0,
+                'frame'    : 't',
+                'position' : [0.0, 50.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 60.0,
+                'requires_ack' : True,
                 'next_step': 'step_4'
             }
             return ans
             
         elif step == 'step_4':
             ans = {
-                'frame'    : 'j',
-                'potition' : [],
-                'speed'    : 10.0,
+                'frame'    : 't',
+                'position' : [0.0, -50.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 60.0,
+                'requires_ack' : True,
                 'next_step': 'None'
             }
             return ans
         
         else:
             print('[ZEUS] Wrong Step')
+            return None

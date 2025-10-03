@@ -100,18 +100,18 @@ class ZeusClientNode(Node):
         except Exception as e:
             self.get_logger().warn(f'[ZEUS] 서비스 호출 실패: {e}')
             srv_msg = String()
-            srv_msg.data = 'Fail'
+            srv_msg.data = 'fail'
             self.service_done.publish(srv_msg)
             return
         if res.success:
             self.get_logger().info(f'[ZEUS] 명령 성공')
             srv_msg = String()
-            srv_msg.data = 'Success'
+            srv_msg.data = 'done'
             self.service_done.publish(srv_msg)
         else:
             self.get_logger().warn(f'[ZEUS] 명령 실패')
             srv_msg = String()
-            srv_msg.data = 'Fail'
+            srv_msg.data = 'fail'
             self.service_done.publish(srv_msg)
             
 def main(args=None):

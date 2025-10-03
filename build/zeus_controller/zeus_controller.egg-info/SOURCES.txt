@@ -10,11 +10,11 @@ setup.py
 ../../build/zeus_controller/zeus_controller.egg-info/zip-safe
 resource/zeus_controller
 zeus_controller/__init__.py
-zeus_controller/gripper_controller.py
+zeus_controller/module.py
 zeus_controller/read_json.py
-zeus_controller/zeus_client copy.py
 zeus_controller/zeus_client.py
 zeus_controller/zeus_connect.py
+zeus_controller/zeus_control_main.py
 zeus_controller/zeus_server.py
 zeus_controller.egg-info/PKG-INFO
 zeus_controller.egg-info/SOURCES.txt
