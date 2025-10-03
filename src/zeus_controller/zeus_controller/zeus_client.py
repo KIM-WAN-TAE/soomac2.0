@@ -79,7 +79,7 @@ class ZeusClientNode(Node):
             7: ['linspd', 180],
             8: ['jntspd', 20],
             9 : ['linspd', 180],
-            10: ['jntspd', 80]
+            10: ['jntspd', 70]
         }
         self.sent_speed_cmd_idx = set()
         
@@ -145,6 +145,8 @@ class ZeusClientNode(Node):
         self.block_mat = None
         self.idx = 0
         self.is_it_flat = False
+        self.x_offset = 0.0
+        self.y_offset = 0.0
         
         # block_list 재구성
         self.block_list = [
@@ -249,6 +251,8 @@ class ZeusClientNode(Node):
             is_busy = self.is_busy
             block_pose = self.block_pose
             
+        # self.get_logger().info(f'[ZEUS] :: CURRENT IDX {idx}')
+            
         if trigger and not is_busy:
             self.send_speed_command_for_idx(idx)
             
@@ -261,12 +265,13 @@ class ZeusClientNode(Node):
                     self.get_logger().info('[ZEUS] Waiting for base_to_camera_matrix...')
                     return
                 
+                # time.sleep(2)
                 with self.lock:
                     if self.topic_flag is False:
                         s_msg = String()
-                        print('block')
                         s_msg.data = 'block'
                         self.block_pose_order_pub.publish(s_msg)
+                        print('block')
                         self.topic_flag = True
                 
                 if block_pose is None:
@@ -287,36 +292,45 @@ class ZeusClientNode(Node):
                 Z_HEIGHT = Z_OFFSET - P[2]
                 move_dis = Z_HEIGHT * np.tan(abs(np.deg2rad(pitch)))
                 
+                # if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
+                #     yaw += 180
+                #     if pitch > PITCH_TOL: # Pitch 양수 # 1
+                #         print(1)
+                #         x_move = - move_dis * np.cos(np.deg2rad(yaw))  
+                #         y_move = - move_dis * np.sin(np.deg2rad(yaw))
+                        
+                #     elif pitch < - PITCH_TOL: # Pitch 음수 # 2
+                #         print(2)
+                #         x_move =   move_dis * np.cos(np.deg2rad(yaw))  
+                #         y_move =   move_dis * np.sin(np.deg2rad(yaw))
+                        
+                #     else: # 그냥 평평할 경우
+                #         x_move, y_move = 0.0, 0.0
+                #         self.is_it_flat = True
+                        
+                # elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
+                #     if pitch > PITCH_TOL: # Pitch 양수 # 3
+                #         print(3)
+                #         x_move =   move_dis * np.cos(np.deg2rad(yaw))  
+                #         y_move = - move_dis * np.sin(np.deg2rad(yaw))
+                        
+                #     elif pitch < - PITCH_TOL: # Pitch 음수 # 4
+                #         print(4)
+                #         x_move = - move_dis * np.cos(np.deg2rad(yaw))  
+                #         y_move =   move_dis * np.sin(np.deg2rad(yaw))
+                        
+                #     else: # 그냥 평평할 경우
+                #         x_move, y_move = 0.0, 0.0
+                #         self.is_it_flat = True
+                        
                 if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
                     yaw += 180
-                    if pitch > PITCH_TOL: # Pitch 양수 # 1
-                        print(1)
-                        x_move = - move_dis * np.cos(np.deg2rad(yaw))  
-                        y_move = - move_dis * np.sin(np.deg2rad(yaw))
-                        
-                    elif pitch < - PITCH_TOL: # Pitch 음수 # 2
-                        print(2)
-                        x_move =   move_dis * np.cos(np.deg2rad(yaw))  
-                        y_move =   move_dis * np.sin(np.deg2rad(yaw))
-                        
-                    else: # 그냥 평평할 경우
-                        x_move, y_move = 0.0, 0.0
-                        self.is_it_flat = True
+                    x_move, y_move = 0.0, 0.0
+                    self.is_it_flat = True
                         
                 elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
-                    if pitch > PITCH_TOL: # Pitch 양수 # 3
-                        print(3)
-                        x_move =   move_dis * np.cos(np.deg2rad(yaw))  
-                        y_move = - move_dis * np.sin(np.deg2rad(yaw))
-                        
-                    elif pitch < - PITCH_TOL: # Pitch 음수 # 4
-                        print(4)
-                        x_move = - move_dis * np.cos(np.deg2rad(yaw))  
-                        y_move =   move_dis * np.sin(np.deg2rad(yaw))
-                        
-                    else: # 그냥 평평할 경우
-                        x_move, y_move = 0.0, 0.0
-                        self.is_it_flat = True
+                    x_move, y_move = 0.0, 0.0
+                    self.is_it_flat = True
                         
                 print(f'\n x : {x_move}, y : {y_move}\n')
                 
@@ -341,32 +355,62 @@ class ZeusClientNode(Node):
                 
                 if abs(e_rx) > 30 and abs(e_rx) < 60:
                     if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
+                        print(1)
                         yaw += 90
                         yaw = abs(yaw)
                         
                     elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
+                        print(2)
                         yaw += 90
                         yaw = -abs(yaw)
                     pitch = 0.0
                     
                 else:
                     if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
+                        print(3) ## 중심  - 좁은쪽 비정상
                         yaw += 90
                         yaw = abs(yaw)
-                        if pitch > PITCH_TOL or pitch < - PITCH_TOL:
-                            pass
-                        else: # 그냥 평평할 경우
-                            pitch = 0.0
-                        
-                    elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
+
+                        if yaw > 80.0:
+                            self.x_offset = 1.5
+                            self.y_offset = 2.5
+                            
+                        elif yaw < 10.0:
+                            self.x_offset = 1.5
+                            self.y_offset = 3.5
+                        else:
+                            self.x_offset = 0.0
+                            self.y_offset = 2.5
+                            
+                        # self.x_offset = 0.0
+                        # self.y_offset = 0.0
+                    
+                            
+                    elif yaw >= -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
+                        print(4) ## 삐딱선 - 좁은 쪽은 정상
                         yaw += 90
                         yaw = -abs(yaw)
-                        if pitch > PITCH_TOL or pitch < - PITCH_TOL:
-                            pass
-                        else: # 그냥 평평할 경우
-                            pitch = 0.0
+                        
+                        if yaw > -90.0 and yaw <= -80.0:
+                            self.x_offset = -5.5
+                            self.y_offset = 0.5
+                        
+                        elif yaw > -80.0 and yaw < -70.0:
+                            self.x_offset = -4.0
+                            self.y_offset = 0.5
+                        elif yaw > -10.0 and yaw < 0.0:
+                            self.x_offset = -4.0
+                            self.y_offset = 2.5
+                        else:
+                            self.x_offset = -4.0
+                            self.y_offset = 2.0
                             
+                        # self.x_offset = 0.0
+                        # self.y_offset = .0
+                        
+                    print(f'YAWYAWYAW : {yaw}')    
                     roll = 0.0
+                    pitch = 0.0
                 
                 print(f'\nyaw : {yaw}, pitch : {pitch}, roll : {roll}')
                 print(f'eyaw : {e_rz}, epitch : {e_ry}, eroll : {e_rx} \n')
@@ -394,19 +438,26 @@ class ZeusClientNode(Node):
                         pre_z = self.xy_coor[2]
                     
                     move_z = pre_z - (P[2] + PICK_Z_OFFSET)
-                    pose = [0.0, 0.0, move_z, 0.0, 0.0, 0.0]
+                    pose = [self.x_offset, self.y_offset, move_z, 0.0, 0.0, 0.0]
                         
                     self.block_list[idx] = ['t'] + pose
                     self.send_next_command()
                 
                 else:
-                    pose = [P[0], P[1], P[2] + PICK_Z_OFFSET - 70.0, rz, ry, rx]
+                    pose = [P[0], P[1], P[2] + PICK_Z_OFFSET + 10, rz, ry, rx]
                     with self.lock:
                         pose[3:] = self.xy_coor[3:]
                     
                     self.block_list[idx] = ['l'] + pose
                     self.send_next_command()
+                    
+                # pose = [P[0], P[1], P[2] + PICK_Z_OFFSET + 10, rz, ry, rx]
+                # with self.lock:
+                #     pose[3:] = self.xy_coor[3:]
                 
+                # self.block_list[idx] = ['l'] + pose
+                # self.send_next_command()
+            
             elif idx == 4:
                 if self.drop_zone_point is None:
                     again_msg = String()
@@ -543,7 +594,9 @@ class ZeusClientNode(Node):
             self.block_pose = [P, rz, ry, rx]
             
         # print(rz, ry, rx)
-        # print(P[0], P[1], P[2])
+        print("")
+        print(P[0], P[1], P[2])
+        print("")
             
 def main(args=None):
     rclpy.init(args=args)

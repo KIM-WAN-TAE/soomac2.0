@@ -246,8 +246,7 @@ def get_3d_center_from_2d_pixel_pinhole(rect_center_px, depth_undist, intr, dept
     u, v = rect_center_px
     pt_3d = ray_plane_intersect_pinhole(u, v, intr, plane_model)
     print(pt_3d)
-    print('#############################################')
-    if pt_3d is not None: return pt_3d.astype(np.float32), "A-ray-plane"
+    # if pt_3d is not None: return pt_3d.astype(np.float32), "A-ray-plane"
     H, W = depth_undist.shape[:2]
     u_i, v_i = int(round(u)), int(round(v))
     x0, x1 = max(0, u_i-2), min(W-1, u_i+2)
@@ -256,7 +255,7 @@ def get_3d_center_from_2d_pixel_pinhole(rect_center_px, depth_undist, intr, dept
     patch = patch[patch > 1e-6]
     if patch.size > 0:
         fx, fy, cx, cy = intr
-        #print(f"z_value {patch}")
+        print(f"z_value {patch}")
         z_med = float(np.mean(patch))
         X = (u - cx) * z_med / fx
         Y = (v - cy) * z_med / fy
@@ -373,8 +372,6 @@ class BlockPosePublisher(Node):
 
     def listener_callback(self, msg):
         self.detect_signal = msg.data
-  
-            
 
     def publish_block(self, label):
         msg = String(); msg.data = label
@@ -413,10 +410,7 @@ def main(args=None):
             plane_vis = (color * 0.3).astype(np.uint8)
             plane_accum_mask = np.zeros((COLOR_H, COLOR_W), dtype=np.uint8)
 
-            res = None
-            if node.detect_signal == 'block':
-                res = node.model(color, conf=CONF_DET, iou=IOU_TH, device=DEVICE, imgsz=IMG_SIZE, verbose=False)
-            
+            res = node.model(color, conf=CONF_DET, iou=IOU_TH, device=DEVICE, imgsz=IMG_SIZE, verbose=False)
             candidates = []
 
             if res and res[0].boxes is not None and len(res[0].boxes) > 0:
@@ -579,7 +573,7 @@ def main(args=None):
                     final_matrix = np.eye(4, dtype=np.float64)
                     final_matrix[:3,:3] = final_rot_matrix
                     final_matrix[:3, 3] = origin_mm
-                    print(f"origin_mm: {origin_mm}")
+
                     def quat_delta_deg(q1, q2):
                         if q1 is None or q2 is None: return np.inf
                         dot = float(np.dot(q1, q2)); 
