@@ -26,6 +26,7 @@ RATE = 10
 CURR_UNIT_A = 0.00269
 
 RELEASE_POSITION = 2150
+GRIPPER_INIT_POSITION = 2800
 GRIP_CURRENT     = 16
 
 class GripperNode(Node):
@@ -48,6 +49,7 @@ class GripperNode(Node):
         
         self.status_timer = self.create_timer(1/RATE, self.timer_callback)
         self.current_pub = self.create_publisher(Float32, '/zeus/float/gripper_present_current', 10)
+        self.active_pub = self.create_publisher(String, '/zeus/string/gripper_done', 10)
         
     def motor_init(self):
         _, dxl_error = self.packethandler.write1ByteTxRx(
@@ -125,6 +127,13 @@ class GripperNode(Node):
         
     def gripper_callback(self, msg : String):
         cmd = msg.data
+        
+        grip_msg = String()
+        grip_msg.data = 'done'
+        
+        current_time = time.time()
+        last_time = current_time
+        
         if cmd == 'open':
             self.make_position_mode()
             
@@ -136,7 +145,14 @@ class GripperNode(Node):
         
             if dxl_error != 0:
                 self.get_logger().warn(f"[AIOT] ID {ID}: Gripper 개방 오류 ({dxl_error})")
-            
+            else:
+                while True:
+                    current_time = time.time()
+                    if current_time - last_time > 0.8:
+                        break
+                    
+                self.active_pub.publish(grip_msg)
+                
         elif cmd == 'close':
             self.make_current_mode()
             time.sleep(0.1)
@@ -145,6 +161,31 @@ class GripperNode(Node):
                 self.porthandler, ID, ADDR_GOAL_CURRENT, GRIP_CURRENT & 0xFFFF
             )
             
+            while True:
+                    current_time = time.time()
+                    if current_time - last_time > 1.0:
+                        break
+            
+            self.active_pub.publish(grip_msg)
+            
+        elif cmd == 'gripinit':
+            self.make_position_mode()
+            time.sleep(0.1)
+            
+            _, dxl_error = self.packethandler.write4ByteTxRx(
+            self.porthandler, ID, ADDR_GOAL_POSITION, GRIPPER_INIT_POSITION
+            )
+            
+            if dxl_error != 0:
+                self.get_logger().warn(f"[AIOT] ID {ID}: Gripper 개방 오류 ({dxl_error})")
+            else:
+                while True:
+                    current_time = time.time()
+                    if current_time - last_time > 0.8:
+                        break
+                    
+                self.active_pub.publish(grip_msg)
+                
         else:
             self.get_logger().warn('[AIOT] Wrong Command!')
             

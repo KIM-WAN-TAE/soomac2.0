@@ -46,7 +46,21 @@ class ZeusClientNode(Node):
     def send_speed(self, frame, value):
         if frame.lower() == 'j':
             raw_frame = 'jntspd'
-        elif frame.lower() == 'l':
+        elif frame.lower() == 'l1':
+            raw_frame = 'linspd'
+        elif frame.lower() == 'l2':
+            raw_frame = 'linspd'
+        elif frame.lower() == 'l3':
+            raw_frame = 'linspd'
+        elif frame.lower() == 'l4':
+            raw_frame = 'linspd'
+        elif frame.lower() == 'l5':
+            raw_frame = 'linspd'
+        elif frame.lower() == 'l6':
+            raw_frame = 'linspd'
+        elif frame.lower() == 'l7':
+            raw_frame = 'linspd'
+        elif frame.lower() == 'l8':
             raw_frame = 'linspd'
         elif frame.lower() == 't':
             raw_frame = 'linspd'

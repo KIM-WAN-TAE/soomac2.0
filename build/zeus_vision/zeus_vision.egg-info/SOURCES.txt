@@ -10,12 +10,7 @@ setup.py
 ../../build/zeus_vision/zeus_vision.egg-info/zip-safe
 resource/zeus_vision
 zeus_vision/__init__.py
-zeus_vision/block_detect_ copy.py
-zeus_vision/block_detect_.py
-zeus_vision/block_detect_original.py
-zeus_vision/block_detect_second.py
-zeus_vision/block_position.py
-zeus_vision/detect_cube_color.py
+zeus_vision/tool_detect.py
 zeus_vision.egg-info/PKG-INFO
 zeus_vision.egg-info/SOURCES.txt
 zeus_vision.egg-info/dependency_links.txt

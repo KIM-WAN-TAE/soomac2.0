@@ -1,6 +1,3 @@
 [console_scripts]
-cls_detect = zeus_vision.detect_cube_color:main
-detect_ = zeus_vision.block_detect_:main
-detect_org = zeus_vision.block_detect_original:main
-position = zeus_vision.block_position:main
+tool_detect = zeus_vision.tool_detect:main
 

@@ -10,6 +10,8 @@ from zeus_interfaces.srv import ZeusExecutor
 import numpy as np
 import threading, time
 
+LIN_FRAME = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6', 'l7' ,'l8']
+
 def angle_diff(goal, current):
     diff = goal - current
     for i in range(len(diff)):
@@ -19,6 +21,67 @@ def angle_diff(goal, current):
             d = (d + 180.0) % 360.0 - 180.0
             diff[i] = d
     return diff
+
+def rpy_to_rotation_matrix(roll, pitch, yaw):
+    """RPY(degree)를 rotation matrix로 변환"""
+    r = np.radians(roll)
+    p = np.radians(pitch)
+    y = np.radians(yaw)
+
+    # Roll (X축 회전)
+    Rx = np.array([[1, 0, 0],
+                   [0, np.cos(r), -np.sin(r)],
+                   [0, np.sin(r), np.cos(r)]])
+
+    # Pitch (Y축 회전)
+    Ry = np.array([[np.cos(p), 0, np.sin(p)],
+                   [0, 1, 0],
+                   [-np.sin(p), 0, np.cos(p)]])
+
+    # Yaw (Z축 회전)
+    Rz = np.array([[np.cos(y), -np.sin(y), 0],
+                   [np.sin(y), np.cos(y), 0],
+                   [0, 0, 1]])
+
+    # ZYX 순서로 회전 적용
+    R = Rz @ Ry @ Rx
+    return R
+
+def pose_to_transform(pose):
+    """6D pose [x,y,z,r,p,y]를 4x4 transformation matrix로 변환"""
+    x, y, z, roll, pitch, yaw = pose
+
+    R = rpy_to_rotation_matrix(roll, pitch, yaw)
+
+    T = np.eye(4)
+    T[:3, :3] = R
+    T[:3, 3] = [x, y, z]
+
+    return T
+
+def transform_to_pose(T):
+    """4x4 transformation matrix를 6D pose [x,y,z,r,p,y]로 변환"""
+    x, y, z = T[:3, 3]
+
+    R = T[:3, :3]
+
+    # Rotation matrix에서 RPY 추출 (ZYX 순서)
+    pitch = np.arctan2(-R[2, 0], np.sqrt(R[0, 0]**2 + R[1, 0]**2))
+
+    if np.abs(np.cos(pitch)) > 1e-6:
+        roll = np.arctan2(R[2, 1] / np.cos(pitch), R[2, 2] / np.cos(pitch))
+        yaw = np.arctan2(R[1, 0] / np.cos(pitch), R[0, 0] / np.cos(pitch))
+    else:
+        # Gimbal lock 경우
+        roll = 0
+        yaw = np.arctan2(-R[0, 1], R[1, 1])
+
+    # Radian to degree
+    roll = np.degrees(roll)
+    pitch = np.degrees(pitch)
+    yaw = np.degrees(yaw)
+
+    return np.array([x, y, z, roll, pitch, yaw])
 
 def dh_transform(theta, d, a, alpha):
     ct, st = np.cos(theta), np.sin(theta)
@@ -39,9 +102,44 @@ def command_string(frame, arr):
         cmd = f"move_j_abs+{values_str}"
         return cmd
     
-    elif frame == 'l' or frame == 'L':
+    elif frame == 'l1' or frame == 'L1':
+        values_str = ",".join([f"{v:.4f}" for v in arr])
+        cmd = f"move_l_abs+{values_str},1.0"
+        return cmd
+    
+    elif frame == 'l2' or frame == 'L2':
+        values_str = ",".join([f"{v:.4f}" for v in arr])
+        cmd = f"move_l_abs+{values_str},2.0"
+        return cmd
+    
+    elif frame == 'l3' or frame == 'L3':
+        values_str = ",".join([f"{v:.4f}" for v in arr])
+        cmd = f"move_l_abs+{values_str},3.0"
+        return cmd
+    
+    elif frame == 'l4' or frame == 'L4':
+        values_str = ",".join([f"{v:.4f}" for v in arr])
+        cmd = f"move_l_abs+{values_str},4.0"
+        return cmd
+    
+    elif frame == 'l5' or frame == 'L5':
+        values_str = ",".join([f"{v:.4f}" for v in arr])
+        cmd = f"move_l_abs+{values_str},5.0"
+        return cmd
+    
+    elif frame == 'l6' or frame == 'L6':
         values_str = ",".join([f"{v:.4f}" for v in arr])
         cmd = f"move_l_abs+{values_str},6.0"
+        return cmd
+    
+    elif frame == 'l7' or frame == 'L7':
+        values_str = ",".join([f"{v:.4f}" for v in arr])
+        cmd = f"move_l_abs+{values_str},7.0"
+        return cmd
+    
+    elif frame == 'l7' or frame == 'L7':
+        values_str = ",".join([f"{v:.4f}" for v in arr])
+        cmd = f"move_l_abs+{values_str},8.0"
         return cmd
     
     elif frame == 't' or frame == 'T':
@@ -100,20 +198,35 @@ class ZeusServerNode(Node):
             self.command_pub.publish(com_msg)
 
             target = None
+            initial_pose = None
             if frame.lower() == 't':
                 with self.lock:
-                    current = np.array(self.xy_coor)
-                    target = current - goal_coor  # 상대좌표
+                    initial_pose = np.array(self.xy_coor)  # 초기 pose 저장
+                    offset = goal_coor  # [dx,dy,dz,dr,dp,dy]
+
+                    # 초기 EE pose를 transformation matrix로 변환
+                    T_initial = pose_to_transform(initial_pose)
+
+                    # Offset을 transformation matrix로 변환
+                    T_offset = pose_to_transform(offset)
+
+                    # EE frame 기준으로 offset 적용
+                    T_target = T_initial @ T_offset
+
+                    # 최종 목표 pose 계산 (base frame 기준) - 루프 내내 고정
+                    target = transform_to_pose(T_target)
+
+                self.get_logger().info(f'[Tool Move] Initial: {initial_pose}, Offset: {offset}, Target: {target}')
 
             # 안정화 모니터링 변수들
             stable_start_time = None
             last_error = None
-            stable_threshold = 3.0  # 3초
-            error_tolerance = 0.1   # 오차 변화 허용 범위
+            stable_threshold = 1.8 
+            error_tolerance = 0.1
 
             while True:
                 with self.lock:
-                    if frame.lower() == 'l':
+                    if frame.lower() in LIN_FRAME:
                         current = np.array(self.xy_coor)
                         error = np.linalg.norm(goal_coor - current)
                         self.get_logger().info(f'Linear error : {error}')
@@ -132,10 +245,19 @@ class ZeusServerNode(Node):
                             break
 
                     elif frame.lower() == 't':
-                        current = np.array(self.xy_coor)
-                        error_vec = angle_diff(target, current)
-                        error = np.linalg.norm(error_vec)
-                        self.get_logger().info(f'target : {target}, Toolmove error : {error}')
+                        current_pose = np.array(self.xy_coor)  # [x,y,z,r,p,y]
+
+                        # Position error (xyz)
+                        pos_error = np.linalg.norm(target[:3] - current_pose[:3])
+
+                        # Rotation error (rpy) with angle wrapping
+                        rot_diff = angle_diff(target[3:], current_pose[3:])
+                        rot_error = np.linalg.norm(rot_diff)
+
+                        # Total error
+                        error = pos_error + rot_error * 0.1  # rotation에 가중치 적용
+
+                        self.get_logger().info(f'target : {target}, current: {current_pose}, pos_error: {pos_error:.2f}, rot_error: {rot_error:.2f}, total: {error:.2f}')
 
                         # 정상 완료 조건
                         if int(error) <= self.tol_tol:
