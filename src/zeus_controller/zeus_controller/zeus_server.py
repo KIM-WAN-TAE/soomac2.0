@@ -221,8 +221,8 @@ class ZeusServerNode(Node):
             # 안정화 모니터링 변수들
             stable_start_time = None
             last_error = None
-            stable_threshold = 1.8 
-            error_tolerance = 0.1
+            stable_threshold = 1.5  # 1.5초 동안 error 변화 없으면 완료
+            error_tolerance = 0.01  # error 변화량 허용 범위
 
             while True:
                 with self.lock:
@@ -264,7 +264,7 @@ class ZeusServerNode(Node):
                             res.success = True
                             break
 
-                        # 안정화 모니터링
+                        # 안정화 모니터링: error가 1.5초 이상 변화 없으면 완료
                         current_time = time.time()
                         if last_error is not None:
                             error_change = abs(error - last_error)
@@ -274,7 +274,7 @@ class ZeusServerNode(Node):
                                 if stable_start_time is None:
                                     stable_start_time = current_time
                                 elif current_time - stable_start_time >= stable_threshold:
-                                    self.get_logger().info(f'[ZEUS] Tool move completed by stable error (3+ seconds)')
+                                    self.get_logger().info(f'[ZEUS] Tool move completed: error stable for {stable_threshold}s (final error: {error:.2f}mm)')
                                     res.success = True
                                     break
                             else:
