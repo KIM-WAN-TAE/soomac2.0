@@ -1,0 +1,37 @@
+[0.285s] Invoking command in '/home/pc/test_ws/src/dongsoo_vision_pkg': PYTHONPATH=/home/pc/test_ws/build/dongsoo_vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/dongsoo_vision_pkg build --build-base /home/pc/test_ws/build/dongsoo_vision_pkg/build install --record /home/pc/test_ws/build/dongsoo_vision_pkg/install.log --single-version-externally-managed install_data
+[0.400s] running egg_info
+[0.400s] creating ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info
+[0.401s] writing ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/PKG-INFO
+[0.401s] writing dependency_links to ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/dependency_links.txt
+[0.401s] writing entry points to ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/entry_points.txt
+[0.401s] writing requirements to ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/requires.txt
+[0.401s] writing top-level names to ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/top_level.txt
+[0.401s] writing manifest file '../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/SOURCES.txt'
+[0.402s] reading manifest file '../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/SOURCES.txt'
+[0.403s] writing manifest file '../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/SOURCES.txt'
+[0.403s] running build
+[0.403s] running build_py
+[0.403s] creating /home/pc/test_ws/build/dongsoo_vision_pkg/build
+[0.403s] creating /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib
+[0.403s] creating /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib/dongsoo_vision_pkg
+[0.403s] copying dongsoo_vision_pkg/tool_detect.py -> /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib/dongsoo_vision_pkg
+[0.403s] copying dongsoo_vision_pkg/__init__.py -> /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib/dongsoo_vision_pkg
+[0.403s] running install
+[0.403s] running install_lib
+[0.403s] creating /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg
+[0.403s] copying /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib/dongsoo_vision_pkg/tool_detect.py -> /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg
+[0.403s] copying /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib/dongsoo_vision_pkg/__init__.py -> /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg
+[0.404s] byte-compiling /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg/tool_detect.py to tool_detect.cpython-310.pyc
+[0.407s] byte-compiling /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg/__init__.py to __init__.cpython-310.pyc
+[0.407s] running install_data
+[0.407s] creating /home/pc/test_ws/install/dongsoo_vision_pkg/share/ament_index
+[0.407s] creating /home/pc/test_ws/install/dongsoo_vision_pkg/share/ament_index/resource_index
+[0.407s] creating /home/pc/test_ws/install/dongsoo_vision_pkg/share/ament_index/resource_index/packages
+[0.407s] copying resource/dongsoo_vision_pkg -> /home/pc/test_ws/install/dongsoo_vision_pkg/share/ament_index/resource_index/packages
+[0.407s] copying package.xml -> /home/pc/test_ws/install/dongsoo_vision_pkg/share/dongsoo_vision_pkg
+[0.407s] running install_egg_info
+[0.408s] Copying ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info to /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg-0.0.0-py3.10.egg-info
+[0.409s] running install_scripts
+[0.419s] Installing tool_detect script to /home/pc/test_ws/install/dongsoo_vision_pkg/lib/dongsoo_vision_pkg
+[0.419s] writing list of installed files to '/home/pc/test_ws/build/dongsoo_vision_pkg/install.log'
+[0.430s] Invoked command in '/home/pc/test_ws/src/dongsoo_vision_pkg' returned '0': PYTHONPATH=/home/pc/test_ws/build/dongsoo_vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/dongsoo_vision_pkg build --build-base /home/pc/test_ws/build/dongsoo_vision_pkg/build install --record /home/pc/test_ws/build/dongsoo_vision_pkg/install.log --single-version-externally-managed install_data

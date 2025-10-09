@@ -1,0 +1,35 @@
+running egg_info
+creating ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info
+writing ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/PKG-INFO
+writing dependency_links to ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/dependency_links.txt
+writing entry points to ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/entry_points.txt
+writing requirements to ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/requires.txt
+writing top-level names to ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/top_level.txt
+writing manifest file '../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/SOURCES.txt'
+reading manifest file '../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/SOURCES.txt'
+writing manifest file '../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/pc/test_ws/build/dongsoo_vision_pkg/build
+creating /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib
+creating /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib/dongsoo_vision_pkg
+copying dongsoo_vision_pkg/tool_detect.py -> /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib/dongsoo_vision_pkg
+copying dongsoo_vision_pkg/__init__.py -> /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib/dongsoo_vision_pkg
+running install
+running install_lib
+creating /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg
+copying /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib/dongsoo_vision_pkg/tool_detect.py -> /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg
+copying /home/pc/test_ws/build/dongsoo_vision_pkg/build/lib/dongsoo_vision_pkg/__init__.py -> /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg
+byte-compiling /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg/tool_detect.py to tool_detect.cpython-310.pyc
+byte-compiling /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg/__init__.py to __init__.cpython-310.pyc
+running install_data
+creating /home/pc/test_ws/install/dongsoo_vision_pkg/share/ament_index
+creating /home/pc/test_ws/install/dongsoo_vision_pkg/share/ament_index/resource_index
+creating /home/pc/test_ws/install/dongsoo_vision_pkg/share/ament_index/resource_index/packages
+copying resource/dongsoo_vision_pkg -> /home/pc/test_ws/install/dongsoo_vision_pkg/share/ament_index/resource_index/packages
+copying package.xml -> /home/pc/test_ws/install/dongsoo_vision_pkg/share/dongsoo_vision_pkg
+running install_egg_info
+Copying ../../build/dongsoo_vision_pkg/dongsoo_vision_pkg.egg-info to /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo_vision_pkg-0.0.0-py3.10.egg-info
+running install_scripts
+Installing tool_detect script to /home/pc/test_ws/install/dongsoo_vision_pkg/lib/dongsoo_vision_pkg
+writing list of installed files to '/home/pc/test_ws/build/dongsoo_vision_pkg/install.log'

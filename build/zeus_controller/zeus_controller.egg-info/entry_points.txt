@@ -1,4 +1,5 @@
 [console_scripts]
+calibration = zeus_controller.zeus_trestle_cali:main
 client_zeus = zeus_controller.zeus_client:main
 connect_zeus = zeus_controller.zeus_connect:main
 main_controller = zeus_controller.zeus_control_main:main

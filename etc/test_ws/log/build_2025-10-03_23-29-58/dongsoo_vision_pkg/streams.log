@@ -1,0 +1,19 @@
+[0.292s] Invoking command in '/home/pc/test_ws/build/dongsoo_vision_pkg': PYTHONPATH=/home/pc/test_ws/build/dongsoo_vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/test_ws/build/dongsoo_vision_pkg/build --no-deps symlink_data --force
+[0.410s] running develop
+[0.479s] running egg_info
+[0.479s] writing dongsoo_vision_pkg.egg-info/PKG-INFO
+[0.479s] writing dependency_links to dongsoo_vision_pkg.egg-info/dependency_links.txt
+[0.479s] writing entry points to dongsoo_vision_pkg.egg-info/entry_points.txt
+[0.480s] writing requirements to dongsoo_vision_pkg.egg-info/requires.txt
+[0.480s] writing top-level names to dongsoo_vision_pkg.egg-info/top_level.txt
+[0.481s] reading manifest file 'dongsoo_vision_pkg.egg-info/SOURCES.txt'
+[0.481s] writing manifest file 'dongsoo_vision_pkg.egg-info/SOURCES.txt'
+[0.482s] running build_ext
+[0.482s] Creating /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo-vision-pkg.egg-link (link to .)
+[0.483s] Installing tool_detect script to /home/pc/test_ws/install/dongsoo_vision_pkg/lib/dongsoo_vision_pkg
+[0.483s] 
+[0.483s] Installed /home/pc/test_ws/build/dongsoo_vision_pkg
+[0.483s] running symlink_data
+[0.483s] symbolically linking /home/pc/test_ws/build/dongsoo_vision_pkg/resource/dongsoo_vision_pkg -> /home/pc/test_ws/install/dongsoo_vision_pkg/share/ament_index/resource_index/packages
+[0.483s] symbolically linking /home/pc/test_ws/build/dongsoo_vision_pkg/package.xml -> /home/pc/test_ws/install/dongsoo_vision_pkg/share/dongsoo_vision_pkg
+[0.497s] Invoked command in '/home/pc/test_ws/build/dongsoo_vision_pkg' returned '0': PYTHONPATH=/home/pc/test_ws/build/dongsoo_vision_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/test_ws/build/dongsoo_vision_pkg/build --no-deps symlink_data --force

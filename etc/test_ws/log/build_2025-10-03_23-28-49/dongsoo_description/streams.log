@@ -1,0 +1,48 @@
+[0.006s] Invoking command in '/home/pc/test_ws/build/dongsoo_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/opt/ros/humble /usr/bin/cmake /home/pc/test_ws/src/dongsoo_description -DCMAKE_INSTALL_PREFIX=/home/pc/test_ws/install/dongsoo_description
+[0.093s] -- The C compiler identification is GNU 11.4.0
+[0.148s] -- The CXX compiler identification is GNU 11.4.0
+[0.156s] -- Detecting C compiler ABI info
+[0.207s] -- Detecting C compiler ABI info - done
+[0.211s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.212s] -- Detecting C compile features
+[0.212s] -- Detecting C compile features - done
+[0.214s] -- Detecting CXX compiler ABI info
+[0.270s] -- Detecting CXX compiler ABI info - done
+[0.276s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.276s] -- Detecting CXX compile features
+[0.276s] -- Detecting CXX compile features - done
+[0.282s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.383s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[0.441s] -- Found ament_lint_auto: 0.12.14 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[0.493s] -- Added test 'lint_cmake' to check CMake code style
+[0.495s] -- Added test 'xmllint' to check XML markup files
+[0.495s] -- Configuring done
+[0.496s] -- Generating done
+[0.497s] -- Build files have been written to: /home/pc/test_ws/build/dongsoo_description
+[0.500s] Invoked command in '/home/pc/test_ws/build/dongsoo_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/opt/ros/humble /usr/bin/cmake /home/pc/test_ws/src/dongsoo_description -DCMAKE_INSTALL_PREFIX=/home/pc/test_ws/install/dongsoo_description
+[0.502s] Invoking command in '/home/pc/test_ws/build/dongsoo_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/opt/ros/humble /usr/bin/cmake --build /home/pc/test_ws/build/dongsoo_description -- -j32 -l32
+[0.529s] Invoked command in '/home/pc/test_ws/build/dongsoo_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/opt/ros/humble /usr/bin/cmake --build /home/pc/test_ws/build/dongsoo_description -- -j32 -l32
+[0.534s] Invoking command in '/home/pc/test_ws/build/dongsoo_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/opt/ros/humble /usr/bin/cmake --install /home/pc/test_ws/build/dongsoo_description
+[0.538s] -- Install configuration: ""
+[0.538s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/config
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/config/link_inertial.json
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/config/base_to_camera_dh.json
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/config/README.md
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/config/base_to_gripper_dh.json
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/config/gravity_dh_param.json
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/ament_index/resource_index/package_run_dependencies/dongsoo_description
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/ament_index/resource_index/parent_prefix_path/dongsoo_description
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/environment/ament_prefix_path.sh
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/environment/ament_prefix_path.dsv
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/environment/path.sh
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/environment/path.dsv
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/local_setup.bash
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/local_setup.sh
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/local_setup.zsh
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/local_setup.dsv
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/package.dsv
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/ament_index/resource_index/packages/dongsoo_description
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/cmake/dongsoo_descriptionConfig.cmake
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/cmake/dongsoo_descriptionConfig-version.cmake
+[0.539s] -- Installing: /home/pc/test_ws/install/dongsoo_description/share/dongsoo_description/package.xml
+[0.541s] Invoked command in '/home/pc/test_ws/build/dongsoo_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/pc/soomac_ws/install/zeus_vision:/home/pc/soomac_ws/install/zeus_dxl:/home/pc/soomac_ws/install/zeus_controller:/opt/ros/humble /usr/bin/cmake --install /home/pc/test_ws/build/dongsoo_description

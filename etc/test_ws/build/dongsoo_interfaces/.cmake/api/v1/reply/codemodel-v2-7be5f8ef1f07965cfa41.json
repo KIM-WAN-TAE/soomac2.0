@@ -1,0 +1,233 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-3e21330f1254fa1ba8e0.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17
+					]
+				},
+				{
+					"build" : "dongsoo_interfaces__py",
+					"jsonFile" : "directory-dongsoo_interfaces__py-c8b8a9bb9b2150de9134.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "/home/pc/test_ws/build/dongsoo_interfaces/dongsoo_interfaces__py",
+					"targetIndexes" : 
+					[
+						4
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1
+					],
+					"name" : "dongsoo_interfaces",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_build_dongsoo_interfaces_egg::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_build_dongsoo_interfaces_egg-9ed41a400a9b48b6321f.json",
+					"name" : "ament_cmake_python_build_dongsoo_interfaces_egg",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_copy_dongsoo_interfaces::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_copy_dongsoo_interfaces-eb1d10864cfcd640dba2.json",
+					"name" : "ament_cmake_python_copy_dongsoo_interfaces",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces-e3bb4e6ed5a3924d9d44.json",
+					"name" : "dongsoo_interfaces",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__cpp-6924dd2c275ef266c40b.json",
+					"name" : "dongsoo_interfaces__cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "dongsoo_interfaces__py::@7c96f297c943e3d5ca35",
+					"jsonFile" : "target-dongsoo_interfaces__py-d46b3b546fb823627da3.json",
+					"name" : "dongsoo_interfaces__py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_generator_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_generator_c-06933edccb38a717a721.json",
+					"name" : "dongsoo_interfaces__rosidl_generator_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_generator_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_generator_py-f22c813e224f14bf5f4d.json",
+					"name" : "dongsoo_interfaces__rosidl_generator_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_typesupport_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_typesupport_c-e7bf57370d29ea4983e2.json",
+					"name" : "dongsoo_interfaces__rosidl_typesupport_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_typesupport_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_typesupport_c__pyext-6f18bd7c8ed6fd99d004.json",
+					"name" : "dongsoo_interfaces__rosidl_typesupport_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_typesupport_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_typesupport_cpp-69175fb9c13bececc43d.json",
+					"name" : "dongsoo_interfaces__rosidl_typesupport_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_typesupport_fastrtps_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_typesupport_fastrtps_c-af820af2e9bc71d7ba2c.json",
+					"name" : "dongsoo_interfaces__rosidl_typesupport_fastrtps_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_typesupport_fastrtps_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_typesupport_fastrtps_c__pyext-4ca28b078b5919d5ad92.json",
+					"name" : "dongsoo_interfaces__rosidl_typesupport_fastrtps_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_typesupport_fastrtps_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_typesupport_fastrtps_cpp-0b2456cd28b11260dd9f.json",
+					"name" : "dongsoo_interfaces__rosidl_typesupport_fastrtps_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_typesupport_introspection_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_typesupport_introspection_c-d8b0ec455d313439e48c.json",
+					"name" : "dongsoo_interfaces__rosidl_typesupport_introspection_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_typesupport_introspection_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_typesupport_introspection_c__pyext-41f049ccdcd1840e0ce1.json",
+					"name" : "dongsoo_interfaces__rosidl_typesupport_introspection_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces__rosidl_typesupport_introspection_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces__rosidl_typesupport_introspection_cpp-513e7fa946e0b4cd33c1.json",
+					"name" : "dongsoo_interfaces__rosidl_typesupport_introspection_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dongsoo_interfaces_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dongsoo_interfaces_uninstall-c64d3251648958694162.json",
+					"name" : "dongsoo_interfaces_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-6d30e60b8131b42642f9.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/pc/test_ws/build/dongsoo_interfaces",
+		"source" : "/home/pc/test_ws/src/dongsoo_interfaces"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "dongsoo_interfaces__py",
+		"source" : "/home/pc/test_ws/build/dongsoo_interfaces/dongsoo_interfaces__py"
+	}
+}

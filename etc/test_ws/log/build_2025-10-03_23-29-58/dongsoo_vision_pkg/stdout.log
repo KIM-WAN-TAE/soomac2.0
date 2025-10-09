@@ -1,0 +1,17 @@
+running develop
+running egg_info
+writing dongsoo_vision_pkg.egg-info/PKG-INFO
+writing dependency_links to dongsoo_vision_pkg.egg-info/dependency_links.txt
+writing entry points to dongsoo_vision_pkg.egg-info/entry_points.txt
+writing requirements to dongsoo_vision_pkg.egg-info/requires.txt
+writing top-level names to dongsoo_vision_pkg.egg-info/top_level.txt
+reading manifest file 'dongsoo_vision_pkg.egg-info/SOURCES.txt'
+writing manifest file 'dongsoo_vision_pkg.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/pc/test_ws/install/dongsoo_vision_pkg/lib/python3.10/site-packages/dongsoo-vision-pkg.egg-link (link to .)
+Installing tool_detect script to /home/pc/test_ws/install/dongsoo_vision_pkg/lib/dongsoo_vision_pkg
+
+Installed /home/pc/test_ws/build/dongsoo_vision_pkg
+running symlink_data
+symbolically linking /home/pc/test_ws/build/dongsoo_vision_pkg/resource/dongsoo_vision_pkg -> /home/pc/test_ws/install/dongsoo_vision_pkg/share/ament_index/resource_index/packages
+symbolically linking /home/pc/test_ws/build/dongsoo_vision_pkg/package.xml -> /home/pc/test_ws/install/dongsoo_vision_pkg/share/dongsoo_vision_pkg
