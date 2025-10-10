@@ -11,6 +11,7 @@ setup.py
 resource/zeus_vision
 zeus_vision/__init__.py
 zeus_vision/tool_detect.py
+zeus_vision/utils.py
 zeus_vision.egg-info/PKG-INFO
 zeus_vision.egg-info/SOURCES.txt
 zeus_vision.egg-info/dependency_links.txt

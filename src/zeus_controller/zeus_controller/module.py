@@ -542,3 +542,60 @@ class Deliver_Box:
                 'next_step': 'step_22'
             }
             return ans
+        
+class Return_Normal:
+    def step(self, step):
+        # Return 디텍 위치로 이동
+        if step == 'step_1':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-184.02,   24.04,   93.32,   -0.17,   63.00,   -4.75],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_2'
+            }
+            return ans
+            
+        elif step == 'step_2':
+            ans = {
+                'return_camera_trigger' : True,
+                'requires_ack' : True,
+                'next_step': 'step_3'
+            }
+            return ans
+        
+        elif step == 'step_3':
+            ans = {
+                'return_camera_center' : True,
+                'requires_ack' : True,
+                'speed'       : 5.0,
+                'next_step': 'step_4'
+            }
+            return ans
+        
+        elif step == 'step_4':
+            ans = {
+                'return_camera_move' : True,
+                'requires_ack' : True,
+                'speed'       : 20.0,
+                'next_step': 'step_5'
+            }
+            return ans
+        
+        elif step == 'step_5':
+            ans = {
+                'gripper' : 'close',
+                'requires_ack' : True,
+                'next_step': 'step_6'
+            }
+            return ans
+        
+        elif step == 'step_6':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-184.02,   24.04,   93.32,   -0.17,   63.00,   -4.75],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'None'
+            }
+            return ans

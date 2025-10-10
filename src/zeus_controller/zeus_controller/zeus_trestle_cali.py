@@ -85,7 +85,7 @@ class Trestle_Calibration(Node):
             
         cmd_msg.frame = 'j'
         cmd_msg.position = [-170.55,   17.08,  124.58,   -0.10,   38.73,   98.72]
-        cmd_msg.speed = 10.0
+        cmd_msg.speed = 5.0
         
         self.get_logger().info(' 초기화 과정 # 2 :: 복귀')
         

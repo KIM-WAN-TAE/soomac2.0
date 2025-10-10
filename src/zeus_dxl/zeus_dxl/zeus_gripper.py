@@ -27,7 +27,7 @@ CURR_UNIT_A = 0.00269
 
 RELEASE_POSITION = 2150
 GRIPPER_INIT_POSITION = 2800
-GRIP_CURRENT     = 16
+GRIP_CURRENT     = 18
 
 class GripperNode(Node):
     def __init__(self):
@@ -127,6 +127,7 @@ class GripperNode(Node):
         
     def gripper_callback(self, msg : String):
         cmd = msg.data
+        print(f'{msg.data}')
         
         grip_msg = String()
         grip_msg.data = 'done'
@@ -137,7 +138,10 @@ class GripperNode(Node):
         if cmd == 'open':
             self.make_position_mode()
             
-            time.sleep(0.1)
+            while True:
+                    current_time = time.time()
+                    if current_time - last_time > 0.1:
+                        break
             
             _, dxl_error = self.packethandler.write4ByteTxRx(
             self.porthandler, ID, ADDR_GOAL_POSITION, RELEASE_POSITION
@@ -154,8 +158,11 @@ class GripperNode(Node):
                 self.active_pub.publish(grip_msg)
                 
         elif cmd == 'close':
+            while True:
+                    current_time = time.time()
+                    if current_time - last_time > 0.1:
+                        break
             self.make_current_mode()
-            time.sleep(0.1)
             
             _, dxl_error = self.packethandler.write2ByteTxRx(
                 self.porthandler, ID, ADDR_GOAL_CURRENT, GRIP_CURRENT & 0xFFFF
@@ -170,7 +177,11 @@ class GripperNode(Node):
             
         elif cmd == 'gripinit':
             self.make_position_mode()
-            time.sleep(0.1)
+            
+            while True:
+                    current_time = time.time()
+                    if current_time - last_time > 0.1:
+                        break
             
             _, dxl_error = self.packethandler.write4ByteTxRx(
             self.porthandler, ID, ADDR_GOAL_POSITION, GRIPPER_INIT_POSITION
@@ -198,7 +209,7 @@ class GripperNode(Node):
         
         present_current = raw_cur * CURR_UNIT_A * 1000
         
-        print(f"[AIOT] Current: {present_current:.1f} mA")
+        # print(f"[AIOT] Current: {present_current:.1f} mA")
         
         cur_msg = Float32()
         cur_msg.data = present_current

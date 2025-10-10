@@ -32,6 +32,7 @@ class MainControlNode(Node):
         self.sub_llm = self.create_subscription(String, '/zeus/string/llm_cmd', self.llm_callback, 10)
         self.cam_done = self.create_subscription(Float32MultiArray, '/zeus/array/tool_pos', self.tool_callback, 10)
         
+        self.create_subscription(Float32MultiArray, '/zeus/array/xy_state', self.xy_state_callback, 10)
         self.create_subscription(Float32MultiArray, '/zeus/array/joint_state', self.joint_state_callback, 10)
 
         self.dh_params = CameraDHParameters()
@@ -66,6 +67,11 @@ class MainControlNode(Node):
             with self.lock:
                 self.joint_coor = msg.data
                 self.base_to_camera_matrix = self.cal_base_to_cam(np.deg2rad(list(self.joint_coor)))
+                
+    def xy_state_callback(self, msg):
+        if len(msg.data) == 6:
+            with self.lock:
+                self.xy_coor = msg.data
     
     def reset_tool_param(self):
         with self.lock:
@@ -131,6 +137,9 @@ class MainControlNode(Node):
             
             else:
                 return Deliver_Normal()
+            
+        elif mode == 'RETURN':
+            return Return_Normal()
             
         elif mode == 'TEST':
             return Test()
@@ -335,8 +344,55 @@ class MainControlNode(Node):
                 cmd_msg.position = [0.0, -110.0, 0.0, 0.0, 0.0, 0.0]
                 
             self.cmd_pub.publish(cmd_msg)
-
+            
+        if ans.get('return_camera_trigger'):
+            cam_msg = String()
+            
+            with self.lock:
+                tool = self.tool
                 
+            cam_msg.data = tool
+            self.cam_pub.publish(cam_msg)
+            self.get_logger().info(f"[ZEUS] return_camera_trigger")
+            
+        if ans.get('return_camera_move'):
+            with self.lock:
+                if self.base_to_camera_matrix is None:
+                    self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
+                    return
+                
+                x,y,z = self.tool_p
+                yaw = self.tool_yaw
+            
+            cmd_msg = ZeusMainCommand()
+            cmd_msg.frame = 't'
+            cmd_msg.position = [0.0, 0.0, 204.0 - 20.0, 0.0, 0.0, 0.0]
+            
+            cmd_msg.speed    = ans['speed']
+            self.cmd_pub.publish(cmd_msg)
+            
+        if ans.get('return_camera_center'):
+            with self.lock:
+                if self.base_to_camera_matrix is None:
+                    self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
+                    return
+                
+                x,y,z = self.tool_p
+                yaw = self.tool_yaw
+                xy_coor = self.xy_coor
+                
+            # xy 값만 도구 중심으로 이동할 수 있게 삽입
+            P = xy_coor
+            P[0] = float(x)
+            P[1] = float(y)
+            P[2] = P[2] - 100.0 
+            P[3] = P[3] - yaw
+            cmd_msg = ZeusMainCommand()
+            cmd_msg.frame = 'l7'
+            cmd_msg.position = P
+            
+            cmd_msg.speed    = ans['speed']
+            self.cmd_pub.publish(cmd_msg)
             
 def main(args=None):
     rclpy.init(args=args)

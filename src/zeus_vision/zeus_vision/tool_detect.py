@@ -696,7 +696,7 @@ class VisionNode(Node):
         msg = Float32MultiArray()
         x, y, z = det["position"]
         roll = float(det.get("roll_deg", 0.0))
-        msg.data = [float(x), float(y), float(z), -roll]
+        msg.data = [float(x)*1000, float(y)*1000, float(z)*1000, -roll]
         self.detection_pub.publish(msg)
         self.get_logger().info(
             f"탐지 전송: {det['class_name']} | pos=({x:.3f},{y:.3f},{z:.3f}) m | roll={roll:.1f}° | conf={det['confidence']:.2f}"

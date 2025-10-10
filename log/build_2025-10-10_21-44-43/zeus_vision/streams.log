@@ -1,0 +1,17 @@
+[0.292s] Invoking command in '/home/pc/soomac_ws/build/zeus_vision': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_vision/build --no-deps symlink_data
+[0.424s] running develop
+[0.502s] running egg_info
+[0.502s] writing zeus_vision.egg-info/PKG-INFO
+[0.502s] writing dependency_links to zeus_vision.egg-info/dependency_links.txt
+[0.502s] writing entry points to zeus_vision.egg-info/entry_points.txt
+[0.502s] writing requirements to zeus_vision.egg-info/requires.txt
+[0.502s] writing top-level names to zeus_vision.egg-info/top_level.txt
+[0.503s] reading manifest file 'zeus_vision.egg-info/SOURCES.txt'
+[0.503s] writing manifest file 'zeus_vision.egg-info/SOURCES.txt'
+[0.504s] running build_ext
+[0.504s] Creating /home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages/zeus-vision.egg-link (link to .)
+[0.504s] Installing tool_detect script to /home/pc/soomac_ws/install/zeus_vision/lib/zeus_vision
+[0.504s] 
+[0.504s] Installed /home/pc/soomac_ws/build/zeus_vision
+[0.504s] running symlink_data
+[0.515s] Invoked command in '/home/pc/soomac_ws/build/zeus_vision' returned '0': PYTHONPATH=/home/pc/soomac_ws/build/zeus_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/pc/soomac_ws/install/zeus_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/pc/soomac_ws/build/zeus_vision/build --no-deps symlink_data
