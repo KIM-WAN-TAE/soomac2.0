@@ -69,7 +69,7 @@ class ZeusClientNode(Node):
         )
         
         self.speed_cmd_idx_map = {
-            0: ['jntspd', 30],
+            0: ['jntspd', 10],
             1: ['linspd', 180],
             2: ['posspd', 150],
             3: ['linspd', 180],
@@ -488,7 +488,7 @@ class ZeusClientNode(Node):
                 self.gripper_wall_command_pub.publish(wall_msg)
                 
                 with self.lock:
-                    self.block_list[idx] = ['l'] + list(self.drop_zone_point)
+                    self.block_list[idx] = ['j'] + list(self.drop_zone_point)
                     
                 self.send_next_command()
                 
