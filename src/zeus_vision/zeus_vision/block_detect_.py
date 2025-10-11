@@ -80,6 +80,8 @@ BLOCK_LEN_M = 0.075
 BLOCK_WID_M = 0.025
 
 AREA_THRESHOLD_MM2 = 1750.0  # mm^2
+EE_OFFSET_MM = np.array([29.0, 67.0, 0.0], dtype=np.float32)
+EE_OFFSET_M  = EE_OFFSET_MM / 1000.0  # m 단위 변환
 
 # ---------- 유틸 ----------
 def apply_mask_overlay(bgr, mask, color=(0,255,255), alpha=0.4):
@@ -160,6 +162,15 @@ def draw_cross(img, pt, color=(0,0,255), size=6, thickness=2):
     if not (0 <= u < w and 0 <= v < h): return
     cv2.line(img, (u-size, v), (u+size, v), color, thickness, cv2.LINE_AA)
     cv2.line(img, (u, v-size), (u, v+size), color, thickness, cv2.LINE_AA)
+
+def euclid_dist_ee(c):
+    """EE 기준 3D 유클리디언 거리 계산"""
+    o = c.get('origin', None)
+    if o is None or not np.all(np.isfinite(o)):
+        return float('inf')
+    p_ee = o - EE_OFFSET_M  # EE 중심으로 원점 이동
+    return float(np.linalg.norm(p_ee))
+
 
 # ---------- 평면/좌표계 ----------
 def segment_plane_and_axes(pts):
@@ -245,8 +256,8 @@ def _rasterize_rotated_rect(shape_hw, rect):
 def get_3d_center_from_2d_pixel_pinhole(rect_center_px, depth_undist, intr, depth_scale, plane_model):
     u, v = rect_center_px
     pt_3d = ray_plane_intersect_pinhole(u, v, intr, plane_model)
-    print(pt_3d)
-    print('#############################################')
+    # print(pt_3d)
+    # print('#############################################')
     if pt_3d is not None: return pt_3d.astype(np.float32), "A-ray-plane"
     H, W = depth_undist.shape[:2]
     u_i, v_i = int(round(u)), int(round(v))
@@ -414,8 +425,18 @@ def main(args=None):
             plane_accum_mask = np.zeros((COLOR_H, COLOR_W), dtype=np.uint8)
 
             res = None
-            if node.detect_signal == 'block':
+            if node.detect_signal == 'block1' or node.detect_signal == 'block2':
                 res = node.model(color, conf=CONF_DET, iou=IOU_TH, device=DEVICE, imgsz=IMG_SIZE, verbose=False)
+                
+            # # === [NEW] Continuous detection for UI ===
+            # if res is None:
+            #     # 트리거가 없어도 UI 갱신용으로 계속 추론
+            #     res = node.model(color, conf=CONF_DET, iou=IOU_TH, device=DEVICE, imgsz=IMG_SIZE, verbose=False)
+            #     _preview_only = True
+            # else:
+            #     _preview_only = False
+            # # === [END] ===
+
             
             candidates = []
 
@@ -528,7 +549,8 @@ def main(args=None):
 
             # ---- 선택 & 퍼블리시 ----
             chosen = None
-            if mode == 'block':
+            if mode == 'block1':
+                print("========================================")
                 CLASS_ORDER = ['blue', 'green', 'pink', 'purple', 'red', 'yellow']
                 def xy_dist_cam(c):
                     o = c.get('origin', None)
@@ -628,6 +650,199 @@ def main(args=None):
                         cv2.putText(overlay, info1,
                                     (max(0, final_px[0]-160), min(COLOR_H-8, final_px[1]+18)),
                                     FONT, 0.50, (0,0,255), 1, cv2.LINE_AA)
+                        
+            if mode == 'block2':
+                CLASS_ORDER = ['blue', 'green', 'pink', 'purple', 'red', 'yellow']
+                def xy_dist_cam(c):
+                    o = c.get('origin', None)
+                    if o is None or not np.isfinite(o[0]) or not np.isfinite(o[1]): return float('inf')
+                    return math.hypot(float(o[0]), float(o[1]))
+                def area_mm2_of(c): return float(c.get('area_mm2', 0.0))
+
+                for cls in CLASS_ORDER:
+                    cand_cls = [c for c in candidates if str(c.get('label', '')).lower() == cls]
+                    cand_sel = [c for c in cand_cls if area_mm2_of(c) >= AREA_THRESHOLD_MM2]
+                    if not cand_sel: continue
+                    chosen = min(cand_sel, key=euclid_dist_ee); break
+
+                if chosen is not None:
+                    x_axis, y_axis, z_axis = chosen['axes']
+                    origin_m = chosen['origin']
+                    label = chosen.get('label', None)
+                    cx, cy = chosen['cx'], chosen['cy']
+
+                    final_px = project_point_to_pixel_pinhole(origin_m, node.rect_intr)
+                    draw_cross(overlay, final_px, color=(0,0,255), size=7, thickness=2)
+
+                    if all(v is not None for v in [x_axis, y_axis, z_axis]):
+                        raw_rot_matrix = np.stack([x_axis, y_axis, z_axis], axis=1)
+                        raw_quat = SciRot.from_matrix(raw_rot_matrix).as_quat()
+                        raw_rotation = SciRot.from_quat(raw_quat)
+                        yaw, pitch, roll = raw_rotation.as_euler('zyx', degrees=True)
+
+                        is_roll_high  = abs(roll)  >= DEAD_ZONE_DEG
+                        is_pitch_high = abs(pitch) >= DEAD_ZONE_DEG
+                        if is_roll_high and is_pitch_high:
+                            if abs(roll) >= abs(pitch): pitch = 0.0
+                            else: roll = 0.0
+                        else:
+                            if not is_pitch_high: pitch = 0.0
+                            if not is_roll_high:  roll  = 0.0
+
+                        final_rpy = (roll, pitch, yaw)
+                        final_rotation   = SciRot.from_euler('zyx', [yaw, pitch, roll], degrees=True)
+                        final_rot_matrix = final_rotation.as_matrix()
+                        final_quat       = final_rotation.as_quat()
+                    else:
+                        final_rot_matrix = np.eye(3, dtype=np.float64)
+                        final_quat       = SciRot.from_matrix(final_rot_matrix).as_quat()
+                        final_rpy        = (0.0, 0.0, 0.0)
+
+                    origin_mm = origin_m * 1000.0
+                    final_matrix = np.eye(4, dtype=np.float64)
+                    final_matrix[:3,:3] = final_rot_matrix
+                    final_matrix[:3, 3] = origin_mm
+                    print(f"origin_mm: {origin_mm}")
+                    def quat_delta_deg(q1, q2):
+                        if q1 is None or q2 is None: return np.inf
+                        dot = float(np.dot(q1, q2)); 
+                        if dot < 0.0: dot = -dot
+                        dot = np.clip(dot, -1.0, 1.0)
+                        return 2.0 * np.degrees(np.arccos(dot))
+
+                    center_jump = 0.0 if node.last_center is None else math.hypot(cx-node.last_center[0], cy-node.last_center[1])
+                    dtheta = quat_delta_deg(node.last_quat, final_quat)
+                    same_target = (center_jump <= STAB_CENTER_JUMP_PX)
+                    if not same_target:
+                        node.stable_count = 0
+                        node.cooldown = max(0, node.cooldown - 1)
+                    else:
+                        if dtheta < STAB_ANGLE_DEG: node.stable_count += 1
+                        else: node.stable_count = 0
+                        node.cooldown = max(0, node.cooldown - 1)
+
+                    node.last_quat = final_quat
+                    node.last_center = (cx, cy)
+
+                    if node.detect_signal != "":
+                        msg = Float32MultiArray()
+                        rows, cols = 4, 4
+                        msg.layout.dim.append(MultiArrayDimension(label='rows', size=rows, stride=cols))
+                        msg.layout.dim.append(MultiArrayDimension(label='cols', size=cols, stride=1))
+                        msg.layout.data_offset = 0
+                        msg.data = final_matrix.flatten().astype(np.float32).tolist()
+                        node.publisher_.publish(msg)
+
+                        msg2 = Float32MultiArray()
+                        roll, pitch, yaw = final_rpy
+                        msg2.data = [roll, pitch, yaw]
+                        node.pose_pubisher.publish(msg2)
+                        node.publish_block(label if label is not None else "")
+
+                        node.cooldown = PUBLISH_COOLDOWN_FRAMES
+                        node.stable_count = 0
+                        node.detect_signal = ""
+
+                    if final_px is not None:
+                        info1 = "CHOSEN (class→area_mm2≥thr→min XY)"
+                        cv2.putText(overlay, info1,
+                                    (max(0, final_px[0]-160), min(COLOR_H-8, final_px[1]+18)),
+                                    FONT, 0.50, (255,255,255), 3, cv2.LINE_AA)
+                        cv2.putText(overlay, info1,
+                                    (max(0, final_px[0]-160), min(COLOR_H-8, final_px[1]+18)),
+                                    FONT, 0.50, (0,0,255), 1, cv2.LINE_AA)
+            
+
+            # # === [NEW] Area Monitor UI (priority class: draw all + fallback select) ===
+            # if not hasattr(node, "_area_ui_initialized"):
+            #     cv2.namedWindow("Area Monitor", cv2.WINDOW_NORMAL)
+            #     cv2.resizeWindow("Area Monitor", 640, 480)
+            #     node._area_ui_initialized = True
+            # if not hasattr(node, "_area_ui_state"):
+            #     node._area_ui_state = {"last_chosen": None}
+
+            # # 이번 프레임 선택 갱신
+            # if chosen is not None:
+            #     node._area_ui_state["last_chosen"] = chosen
+
+            # # 우선순위 계산
+            # class_order = locals().get('CLASS_ORDER', ['blue', 'green', 'pink', 'purple', 'red', 'yellow'])
+
+            # def _area(c): 
+            #     return float(c.get("area_mm2", 0.0))
+            # def _xy_dist_cam(c):
+            #     o = c.get("origin", None)
+            #     if o is None or not np.isfinite(o[0]) or not np.isfinite(o[1]): 
+            #         return float('inf')
+            #     return math.hypot(float(o[0]), float(o[1]))
+
+            # priority_class = None
+            # cand_for_monitor = []
+            # for cls in class_order:
+            #     cls_cands = [c for c in candidates if str(c.get("label","")).lower() == cls]
+            #     cls_cands = [c for c in cls_cands if _area(c) >= AREA_THRESHOLD_MM2]
+            #     if cls_cands:
+            #         priority_class = cls
+            #         cand_for_monitor = sorted(cls_cands, key=_area, reverse=True)
+            #         break
+
+            # # 우선순위 없으면 마지막 선택 클래스 또는 전체 상위로 대체
+            # sel_last = node._area_ui_state.get("last_chosen")
+            # if not cand_for_monitor and sel_last is not None:
+            #     sel_lab = str(sel_last.get("label","")).lower()
+            #     tmp = [c for c in candidates if str(c.get("label","")).lower() == sel_lab and _area(c) >= AREA_THRESHOLD_MM2]
+            #     if tmp:
+            #         priority_class = sel_lab
+            #         cand_for_monitor = sorted(tmp, key=_area, reverse=True)
+            # if not cand_for_monitor and candidates:
+            #     cand_for_monitor = sorted(candidates, key=_area, reverse=True)
+
+            # monitor = color.copy()
+
+            # # 헤더
+            # header = f"Areas (mm^2)  Priority={priority_class if priority_class else '-'}"
+            # cv2.putText(monitor, header, (10, 18), FONT, 0.55, (0,0,0), 3, cv2.LINE_AA)
+            # cv2.putText(monitor, header, (10, 18), FONT, 0.55, (255,255,255), 1, cv2.LINE_AA)
+
+            # # 리스트(최대 8개)
+            # for i, c in enumerate(cand_for_monitor[:8]):
+            #     lab = str(c.get("label","-"))
+            #     area_val = int(round(_area(c)))
+            #     s = f"{i+1:>2}. {lab:>6} : {area_val}"
+            #     y = 18 + 24*(i+1)
+            #     cv2.putText(monitor, s, (12,y), FONT, 0.55, (0,0,0), 3, cv2.LINE_AA)
+            #     cv2.putText(monitor, s, (12,y), FONT, 0.55, (0,255,255), 1, cv2.LINE_AA)
+
+            # # 선택 객체: 트리거 없을 때도 우선순위 그룹 내에서 XY 최소를 임시 선택
+            # current_sel = chosen
+            # if current_sel is None and cand_for_monitor:
+            #     current_sel = min(cand_for_monitor, key=_xy_dist_cam)
+
+            # # 동일 클래스(또는 대체 그룹)의 모든 블럭 표시
+            # if cand_for_monitor:
+            #     for c in cand_for_monitor:
+            #         origin_m = c.get("origin", None)
+            #         px = project_point_to_pixel_pinhole(origin_m, node.rect_intr) if origin_m is not None else None
+            #         if px is None:
+            #             continue
+            #         is_selected = (c is current_sel)
+            #         draw_cross(monitor, px, color=(0,0,255) if is_selected else (0,255,0), size=9, thickness=2)
+
+            #         lab = str(c.get("label","-"))
+            #         area_val = int(round(_area(c)))
+            #         info = f"{lab}:{area_val} mm^2"
+            #         anchor = (max(0, px[0]-80), min(monitor.shape[0]-8, px[1]+22))
+            #         cv2.putText(monitor, info, anchor, FONT, 0.55, (255,255,255), 3, cv2.LINE_AA)
+            #         cv2.putText(monitor, info, anchor, FONT, 0.55, (0,0,255) if is_selected else (0,255,0), 1, cv2.LINE_AA)
+            # else:
+            #     cv2.putText(monitor, "No candidates", (10, monitor.shape[0]-14),
+            #                 FONT, 0.55, (0,0,0), 3, cv2.LINE_AA)
+            #     cv2.putText(monitor, "No candidates", (10, monitor.shape[0]-14),
+            #                 FONT, 0.55, (255,255,255), 1, cv2.LINE_AA)
+
+            # cv2.imshow("Area Monitor", monitor)
+            # # === [END] Area Monitor UI ===
+
 
             cv2.imshow("Detections (mask+box + centers)", overlay)
             cv2.imshow("PlaneFiltered (all blocks)", plane_vis)

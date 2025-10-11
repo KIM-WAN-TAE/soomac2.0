@@ -14,6 +14,7 @@ from .read_json import CameraDHParameters
 import copy
 
 Z_OFFSET  = 200.0
+Z_OFFSET_  = 250.0
 PITCH_TOL = 500.0
 YAW_TOL   = 3.0
 ROLL_TOL  = 10.0
@@ -98,7 +99,7 @@ class ZeusClientNode(Node):
         self.block_pose = None
         self.topic_flag = False
         self.suction_flag = False
-        
+                
         self.service_cb_group = ReentrantCallbackGroup()
         self.sub_cb_group = ReentrantCallbackGroup()
         self.timer_cb_group = ReentrantCallbackGroup()
@@ -136,7 +137,7 @@ class ZeusClientNode(Node):
         self.BLOCK_DROP      = []
 
         # 고정값들 정의
-        CAM_INIT = ['j', -97.53,  -15.97,  -82.29,    0.19,  -81.88,  -97.29]
+        CAM_INIT = ['j', -101.97, -17.57, -65.79, 0.18, -96.80, -101.69]
         BLOCK_DROP_INIT = ['j', -15.75, -27.47, -95.23, 0.20, -57.54, -102.09]
         GRIPPER_TIME    = ['t', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
@@ -259,6 +260,7 @@ class ZeusClientNode(Node):
             if idx == 0:
                 
                 self.send_next_command()
+                print("================= 0 =================")
                   
             elif idx == 1:
                 if self.base_to_camera_matrix is None:
@@ -269,18 +271,14 @@ class ZeusClientNode(Node):
                 with self.lock:
                     if self.topic_flag is False:
                         s_msg = String()
-                        s_msg.data = 'block'
+                        s_msg.data = 'block1'
                         self.block_pose_order_pub.publish(s_msg)
-                        print('block')
+                        print('block1')
                         self.topic_flag = True
                 
                 if block_pose is None:
                     # self.get_logger().info('[ZEUS] Waiting Block Pose')
                     return
-                
-                wall_msg = String()
-                wall_msg.data = 'down'
-                self.gripper_wall_command_pub.publish(wall_msg)
                 
                 P, rz, ry, rx = block_pose
                     
@@ -332,21 +330,42 @@ class ZeusClientNode(Node):
                     x_move, y_move = 0.0, 0.0
                     self.is_it_flat = True
                         
-                print(f'\n x : {x_move}, y : {y_move}\n')
+                # print(f'\n x : {x_move}, y : {y_move}\n')
                 
-                pose = [P[0] + x_move, P[1] + y_move, Z_OFFSET, rz, ry, rx]
+                pose = [P[0] + x_move, P[1] + y_move, Z_OFFSET_, rz, ry, rx]
                 with self.lock:
                     pose[3:] = self.xy_coor[3:]
                 
-                print(f'POSE : {pose}')
+                # print(f'POSE : {pose}')
                 self.block_list[idx] = ['l'] + pose
                 self.send_next_command()
-                print(f"PITCH : {pitch}")
+                # print(f"PITCH : {pitch}")
                 
+                self.block_pose = None # 토픽을 한번 더 받기 위한 reset
+
                 with self.lock:
                     self.topic_flag = False
+                print("================= 1 =================")
+                print(f'1st yaw : {yaw}')    
                     
             elif idx == 2:
+                if self.base_to_camera_matrix is None:
+                    self.get_logger().info('[ZEUS] Waiting for base_to_camera_matrix...')
+                    return
+                
+                # time.sleep(2)
+                with self.lock:
+                    if self.topic_flag is False:
+                        s_msg = String()
+                        s_msg.data = 'block2'
+                        self.block_pose_order_pub.publish(s_msg)
+                        print('block2')
+                        self.topic_flag = True
+                
+                if block_pose is None:
+                    # self.get_logger().info('[ZEUS] Waiting Block Pose')
+                    return
+                
                 with self.lock:
                     c_rz, c_ry, c_rx = self.xy_coor[3:]
                 _, yaw, pitch, roll = block_pose
@@ -355,70 +374,73 @@ class ZeusClientNode(Node):
                 
                 if abs(e_rx) > 30 and abs(e_rx) < 60:
                     if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
-                        print(1)
+                        # print(1)
                         yaw += 90
                         yaw = abs(yaw)
                         
                     elif yaw > -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
-                        print(2)
+                        # print(2)
                         yaw += 90
                         yaw = -abs(yaw)
                     pitch = 0.0
                     
                 else:
                     if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
-                        print(3) ## 중심  - 좁은쪽 비정상
+                        # print(3) ## 중심  - 좁은쪽 비정상
                         yaw += 90
                         yaw = abs(yaw)
 
-                        if yaw > 80.0:
-                            self.x_offset = 1.5
-                            self.y_offset = 2.5
+                        # if yaw > 80.0:
+                        #     self.x_offset = 1.5
+                        #     self.y_offset = 2.5
                             
-                        elif yaw < 10.0:
-                            self.x_offset = 1.5
-                            self.y_offset = 3.5
-                        else:
-                            self.x_offset = 0.0
-                            self.y_offset = 2.5
+                        # elif yaw < 10.0:
+                        #     self.x_offset = 1.5
+                        #     self.y_offset = 3.5
+                        # else:
+                        #     self.x_offset = 0.0
+                        #     self.y_offset = 2.5
                             
-                        # self.x_offset = 0.0
-                        # self.y_offset = 0.0
+                        self.x_offset = 0.0
+                        self.y_offset = 0.0
                     
                             
                     elif yaw >= -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 4사분면
-                        print(4) ## 삐딱선 - 좁은 쪽은 정상
+                        # print(4) ## 삐딱선 - 좁은 쪽은 정상
                         yaw += 90
                         yaw = -abs(yaw)
                         
-                        if yaw > -90.0 and yaw <= -80.0:
-                            self.x_offset = -5.5
-                            self.y_offset = 0.5
+                        # if yaw > -90.0 and yaw <= -80.0:
+                        #     self.x_offset = -5.5
+                        #     self.y_offset = 0.5
                         
-                        elif yaw > -80.0 and yaw < -70.0:
-                            self.x_offset = -4.0
-                            self.y_offset = 0.5
-                        elif yaw > -10.0 and yaw < 0.0:
-                            self.x_offset = -4.0
-                            self.y_offset = 2.5
-                        else:
-                            self.x_offset = -4.0
-                            self.y_offset = 2.0
+                        # elif yaw > -80.0 and yaw < -70.0:
+                        #     self.x_offset = -4.0
+                        #     self.y_offset = 0.5
+                        # elif yaw > -10.0 and yaw < 0.0:
+                        #     self.x_offset = -4.0
+                        #     self.y_offset = 2.5
+                        # else:
+                        #     self.x_offset = -4.0
+                        #     self.y_offset = 2.0
                             
-                        # self.x_offset = 0.0
-                        # self.y_offset = .0
+                        self.x_offset = 0.0
+                        self.y_offset = 0.0
                         
-                    print(f'YAWYAWYAW : {yaw}')    
+                    # print(f'YAWYAWYAW : {yaw}')   
+                    print(f'2nd yaw : {yaw}')    
+                     
                     roll = 0.0
                     pitch = 0.0
                 
-                print(f'\nyaw : {yaw}, pitch : {pitch}, roll : {roll}')
-                print(f'eyaw : {e_rz}, epitch : {e_ry}, eroll : {e_rx} \n')
+                # print(f'\nyaw : {yaw}, pitch : {pitch}, roll : {roll}')
+                # print(f'eyaw : {e_rz}, epitch : {e_ry}, eroll : {e_rx} \n')
                   
-                pose = [0.0, 0.0, 0.0, yaw, pitch, 0.0]
+                pose = [0.0, 0.0, 0.0, yaw, 0.0, 0.0]
                 self.block_list[idx] = ['t'] + pose
                 self.send_next_command()
-                    
+                print("================= 2 =================")
+                
             elif idx == 3:
                 P, rz, ry, rx = block_pose
                 
@@ -434,21 +456,26 @@ class ZeusClientNode(Node):
                     self.suction_flag = True
                 
                 if self.is_it_flat:
+                    # print("============== if ================")
+
+                    pose = [P[0], P[1], P[2] + PICK_Z_OFFSET, rz, ry, rx]
                     with self.lock:
-                        pre_z = self.xy_coor[2]
-                    
-                    move_z = pre_z - (P[2] + PICK_Z_OFFSET)
-                    pose = [self.x_offset, self.y_offset, move_z, 0.0, 0.0, 0.0]
-                        
-                    self.block_list[idx] = ['t'] + pose
+                        pose[3:] = self.xy_coor[3:]
+
+                    self.block_list[idx] = ['l'] + pose
+                
                     self.send_next_command()
                 
                 else:
+                    # print("============== else ================")
                     pose = [P[0], P[1], P[2] + PICK_Z_OFFSET + 10, rz, ry, rx]
                     with self.lock:
+                        # print("============== else_with ================")
+
                         pose[3:] = self.xy_coor[3:]
                     
                     self.block_list[idx] = ['l'] + pose
+                    
                     self.send_next_command()
                     
                 # pose = [P[0], P[1], P[2] + PICK_Z_OFFSET + 10, rz, ry, rx]
@@ -457,6 +484,7 @@ class ZeusClientNode(Node):
                 
                 # self.block_list[idx] = ['l'] + pose
                 # self.send_next_command()
+                # print("================= 3 =================")
             
             elif idx == 4:
                 if self.drop_zone_point is None:
@@ -466,6 +494,8 @@ class ZeusClientNode(Node):
                     
                 time.sleep(0.5)
                 self.send_next_command()
+                # print("================= 4 =================")
+                
             
             elif idx == 5:
                 with self.lock:
@@ -478,9 +508,13 @@ class ZeusClientNode(Node):
                     self.suction_flag = False
                 
                 self.send_next_command()
+                # print("================= 5 =================")
+
                 
             elif idx == 6: # Move Drop Init Position
                 self.send_next_command()
+                # print("================= 6 =================")
+
             
             elif idx == 7: # Drop Top Zone
                 wall_msg = String()
@@ -491,6 +525,8 @@ class ZeusClientNode(Node):
                     self.block_list[idx] = ['j'] + list(self.drop_zone_point)
                     
                 self.send_next_command()
+                # print("================= 7 =================")
+
                 
             elif idx == 8:
                 with self.lock:
@@ -504,6 +540,8 @@ class ZeusClientNode(Node):
                     self.suction_flag = True
                     
                 self.send_next_command()
+                # print("================= 8 =================")
+
                 
             elif idx == 9:
                 
@@ -511,14 +549,20 @@ class ZeusClientNode(Node):
                     self.block_list[idx] = ['t'] + [0.0, 0.0, -100.0, 0.0, 0.0, 0.0]
                 time.sleep(0.6)
                 self.send_next_command()
+                # print("================= 9 =================")
+
                 
             elif idx == 10:
                 self.suction_flag = False
                 
                 self.send_next_command()
+                # print("================= 10 =================")
+
                 
             elif idx == 11:
                 self.send_next_command()
+                # print("================= 11 =================")
+
 
         elif trigger and is_busy:
             # self.get_logger().info(f"[ZEUS] I'm moving! ")
