@@ -27,7 +27,7 @@ CURR_UNIT_A = 0.00269
 
 RELEASE_POSITION = 2150
 GRIPPER_INIT_POSITION = 2800
-GRIP_CURRENT     = 20
+GRIP_CURRENT     = 24
 
 class GripperNode(Node):
     def __init__(self):
@@ -177,6 +177,30 @@ class GripperNode(Node):
                         break
             
             self.active_pub.publish(grip_msg)
+            
+        elif cmd == 'none_return_open':
+            self.make_position_mode()
+            
+            while True:
+                    current_time = time.time()
+                    if current_time - last_time > 0.1:
+                        break
+            
+            _, dxl_error = self.packethandler.write4ByteTxRx(
+            self.porthandler, ID, ADDR_GOAL_POSITION, RELEASE_POSITION
+            )
+
+        elif cmd == 'none_return_close':
+            while True:
+                    current_time = time.time()
+                    if current_time - last_time > 0.1:
+                        break
+            self.make_current_mode()
+            
+            _, dxl_error = self.packethandler.write2ByteTxRx(
+                self.porthandler, ID, ADDR_GOAL_CURRENT, GRIP_CURRENT & 0xFFFF
+            )
+            
             
         elif cmd == 'gripinit':
             self.make_position_mode()
