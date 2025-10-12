@@ -40,6 +40,7 @@ struct ZeusMainCommand_
     {
       this->frame = "";
       std::fill<typename std::array<float, 6>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
+      this->speed = 0.0f;
     }
   }
 
@@ -52,6 +53,7 @@ struct ZeusMainCommand_
     {
       this->frame = "";
       std::fill<typename std::array<float, 6>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
+      this->speed = 0.0f;
     }
   }
 
@@ -62,6 +64,9 @@ struct ZeusMainCommand_
   using _position_type =
     std::array<float, 6>;
   _position_type position;
+  using _speed_type =
+    float;
+  _speed_type speed;
 
   // setters for named parameter idiom
   Type & set__frame(
@@ -74,6 +79,12 @@ struct ZeusMainCommand_
     const std::array<float, 6> & _arg)
   {
     this->position = _arg;
+    return *this;
+  }
+  Type & set__speed(
+    const float & _arg)
+  {
+    this->speed = _arg;
     return *this;
   }
 
@@ -123,6 +134,9 @@ struct ZeusMainCommand_
       return false;
     }
     if (this->position != other.position) {
+      return false;
+    }
+    if (this->speed != other.speed) {
       return false;
     }
     return true;

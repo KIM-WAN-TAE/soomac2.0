@@ -72,6 +72,11 @@ static bool _ZeusMainCommand__cdr_serialize(
     cdr.serializeArray(array_ptr, size);
   }
 
+  // Field name: speed
+  {
+    cdr << ros_message->speed;
+  }
+
   return true;
 }
 
@@ -107,6 +112,11 @@ static bool _ZeusMainCommand__cdr_deserialize(
     cdr.deserializeArray(array_ptr, size);
   }
 
+  // Field name: speed
+  {
+    cdr >> ros_message->speed;
+  }
+
   return true;
 }  // NOLINT(readability/fn_size)
 
@@ -135,6 +145,12 @@ size_t get_serialized_size_zeus_interfaces__msg__ZeusMainCommand(
     (void)array_ptr;
     size_t item_size = sizeof(array_ptr[0]);
     current_alignment += array_size * item_size +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
+  }
+  // field.name speed
+  {
+    size_t item_size = sizeof(ros_message->speed);
+    current_alignment += item_size +
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
   }
 
@@ -186,6 +202,14 @@ size_t max_serialized_size_zeus_interfaces__msg__ZeusMainCommand(
     current_alignment += array_size * sizeof(uint32_t) +
       eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
   }
+  // member: speed
+  {
+    size_t array_size = 1;
+
+    last_member_size = array_size * sizeof(uint32_t);
+    current_alignment += array_size * sizeof(uint32_t) +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, sizeof(uint32_t));
+  }
 
   size_t ret_val = current_alignment - initial_alignment;
   if (is_plain) {
@@ -195,7 +219,7 @@ size_t max_serialized_size_zeus_interfaces__msg__ZeusMainCommand(
     using DataType = zeus_interfaces__msg__ZeusMainCommand;
     is_plain =
       (
-      offsetof(DataType, position) +
+      offsetof(DataType, speed) +
       last_member_size
       ) == ret_val;
   }

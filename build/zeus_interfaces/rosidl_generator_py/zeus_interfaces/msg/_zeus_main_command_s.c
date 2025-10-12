@@ -95,6 +95,15 @@ bool zeus_interfaces__msg__zeus_main_command__convert_from_py(PyObject * _pymsg,
     }
     Py_DECREF(field);
   }
+  {  // speed
+    PyObject * field = PyObject_GetAttrString(_pymsg, "speed");
+    if (!field) {
+      return false;
+    }
+    assert(PyFloat_Check(field));
+    ros_message->speed = (float)PyFloat_AS_DOUBLE(field);
+    Py_DECREF(field);
+  }
 
   return true;
 }
@@ -151,6 +160,17 @@ PyObject * zeus_interfaces__msg__zeus_main_command__convert_to_py(void * raw_ros
     float * src = &(ros_message->position[0]);
     memcpy(dst, src, 6 * sizeof(float));
     Py_DECREF(field);
+  }
+  {  // speed
+    PyObject * field = NULL;
+    field = PyFloat_FromDouble(ros_message->speed);
+    {
+      int rc = PyObject_SetAttrString(_pymessage, "speed", field);
+      Py_DECREF(field);
+      if (rc) {
+        return NULL;
+      }
+    }
   }
 
   // ownership of _pymessage is transferred to the caller

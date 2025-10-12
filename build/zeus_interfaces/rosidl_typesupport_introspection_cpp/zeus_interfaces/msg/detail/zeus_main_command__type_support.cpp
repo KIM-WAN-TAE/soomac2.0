@@ -75,7 +75,7 @@ void assign_function__ZeusMainCommand__position(
   item = value;
 }
 
-static const ::rosidl_typesupport_introspection_cpp::MessageMember ZeusMainCommand_message_member_array[2] = {
+static const ::rosidl_typesupport_introspection_cpp::MessageMember ZeusMainCommand_message_member_array[3] = {
   {
     "frame",  // name
     ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING,  // type
@@ -109,13 +109,30 @@ static const ::rosidl_typesupport_introspection_cpp::MessageMember ZeusMainComma
     fetch_function__ZeusMainCommand__position,  // fetch(index, &value) function pointer
     assign_function__ZeusMainCommand__position,  // assign(index, value) function pointer
     nullptr  // resize(index) function pointer
+  },
+  {
+    "speed",  // name
+    ::rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT,  // type
+    0,  // upper bound of string
+    nullptr,  // members of sub message
+    false,  // is array
+    0,  // array size
+    false,  // is upper bound
+    offsetof(zeus_interfaces::msg::ZeusMainCommand, speed),  // bytes offset in struct
+    nullptr,  // default value
+    nullptr,  // size() function pointer
+    nullptr,  // get_const(index) function pointer
+    nullptr,  // get(index) function pointer
+    nullptr,  // fetch(index, &value) function pointer
+    nullptr,  // assign(index, value) function pointer
+    nullptr  // resize(index) function pointer
   }
 };
 
 static const ::rosidl_typesupport_introspection_cpp::MessageMembers ZeusMainCommand_message_members = {
   "zeus_interfaces::msg",  // message namespace
   "ZeusMainCommand",  // message name
-  2,  // number of fields
+  3,  // number of fields
   sizeof(zeus_interfaces::msg::ZeusMainCommand),
   ZeusMainCommand_message_member_array,  // message members
   ZeusMainCommand_init_function,  // function to initialize message memory (memory has to be allocated)

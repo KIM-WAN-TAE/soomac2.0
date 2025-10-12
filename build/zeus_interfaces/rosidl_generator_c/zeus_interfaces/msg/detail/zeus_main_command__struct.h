@@ -29,6 +29,7 @@ typedef struct zeus_interfaces__msg__ZeusMainCommand
 {
   rosidl_runtime_c__String frame;
   float position[6];
+  float speed;
 } zeus_interfaces__msg__ZeusMainCommand;
 
 // Struct for a sequence of zeus_interfaces__msg__ZeusMainCommand.
