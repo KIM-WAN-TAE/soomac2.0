@@ -16,7 +16,6 @@ import copy
 Z_OFFSET  = 200.0
 Z_OFFSET_  = 250.0
 PITCH_TOL = 500.0
-YAW_TOL   = 3.0
 ROLL_TOL  = 10.0
 PICK_Z_OFFSET = 13.0
 
@@ -285,7 +284,9 @@ class ZeusClientNode(Node):
                 pose = [0.0, 0.0, 0.0, rz, ry, rx]
                 pose[3:] = self.xy_coor[3:]
                 
-                yaw, pitch, roll = rz, ry, rx               
+                yaw, pitch, roll = rz, ry, rx  
+                print(f'1st yaw : {yaw}')    
+                             
                 
                 Z_HEIGHT = Z_OFFSET - P[2]
                 move_dis = Z_HEIGHT * np.tan(abs(np.deg2rad(pitch)))
@@ -346,7 +347,7 @@ class ZeusClientNode(Node):
                 with self.lock:
                     self.topic_flag = False
                 print("================= 1 =================")
-                print(f'1st yaw : {yaw}')    
+                # print(f'1st yaw : {yaw}')    
                     
             elif idx == 2:
                 if self.base_to_camera_matrix is None:
@@ -371,6 +372,8 @@ class ZeusClientNode(Node):
                 _, yaw, pitch, roll = block_pose
                     
                 e_rz, e_ry, e_rx = yaw - c_rz, pitch - c_ry, roll - c_rx
+                print(f'2nd yaw : {yaw}')    
+                
                 
                 if abs(e_rx) > 30 and abs(e_rx) < 60:
                     if yaw < -90.0: # 월드 좌표계 기준 YAW의 방향벡터가 3사분면 -> 1사분면으로 이동
@@ -428,7 +431,7 @@ class ZeusClientNode(Node):
                         self.y_offset = 0.0
                         
                     # print(f'YAWYAWYAW : {yaw}')   
-                    print(f'2nd yaw : {yaw}')    
+                    # print(f'2nd yaw : {yaw}')    
                      
                     roll = 0.0
                     pitch = 0.0

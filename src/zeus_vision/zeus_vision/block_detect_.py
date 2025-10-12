@@ -310,26 +310,6 @@ def refine_center_minarearect_with_size(mask_bin, depth_undist, intr, depth_scal
     )
     return refined_origin, (cx, cy), z_med, rect_snap, rect_snap_box_pts, rect_orig_box_pts, origin_src, None
 
-def _polygon_area_2d(points_xy):
-    if points_xy is None or len(points_xy) < 3: return 0.0
-    x = points_xy[:,0]; y = points_xy[:,1]
-    s = float(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1)))
-    return abs(s) * 0.5
-
-def area_mm2_from_inliers(inliers_xyz, plane_origin, x_axis, y_axis):
-    if inliers_xyz is None or len(inliers_xyz) < 3: return None
-    if any(v is None for v in [plane_origin, x_axis, y_axis]): return None
-    P = inliers_xyz.astype(np.float32, copy=False)
-    o = plane_origin.reshape(1,3).astype(np.float32, copy=False)
-    xa = x_axis.reshape(3,1).astype(np.float32, copy=False)
-    ya = y_axis.reshape(3,1).astype(np.float32, copy=False)
-    rel = P - o
-    X = (rel @ xa).reshape(-1) * 1000.0
-    Y = (rel @ ya).reshape(-1) * 1000.0
-    pts2 = np.stack([X, Y], axis=1).astype(np.float32)
-    hull = cv2.convexHull(pts2, returnPoints=True).reshape(-1,2)
-    return float(_polygon_area_2d(hull))
-
 # ---------- HSV 라벨 보정 ----------
 COLOR_NORMALIZE_SET = {"red", "pink", "purple", "green"}
 def refine_label_by_hsv_mean(initial_label: str, mask_bin: np.ndarray, hsv_img: np.ndarray):
@@ -343,6 +323,38 @@ def refine_label_by_hsv_mean(initial_label: str, mask_bin: np.ndarray, hsv_img: 
     if lab in ("red","pink"):    lab = "pink" if Sm < 170.0 else "red"
     elif lab in ("purple","green"): lab = "purple" if Hm > 100.0 else "green"
     return lab, Hm, Sm, Vm
+
+# =================== BB를 이용한 면적 계산 유틸 함수 =========================
+def area_mm2_from_rect_on_plane(rect_box_pts, intr, plane_model):
+    """
+    rect_box_pts: (4,2) int32 or float32 - cv2.boxPoints(...) 결과 (u,v) 4점
+    intr: (fx, fy, cx, cy) - 보정된 핀홀 내참
+    plane_model: (a,b,c,d) - 카메라 좌표계에서의 평면식 ax+by+cz+d=0
+    return: 면적(mm^2, float). 교점 실패 시 0.0
+    """
+    if rect_box_pts is None or plane_model is None:
+        return 0.0
+
+    fx, fy, cx, cy = intr
+    corners_3d = []
+    for (u, v) in rect_box_pts.astype(np.float32):
+        p = ray_plane_intersect_pinhole(float(u), float(v), intr, plane_model)
+        if p is None or not np.all(np.isfinite(p)):
+            return 0.0
+        corners_3d.append(p)
+
+    if len(corners_3d) != 4:
+        return 0.0
+
+    # 사각형을 두 삼각형으로 분할해 면적 합산 (단위: m^2)
+    p0, p1, p2, p3 = [np.asarray(q, dtype=np.float32) for q in corners_3d]
+    a1 = 0.5 * np.linalg.norm(np.cross(p1 - p0, p2 - p0))
+    a2 = 0.5 * np.linalg.norm(np.cross(p3 - p0, p2 - p0))
+    area_m2 = float(a1 + a2)
+
+    # mm^2 로 변환
+    return area_m2 * 1e6
+# ==================================================================================
 
 # ---------- ROS2 ----------
 class BlockPosePublisher(Node):
@@ -529,7 +541,8 @@ def main(args=None):
                         ypr = SciRot.from_matrix(raw_rot_matrix).as_euler('zyx', degrees=True)
                         pitch_deg = float(ypr[1])
 
-                    area_mm2 = area_mm2_from_inliers(inliers, origin_m, x_axis, y_axis) or 0.0
+                    rect_pts_2d = rect_snap_box_pts if rect_snap_box_pts is not None else rect_orig_box_pts
+                    area_mm2 = area_mm2_from_rect_on_plane(rect_pts_2d, node.rect_intr, plane_model)
                     area_txt = f"area_mm2:{int(round(area_mm2))}"
                     cv2.putText(overlay, area_txt, (x1, max(0, y1 - 24)),
                                 FONT, 0.6, (255,255,255), 3, cv2.LINE_AA)
@@ -550,7 +563,7 @@ def main(args=None):
             # ---- 선택 & 퍼블리시 ----
             chosen = None
             if mode == 'block1':
-                print("========================================")
+                time.sleep(2)
                 CLASS_ORDER = ['blue', 'green', 'pink', 'purple', 'red', 'yellow']
                 def xy_dist_cam(c):
                     o = c.get('origin', None)
@@ -652,6 +665,7 @@ def main(args=None):
                                     FONT, 0.50, (0,0,255), 1, cv2.LINE_AA)
                         
             if mode == 'block2':
+                time.sleep(2)
                 CLASS_ORDER = ['blue', 'green', 'pink', 'purple', 'red', 'yellow']
                 def xy_dist_cam(c):
                     o = c.get('origin', None)
