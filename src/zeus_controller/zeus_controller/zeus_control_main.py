@@ -61,7 +61,10 @@ class MainControlNode(Node):
     
         T_BC = fk(all_dh_params)
         return T_BC
-            
+    
+    # ==============================================================
+    # ======================== Callback 모음 ========================
+    
     def joint_state_callback(self, msg):
         if len(msg.data) == 6:
             with self.lock:
@@ -120,6 +123,33 @@ class MainControlNode(Node):
             if msg.data:
                 if self.current_flag == 'waiting':
                     self.current_flag = 'done'
+    
+    def llm_callback(self, msg : String):
+        self.get_logger().info(f"[RAW] {msg.data}")
+        try:
+            obj = json.loads(msg.data)
+        except Exception as e:
+            self.get_logger().error(f"JSON 파싱 실패: {e}")
+            return
+        
+        with self.lock:
+            self.tool      = obj.get('tool')
+            self.mode      = obj.get('mode')
+            self.direction = obj.get('direction')
+            self.target    = obj.get('target') # 공구
+            
+            self.handler = self.create_handler(self.mode, self.tool)
+            self.current_step = 'step_1'
+            
+            self.current_flag = 'order'
+            
+        self.get_logger().info(
+            f"[PARSED] mode={self.mode}, tool={self.tool}, "
+            f"direction={self.direction}, target={self.target}"
+        )
+                    
+    # ======================== Callback 모음 ========================
+    # ==============================================================
         
     def create_handler(self, mode, tool):
         if mode == 'START':
@@ -146,41 +176,33 @@ class MainControlNode(Node):
         
         return None
 
-    def llm_callback(self, msg : String):
-        self.get_logger().info(f"[RAW] {msg.data}")
-        try:
-            obj = json.loads(msg.data)
-        except Exception as e:
-            self.get_logger().error(f"JSON 파싱 실패: {e}")
-            return
-        
-        with self.lock:
-            self.tool      = obj.get('tool')
-            self.mode      = obj.get('mode')
-            self.direction = obj.get('direction')
-            self.target    = obj.get('target') # 공구
-            
-            self.handler = self.create_handler(self.mode, self.tool)
-            self.current_step = 'step_1'
-            
-            self.current_flag = 'order'
-            
-        self.get_logger().info(
-            f"[PARSED] mode={self.mode}, tool={self.tool}, "
-            f"direction={self.direction}, target={self.target}"
-        )
-        
     def advance_step(self, next_step):
         if next_step in (None, 'None'):
             self.get_logger().info('[ZEUS] All Step Finished')
             self.reset_param()
+            self.reset_tool_param()
             
         else:
             with self.lock:
                 self.current_step = next_step
                 self.current_flag = 'order'
                 self.next_step = None
+                
+    def waiting(self, t):
+        import time
+        
+        start_time = time.time()
+        
+        while True:
+            print(f"Time left : {(t - (time.time() - start_time)):.2}")
+            if time.time() - start_time >= t:
+                break
             
+        with self.lock:
+            if self.current_flag == 'waiting':
+                self.current_flag = 'done'
+    
+    # 메인 루프 함수       
     def loop(self):
         with self.lock:
             handler = self.handler
@@ -236,7 +258,8 @@ class MainControlNode(Node):
             
             # 모든 변수 초기화 및 flag : idle 상태로 전환해 대기 상태로 전환
             self.reset_param()
-            
+         
+    # 요청 받은 동작에 대한 움직임을 관장하는 함수   
     def module_translator(self, ans):
         if ans.get('position'):
             cmd_msg = ZeusMainCommand()
@@ -262,7 +285,8 @@ class MainControlNode(Node):
         if ans.get('clear'):
             self.reset_tool_param()
             self.get_logger().info(f"[ZEUS] clear")
-            
+        
+        # Deliver Normal 에 사용하는 기능 =======================================
         if ans.get('camera_trigger'):
             cam_msg = String()
             
@@ -280,22 +304,49 @@ class MainControlNode(Node):
                     return
                 
                 x,y,z = self.tool_p
+                current_p = self.xy_coor
                 yaw = self.tool_yaw
                 
             cmd_msg = ZeusMainCommand()
             
+            # 340mm
             cmd_msg.frame    = 'l7' # 커터는 대회장에서 해야할 듯
             if self.tool == 'wire_cutter': # 커터만 예외처리
-                cmd_msg.position = [float(x) - 30.0, float(y) - 10.0, float(z) + 40.0, -90.0, float(yaw), 90.0]
+                cmd_msg.position = [current_p[0] - 250.0, float(y) - 10.0, float(z) + 20.0, -90.0, float(yaw), 90.0]
+            
+            # 나머지 툴은 다른 Offset -30 : 타공판 진입 Offset임, 아마 tool Offset이 안들어가 있어서 그런 듯
+            elif self.tool == 'wire_stripper' or self.tool == 'nipper': 
+                cmd_msg.position = [current_p[0] - 250.0, float(y), float(z), -90.0, float(yaw), 90.0]
             
             elif self.tool == 'M3': # 집는 Z 값 Offset 들어가있음
                 cmd_msg.position = [float(x), float(y), 60.0, -90.0 + float(yaw), 0.0, 179.0]
-            
-            else: # 나머지 툴은 다른 Offset -30 : 타공판 진입 Offset임, 아마 tool Offset이 안들어가 있어서 그런 듯
-                cmd_msg.position = [float(x) - 30.0, float(y), float(z), -90.0, float(yaw), 90.0]
+                
+            else:
+                self.get_logger().warn('[ZEUS] Wrong Tool')
+                return
                 
             cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
+            
+        if ans.get('deliver_offset_move'):
+            cmd_msg = ZeusMainCommand()
+            with self.lock:
+                current_p = self.xy_coor
+                yaw = self.tool_yaw
+            
+            cmd_msg.frame = 'l7'
+            # 많이 기울어져 있으면 동작 추가
+            if abs(yaw) > 10.0:
+                cmd_msg.position = current_p
+                cmd_msg.position[2] += 18.0
+                
+            # 아니면 현 위치 고수
+            else:
+                cmd_msg.position = current_p
+            
+            cmd_msg.speed = ans['speed']
+            self.cmd_pub.publish(cmd_msg)
+        # ==========================================================================
         
         if ans.get('target_trigger'):
             target_msg = String()
@@ -366,7 +417,7 @@ class MainControlNode(Node):
             
             cmd_msg = ZeusMainCommand()
             cmd_msg.frame = 't'
-            cmd_msg.position = [0.0, 0.0, 204.0 - 20.0, 0.0, 0.0, 0.0]
+            cmd_msg.position = [0.0, 0.0, 67.0, 0.0, 0.0, 0.0]
             
             cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
@@ -385,15 +436,36 @@ class MainControlNode(Node):
             P = xy_coor
             P[0] = float(x)
             P[1] = float(y)
-            P[2] = P[2] - 100.0 
-            P[3] = P[3] - yaw
+            P[2] = P[2] - 240.0 
+            P[3] = P[3] + yaw
             cmd_msg = ZeusMainCommand()
             cmd_msg.frame = 'l7'
             cmd_msg.position = P
             
             cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
+        
+        # 여기서 자리 기억 및 tool 정보에 따른 반환 자리 다 작성해야 함    
+        if ans.get('return_tool_offset'):
+            with self.lock:
+                tool = self.tool
+            print('')
+            print(tool)
+            print('')
+            cmd_msg = ZeusMainCommand()
+            cmd_msg.frame = 'j'
             
+            if tool == 'wire_stripper':
+                cmd_msg.position = [-147.02,   45.30,  118.83,  121.14,   81.51,  -76.08]
+            
+            cmd_msg.speed = ans['speed']
+            self.cmd_pub.publish(cmd_msg)
+        
+        if ans.get('wait_a_sec'):
+            t = ans['wait_a_sec']
+            self.waiting(t)
+            
+        
 def main(args=None):
     rclpy.init(args=args)
     node = MainControlNode()

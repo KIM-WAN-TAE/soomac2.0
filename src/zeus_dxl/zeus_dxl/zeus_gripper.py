@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String, Float32
 from dynamixel_sdk import PortHandler, PacketHandler
-import time
+import time, os
 
 DEVICENAME            = '/dev/ttyUSB0'
 BAUDRATE              = 3000000
@@ -27,7 +27,7 @@ CURR_UNIT_A = 0.00269
 
 RELEASE_POSITION = 2150
 GRIPPER_INIT_POSITION = 2800
-GRIP_CURRENT     = 18
+GRIP_CURRENT     = 20
 
 class GripperNode(Node):
     def __init__(self):
@@ -43,6 +43,8 @@ class GripperNode(Node):
         if not self.porthandler.setBaudRate(BAUDRATE):
             self.get_logger().error(f"[AIOT] 보드레이트 설정 실패: {BAUDRATE}")
             return
+        
+        self.last_cmd = None
         
         self.motor_init()
         self.create_subscription(String, '/zeus/string/gripper_command', self.gripper_callback, 10)
@@ -134,6 +136,7 @@ class GripperNode(Node):
         
         current_time = time.time()
         last_time = current_time
+        self.last_cmd = cmd
         
         if cmd == 'open':
             self.make_position_mode()
@@ -201,6 +204,7 @@ class GripperNode(Node):
             self.get_logger().warn('[AIOT] Wrong Command!')
             
     def timer_callback(self):
+        os.system('clear')
         raw_cur, _, dxl_error = self.packethandler.read2ByteTxRx(
             self.porthandler, ID, ADDR_PRESENT_CURRENT)
         
@@ -209,7 +213,8 @@ class GripperNode(Node):
         
         present_current = raw_cur * CURR_UNIT_A * 1000
         
-        # print(f"[AIOT] Current: {present_current:.1f} mA")
+        print(f"[AIOT] Current : {present_current:.1f} mA")
+        print(f"[AIOT] Last Command : {self.last_cmd}")
         
         cur_msg = Float32()
         cur_msg.data = present_current

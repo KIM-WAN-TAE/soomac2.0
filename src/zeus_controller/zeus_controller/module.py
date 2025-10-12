@@ -1,252 +1,14 @@
 # Zeus Free Mission Module
 
-# Joint Coordinate :: Posture #3
-INIT_POSE = [-143.12,   13.69,  148.63,  180.11,  -17.73,  -54.85]
-
-class Start:
-    def step(self, step):
-        if step == 'step_1':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, -30.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_2'
-            }
-            return ans
-            
-        elif step == 'step_2':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, 100.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_3'
-            }
-            return ans
-        
-        elif step == 'step_3':
-            ans = {
-                'gripper' : 'close',
-                'requires_ack' : True,
-                'next_step': 'step_4'
-            }
-            return ans
-        
-        elif step == 'step_4':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_5'
-            }
-            return ans
-            
-        elif step == 'step_5':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, 30.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_6'
-            }
-            return ans
-        
-        elif step == 'step_6':
-            ans = {
-                'gripper' : 'open',
-                'requires_ack' : True,
-                'next_step': 'None'
-            }
-            return ans
-        
-        else:
-            print('[ZEUS] Wrong Step')
-            return None
-            
-class Finish:
-    def step(self, step):
-        if step == 'step_1':
-            ans = {
-                'frame'    : 't',
-                'position' : [50.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_2'
-            }
-            return ans
-            
-        elif step == 'step_2':
-            ans = {
-                'frame'    : 't',
-                'position' : [-50.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_3'
-            }
-            return ans
-        
-        elif step == 'step_3':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 50.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_4'
-            }
-            return ans
-            
-        elif step == 'step_4':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, -50.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'None'
-            }
-            return ans
-        
-        else:
-            print('[ZEUS] Wrong Step')
-            return None
-
-class Up:
-    def step(self, step):
-        if step == 'step_1':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, -30.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_2'
-            }
-            return ans
-            
-        elif step == 'step_2':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, 100.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_3'
-            }
-            return ans
-        
-        elif step == 'step_3':
-            ans = {
-                'gripper' : 'close',
-                'requires_ack' : True,
-                'next_step': 'step_4'
-            }
-            return ans
-        
-        elif step == 'step_4':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_5'
-            }
-            return ans
-            
-        elif step == 'step_5':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, 30.0, 0.0, 0.0, 0.0],
-                'speed'    : 60.0,
-                'requires_ack' : True,
-                'next_step': 'step_6'
-            }
-            return ans
-        
-        elif step == 'step_6':
-            ans = {
-                'gripper' : 'open',
-                'requires_ack' : True,
-                'next_step': 'None'
-            }
-            return ans
-        
-        else:
-            print('[ZEUS] Wrong Step')
-            return None
-        
-class Down:
-    def step(self, step):
-        # 조명을 잡기 위한 초기 위치
-        if step == 'step_1':
-            ans = {
-                'frame'    : 'j',
-                'position' : [-52.79,  -21.85,  -82.58,  100.10,  -55.46, -197.42],
-                'speed'    : 5.0,
-                'requires_ack' : True,
-                'next_step': 'step_2'
-            }
-            return ans
-        
-        # 조명 잡기 위치
-        elif step == 'step_2':
-            ans = {
-                'frame'    : 'j',
-                'position' : [-41.68,  -32.48,  -64.92,   97.72,  -43.57, -190.59],
-                'speed'    : 5.0,
-                'requires_ack' : True,
-                'next_step': 'step_3'
-            }
-            return ans
-        
-        # 그리퍼로 조명 잡기
-        elif step == 'step_3':
-            ans = {
-                'gripper' : 'close',
-                'requires_ack' : True,
-                'next_step': 'step_4'
-            }
-            return ans
-        
-        # 내려가기
-        elif step == 'step_4':
-            ans = {
-                'frame'    : 'j',
-                'position' : [-42.66,  -35.08,  -68.94,  103.96,  -45.61, -199.51],
-                'speed'    : 5.0,
-                'requires_ack' : True,
-                'next_step': 'step_5'
-            }
-            return ans
-        
-        # 그리퍼 열기
-        elif step == 'step_5':
-            ans = {
-                'gripper' : 'open',
-                'requires_ack' : True,
-                'next_step': 'step_6'
-            }
-            return ans
-        
-        # 빠지기
-        elif step == 'step_6':
-            ans = {
-                'frame'    : 'j',
-                'position' : [-54.75,  -24.30,  -87.88,  104.26,  -58.73, -206.04],
-                'speed'    : 5.0,
-                'requires_ack' : True,
-                'next_step': 'None'
-            }
-            return ans
-        
-        else:
-            print('[ZEUS] Wrong Step')
-            return None
+# Init Pose Joint Coordinate
+INIT_POSE = [-170.55,   17.08,  124.58,   -0.10,   38.73,   98.72]
         
 class Test:
     def step(self, step):
         if step == 'step_1':
             ans = {
                 'frame'    : 'j',
-                'position' : [-91.03, -36.22, -71.56, 0.20, -72.10, -91.09],
+                'position' : INIT_POSE,
                 'speed'    : 10.0,
                 'requires_ack' : True,
                 'next_step': 'step_2'
@@ -255,7 +17,7 @@ class Test:
             
         elif step == 'step_2':
             ans = {
-                'frame'    : 'j',
+                'frame'    : 't',
                 'position' : [-91.10, -31.70, -79.66, 0.11, -68.52, -91.17],
                 'speed'    : 5.0,
                 'requires_ack' : True,
@@ -272,8 +34,8 @@ class Deliver_Normal:
         if step == 'step_1':
             ans = {
                 'frame'    : 'j',
-                'position' : [-143.12,   13.69,  148.63,  180.11,  -17.73,  -54.85],
-                'speed'    : 5.0,
+                'position' : [-176.12,   52.47,  112.57,   97.36,   88.01,  -75.26],
+                'speed'    : 10.0,
                 'requires_ack' : True,
                 'next_step': 'step_2'
             }
@@ -282,8 +44,8 @@ class Deliver_Normal:
         elif step == 'step_2':
             ans = {
                 'frame'    : 'j',
-                'position' : [-181.83,   49.58,  121.90,   91.89,   89.69,  -81.58],
-                'speed'    : 5.0,
+                'position' : [-176.12,   52.47,  112.57,   97.36,   88.01,  -75.26],
+                'speed'    : 10.0,
                 'requires_ack' : True,
                 'next_step': 'step_3'
             }
@@ -308,31 +70,99 @@ class Deliver_Normal:
         
         elif step == 'step_5':
             ans = {
-                'gripper' : 'close',
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 80.0, 0.0, 0.0, 0.0],
+                'speed'    : 30.0,
                 'requires_ack' : True,
                 'next_step': 'step_6'
             }
             return ans
-            
+        
         elif step == 'step_6':
             ans = {
-                'frame'    : 't',
-                'position' : [0.0, 50.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 20.0,
+                'gripper' : 'close',
                 'requires_ack' : True,
                 'next_step': 'step_7'
             }
             return ans
-        
+            
         elif step == 'step_7':
             ans = {
                 'frame'    : 't',
+                'position' : [0.0, 70.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 30.0,
+                'requires_ack' : True,
+                'next_step': 'step_8'
+            }
+            return ans
+
+        elif step == 'step_8':
+            ans = {
+                'deliver_offset_move'    : True,
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_9'
+            }
+            return ans
+        
+        elif step == 'step_9':
+            ans = {
+                'frame'    : 't',
                 'position' : [0.0, 0.0, -170.0, 0.0, 0.0, 0.0],
+                'speed'    : 80.0,
+                'requires_ack' : True,
+                'next_step': 'step_10'
+            }
+            return ans
+
+        elif step == 'step_10':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-173.58,   38.03,   96.39,   -0.12,   45.97,    5.69],
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'step_11'
+            }
+            return ans
+        
+        elif step == 'step_11':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 150.0, 0.0, 0.0, 0.0],
                 'speed'    : 20.0,
+                'requires_ack' : True,
+                'next_step': 'step_12'
+            }
+            return ans
+        
+        elif step == 'step_12':
+            ans = {
+                'gripper' : 'open',
+                'requires_ack' : True,
+                'next_step': 'step_13'
+            }
+            return ans
+        
+        elif step == 'step_13':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -50.0, 0.0, 0.0, 0.0],
+                'speed'    : 50.0,
+                'requires_ack' : True,
+                'next_step': 'step_14'
+            }
+            return ans
+        
+        elif step == 'step_14':
+            ans = {
+                'frame'    : 'j',
+                'position' : INIT_POSE,
+                'speed'    : 15.0,
                 'requires_ack' : True,
                 'next_step': 'None'
             }
             return ans
+        
         
 class Deliver_Box:
     def step(self, step):
@@ -550,7 +380,7 @@ class Return_Normal:
             ans = {
                 'frame'    : 'j',
                 'position' : [-184.02,   24.04,   93.32,   -0.17,   63.00,   -4.75],
-                'speed'    : 5.0,
+                'speed'    : 10.0,
                 'requires_ack' : True,
                 'next_step': 'step_2'
             }
@@ -593,8 +423,195 @@ class Return_Normal:
         elif step == 'step_6':
             ans = {
                 'frame'    : 'j',
-                'position' : [-184.02,   24.04,   93.32,   -0.17,   63.00,   -4.75],
+                'position' : INIT_POSE,
                 'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_7'
+            }
+            return ans
+        
+        elif step == 'step_7':
+            ans = {
+                'return_tool_offset' : True,
+                'speed'    : 15.0,
+                'requires_ack' : True,
+                'next_step': 'step_8'
+            }
+            return ans
+        
+        elif step == 'step_8':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 110.0, 0.0, 0.0, 0.0],
+                'speed'    : 50.0,
+                'requires_ack' : True,
+                'next_step': 'step_9'
+            }
+            return ans
+        
+        elif step == 'step_9':
+            ans = {
+                'gripper' : 'open',
+                'requires_ack' : True,
+                'next_step': 'step_10'
+            }
+            return ans
+        
+        elif step == 'step_10':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
+                'speed'    : 80.0,
+                'requires_ack' : True,
+                'next_step': 'step_11'
+            }
+            return ans
+        
+        elif step == 'step_11':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-184.02,   24.04,   93.32,   -0.17,   63.00,   -4.75],
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'None'
+            }
+            return ans
+
+SWITCH_ON_INIT_POSE = [-133.98,   31.30,  115.21,  129.98,   66.84,  -64.61]     
+class Start:
+    def step(self, step):
+        # 혹시 모를 초기화 위치
+        if step == 'step_1':
+            ans = {
+                'frame'    : 'j',
+                'position' : INIT_POSE,
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_2'
+            }
+            return ans
+        
+        elif step == 'step_2':
+            ans = {
+                'gripper' : 'close',
+                'requires_ack' : True,
+                'next_step': 'step_3'
+            }
+            return ans
+        
+        elif step == 'step_3':
+            ans = {
+                'frame'    : 'j',
+                'position' : SWITCH_ON_INIT_POSE,
+                'speed'    : 15.0,
+                'requires_ack' : True,
+                'next_step': 'step_4'
+            }
+            return ans
+        
+        elif step == 'step_4':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 25.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_5'
+            }
+            return ans
+        
+        elif step == 'step_4':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
+                'speed'    : 50.0,
+                'requires_ack' : True,
+                'next_step': 'step_5'
+            }
+            return ans
+        
+        elif step == 'step_5':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-170.55,   17.08,  124.58,   -0.10,   38.73,   98.72],
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'step_6'
+            }
+            return ans
+        
+        elif step == 'step_6':
+            ans = {
+                'gripper' : 'open',
+                'requires_ack' : True,
+                'next_step': 'None'
+            }
+            return ans
+
+SWITCH_OFF_INIT_POSE = [-133.89,   32.42,  115.73,  130.60,   67.86,  -66.00]        
+class Finish:
+    def step(self, step):
+        # 혹시 모를 초기화 위치
+        if step == 'step_1':
+            ans = {
+                'frame'    : 'j',
+                'position' : INIT_POSE,
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_2'
+            }
+            return ans
+        
+        elif step == 'step_2':
+            ans = {
+                'gripper' : 'close',
+                'requires_ack' : True,
+                'next_step': 'step_3'
+            }
+            return ans
+        
+        elif step == 'step_3':
+            ans = {
+                'frame'    : 'j',
+                'position' : SWITCH_OFF_INIT_POSE,
+                'speed'    : 15.0,
+                'requires_ack' : True,
+                'next_step': 'step_4'
+            }
+            return ans
+        
+        elif step == 'step_4':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 25.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_5'
+            }
+            return ans
+        
+        elif step == 'step_4':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
+                'speed'    : 50.0,
+                'requires_ack' : True,
+                'next_step': 'step_5'
+            }
+            return ans
+        
+        elif step == 'step_5':
+            ans = {
+                'frame'    : 'j',
+                'position' : INIT_POSE,
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'step_6'
+            }
+            return ans
+        
+        elif step == 'step_6':
+            ans = {
+                'gripper' : 'open',
                 'requires_ack' : True,
                 'next_step': 'None'
             }
