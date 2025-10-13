@@ -34,8 +34,8 @@ class Deliver_Normal:
         if step == 'step_1':
             ans = {
                 'frame'    : 'j',
-                'position' : [-176.12,   52.47,  112.57,   97.36,   88.01,  -75.26],
-                'speed'    : 10.0,
+                'position' : INIT_POSE,
+                'speed'    : 15.0,
                 'requires_ack' : True,
                 'next_step': 'step_2'
             }
@@ -170,7 +170,7 @@ class Return_Normal:
             ans = {
                 'frame'    : 'j',
                 'position' : [-184.02,   24.04,   93.32,   -0.17,   63.00,   -4.75],
-                'speed'    : 10.0,
+                'speed'    : 15.0,
                 'requires_ack' : True,
                 'next_step': 'step_2'
             }
@@ -212,9 +212,9 @@ class Return_Normal:
         
         elif step == 'step_6':
             ans = {
-                'frame'    : 'j',
-                'position' : INIT_POSE,
-                'speed'    : 5.0,
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -80.0, 0.0, 0.0, 0.0],
+                'speed'    : 80.0,
                 'requires_ack' : True,
                 'next_step': 'step_7'
             }
@@ -223,7 +223,7 @@ class Return_Normal:
         elif step == 'step_7':
             ans = {
                 'return_tool_offset' : True,
-                'speed'    : 15.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'step_8'
             }
@@ -233,7 +233,7 @@ class Return_Normal:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, 105.0, 0.0, 0.0, 0.0],
-                'speed'    : 50.0,
+                'speed'    : 80.0,
                 'requires_ack' : True,
                 'next_step': 'step_9'
             }
@@ -260,7 +260,7 @@ class Return_Normal:
         elif step == 'step_11':
             ans = {
                 'frame'    : 'j',
-                'position' : [-184.02,   24.04,   93.32,   -0.17,   63.00,   -4.75],
+                'position' : INIT_POSE,
                 'speed'    : 10.0,
                 'requires_ack' : True,
                 'next_step': 'None'
@@ -323,7 +323,7 @@ class Start:
             ans = {
                 'frame'    : 'j',
                 'position' : [-170.55,   17.08,  124.58,   -0.10,   38.73,   98.72],
-                'speed'    : 10.0,
+                'speed'    : 15.0,
                 'requires_ack' : True,
                 'next_step': 'step_6'
             }
@@ -393,7 +393,7 @@ class Finish:
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
-                'speed'    : 10.0,
+                'speed'    : 15.0,
                 'requires_ack' : True,
                 'next_step': 'step_6'
             }
@@ -555,6 +555,93 @@ class Deliver_Box:
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -110.0, 0.0, 0.0, 0.0],
                 'speed'    : 20.0,
+                'requires_ack' : True,
+                'next_step': 'None'
+            }
+            return ans
+
+GRIP_INIT_POSE = [-162.44,    2.35,  104.30, -225.75,   22.97,  313.07]
+class Down:
+    def step(self, step):
+        
+        # 초기화
+        if step == 'step_1':
+            ans = {
+                'frame'    : 'j',
+                'position' : INIT_POSE,
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'step_2'
+            }
+            return ans
+        
+        # 잡기 전 자세로 진입
+        elif step == 'step_2':
+            ans = {
+                'frame'    : 'j',
+                'position' : GRIP_INIT_POSE,
+                'speed'    : 30.0,
+                'requires_ack' : True,
+                'next_step': 'step_3'
+            }
+            return ans
+        
+        # 잡으러 진입
+        elif step == 'step_3':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 200.0, 0.0, 0.0, 0.0],
+                'speed'    : 120.0,
+                'requires_ack' : True,
+                'next_step': 'step_4'
+            }
+            return ans
+        
+        # 잡기
+        elif step == 'step_4':
+            ans = {
+                'gripper' : 'close',
+                'requires_ack' : True,
+                'next_step': 'step_5'
+            }
+            return ans
+        
+        # 잡고 하강
+        elif step == 'step_5':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, -50.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 20.0,
+                'requires_ack' : True,
+                'next_step': 'step_6'
+            }
+            return ans
+        
+        # 놓기
+        elif step == 'step_6':
+            ans = {
+                'gripper' : 'open',
+                'requires_ack' : True,
+                'next_step': 'step_7'
+            }
+            return ans
+        
+        # 퇴장
+        elif step == 'step_7':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -200.0, 0.0, 0.0, 0.0],
+                'speed'    : 150.0,
+                'requires_ack' : True,
+                'next_step': 'step_8'
+            }
+            return ans
+        
+        elif step == 'step_8':
+            ans = {
+                'frame'    : 'j',
+                'position' : INIT_POSE,
+                'speed'    : 30.0,
                 'requires_ack' : True,
                 'next_step': 'None'
             }

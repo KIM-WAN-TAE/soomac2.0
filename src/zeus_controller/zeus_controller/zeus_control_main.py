@@ -195,9 +195,9 @@ class MainControlNode(Node):
             
         elif mode == 'RETURN':
             return Return_Normal()
-            
-        elif mode == 'TEST':
-            return Test()
+        
+        elif mode == 'DOWN':
+            return Down()
         
         return None
 
@@ -366,7 +366,7 @@ class MainControlNode(Node):
                 self.get_logger().warn('[ZEUS] Wrong Tool')
                 return
                 
-            cmd_msg.speed    = ans['speed']
+            cmd_msg.speed    = 5.0
             self.cmd_pub.publish(cmd_msg)
             
         if ans.get('deliver_offset_move'):
