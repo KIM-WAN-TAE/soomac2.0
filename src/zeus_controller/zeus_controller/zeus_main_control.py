@@ -44,6 +44,8 @@ class MainControlNode(Node):
         self.create_subscription(Float32MultiArray, '/zeus/array/joint_state', self.joint_state_callback, 10)
         self.create_subscription(Float32MultiArray, '/zeus/array/drop_point', self.drop_zone_callback, 10)
         
+        self.dh_params = CameraDHParameters()
+        
         self.create_timer(TIMER_PERIOD, self.loop)
         
         self.reset_param()
@@ -64,6 +66,13 @@ class MainControlNode(Node):
         with self.lock:
             self.block_pose = None
             
+    def cal_base_to_cam(self, joint_angles):
+        all_dh_params = self.dh_params.get_all_dh_params(joint_angles[:6])
+    
+        T_BC = fk(all_dh_params)
+        # print(f'\n{T_BC}')
+        return T_BC
+    
     # ======================================
     # == callback == callback == callback ==
     
@@ -74,7 +83,6 @@ class MainControlNode(Node):
         
         with self.lock:
             self.drop_zone_point = msg.data
-            self.block_list[7] = ['l'] + list(self.drop_zone_point)
             self.get_logger().info(f'[ZEUS] Drop Zone Point : {self.drop_zone_point}')
     
     def joint_state_callback(self, msg):
@@ -121,13 +129,15 @@ class MainControlNode(Node):
         
         # print(f'rz : {rz}')
         
-        with self.lock:
-            self.block_pose = [P, rz, ry, rx]
-            
         # print(rz, ry, rx)
         print("")
         print(P[0], P[1], P[2])
         print("")
+        
+        with self.lock:
+            self.block_pose = [P, rz, ry, rx]
+            if self.current_flag == 'waiting':
+                self.current_flag = 'done'
     
     # == callback == callback == callback ==
     # ======================================
@@ -150,6 +160,8 @@ class MainControlNode(Node):
         if ans.get('gripper'):
             grip_msg = String()
             grip_msg.data = ans['gripper_str']
+            
+            self.grip_cmd_pub.publish(grip_msg)
             
             self.get_logger().info(f"[ZEUS] Gripper able or disable")
         
@@ -209,7 +221,39 @@ class MainControlNode(Node):
             cmd_msg.speed = ans['speed']
             
             self.cmd_pub.publish(cmd_msg)
+            
+        if ans.get('block_drop_move'):
+            with self.lock:
+                drop_zone = self.drop_zone_point 
                 
+            cmd_msg = ZeusMainCommand()
+            cmd_msg.frame = 'j'
+            cmd_msg.position = drop_zone
+            cmd_msg.speed = ans['speed']
+            
+            self.cmd_pub.publish(cmd_msg)
+            
+        if ans.get('wait_a_sec'):
+            import time
+            
+            t = ans['time']
+            start_time = time.time()
+            
+            while True:
+                print(f'[ZEUS] Waiting Time : {(t - (time.time() - start_time)):.2}')
+                if time.time() - start_time >= t:
+                    break
+            
+            with self.lock:
+                # 석션 과정 중 혹시 Drop 좌표가 넘어오지 않았을 경우 좌표 2차 요청
+                if self.drop_zone_point is None:
+                    again_msg = String()
+                    again_msg.data = 'again'
+                    self.done_pub.publish(again_msg)
+                
+                if self.current_flag == 'waiting':
+                    self.current_flag = 'done'
+        
     # == 동작 정의 함수 == 동작 정의 함수 ==        
     # ==================================
     

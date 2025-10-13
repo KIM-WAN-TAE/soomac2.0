@@ -59,19 +59,11 @@ class Block:
             }
             return ans
         
-        # 그리퍼 석션 시작
+        # 그리퍼 석션 시작 + Block 좌표 요청
         elif step == 'step_3':
             ans = {
                 'gripper'    : True,
                 'gripper_str' : 's',
-                'requires_ack' : False,
-                'next_step': 'None'
-            }
-            return ans
-    
-        # 블록 Drop 위치 요청 // 기다리지는 않음
-        elif step == 'step_4':
-            ans = {
                 'drop_coor_order' : True,
                 'requires_ack' : False,
                 'next_step': 'None'
@@ -89,11 +81,69 @@ class Block:
             }
             return ans
         
-        # 블록 Drop 위치 요청 // 기다리지는 않음
+        # 석션기가 블록을 집기까지 대기
         elif step == 'step_4':
             ans = {
-                'drop_coor_order' : True,
+                'wait_a_sec' : True,
+                'time' : 2.0, # sec 단위
                 'requires_ack' : False,
                 'next_step': 'None'
+            }
+            return ans
+        # 상승
+        elif step == 'step_1':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -80.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'None'
+            }
+            return ans
+        
+        # 떨어뜨리는 초기 단계로 이동 ## 수정해야 해용
+        elif step == 'step_1':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -80.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'None'
+            }
+            return ans
+        
+        # 떨어뜨리는 Offset 위치로 이동
+        elif step == 'step_1':
+            ans = {
+                'block_drop_move' : True,
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'None'
+            }
+            return ans
+        
+        # 석션기 종료와 동시에 하강
+        elif step == 'step_1':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 50.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'gripper'    : True,
+                'gripper_str' : 'e',
+                'requires_ack' : True,
+                'next_step': 'None'
+            }
+            return ans
+        
+        # 다시 상승 -> 이후 바로 step_1으로 이동할 수 있게
+        elif step == 'step_1':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -80.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'gripper'    : True,
+                'gripper_str' : 'e',
+                'requires_ack' : True,
+                'next_step': 'step_1'
             }
             return ans

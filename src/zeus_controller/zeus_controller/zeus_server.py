@@ -72,7 +72,7 @@ class ZeusServerNode(Node):
         
         self.tol_ang = 1.0
         self.tol_pos = 2.0
-        self.tol_tol = 10.0
+        self.tol_tol = 5.0
         
     def xy_state_callback(self, msg):
         with self.lock:
@@ -108,7 +108,7 @@ class ZeusServerNode(Node):
             # 안정화 모니터링 변수들
             stable_start_time = None
             last_error = None
-            stable_threshold = 3.0  # 3초
+            stable_threshold = 1.0
             error_tolerance = 0.1   # 오차 변화 허용 범위
 
             while True:
