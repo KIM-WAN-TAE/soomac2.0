@@ -49,7 +49,9 @@ class MainControlNode(Node):
         self.create_timer(TIMER_PERIOD, self.loop)
     
         self.reset_block_pose()
-        self.reset_yaw()
+        self.reset_last_yaw()
+        self.reset_last_pose()
+        self.reset_last_pitch()
         
         start_time = time.time()
         while True:
@@ -66,9 +68,17 @@ class MainControlNode(Node):
         with self.lock:
             self.block_pose = None
     
-    def reset_yaw(self):
+    def reset_last_yaw(self):
         with self.lock:
-            self.yaw = None
+            self.last_yaw = None
+            
+    def reset_last_pitch(self):
+        with self.lock:
+            self.last_pitch = None
+            
+    def reset_last_pose(self):
+        with self.lock:
+            self.last_pose = None
     
     def cal_base_to_cam(self, joint_angles):
         all_dh_params = self.dh_params.get_all_dh_params(joint_angles[:6])
@@ -147,6 +157,7 @@ class MainControlNode(Node):
         # print(rz, ry, rx)
         print("")
         print(P[0], P[1], P[2])
+        print(f'{rz}, pitch : {ry}, {rx}')
         print("")
         
         with self.lock:
@@ -200,10 +211,13 @@ class MainControlNode(Node):
             with self.lock:
                 block_pose   = self.block_pose
                 current_coor = self.xy_coor
-                last_yaw = self.yaw
+                last_yaw = self.last_yaw
+                last_pose = self.last_pose
+                last_pitch = self.last_pitch
                 
             cmd_msg = ZeusMainCommand()
-            P, rz, ry, rx = block_pose
+            P, rz, ry, _ = block_pose
+            pitch = ry
             yaw = rz
             
             # 1차 Detect 위치로 이동   
@@ -215,7 +229,10 @@ class MainControlNode(Node):
                 self.reset_block_pose() # 1차 -> 2차로 넘어갈 땐 새로운 좌표 받아야함
                 
                 with self.lock:
-                    self.yaw = yaw
+                    self.last_pose = block_pose
+                    self.last_yaw = yaw
+                    self.last_pitch = pitch
+                print(f'저장할 때 pitch 값 : {pitch}')
             
             # Yaw 회전만 시행
             elif ans['pick_str'] == 'second':
@@ -230,11 +247,44 @@ class MainControlNode(Node):
                 pose = [0.0, 0.0, 0.0, last_yaw, 0.0, 0.0]
                 cmd_msg.frame = 't'
                 
-                self.reset_yaw()
+                self.reset_last_yaw()
             
             elif ans['pick_str'] == 'third':
-                pose = [P[0], P[1], P[2] + PICK_Z_OFFSET - 10.0, 0.0, 0.0, 0.0]
-                pose[3:] = current_coor[3:]
+                # 첫 번째 Pose와 두 번째 Pose 값의 차이를 연산
+                # last_pose = [P, rz, ry, rx], block_pose = [P, rz, ry, rx]
+                last_P = last_pose[0]
+                current_P = block_pose[0]
+                error = np.linalg.norm(last_P - current_P)
+                self.get_logger().warning(f'ERROR : {error}')
+                
+                self.get_logger().info(f'PITCH :{last_pitch}')
+                
+                # pitch로 생성되는 각도가 6.0 을 넘어간다면
+                if abs(last_pitch) >= 5.0:
+                    # 기존보다 2mm 더 하강
+                    PITCH_OFFSET = 3.0
+                    self.get_logger().info(f'Activate PITCH OFFSET')
+                # pitch로 생성되는 각도가 6.0 을 넘어가지 않는다면
+                else:
+                    # 하강 OFFSET 없음
+                    PITCH_OFFSET = 0.0
+                    self.get_logger().info(f'Deactivate pitch offset')
+                
+                # 첫 번째 Pose와 두 번째 Pose가 많이 차이가 난다면 -> 다른 Block 일 것임
+                if error >= 10.0: # 그럼 그냥 1번 좌표로 진입
+                    self.get_logger().error(f'잘못봤어용~')
+                    LAST_P = last_pose[0]  # last_pose[0] = P (위치 벡터)
+                    pose = [LAST_P[0], LAST_P[1], LAST_P[2] + PICK_Z_OFFSET - (13.0 + PITCH_OFFSET), 0.0, 0.0, 0.0]
+                    pose[3:] = current_coor[3:]
+                
+                # 두 블록을 일치하게 봤다면
+                elif error < 10.0: # 기존 로직 그대로
+                    self.get_logger().warn(f'잘 봤어용~')
+                    pose = [P[0], P[1], P[2] + PICK_Z_OFFSET - (9.5 + PITCH_OFFSET), 0.0, 0.0, 0.0]
+                    pose[3:] = current_coor[3:]
+                
+                # last pitch 초기화
+                self.reset_last_pitch()
                 
                 cmd_msg.frame = 'l'
             
@@ -261,7 +311,7 @@ class MainControlNode(Node):
             start_time = time.time()
             
             while True:
-                print(f'[ZEUS] Waiting Time : {(t - (time.time() - start_time)):.2}')
+                # print(f'[ZEUS] Waiting Time : {(t - (time.time() - start_time)):.2}')
                 if time.time() - start_time >= t:
                     break
             
@@ -299,7 +349,7 @@ class MainControlNode(Node):
             next_step = self.next_step
 
         # 모니터링: 현재 상태 출력
-        self.get_logger().info(f'[MONITOR] Flag: {current_flag}, Step: {current_step}, Next: {next_step}')
+        # self.get_logger().info(f'[MONITOR] Flag: {current_flag}, Step: {current_step}, Next: {next_step}')
 
         if handler is None or current_step is None:
             return
@@ -330,7 +380,7 @@ class MainControlNode(Node):
                     self.current_flag = 'order'
                     
         elif current_flag == 'waiting':
-            self.get_logger().info('[ZEUS] Waiting Movement')
+            # self.get_logger().info('[ZEUS] Waiting Movement')
             return
         
         elif current_flag == 'done':

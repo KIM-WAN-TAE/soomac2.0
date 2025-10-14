@@ -73,10 +73,17 @@ def main():
                         if u'+' in line:
                             cmd, payload = line.split(u'+', 1)
                             cmd = cmd.strip(); payload = payload.strip()
-                        
+
                         # "cmd" 만 왔을 경우
                         else:
                             cmd, payload = line, u''
+
+                        # 수신한 명령 출력 (joint_state, xy_state 제외 - 주기적 갱신 명령)
+                        if cmd not in (u'joint_state', u'xy_state'):
+                            if payload:
+                                print('[ZEUS] Command received: {} (payload: {})'.format(cmd, payload))
+                            else:
+                                print('[ZEUS] Command received: {}'.format(cmd))
 
                         try:
                             rb.asyncm(1)
@@ -179,7 +186,7 @@ def main():
                                         P = Position(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], int(vals[6]))
                                     else:
                                         P = Position(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5])
-                                    rb.move(P)
+                                    rb.line(P)
                                     cli.send('ok\n')
                                     cli.send('done\n')
                                     continue

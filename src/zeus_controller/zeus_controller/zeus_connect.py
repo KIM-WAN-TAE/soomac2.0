@@ -106,6 +106,9 @@ class ZeusConnectTestNode(Node):
         else:
             wire = text  # payload 없는 명령 (start, jnt_coor, xy_coor 등)
 
+        # 명령 수신 로그 (ok + 명령 내용 표시)
+        self.get_logger().info(f"[TCP] ✓ Command received: '{text}' → sending: '{wire}'")
+
         try:
             lines = self.client.request_until_done(wire)
             # 간단한 출력 규칙: 첫 줄이 CSV 값이면 예쁘게 찍고, 나머지는 로그

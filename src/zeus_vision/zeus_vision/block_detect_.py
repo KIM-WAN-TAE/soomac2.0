@@ -364,7 +364,7 @@ def size_mm_from_rect_on_plane(rect_box_pts, intr, plane_model):
         corners_3d.append(p.astype(np.float32))
     if len(corners_3d) != 4: return 0.0, 0.0
     p0, p1, p2, p3 = corners_3d
-    print(f"3D Box Corners (m): {p0}, {p1}, {p2}, {p3}")
+    #print(f"3D Box Corners (m): {p0}, {p1}, {p2}, {p3}")
     e01 = float(np.linalg.norm(p1 - p0)) * 1000.0
     e12 = float(np.linalg.norm(p2 - p1)) * 1000.0
     w_mm = min(e01, e12)
@@ -398,6 +398,15 @@ class BlockPosePublisher(Node):
         self.tmp_filter  = rs.temporal_filter()
         self.hole_fill   = rs.hole_filling_filter(2)  # 0~2
         K = CAMERA_MATRIX; D = DIST_COEFFS
+
+        self.blue_num = 0
+        self.green_num = 0
+        self.pink_num = 0
+        self.purple_num = 0
+        self.red_num = 0
+        self.yellow_num = 0
+
+        self.class_order = ['blue', 'green', 'pink', 'purple', 'red', 'yellow']
         # color_vsp  = profile.get_stream(rs.stream.color).as_video_stream_profile()
         # color_intr = color_vsp.get_intrinsics()  # width, height, ppx, ppy, fx, fy, model, coeffs
 
@@ -599,7 +608,7 @@ def main(args=None):
 
             chosen = None
             if mode in ('block1', 'block2'):
-                CLASS_ORDER = ['blue', 'green', 'pink', 'purple', 'red', 'yellow']
+                CLASS_ORDER = node.class_order.copy()
                 def area_mm2_of(c): return float(c.get('area_mm2', 0.0))
                 
                 cand_sel_all = []
@@ -619,11 +628,43 @@ def main(args=None):
                     break 
 
                 if chosen is not None:
+                        
                     x_axis, y_axis, z_axis = chosen['axes']
                     origin_m = chosen['origin']
                     label = chosen.get('label', None)
+                    if mode == 'block2':
+                        if label == "blue":   
+                            node.blue_num  += 1
+                            if node.blue_num >= 6:
+                                node.class_order = [c for c in node.class_order if c != "blue"]
+                        
+                        elif label == "green":  
+                            node.green_num += 1
+                            if node.green_num >= 6:
+                                node.class_order = [c for c in node.class_order if c != "green"]
+                        
+                        elif label == "pink":   
+                            node.pink_num  += 1
+                            if node.pink_num >= 6:
+                                node.class_order = [c for c in node.class_order if c != "pink"]
+                        
+                        elif label == "purple": 
+                            node.purple_num+= 1
+                            if node.purple_num >= 6:
+                                node.class_order = [c for c in node.class_order if c != "purple"]
+                        
+                        elif label == "red":    
+                            node.red_num   += 1
+                            if node.red_num >= 2:
+                                node.class_order = [c for c in node.class_order if c != "red"]
+                        
+                        elif label == "yellow": 
+                            node.yellow_num+= 1
+                            if node.yellow_num >= 5:
+                                node.class_order = [c for c in node.class_order if c != "yellow"] 
+                        print(f"blue: {node.blue_num}, green: {node.green_num}, pink: {node.pink_num}, purple: {node.purple_num}, red: {node.red_num}, yellow: {node.yellow_num}")
+                    
                     cx, cy = chosen['cx'], chosen['cy']
-
                     final_px = project_point_to_pixel_pinhole(origin_m, node.rect_intr)
                     draw_cross(overlay, final_px, color=(0,0,255), size=7, thickness=2)
 
@@ -683,11 +724,11 @@ def main(args=None):
                         msg.layout.dim.append(MultiArrayDimension(label='cols', size=cols, stride=1))
                         msg.data = final_matrix.flatten().astype(np.float32).tolist()
                         node.publisher_.publish(msg)
-
-                        msg2 = Float32MultiArray()
-                        msg2.data = [final_rpy[0], final_rpy[1], final_rpy[2]]
-                        node.pose_pubisher.publish(msg2)
-                        node.publish_block(label if label is not None else "")
+                        if node.detect_signal == "block1":
+                            msg2 = Float32MultiArray()
+                            msg2.data = [final_rpy[0], final_rpy[1], final_rpy[2]]
+                            node.pose_pubisher.publish(msg2)
+                            node.publish_block(label if label is not None else "")
 
                         node.cooldown = PUBLISH_COOLDOWN_FRAMES
                         node.stable_count = 0
