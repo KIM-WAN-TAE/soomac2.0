@@ -1,7 +1,7 @@
 [console_scripts]
-capture = zeus_controller.coordinate:main
 client_zeus = zeus_controller.zeus_client:main
 connect_zeus = zeus_controller.zeus_connect:main
-gripper_zeus = zeus_controller.gripper_controller:main
+gripper_zeus = zeus_controller.zeus_block_gripper:main
+main_control = zeus_controller.zeus_main_control:main
 server_zeus = zeus_controller.zeus_server:main
 

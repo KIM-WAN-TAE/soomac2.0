@@ -72,7 +72,7 @@ class ZeusServerNode(Node):
         
         self.tol_ang = 1.0
         self.tol_pos = 2.0
-        self.tol_tol = 5.0
+        self.tol_tol = 1.0
         
     def xy_state_callback(self, msg):
         with self.lock:

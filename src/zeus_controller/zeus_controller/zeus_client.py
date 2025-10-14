@@ -35,6 +35,8 @@ class ZeusClientNode(Node):
         
         self.create_subscription(ZeusMainCommand, '/zeus/custom/client_command', self.target_pose_callback, 10)
         
+        self.make_pose_speed_fast()
+        
         self.target_flag = False
         self.target_frame = None
         self.target_point = np.array([])
@@ -51,6 +53,14 @@ class ZeusClientNode(Node):
         elif frame.lower() == 't':
             raw_frame = 'linspd'
         
+        cmd = mparam_command_string(raw_frame, value)
+        msg = String()
+        msg.data = str(cmd)
+        self.binary_cmd.publish(msg)
+        
+    def make_pose_speed_fast(self):
+        raw_frame = 'posspd'
+        value = 150.0
         cmd = mparam_command_string(raw_frame, value)
         msg = String()
         msg.data = str(cmd)

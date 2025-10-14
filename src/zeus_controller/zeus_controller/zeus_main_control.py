@@ -13,8 +13,7 @@ from zeus_controller.dh_module import *
 from zeus_controller.read_json import CameraDHParameters
 
 import numpy as np
-import threading
-import json
+import threading, time
 
 RATE = 10
 TIMER_PERIOD = 1/RATE
@@ -35,10 +34,11 @@ class MainControlNode(Node):
         )
         
         self.cmd_pub      = self.create_publisher(ZeusMainCommand, '/zeus/custom/client_command', 10)
-        self.grip_cmd_pub = self.create_publisher(String, '/zeus/string/gripper_command', 10, qos_profile=gripper_qos_profile)
+        self.grip_cmd_pub = self.create_publisher(String, '/zeus/string/gripper_command', gripper_qos_profile)
         self.cam_pub      = self.create_publisher(String, '/zeus/string/block_order', 10)
         self.done_pub     = self.create_publisher(String, '/zeus/string/drop_done', 10)
         
+        self.create_subscription(String, '/zeus/string/service_done', self.client_state_callback, 10)
         self.create_subscription(Float32MultiArray, '/zeus/array/block_pose', self.block_pose_callback, 10)
         self.create_subscription(Float32MultiArray, '/zeus/array/xy_state', self.xy_state_callback, 10)
         self.create_subscription(Float32MultiArray, '/zeus/array/joint_state', self.joint_state_callback, 10)
@@ -47,25 +47,29 @@ class MainControlNode(Node):
         self.dh_params = CameraDHParameters()
         
         self.create_timer(TIMER_PERIOD, self.loop)
-        
-        self.reset_param()
+    
         self.reset_block_pose()
+        self.reset_yaw()
+        
+        start_time = time.time()
+        while True:
+            if time.time() - start_time > 3.5:
+                break
         
         self.handler = Block()
-        self.current_flag = 'order'
+        self.current_step = 'step_1'
+        self.next_step = 'step_2'
         
-    def reset_param(self):
-        with self.lock:
-            self.handler = None
-            self.current_step = None
-            self.next_step = None
-            
-            self.current_flag = 'idle'
+        self.current_flag = 'order' # waiting , done
 
     def reset_block_pose(self):
         with self.lock:
             self.block_pose = None
-            
+    
+    def reset_yaw(self):
+        with self.lock:
+            self.yaw = None
+    
     def cal_base_to_cam(self, joint_angles):
         all_dh_params = self.dh_params.get_all_dh_params(joint_angles[:6])
     
@@ -96,7 +100,18 @@ class MainControlNode(Node):
         with self.lock:
             if len(msg.data) == 6:
                 self.xy_coor = msg.data
-                
+    
+    def client_state_callback(self, msg : String):
+        data = msg.data.strip().lower()
+        with self.lock:
+            if data in ('done', 'success'):
+                if self.current_flag == 'waiting':
+                    self.current_flag = 'done'
+                    
+            elif data in ('fail', 'error'):
+                self.current_flag = 'fail'
+                # 추후 안전 자세로 되돌아가는 로직 추가
+    
     def block_pose_callback(self, msg : Float32MultiArray):
         if len(msg.data) != 16:
             return  
@@ -185,6 +200,7 @@ class MainControlNode(Node):
             with self.lock:
                 block_pose   = self.block_pose
                 current_coor = self.xy_coor
+                last_yaw = self.yaw
                 
             cmd_msg = ZeusMainCommand()
             P, rz, ry, rx = block_pose
@@ -197,22 +213,27 @@ class MainControlNode(Node):
                 
                 cmd_msg.frame = 'l'
                 self.reset_block_pose() # 1차 -> 2차로 넘어갈 땐 새로운 좌표 받아야함
+                
+                with self.lock:
+                    self.yaw = yaw
             
             # Yaw 회전만 시행
             elif ans['pick_str'] == 'second':
-                if yaw < -90.0:
-                    yaw += 90
-                    yaw = abs(yaw)
+                if last_yaw < -90.0:
+                    last_yaw += 90
+                    last_yaw = abs(last_yaw)
                 
-                elif yaw >= -90.0:
-                    yaw += 90
-                    yaw = -abs(yaw)
+                elif last_yaw >= -90.0:
+                    last_yaw += 90
+                    last_yaw = -abs(last_yaw)
 
-                pose = [0.0, 0.0, 0.0, yaw, 0.0, 0.0]
+                pose = [0.0, 0.0, 0.0, last_yaw, 0.0, 0.0]
                 cmd_msg.frame = 't'
+                
+                self.reset_yaw()
             
             elif ans['pick_str'] == 'third':
-                pose = [P[0], P[1], P[2] + PICK_Z_OFFSET, 0.0, 0.0, 0.0]
+                pose = [P[0], P[1], P[2] + PICK_Z_OFFSET - 10.0, 0.0, 0.0, 0.0]
                 pose[3:] = current_coor[3:]
                 
                 cmd_msg.frame = 'l'
@@ -261,7 +282,6 @@ class MainControlNode(Node):
         if next_step in (None, 'None'):
             self.get_logger().info('[ZEUS] All Step Finished')
             self.reset_param()
-            self.reset_tool_param()
             
         else:
             with self.lock:
