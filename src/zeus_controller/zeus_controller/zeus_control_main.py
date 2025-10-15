@@ -199,6 +199,9 @@ class MainControlNode(Node):
         elif mode == 'DOWN':
             return Down()
         
+        elif mode == 'MEASURE':
+            return Measure()
+        
         return None
 
     def advance_step(self, next_step):
@@ -366,7 +369,7 @@ class MainControlNode(Node):
                 self.get_logger().warn('[ZEUS] Wrong Tool')
                 return
                 
-            cmd_msg.speed    = 5.0
+            cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
             
         if ans.get('deliver_offset_move'):
@@ -479,6 +482,19 @@ class MainControlNode(Node):
         # BOXBOX 동작에 사용하는 기능 =======================================
         # BOXBOX 동작에 사용하는 기능 =======================================   
         # BOXBOX 동작에 사용하는 기능 =======================================  
+        
+        if ans.get('talking_measure_result'):
+            if ans['result'] == 'sound':
+                msg = String()
+                text = '검사 결과 문제 없음!'
+                msg.data = text
+                self.llm_pub.publish(msg)
+                
+            elif ans['result'] == 'no_sound':
+                msg = String()
+                text = '이 부분이 문제네요!'
+                msg.data = text
+                self.llm_pub.publish(msg)
         
         # return 동작에 사용하는 기능 =======================================
         # return 동작에 사용하는 기능 =======================================   

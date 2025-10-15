@@ -63,7 +63,7 @@ class Deliver_Normal:
             ans = {
                 'camera_move' : True,
                 'requires_ack' : True,
-                'speed'       : 5.0,
+                'speed'       : 100.0,
                 'next_step': 'step_5'
             }
             return ans
@@ -90,7 +90,7 @@ class Deliver_Normal:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 70.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 30.0,
+                'speed'    : 80.0,
                 'requires_ack' : True,
                 'next_step': 'step_8'
             }
@@ -188,7 +188,7 @@ class Return_Normal:
             ans = {
                 'return_camera_center' : True,
                 'requires_ack' : True,
-                'speed'       : 5.0,
+                'speed'       : 100.0,
                 'next_step': 'step_4'
             }
             return ans
@@ -197,7 +197,7 @@ class Return_Normal:
             ans = {
                 'return_camera_move' : True,
                 'requires_ack' : True,
-                'speed'       : 20.0,
+                'speed'       : 40.0,
                 'next_step': 'step_5'
             }
             return ans
@@ -642,6 +642,203 @@ class Down:
                 'frame'    : 'j',
                 'position' : INIT_POSE,
                 'speed'    : 30.0,
+                'requires_ack' : True,
+                'next_step': 'None'
+            }
+            return ans
+
+MEASURE_INIT = [-150.44,   51.97,  101.52, -180.93,   63.37,  270.33]
+MEASURE_GRIP = [-150.32,   67.94,   79.96, -180.84,   57.77,  270.37]
+MEASURE_TIP_TOP = [-150.31,   58.36,   82.44, -180.90,   50.67,  270.49]
+SOUND = [-143.42,   58.83,   89.31, -172.68,   58.20,  265.94]
+NONE_SOUND = [-142.93,   57.10,   94.04, -172.48,   61.00,  266.14]
+class Measure:
+    def step(self, step):
+        # 초기화
+        if step == 'step_1':
+            ans = {
+                'frame'    : 'j',
+                'position' : INIT_POSE,
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'step_2'
+            }
+            return ans
+        
+        # 잡기 init 좌표로 이동
+        elif step == 'step_2':
+            ans = {
+                'frame'    : 'j',
+                'position' : MEASURE_INIT,
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'step_3'
+            }
+            return ans
+        
+        # 잡는 좌표로 이동
+        elif step == 'step_3':
+            ans = {
+                'frame'    : 'j',
+                'position' : MEASURE_GRIP,
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_4'
+            }
+            return ans
+        
+        # 잡기
+        elif step == 'step_4':
+            ans = {
+                'gripper' : 'close',
+                'requires_ack' : True,
+                'next_step': 'step_5'
+            }
+            return ans
+        
+        # 잡고 상승
+        elif step == 'step_5':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 80.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_6'
+            }
+            return ans
+        
+        # 소리 나는 좌표 위로 이동
+        elif step == 'step_6':
+            ans = {
+                'frame'    : 'j',
+                'position' : SOUND,
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_7'
+            }
+            return ans
+        
+        # 하강
+        elif step == 'step_7':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, -75.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_8'
+            }
+            return ans
+        
+        # 검침 결과 음성으로 발송
+        elif step == 'step_8':
+            ans = {
+                'talking_measure_result' : True,
+                'result' : 'sound',
+                'requires_ack' : False,
+                'next_step': 'step_9'
+            }
+            return ans
+        
+        # 상승
+        elif step == 'step_9':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 75.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_10'
+            }
+            return ans
+        
+        # 소리 안나는 좌표로 이동
+        elif step == 'step_10':
+            ans = {
+                'frame'    : 'j',
+                'position' : NONE_SOUND,
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_11'
+            }
+            return ans
+        
+        # 하강
+        elif step == 'step_11':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, -75.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_12'
+            }
+            return ans
+        
+        # 검침 결과 음성으로 발송
+        elif step == 'step_12':
+            ans = {
+                'talking_measure_result' : True,
+                'result' : 'no_sound',
+                'requires_ack' : False,
+                'next_step': 'step_13'
+            }
+            return ans
+        
+        # 상승
+        elif step == 'step_13':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 75.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_14'
+            }
+            return ans
+        
+        # 팁 반납하는 위로 이동
+        elif step == 'step_14':
+            ans = {
+                'frame'    : 'j',
+                'position' : MEASURE_TIP_TOP,
+                'speed'    : 2.0,
+                'requires_ack' : True,
+                'next_step': 'step_15'
+            }
+            return ans
+        
+        # 팁 두러 하강
+        elif step == 'step_15':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, -90.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_16'
+            }
+            return ans
+        
+        elif step == 'step_16':
+            ans = {
+                'gripper' : 'open',
+                'requires_ack' : True,
+                'next_step': 'step_17'
+            }
+            return ans
+        
+         # 잡기 init 좌표로 이동
+        elif step == 'step_17':
+            ans = {
+                'frame'    : 'j',
+                'position' : MEASURE_INIT,
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'step_18'
+            }
+            return ans
+        
+        elif step == 'step_18':
+            ans = {
+                'frame'    : 'j',
+                'position' : INIT_POSE,
+                'speed'    : 10.0,
                 'requires_ack' : True,
                 'next_step': 'None'
             }
