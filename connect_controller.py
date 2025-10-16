@@ -40,7 +40,7 @@ def main():
     rb.settool(**tool_settings[1])
     rb.changetool(1)
     
-    current_motion_param = MotionParam(jnt_speed=5, lin_speed=5, pose_speed=5, overlap=30)
+    current_motion_param = MotionParam(jnt_speed=5, lin_speed=5, acctime=0.1, dacctime=0.1, pose_speed=5, overlap=30)
     rb.motionparam(current_motion_param)
     
     srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -15,7 +15,7 @@ from zeus_controller.read_json import CameraDHParameters
 import numpy as np
 import threading, time
 
-RATE = 10
+RATE = 150
 TIMER_PERIOD = 1/RATE
 Z_OFFSET = 200.0
 Z_OFFSET_  = 250.0
@@ -43,6 +43,7 @@ class MainControlNode(Node):
         self.create_subscription(Float32MultiArray, '/zeus/array/xy_state', self.xy_state_callback, 10)
         self.create_subscription(Float32MultiArray, '/zeus/array/joint_state', self.joint_state_callback, 10)
         self.create_subscription(Float32MultiArray, '/zeus/array/drop_point', self.drop_zone_callback, 10)
+        self.create_subscription(Float32MultiArray, '/zeus/rpy/block_pose', self.pitch_callback, 10)
         
         self.dh_params = CameraDHParameters()
         
@@ -110,6 +111,11 @@ class MainControlNode(Node):
         with self.lock:
             if len(msg.data) == 6:
                 self.xy_coor = msg.data
+                
+    def pitch_callback(self, msg : Float32MultiArray):
+        with self.lock:
+            if len(msg.data) == 3:
+                self.last_pitch = msg.data[1]
     
     def client_state_callback(self, msg : String):
         data = msg.data.strip().lower()
@@ -216,14 +222,23 @@ class MainControlNode(Node):
                 last_pitch = self.last_pitch
                 
             cmd_msg = ZeusMainCommand()
-            P, rz, ry, _ = block_pose
-            pitch = ry
+            P, rz, _, _ = block_pose
             yaw = rz
             
             # 1차 Detect 위치로 이동   
             if ans['pick_str'] == 'first':
+                if yaw < -90.0:
+                    yaw += 90
+                    yaw = -abs(yaw)
+                
+                elif yaw >= -90.0:
+                    yaw += 90
+                    yaw = abs(yaw)
+                
                 pose = [P[0], P[1], Z_OFFSET_, 0.0, 0.0, 0.0]
                 pose[3:] = current_coor[3:]
+                
+                pose[3] = pose[3] + yaw
                 
                 cmd_msg.frame = 'l'
                 self.reset_block_pose() # 1차 -> 2차로 넘어갈 땐 새로운 좌표 받아야함
@@ -231,8 +246,6 @@ class MainControlNode(Node):
                 with self.lock:
                     self.last_pose = block_pose
                     self.last_yaw = yaw
-                    self.last_pitch = pitch
-                print(f'저장할 때 pitch 값 : {pitch}')
             
             # Yaw 회전만 시행
             elif ans['pick_str'] == 'second':
@@ -260,7 +273,7 @@ class MainControlNode(Node):
                 self.get_logger().info(f'PITCH :{last_pitch}')
                 
                 # pitch로 생성되는 각도가 6.0 을 넘어간다면
-                if abs(last_pitch) >= 5.0:
+                if abs(last_pitch) >= 8.0:
                     # 기존보다 2mm 더 하강
                     PITCH_OFFSET = 3.0
                     self.get_logger().info(f'Activate PITCH OFFSET')

@@ -21,7 +21,7 @@ class Block:
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
-                'speed'    : 10.0,
+                'speed'    : 90.0,
                 'requires_ack' : True,
                 'next_step': 'step_2'
             }
@@ -54,38 +54,42 @@ class Block:
                 'block_order'    : True,
                 'detect_str' : 'block2',
                 'requires_ack' : True,
-                'next_step': 'step_5'
-            }
-            return ans
-        
-         # 2차 이동 전 yaw만 회전
-        elif step == 'step_5':
-            ans = {
-                'block_pick_move'    : True,
-                'pick_str' : 'second',
-                'speed' : 80.0,
-                'requires_ack' : True,
-                'next_step': 'step_6'
-            }
-            return ans
-        
-        # 그리퍼 석션 시작 + Block 좌표 요청
-        elif step == 'step_6':
-            ans = {
-                'gripper'    : True,
-                'gripper_str' : 's',
-                'drop_coor_order' : True,
-                'requires_ack' : False,
                 'next_step': 'step_7'
             }
             return ans
         
+        # #이거 지금 생략되어있음
+        # # 2차 이동 전 yaw만 회전
+        # elif step == 'step_5':
+        #     ans = {
+        #         'block_pick_move'    : True,
+        #         'pick_str' : 'second',
+        #         'speed' : 90.0,
+        #         'requires_ack' : True,
+        #         'next_step': 'step_6'
+        #     }
+        #     return ans
+        
+        # # 그리퍼 석션 시작 + Block 좌표 요청
+        # elif step == 'step_6':
+        #     ans = {
+        #         'gripper'    : True,
+        #         'gripper_str' : 's',
+        #         'drop_coor_order' : True,
+        #         'requires_ack' : False,
+        #         'next_step': 'step_7'
+        #     }
+        #     return ans
+        
         # 블록 집으러 진입
         elif step == 'step_7':
             ans = {
+                'gripper'    : True,
+                'gripper_str' : 's',
+                'drop_coor_order' : True,
                 'block_pick_move'    : True,
                 'pick_str' : 'third',
-                'speed' : 200.0,
+                'speed' : 300.0,
                 'requires_ack' : True,
                 'next_step': 'step_8'
             }
@@ -106,7 +110,7 @@ class Block:
         elif step == 'step_8':
             ans = {
                 'wait_a_sec' : True,
-                'time' : 0.5, # sec 단위
+                'time' : 0.1, # sec 단위
                 'requires_ack' : False,
                 'next_step': 'step_10'
             }
@@ -117,7 +121,7 @@ class Block:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -150.0, 0.0, 0.0, 0.0],
-                'speed'    : 400.0,
+                'speed'    : 800.0,
                 'requires_ack' : True,
                 'next_step': 'step_12'
             }
@@ -138,7 +142,7 @@ class Block:
         elif step == 'step_12':
             ans = {
                 'block_drop_move' : True,
-                'speed'    : 15.0,
+                'speed'    : 90.0,
                 # 'gripper'    : True,
                 # 'gripper_str' : 'e',
                 'requires_ack' : True,
@@ -152,8 +156,8 @@ class Block:
                 'frame'    : 't',
                 'position' : [0.0, 0.0, 95.0, 0.0, 0.0, 0.0],
                 'speed'    : 200.0,
-                'gripper'    : True,
-                'gripper_str' : 'e',
+                # 'gripper'    : True,
+                # 'gripper_str' : 'e',
                 'requires_ack' : True,
                 'next_step': 'step_14'
             }
@@ -161,8 +165,10 @@ class Block:
         
         elif step == 'step_14':
             ans = {
+                'gripper'    : True,
+                'gripper_str' : 'e',
                 'wait_a_sec' : True,
-                'time' : 1.0, # sec 단위
+                'time' : 0.1, # sec 단위
                 'requires_ack' : False,
                 'next_step': 'step_15'
             }
@@ -173,20 +179,20 @@ class Block:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -80.0, 0.0, 0.0, 0.0],
-                'speed'    : 150.0,
+                'speed'    : 800.0,
                 'gripper'    : True,
                 'gripper_str' : 'e',
-                'requires_ack' : True,
-                'next_step': 'step_16'
-            }
-            return ans
-        
-        elif step == 'step_16':
-            ans = {
-                'frame'    : 'j',
-                'position' : INIT_POSE,
-                'speed'    : 30.0,
                 'requires_ack' : True,
                 'next_step': 'step_1'
             }
             return ans
+        
+        # elif step == 'step_16':
+        #     ans = {
+        #         'frame'    : 'j',
+        #         'position' : INIT_POSE,
+        #         'speed'    : 90.0,
+        #         'requires_ack' : True,
+        #         'next_step': 'step_1'
+        #     }
+        #     return ans
