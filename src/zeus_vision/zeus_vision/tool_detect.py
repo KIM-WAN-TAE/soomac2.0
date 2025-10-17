@@ -46,6 +46,8 @@ WIDTH_MARGIN_RATIO = 0.15
 
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
+
+
 # ---------- 유틸 ----------
 def norm_label(s: str) -> str:
     return re.sub(r"[\s\-_]+", "", s.lower())
@@ -301,8 +303,8 @@ class VisionNode(Node):
         self.get_logger().info('Vision Node 시작됨. 제어단에서 도구 요청 대기...')
         self.smoothed_angle = None
 
-        self.aruco_type = "DICT_6X6_100"
-        self.marker_length = 0.030
+        self.aruco_type = "DICT_6X6_1000"
+        self.marker_length = 0.029
         aruco_dict = cv2.aruco.getPredefinedDictionary(ARUCO_DICT[self.aruco_type])
         aruco_params = cv2.aruco.DetectorParameters()
         self.detector = cv2.aruco.ArucoDetector(aruco_dict, aruco_params)
@@ -333,10 +335,20 @@ class VisionNode(Node):
 
         color_stream = profile.get_stream(rs.stream.color)
         self.intrinsics = color_stream.as_video_stream_profile().get_intrinsics()
-        self.K = np.array([[self.intrinsics.fx, 0, self.intrinsics.ppx],
-                           [0, self.intrinsics.fy, self.intrinsics.ppy],
-                           [0, 0, 1]], dtype=np.float32)
-        self.D = np.array(self.intrinsics.coeffs[:5], dtype=np.float32)
+        # self.K = np.array([[self.intrinsics.fx, 0, self.intrinsics.ppx],
+        #                    [0, self.intrinsics.fy, self.intrinsics.ppy],
+        #                    [0, 0, 1]], dtype=np.float32)
+        self.K = np.array([
+            [609.59370966, 0.0,          327.77961006],
+            [ 0.0,       610.16182704, 244.8987311],
+            [0.0, 0.0, 1.0]
+        ], dtype=np.float32)
+        
+        #self.D = np.array(self.intrinsics.coeffs[:5], dtype=np.float32)
+        self.D = np.array([
+            [ 2.98079773e-02,  7.71843130e-01,  1.12771351e-03,  1.91769037e-03, -2.86200282e+00]
+        ], dtype=np.float32)
+
         self.size_tolerance = 0.2
         self.get_logger().info("RealSense 카메라 초기화 완료")
 

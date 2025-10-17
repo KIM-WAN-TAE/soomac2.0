@@ -45,7 +45,7 @@ class Deliver_Normal:
             ans = {
                 'frame'    : 'j',
                 'position' : [-176.12,   52.47,  112.57,   97.36,   88.01,  -75.26],
-                'speed'    : 10.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'step_3'
             }
@@ -99,7 +99,7 @@ class Deliver_Normal:
         elif step == 'step_8':
             ans = {
                 'deliver_offset_move'    : True,
-                'speed'    : 10.0,
+                'speed'    : 80.0,
                 'requires_ack' : True,
                 'next_step': 'step_9'
             }
@@ -407,7 +407,7 @@ class Finish:
             }
             return ans
         
-BOX_DETECT_POSE = [-152.54,   31.82,   83.72,    0.06,   64.84,   26.62]
+BOX_DETECT_POSE = [-151.22,   34.36,   89.87,    0.00,   56.35,   28.78]
 class Deliver_Box:
     def step(self, step):
         if step == 'step_1':
@@ -444,7 +444,7 @@ class Deliver_Box:
             ans = {
                 'box_camera_move' : True,
                 'requires_ack' : True,
-                'speed'       : 5.0,
+                'speed'       : 10.0,
                 'next_step': 'step_5'
             }
             return ans
@@ -453,10 +453,10 @@ class Deliver_Box:
         elif step == 'step_5':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 0.0, 80.0, 0.0, 0.0, 0.0],
+                'position' : [0.0, 0.0, 85.0, 0.0, 0.0, 0.0],
                 'speed'    : 10.0,
                 'requires_ack' : True,
-                'next_step': 'step_6'
+                'next_step': 'None'
             }
             return ans
 
@@ -650,7 +650,7 @@ class Down:
 MEASURE_INIT = [-150.44,   51.97,  101.52, -180.93,   63.37,  270.33]
 MEASURE_GRIP = [-150.32,   67.94,   79.96, -180.84,   57.77,  270.37]
 MEASURE_TIP_TOP = [-150.31,   58.36,   82.44, -180.90,   50.67,  270.49]
-SOUND = [-143.42,   58.83,   89.31, -172.68,   58.20,  265.94]
+SOUND = [-143.16,   58.76,   89.09, -172.34,   57.92,  265.71]
 NONE_SOUND = [-142.93,   57.10,   94.04, -172.48,   61.00,  266.14]
 class Measure:
     def step(self, step):
@@ -659,7 +659,7 @@ class Measure:
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
-                'speed'    : 10.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'step_2'
             }
@@ -670,7 +670,7 @@ class Measure:
             ans = {
                 'frame'    : 'j',
                 'position' : MEASURE_INIT,
-                'speed'    : 10.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'step_3'
             }
@@ -701,7 +701,7 @@ class Measure:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 80.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 5.0,
+                'speed'    : 80.0,
                 'requires_ack' : True,
                 'next_step': 'step_6'
             }
@@ -712,7 +712,7 @@ class Measure:
             ans = {
                 'frame'    : 'j',
                 'position' : SOUND,
-                'speed'    : 5.0,
+                'speed'    : 10.0,
                 'requires_ack' : True,
                 'next_step': 'step_7'
             }
@@ -722,8 +722,8 @@ class Measure:
         elif step == 'step_7':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, -75.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 5.0,
+                'position' : [0.0, -77.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 12.0,
                 'requires_ack' : True,
                 'next_step': 'step_8'
             }
@@ -743,8 +743,8 @@ class Measure:
         elif step == 'step_9':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 75.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 5.0,
+                'position' : [0.0, 77.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 50.0,
                 'requires_ack' : True,
                 'next_step': 'step_10'
             }
@@ -755,7 +755,7 @@ class Measure:
             ans = {
                 'frame'    : 'j',
                 'position' : NONE_SOUND,
-                'speed'    : 5.0,
+                'speed'    : 10.0,
                 'requires_ack' : True,
                 'next_step': 'step_11'
             }
@@ -765,8 +765,8 @@ class Measure:
         elif step == 'step_11':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, -75.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 5.0,
+                'position' : [0.0, -80.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 12.0,
                 'requires_ack' : True,
                 'next_step': 'step_12'
             }
@@ -786,8 +786,8 @@ class Measure:
         elif step == 'step_13':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 75.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 5.0,
+                'position' : [0.0, 80.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 50.0,
                 'requires_ack' : True,
                 'next_step': 'step_14'
             }
@@ -798,7 +798,7 @@ class Measure:
             ans = {
                 'frame'    : 'j',
                 'position' : MEASURE_TIP_TOP,
-                'speed'    : 2.0,
+                'speed'    : 15.0,
                 'requires_ack' : True,
                 'next_step': 'step_15'
             }
@@ -809,7 +809,7 @@ class Measure:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, -90.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 5.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'step_16'
             }
@@ -828,7 +828,7 @@ class Measure:
             ans = {
                 'frame'    : 'j',
                 'position' : MEASURE_INIT,
-                'speed'    : 5.0,
+                'speed'    : 15.0,
                 'requires_ack' : True,
                 'next_step': 'step_18'
             }
@@ -838,7 +838,7 @@ class Measure:
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
-                'speed'    : 10.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'None'
             }

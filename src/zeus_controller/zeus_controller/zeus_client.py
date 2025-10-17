@@ -33,6 +33,8 @@ class ZeusClientNode(Node):
         self.service_done = self.create_publisher(String, '/zeus/string/service_done', 10)
         self.binary_cmd = self.create_publisher(String, '/zeus/string/binary_command', 10)
         
+        self.make_pose_speed_fast()
+        
         self.create_subscription(ZeusMainCommand, '/zeus/custom/client_command', self.target_pose_callback, 10)
         
         self.target_flag = False
@@ -78,6 +80,14 @@ class ZeusClientNode(Node):
             self.target_flag = True
             
             self.get_logger().info(f'[AIOT] Target Point Received : {self.target_point}, Frame : {self.target_frame}, Speed : {self.target_speed}')
+    
+    def make_pose_speed_fast(self):
+        raw_frame = 'posspd'
+        value = 150.0
+        cmd = mparam_command_string(raw_frame, value)
+        msg = String()
+        msg.data = str(cmd)
+        self.binary_cmd.publish(msg)
     
     def client_timer_callback(self):
         self.get_logger().info(f'[AIOT] Flag State : {self.target_flag}')

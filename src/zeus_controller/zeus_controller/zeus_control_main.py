@@ -15,7 +15,7 @@ import numpy as np
 import threading
 import json
 
-RATE = 10
+RATE = 20
 TIMER_PERIOD = 1/RATE
 
 def return_goal_memory(pick_pose):
@@ -409,7 +409,7 @@ class MainControlNode(Node):
 
             cmd_msg.frame    = 'l7' # 커터는 대회장에서 해야할 듯
             if self.tool == 'M3': # 집는 Z 값 Offset 들어가있음
-                cmd_msg.position = [float(x), float(y), 0.0, -90.0 + float(yaw), 0.0, 179.0]
+                cmd_msg.position = [float(x), float(y), 0.0, -90.0 - float(yaw), 0.0, 179.0]
                 
             else:
                 self.get_logger().warn('[ZEUS] Wrong Tool')
@@ -520,7 +520,7 @@ class MainControlNode(Node):
             
             cmd_msg = ZeusMainCommand()
             cmd_msg.frame = 't'
-            cmd_msg.position = [0.0, 0.0, 67.0, 0.0, 0.0, 0.0]
+            cmd_msg.position = [0.0, 0.0, 65.5, 0.0, 0.0, 0.0]
             
             cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
