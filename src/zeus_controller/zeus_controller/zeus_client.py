@@ -73,13 +73,13 @@ class ZeusClientNode(Node):
             self.target_speed = msg.speed
             self.target_flag = True
             
-            self.get_logger().info(f'[AIOT] Target Point Received : {self.target_point}, Frame : {self.target_frame}, Speed : {self.target_speed}')
+            self.get_logger().info(f'[ZEUS] Target Point Received : {self.target_point}, Frame : {self.target_frame}, Speed : {self.target_speed}')
     
     def client_timer_callback(self):
-        self.get_logger().info(f'[AIOT] Flag State : {self.target_flag}')
+        self.get_logger().info(f'[ZEUS] Flag State : {self.target_flag}')
         
         if not self.target_flag:
-            self.get_logger().info('[AIOT] Waiting For Target Point ...')
+            self.get_logger().info('[ZEUS] Waiting For Target Point ...')
             return
 
         if self.target_flag and self.target_point.size != 0:
