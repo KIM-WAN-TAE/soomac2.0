@@ -202,6 +202,9 @@ class MainControlNode(Node):
         elif mode == 'MEASURE':
             return Measure()
         
+        elif mode == 'TEST':
+            return Test()
+        
         return None
 
     def advance_step(self, next_step):
@@ -539,7 +542,7 @@ class MainControlNode(Node):
             P = xy_coor
             P[0] = float(x)
             P[1] = float(y)
-            P[2] = P[2] - 240.0 
+            P[2] = -41.8
             P[3] = P[3] + yaw
             cmd_msg = ZeusMainCommand()
             cmd_msg.frame = 'l7'
