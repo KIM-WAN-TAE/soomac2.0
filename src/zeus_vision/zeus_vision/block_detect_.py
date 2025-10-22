@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import os
 os.environ.setdefault("QT_QPA_PLATFORM", "xcb")
 
@@ -41,7 +40,7 @@ DIST_COEFFS = np.array([
 ], dtype=np.float32)
 
 # ---------- 설정 ----------
-WEIGHTS     = "/home/pc/soomac_ws/src/zeus_vision/best_last_jebal.pt"
+WEIGHTS     = "/home/pc/Downloads/best_no_bri_roboflow.pt"
 DEVICE      = "0"
 
 CONF_DET    = 0.28
@@ -68,7 +67,7 @@ STAB_ANGLE_DEG = 1.0
 STAB_CENTER_JUMP_PX = 60
 PUBLISH_COOLDOWN_FRAMES = 10
 
-# 💡 --- 이너 코어 설정 추가 ---
+# --- 이너 코어 설정 추가 ---
 # 마스크의 가장자리에서 최대 거리의 몇 % 안쪽까지를 코어로 사용할지 결정 (10%)
 INNER_CORE_RATIO = 0.0
 
@@ -197,6 +196,15 @@ def euclid_dist_ee(c):
         return float('inf')
     p_ee = o - EE_OFFSET_M  # EE 중심으로 원점 이동
     return float(np.linalg.norm(p_ee))
+
+def xy_dist_cam_ee(c):
+    """Z 무시. 카메라좌표계에서 EE 오프셋과 후보의 XY 거리만 비교"""
+    o = c.get('origin', None)
+    if o is None or not np.all(np.isfinite(o)):
+        return float('inf')
+    dx = float(o[0] - EE_OFFSET_M[0])
+    dy = float(o[1] - EE_OFFSET_M[1])
+    return float(math.hypot(dx, dy))
 
 # ---------- 평면/좌표계 ----------
 def segment_plane_and_axes(pts):
@@ -373,6 +381,26 @@ def size_mm_from_rect_on_plane(rect_box_pts, intr, plane_model):
     w_mm = min(e01, e12)
     h_mm = max(e01, e12)
     return w_mm, h_mm
+
+def draw_axes(img, origin_px, length=60, thickness=2):
+    """이미지 상의 origin_px (u,v)에 2D X/Y 축을 그린다."""
+    if origin_px is None: 
+        return
+    u, v = int(origin_px[0]), int(origin_px[1])
+    h, w = img.shape[:2]
+    # X축: 좌/우
+    pt_x1 = (max(0, u - length), v)
+    pt_x2 = (min(w-1, u + length), v)
+    cv2.arrowedLine(img, (u, v), pt_x2, (0,255,0), thickness, tipLength=0.15)     # +X (초록)
+    cv2.arrowedLine(img, (u, v), pt_x1, (0,155,0), thickness, tipLength=0.15)     # -X
+    # Y축: 상/하 (이미지 좌표계 기준)
+    pt_y1 = (u, max(0, v - length))
+    pt_y2 = (u, min(h-1, v + length))
+    cv2.arrowedLine(img, (u, v), pt_y1, (255,0,255), thickness, tipLength=0.15)   # +Y (보라, 위쪽)
+    cv2.arrowedLine(img, (u, v), pt_y2, (155,0,155), thickness, tipLength=0.15)   # -Y
+    cv2.circle(img, (u, v), 4, (0,0,0), -1, cv2.LINE_AA)
+    cv2.circle(img, (u, v), 2, (255,255,255), -1, cv2.LINE_AA)
+
 # =================================================================
 
 # ---------- ROS2 ----------
@@ -433,10 +461,24 @@ class BlockPosePublisher(Node):
         self.rect_intr = (fx, fy, cx, cy)
         self.get_logger().info(f"[Rectified K] fx={fx:.2f}, fy={fy:.2f}, cx={cx:.2f}, cy={cy:.2f}")
 
+        # --- EE 전용 UI 창 준비 ---
+        try:
+            cv2.namedWindow("EE Distance View", cv2.WINDOW_NORMAL)
+            cv2.resizeWindow("EE Distance View", 480, 360)
+        except Exception:
+            pass  # GUI 미지원 환경 대비
+        self.ee_idle_canvas = np.full((240, 360, 3), 30, dtype=np.uint8)
+        self.last_plane_depth_m = 0.5  # 평면 Z 기본값(미탐지 시 0.5m 가정)
+
+        # ------------------------
+
         self.last_quat = None
         self.last_center = None
         self.stable_count = 0
         self.cooldown = 0
+
+        self.last_block1_color = None
+
 
     def listener_callback(self, msg):
         self.detect_signal = msg.data
@@ -487,10 +529,8 @@ def main(args=None):
 
             res = None
             if node.detect_signal == 'block1' or node.detect_signal == 'block2':
+                print(f"[INFO] Detect Order: {node.class_order}")
                 res = node.model(color, conf=CONF_DET, iou=IOU_TH, device=DEVICE, imgsz=IMG_SIZE, verbose=False)
-
-            # ==========================
-            # 여기서부터 교체 시작
             # ==========================
             candidates = []
             chosen = None
@@ -502,7 +542,7 @@ def main(args=None):
                 xyxy  = r.boxes.xyxy.detach().cpu().numpy()
                 clss  = r.boxes.cls.detach().cpu().numpy().astype(int) if r.boxes.cls is not None else np.zeros_like(confs, dtype=int)
                 names = getattr(r, "names", None)
-
+                
                 # 1) confidence 1차 컷
                 valid_idx = np.where(confs >= CONF_PUB)[0]
 
@@ -516,8 +556,14 @@ def main(args=None):
                 mode = (node.detect_signal or "").strip().lower()
                 CLASS_ORDER = node.class_order.copy()
 
-                def area_mm2_of(c): 
-                    return float(c.get('area_mm2', 0.0))
+                if mode == 'block2' and node.last_block1_color:
+                    try:
+                        # 리스트에 있다면 제거 후 맨 앞에 삽입(중복 방지)
+                        CLASS_ORDER.remove(node.last_block1_color)
+                        CLASS_ORDER.insert(0, node.last_block1_color)
+                    except ValueError:
+                        # last_block1_color가 현재 class_order에 없으면(이미 quota로 제거된 경우 등) 무시
+                        pass
 
                 for cls_name in CLASS_ORDER:
                     cls_id = None
@@ -543,13 +589,13 @@ def main(args=None):
                     if not idx_cls:
                         continue  # 이 클래스에 후보 없음 → 다음 클래스
 
-                    # 이 클래스 후보들만 기존 "블럭 전처리" 그대로 수행 (코드 변경 없음)
+                    # 이 클래스 후보들만 기존 "블럭 전처리" 그대로 수행
                     candidates_cls = []
                     for i in idx_cls:
                         conf_i = float(confs[i])
                         x1, y1, x2, y2 = xyxy[i].astype(int)
                         label_raw = names[clss[i]] if (names is not None and clss[i] < len(names)) else f"id{clss[i]}"
-
+                        #print(f"[DEBUG] Processing Detection: Label={label_raw}, Conf={conf_i:.3f}, BBox=({x1},{y1},{x2},{y2})")
                         # (전처리 1) 마스크 확보 (원본 로직 유지)
                         if has_masks:
                             mask = r.masks.data[i].detach().cpu().numpy()
@@ -568,8 +614,14 @@ def main(args=None):
 
                         # (전처리 3) HSV 라벨 보정 (원본 유지)
                         label_norm, Hm, Sm, Vm = refine_label_by_hsv_mean(label_raw, mask_bin, hsv_image)
-                        label = label_norm if label_norm is not None else label_raw
 
+    
+                        label = label_norm if label_norm is not None else label_raw
+                        
+                        if label not in node.class_order:
+                            #print(f"[WARNING] Refined label '{label}' not in class order list.")
+                            continue
+                        
                         # 시각화(원본 유지)
                         overlay = apply_mask_overlay(overlay, mask_bin, color=(0,255,255), alpha=0.35)
                         cv2.rectangle(overlay, (x1,y1), (x2,y2), (0,0,0), 2)
@@ -581,6 +633,7 @@ def main(args=None):
                             continue
 
                         ASSUMED_DISTANCE_M = np.mean(inliers[:, 2]) if inliers is not None and inliers.shape[0] > 0 else 0.5
+                        # node.last_plane_depth_m = float(ASSUMED_DISTANCE_M)  # 최근 평면 깊이(카메라 Z) 업데이트
                         plane_model_flat = (0.0, 0.0, 1.0, -ASSUMED_DISTANCE_M)
 
                         plane_inlier_mask = plane_inlier_mask_from_model_pinhole(mask_bin, depth, node.rect_intr, node.depth_scale, plane_model, stride=1)
@@ -629,14 +682,14 @@ def main(args=None):
                         size_txt = f"W:{w_mm:.1f}mm  H:{h_mm:.1f}mm"
                         cv2.putText(overlay, size_txt, (x1, max(0, y1 - 8)), FONT, 0.45, (255,255,255), 2, cv2.LINE_AA)
                         cv2.putText(overlay, size_txt, (x1, max(0, y1 - 8)), FONT, 0.45, (0,0,0), 1, cv2.LINE_AA)
-
-                        if not (w_flat_mm >= 20.0 and h_mm >= 70.0):
+                        print(f"[DEBUG] Processing Detection: Label={label_raw}, Conf={conf_i:.3f}, BBox=({x1},{y1},{x2},{y2}), w_flat_mm={w_flat_mm:.1f} h_mm={h_flat_mm:.1f}")
+                        if not (w_flat_mm >= 20.0 and h_mm >= 65.0):
                             # (디버깅 시각화 유지)
                             cv2.rectangle(overlay, (x1, y1), (x2, y2), (0, 0, 255), 2)
                             rejection_text = f"REJECTED: w_flat_mm={w_flat_mm:.1f} h_mm={h_mm:.1f}"
                             cv2.putText(overlay, rejection_text, (x1, y2 + 15), FONT, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
                             continue
-
+                        
                         # 후보 등록(원본 필드 유지)
                         candidates_cls.append(dict(
                             label=(label if label is not None else label_raw),
@@ -644,7 +697,8 @@ def main(args=None):
                             origin=origin_m, axes=(x_axis, y_axis, z_axis),
                             inliers=inliers, plane_model=plane_model, cx=cx0, cy=cy0,
                             src=origin_src or "-", hsv=(Hm, Sm, Vm),
-                            area_mm2=float(area_mm2)
+                            area_mm2=float(area_mm2),
+                            rect_center_px=(None if rect_center_px is None else (float(rect_center_px[0]), float(rect_center_px[1])))
                         ))
 
                     # 이 클래스에서 면적 하한 통과만 추려 최종 선택
@@ -657,8 +711,10 @@ def main(args=None):
                                 if o is None or not np.all(np.isfinite(o)): return float('inf')
                                 return math.hypot(float(o[0]), float(o[1]))
                             chosen = min(cand_sel, key=xy_dist_cam)
+                            # if chosen is not None:
+                            #     break
                         elif mode == 'block2':
-                            chosen = min(cand_sel, key=euclid_dist_ee)
+                            chosen = min(cand_sel, key=xy_dist_cam_ee)
                         # 클래스 하나에서 선택 끝 → 바깥 루프 종료
                         candidates = cand_sel  # (옵션) 디버깅용 참조
                         break
@@ -694,7 +750,7 @@ def main(args=None):
                     elif label == "yellow": 
                         node.yellow_num+= 1
 
-                else:
+                elif mode == 'block2':
                     if node.blue_num >= 6:
                         node.class_order = [c for c in node.class_order if c != "blue"]
  
@@ -713,7 +769,7 @@ def main(args=None):
                     if node.yellow_num >= 5:
                             node.class_order = [c for c in node.class_order if c != "yellow"] 
                     
-                    #print(f"blue: {node.blue_num}, green: {node.green_num}, pink: {node.pink_num}, purple: {node.purple_num}, red: {node.red_num}, yellow: {node.yellow_num}")
+                    print(f"blue: {node.blue_num}, green: {node.green_num}, pink: {node.pink_num}, purple: {node.purple_num}, red: {node.red_num}, yellow: {node.yellow_num}")
 
                 final_px = project_point_to_pixel_pinhole(origin_m, node.rect_intr)
                 draw_cross(overlay, final_px, color=(0,0,255), size=7, thickness=2)
@@ -723,14 +779,14 @@ def main(args=None):
                     raw_rotation = SciRot.from_matrix(raw_rot_matrix)
                     yaw, pitch, roll = raw_rotation.as_euler('zyx', degrees=True)
 
-                    is_roll_high  = abs(roll)  >= DEAD_ZONE_DEG
-                    is_pitch_high = abs(pitch) >= DEAD_ZONE_DEG
-                    if is_roll_high and is_pitch_high:
-                        if abs(roll) >= abs(pitch): pitch = 0.0
-                        else: roll = 0.0
-                    else:
-                        if not is_pitch_high: pitch = 0.0
-                        if not is_roll_high:  roll  = 0.0
+                    # is_roll_high  = abs(roll)  >= DEAD_ZONE_DEG
+                    # is_pitch_high = abs(pitch) >= DEAD_ZONE_DEG
+                    # if is_roll_high and is_pitch_high:
+                    #     if abs(roll) >= abs(pitch): pitch = 0.0
+                    #     else: roll = 0.0
+                    # else:
+                    #     if not is_pitch_high: pitch = 0.0
+                    #     if not is_roll_high:  roll  = 0.0
 
                     final_rotation = SciRot.from_euler('zyx', [yaw, pitch, roll], degrees=True)
                     final_rot_matrix = final_rotation.as_matrix()
@@ -778,13 +834,15 @@ def main(args=None):
                     if node.detect_signal == "block1":
                         print(f"block1_color : {label}")
                     if node.detect_signal == "block2":
-                        print("############################")
                         print(f"block2_color : {label}")
-                    # if node.detect_signal == "block1":
-                    msg2 = Float32MultiArray()
-                    msg2.data = [final_rpy[0], final_rpy[1], final_rpy[2]]
-                    node.pose_pubisher.publish(msg2)
-                    node.publish_block(label if label is not None else "")
+                        print("############################")
+                    
+                    if node.detect_signal == "block1":
+                        msg2 = Float32MultiArray()
+                        msg2.data = [final_rpy[0], final_rpy[1], final_rpy[2]]
+                        node.pose_pubisher.publish(msg2)
+                        node.publish_block(label if label is not None else "")
+                        node.last_block1_color = (label if label is not None else None)
 
                     node.cooldown = PUBLISH_COOLDOWN_FRAMES
                     node.stable_count = 0
@@ -795,6 +853,45 @@ def main(args=None):
                     info1 = f"CHOSEN (class→area≥thr→{info_key})"
                     cv2.putText(overlay, info1, (max(0, final_px[0]-160), min(COLOR_H-8, final_px[1]+18)), FONT, 0.50, (255,255,255), 3, cv2.LINE_AA)
                     cv2.putText(overlay, info1, (max(0, final_px[0]-160), min(COLOR_H-8, final_px[1]+18)), FONT, 0.50, (0,0,255), 1, cv2.LINE_AA)
+
+            # ==========================
+            # EE 전용 UI 렌더링 (항상 표시)
+            # ==========================
+            try:
+                ee_view = color.copy()
+
+                # (a) EE 오프셋 적용 원점 픽셀 위치 계산: [x_off, y_off, 최근 평면 Z]
+                ee_P = np.array([EE_OFFSET_M[0], EE_OFFSET_M[1], node.last_plane_depth_m], dtype=np.float32)
+                ee_px = project_point_to_pixel_pinhole(ee_P, node.rect_intr)
+                if ee_px is not None:
+                    draw_axes(ee_view, ee_px, length=60, thickness=2)
+                    cv2.putText(ee_view, "EE (0,0)", (ee_px[0]+8, ee_px[1]-8), FONT, 0.5, (255,255,255), 2, cv2.LINE_AA)
+                    cv2.putText(ee_view, "EE (0,0)", (ee_px[0]+8, ee_px[1]-8), FONT, 0.5, (0,0,0), 1, cv2.LINE_AA)
+
+                # (b) 후보들: 파란 점(크게)
+                if candidates:
+                    for c in candidates:
+                        pt = c.get('rect_center_px', None)
+                        if pt is None:
+                            pt = project_point_to_pixel_pinhole(c.get('origin', None), node.rect_intr)
+                        if pt is None:
+                            continue
+                        u, v = int(round(pt[0])), int(round(pt[1]))
+                        cv2.circle(ee_view, (u, v), 9, (255, 0, 0), -1, cv2.LINE_AA)
+
+                # (c) 최종 선택: 빨간 점(더 크게)
+                if chosen is not None:
+                    pt_sel = chosen.get('rect_center_px', None)
+                    if pt_sel is None:
+                        pt_sel = project_point_to_pixel_pinhole(chosen.get('origin', None), node.rect_intr)
+                    if pt_sel is not None:
+                        u, v = int(round(pt_sel[0])), int(round(pt_sel[1]))
+                        cv2.circle(ee_view, (u, v), 11, (0, 0, 255), -1, cv2.LINE_AA)
+
+                cv2.imshow("EE Distance View", ee_view)
+
+            except Exception:
+                pass
 
             # ==========================
             # 교체 끝

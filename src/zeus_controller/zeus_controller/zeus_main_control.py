@@ -273,7 +273,7 @@ class MainControlNode(Node):
                 self.get_logger().info(f'PITCH :{last_pitch}')
                 
                 # pitch로 생성되는 각도가 6.0 을 넘어간다면
-                if abs(last_pitch) >= 8.0:
+                if abs(last_pitch) >= 7.0:
                     # 기존보다 2mm 더 하강
                     PITCH_OFFSET = 3.0
                     self.get_logger().info(f'Activate PITCH OFFSET')
