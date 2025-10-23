@@ -2,11 +2,10 @@
 
 import rclpy
 from rclpy.node import Node
+from std_msgs.msg import String
 from dongsoo_interfaces.srv import DongSooExecutor
 from dongsoo_interfaces.msg import DongSooCommand
 import numpy as np
-
-RATE = 10
 
 class DongsooClient(Node):
     def __init__(self):
@@ -15,16 +14,20 @@ class DongsooClient(Node):
         
         self.dongsoo_client = self.create_client(DongSooExecutor, 'dongsoo_executor')
         
-        self.create_subscription(DongSooCommand, '/aiot/array/command_pose',
+        self.create_subscription(DongSooCommand, '/aiot/custom/command',
                                  self.target_pose_callback, 10)
         
+        self.srv_pub = self.create_publisher(String, '/aiot/string/client_done', 10)
+
+        self.last_position = np.array([0.0, 0.0, 0.0])  # 마지막 위치 저장
+
         self.target_position = np.array([])
         self.target_look  = None
         self.target_time  = None
         self.target_wrist = None
         self.target_flag  = False
         
-        timer_period = 1/RATE 
+        timer_period = 1/10
         self.client_timer = self.create_timer(timer_period, self.client_timer_callback)
         
     def target_pose_callback(self, msg : DongSooCommand):
@@ -32,6 +35,11 @@ class DongsooClient(Node):
         LOOK  = msg.look
         TIME  = msg.time
         WRIST = msg.wrist
+
+        # 상대 위치인 경우 마지막 위치에 더하기
+        if msg.is_relative:
+            P = self.last_position + P
+            self.get_logger().info(f'[AIOT] Relative move: {msg.position} -> Absolute: {P}')
 
         self.target_position = P
         self.target_look     = LOOK
@@ -69,6 +77,7 @@ class DongsooClient(Node):
         future.add_done_callback(self.response_callback)
         
     def response_callback(self, future):
+        srv_msg = String()
         try:
             res = future.result()
         except Exception as e:
@@ -77,9 +86,16 @@ class DongsooClient(Node):
 
         if res.success:
             self.get_logger().info(f'[AIOT] 동작 성공 ')
+            # 동작 성공 시 마지막 위치 업데이트
+            self.last_position = self.target_position.copy()
+            self.get_logger().info(f'[AIOT] Last position updated: {self.last_position}')
+            srv_msg.data = 'done'
+
         else:
             self.get_logger().warn(f'[AIOT] 동작 실패 ')
-            
+            srv_msg.data = 'fail'
+
+        self.srv_pub.publish(srv_msg)
         self.target_flag = False
         
 def main(args=None):

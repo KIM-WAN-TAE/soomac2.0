@@ -48,6 +48,7 @@ class GripperNode(Node):
         
         self.status_timer = self.create_timer(1/RATE, self.timer_callback)
         self.current_pub = self.create_publisher(Float32, '/aiot/float/gripper_present_current', 10)
+        self.gripper_pub = self.create_publisher(String, '/aiot/string/gripper_done', 10)
         
     def motor_init(self):
         _, dxl_error = self.packethandler.write1ByteTxRx(
@@ -125,6 +126,7 @@ class GripperNode(Node):
         
     def gripper_callback(self, msg : String):
         cmd = msg.data
+        grip_msg = String()
         if cmd == 'open':
             self.make_position_mode()
             
@@ -137,6 +139,11 @@ class GripperNode(Node):
             if dxl_error != 0:
                 self.get_logger().warn(f"[AIOT] ID {ID}: Gripper 개방 오류 ({dxl_error})")
             
+            time.sleep(1.2)
+            grip_msg.data = 'done'
+            print(f'open : {grip_msg.data}')
+            self.gripper_pub.publish(grip_msg)
+            
         elif cmd == 'close':
             self.make_current_mode()
             time.sleep(0.1)
@@ -144,6 +151,11 @@ class GripperNode(Node):
             _, dxl_error = self.packethandler.write2ByteTxRx(
                 self.porthandler, ID, ADDR_GOAL_CURRENT, GRIP_CURRENT & 0xFFFF
             )
+            
+            time.sleep(1.2)
+            grip_msg.data = 'done'
+            print(f'close : {grip_msg.data}')
+            self.gripper_pub.publish(grip_msg)
             
         else:
             self.get_logger().warn('[AIOT] Wrong Command!')

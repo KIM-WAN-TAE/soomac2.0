@@ -4,277 +4,355 @@ import rclpy
 from rclpy.node import Node
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
-from std_msgs.msg import Float32MultiArray, Int32MultiArray, String, Float32
+from std_msgs.msg import String, Float32MultiArray
 from dongsoo_interfaces.msg import DongSooCommand
+
+from .dh_module import *
+from .module import *
 
 import numpy as np
 import threading
-import time
+import json
 
-def deg_to_pulse(degree):
-    p = int(np.round(degree * (4096.0 / 360.0) + 2048))
-    return max(0, min(4095, p))
-
-def pulse_to_deg(pulse):
-    pulse = max(0, min(4095, int(pulse)))
-    return (pulse - 2048) * (360.0 / 4096.0)
-
-def pos_as_T(P):
-    T = np.eye(4)
-    T[:3, 3] = np.asarray(P, float).reshape(3)
-    return T
-    
-class CommandCentorNode(Node):
+class MainControlNode(Node):
     def __init__(self):
-        super().__init__('command_centor_node')
-        self.get_logger().info('Command Centor is Ready!')
+        super().__init__('main_control_node')
         
-        self.sub_callback_gb = ReentrantCallbackGroup()
-        self.timer_callback_gb = ReentrantCallbackGroup()
+        self.data_lock = threading.Lock()
+        self.lock = threading.Lock()
         
-        self.lock = threading.RLock()
-        self._start_ev = threading.Event()
-        threading.Thread(target=self._input_loop, daemon=True).start()
+        self.create_subscription(String, '/aiot/string/client_done', self.client_done_callback, 10)
+        self.create_subscription(String, '/aiot/string/gripper_done', self.grip_done_callback, 10)
+        self.create_subscription(Float32MultiArray, '/aiot/array/tool_pose', self.cam_callback, 10)
+        self.create_subscription(Float32MultiArray, '/aiot/matrix/camera', self.cam_coor_callback, 10)
+        # self.create_subscription(Float32MultiArray, '/aiot/matrix/gripper', self.grip_coor_callback, 10)
+        self.create_subscription(String, '/aiot/string/llm_cmd', self.llm_callback, 10)
         
-        self.block_coor_sub = self.create_subscription(
-            Float32MultiArray,
-            '/info/array/target_obj_array',
-            self.block_coordinate_callback,
-            10,
-            callback_group=self.sub_callback_gb)
+        self.cmd_pub = self.create_publisher(DongSooCommand, '/aiot/custom/command', 10)
+        self.grip_pub = self.create_publisher(String, '/aiot/string/gripper_command', 10)
+        self.cam_pub = self.create_publisher(String, '/aiot/string/tool_info', 10)
         
-        self.camera_mat_sub = self.create_subscription(
-            Float32MultiArray,
-            '/aiot/matrix/camera',
-            self.camera_mat_callback,
-            10,
-            callback_group=self.sub_callback_gb)
+        self.cam_mat = None
+        # self.grip_mat = np.array([])
         
-        self.position_sub = self.create_subscription(
-            Int32MultiArray,
-            '/aiot/array/present_motor_pulse',
-            self.read_pulse,
-            10,
-            callback_group=self.sub_callback_gb)
+        self.reset_param()
+        self.reset_tool_param()
         
-        self.deg_1 = None
-        self.cam_mat = np.eye(4)
-        
-        self.target_pose_pub = self.create_publisher(
-            DongSooCommand,
-            '/aiot/array/command_pose',
-            10)
-
-        self.obj_pos = None
-
-        self.yaw_pose_pub    = self.create_publisher(
-            Float32,
-            '/aiot/float/target_wrist_deg',
-            10)
-        
-        self.tool_pub        = self.create_publisher(
-            String,
-            '/info/string/obj_name',
-            10
-        )
-        
-        self.ik_done_sub = self.create_subscription(
-            String,
-            '/info/string/movement_done',
-            self.ik_state_callback,
-            10
-        )
-        
-        # self.obj_coor_pub = self.create_publisher(
-        #     Float32MultiArray,
-        #     '/aiot/array/command_pose',
-        #     10
-        # )
-        
-        TIMER_PERIOD = 1/5
-        self.timer = self.create_timer(TIMER_PERIOD, self.timer_callback, callback_group=self.timer_callback_gb)
-        
-        self.move_done_msg = None
-        
-        self.yaw = None
-        self.state = 0
-        
-    def _input_loop(self):
-        while rclpy.ok():
-            ans = input('이동을 원하면 y를 입력하시오 : ')
-            if ans.lower() == 'y':
-                self._start_ev.set()
-        
-    def ik_state_callback(self, msg : String):
-        self.move_done_msg = msg.data
-        
-    def read_pulse(self, msg : Int32MultiArray):
-        pulse = msg.data
-        with self.lock:
-            self.deg_1 = pulse_to_deg(pulse[0])
-        
-    def camera_mat_callback(self, msg : Float32MultiArray):
-        dims = msg.layout.dim
-        
-        if len(dims) < 2:
-            self.get_logger().warn(' 잘못된 행렬 수신 ')
-            return
-
-        rows = dims[0].size
-        cols = dims[1].size
-        
-        if len(msg.data) != rows * cols:
-            self.get_logger().warn(f' msg count error : msg_count : {rows*cols}')
-            return
-        
-        with self.lock:
-            self.cam_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
+        self.create_timer(1/10, self.loop)
             
-    def block_coordinate_callback(self, msg: Float32MultiArray):
-        if len(msg.data) < 4:
-            self.get_logger().warning('Wrong data length')
-            return
-
-        P = np.asarray(msg.data[:3], dtype=np.float32)   # [x,y,z] in camera frame
-        T_CO = pos_as_T(P)                                # 4x4
+    def reset_param(self):
         with self.lock:
-            T_BO = self.cam_mat @ T_CO
-            self.obj_pos = T_BO[:3, 3].astype(np.float32)
-            self.yaw = float(msg.data[3])
-
-        # out = Float32MultiArray()
-        # out.data = self.obj_pos.tolist()
-        # self.obj_coor_pub.publish(out)
-
-        self.get_logger().info(
-            f'Position: [{self.obj_pos[0]:.2f}, {self.obj_pos[1]:.2f}, {self.obj_pos[2]:.2f}], Yaw: {self.yaw:.3f}'
-        )       
-        
-    def timer_callback(self):
+            self.handler = None
+            self.current_step = None
+            self.next_step = None
+            
+            self.current_flag = 'idle'
+            '''
+            idle : LLM 명령 대기 상태
+            order : Client에 명령 전송 가능 상태
+            waiting : client에 명령 전송 완료, 응답 대기 중
+            done : client 동작 상태
+            '''
+            
+            self.tool = None
+            self.mode = None
+            self.direction = None
+            self.target = None
+                        
+    def reset_tool_param(self):
         with self.lock:
-            state = self.state
-            obj_pos = None if self.obj_pos is None else self.obj_pos.copy()
-            yaw = None
-            if self.yaw is not None and self.deg_1 is not None:
-                yaw = self.yaw - self.deg_1
-            elif self.yaw is not None:
-                yaw = self.yaw
-            move_done = self.move_done_msg
-
-        tar_msg = DongSooCommand()
-        tool_msg = String()
-
-        if state == 0:
-            if self._start_ev.is_set():
-                self._start_ev.clear()
-                tar_msg.position = [0.25, 0.0, 0.25]
-                tar_msg.look = 'down'
-                tar_msg.time = 3.0
-                tar_msg.wrist = 0.0
-                self.target_pose_pub.publish(tar_msg)
-            if move_done == 'done':
-                self.get_logger().info('move is done')
-                with self.lock:
-                    self.move_done_msg = None
-                    self.state = 1
-
-        elif state == 1:
-            time.sleep(1)
-            self.get_logger().info(f"{state}")
-            tool_msg.data = 'wire_cutter'
-            self.tool_pub.publish(tool_msg)
-            if obj_pos is not None:
-                with self.lock:
-                    self.state = 2
-
-        elif state == 2:
-            time.sleep(1)
-            self.get_logger().info(f"{state}")
-            if obj_pos is not None:
-                detect_position = obj_pos.tolist()
-                detect_position[0] -= 0.08
-                detect_position[2] = 0.15
-
-                tar_msg.position = detect_position
-                tar_msg.look = 'down'
-                tar_msg.time = 3.0
-                tar_msg.wrist = 0.0
-
-                self.target_pose_pub.publish(tar_msg)
-                with self.lock:
-                    self.state = 3
-
-        elif state == 3:
-            time.sleep(1)
-            self.get_logger().info(f"{state}")
-            if move_done == 'done':
-                self.get_logger().info('move is done')
-                with self.lock:
-                    self.move_done_msg = None
-                    self.obj_pos = None
-                    self.state = 4
-            else:
-                self.get_logger().info('waiting for movement is done')
-
-        elif state == 4:
-            time.sleep(1)
-            self.get_logger().info(f"{state}")
-            if obj_pos is None:
-                tool_msg.data = 'wire_cutter'
-                self.tool_pub.publish(tool_msg)
+            
+            self.tool_p = []
+            self.tool_yaw = None
+    
+    # self.cam_mat
+    def cam_coor_callback(self, msg : Float32MultiArray):
+        with self.data_lock:
+            dims = msg.layout.dim
+            
+            if len(dims) < 2:
+                self.get_logger().warn(' 잘못된 행렬 수신 ')
                 return
-            self.get_logger().info(f'{obj_pos}, {yaw} 수신 완료')
-            with self.lock:
-                self.state = 5
 
-        elif state == 5:
-            time.sleep(0.5)
-            self.get_logger().info(f"{state}")
-            if obj_pos is not None:
-                pick_position = obj_pos.tolist()
-                pick_position_z = pick_position[2]
-                pick_position[2] = pick_position_z - 0.005
+            rows = dims[0].size
+            cols = dims[1].size
+            
+            if len(msg.data) != rows * cols:
+                self.get_logger().warn(f' msg count error : msg_count : {rows*cols}')
+                return
 
-                tar_msg.position = pick_position
-                tar_msg.look = 'down'
-                tar_msg.time = 5.0
-                if yaw is not None:
-                    tar_msg.wrist = yaw
-                else:
-                    tar_msg.wrist = 0.0
-                self.target_pose_pub.publish(tar_msg)
+            self.cam_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
+    
+    # 혹시 몰라 만들어 둔 Gripper Pose 값 읽어오는 callback
+    # # self.grip_mat    
+    # def grip_coor_callback(self, msg : Float32MultiArray):
+    #     with self.data_lock:
+    #         dims = msg.layout.dim
+            
+    #         if len(dims) < 2:
+    #             self.get_logger().warn(' 잘못된 행렬 수신 ')
+    #             return
 
-                with self.lock:
-                    self.state = 6
+    #         rows = dims[0].size
+    #         cols = dims[1].size
+            
+    #         if len(msg.data) != rows * cols:
+    #             self.get_logger().warn(f' msg count error : msg_count : {rows*cols}')
+    #             return
+            
+    #         self.grip_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
+    
+    def client_done_callback(self, msg : String):
+        data = msg.data.strip().lower()
+        
+        with self.lock:
+            if data in ('done', 'success'):
+                if self.current_flag == 'waiting':
+                    self.current_flag = 'done'
+                    
+            elif data in ('fail', 'error'):
+                self.current_flag = 'fail'
+    
+    def grip_done_callback(self, msg : String):
+        data = msg.data.strip().lower()
+        
+        print(1111111111111111111)
+        
+        with self.lock:
+            if data in ('done', 'success'):
+                if self.current_flag == 'waiting':
+                    self.current_flag = 'done'
 
-        elif state == 6:
-            time.sleep(0.5)
-            self.get_logger().info(f"{state}")
-            if move_done == 'done':
-                self.get_logger().info('move is done')
-                with self.lock:
-                    self.move_done_msg = None
-                    self.state = 7
-            else:
-                self.get_logger().info('waiting for movement is done')
-
-        elif state == 7:
-            self.get_logger().info(f"{state}")
-            self.get_logger().info('동작 종료')
+        
+    def cam_callback(self, msg : Float32MultiArray):
+        if len(msg.data) != 4:
             return
+        
+        P = np.asarray(msg.data[:3], dtype=np.float32)
+        T_CO = pos_as_T(P)
+        
+        with self.data_lock:
+            T_BO = self.cam_mat @ T_CO
+            
+        obj_pos = T_BO[:3, 3].astype(np.float32)
+        yaw = float(msg.data[3])
+        
+        print(f'\n########{obj_pos}########\n')
+        print(f'\n########{yaw}########\n')
 
+        with self.lock:
+            self.tool_p   = obj_pos
+            self.tool_yaw = yaw
 
+            if self.current_flag == 'waiting':
+                self.current_flag = 'done'
+    
+    def llm_callback(self, msg : String):
+        self.get_logger().info(f"[RAW] {msg.data}")
+        try:
+            obj = json.loads(msg.data)
+        except Exception as e:
+            self.get_logger().error(f"JSON 파싱 실패: {e}")
+            return
+        
+        with self.lock:
+            self.tool      = obj.get('tool')
+            self.mode      = obj.get('mode')
+            self.direction = obj.get('direction')
+            self.target    = obj.get('target') # 공구
+            
+            self.handler = self.create_handler(self.mode, self.tool)
+            self.current_step = 'step_1'
+            
+            self.current_flag = 'order'
+            
+        self.get_logger().info(
+            f"[PARSED] mode={self.mode}, tool={self.tool}, "
+            f"direction={self.direction}, target={self.target}"
+        )
+        
+    def advance_step(self, next_step):
+        if next_step in (None, 'None'):
+            self.get_logger().info('[AIOT] All Step Finished')
+            self.reset_param()
+            
+        else:
+            with self.lock:
+                self.current_step = next_step
+                self.current_flag = 'order'
+                self.next_step = None
+                    
+    def create_handler(self, mode, tool):
+        if mode == 'TEST':
+            return Test()
+        
+        return None
+    
+    def loop(self):
+        with self.lock:
+            handler = self.handler
+            current_step = self.current_step
+            current_flag = self.current_flag
+            next_step = self.next_step
+
+        # 모니터링: 현재 상태 출력
+        self.get_logger().info(f'[MONITOR] Flag: {current_flag}, Step: {current_step}, Next: {next_step}')
+
+        if handler is None or current_step is None:
+            return
+        
+        if current_flag == 'order':
+            ans = handler.step(current_step)
+            
+            if ans is None:
+                self.get_logger().warn(f'[AIOT] Wrong Step : {current_step}')
+                
+                with self.lock:
+                    self.current_step = None
+                    self.current_flag  = 'order'
+                return
+            
+            requires_ack = ans.get('requires_ack')
+            # 여기서 모듈에 대한 명령을 요청함
+            self.module_translator(ans)
+            
+            # 이후 flag 처리를 어떻게 할지에 대해, next_step을 다음 step으로 넘길지에 대한 논의
+            
+            # 동작에 대한 대기가 있어야 할 경우 next step에 다음 스텝을 저장 이후 done이 나오면 반환
+            if requires_ack:
+                with self.lock:
+                    self.next_step = ans.get('next_step')
+                    self.current_flag = 'waiting'
+
+            # 동작에 대한 대기가 필요 없는 경우 next step을 바로 현재 스텝에 넣어 다음 스텝으로 넘어갈 수 있게
+            else:
+                with self.lock:
+                    self.current_step = ans.get('next_step')
+                    self.current_flag = 'order'
+                    
+        elif current_flag == 'waiting':
+            self.get_logger().info('[AIOT] Waiting Movement')
+            return
+        
+        elif current_flag == 'done':
+            self.get_logger().info('[AIOT] 단일 동작 완료')
+            self.advance_step(next_step)
+                
+        elif current_flag == 'fail':
+            self.get_logger().warn('[AIOT] 클라이언트에서 명령 실패 응답. 플래그를 idle로 복구합니다.')
+            
+            # 모든 변수 초기화 및 flag : idle 상태로 전환해 대기 상태로 전환
+            self.reset_param()
+            
+    def module_translator(self, ans):
+        if ans.get('position'):
+            cmd_msg = DongSooCommand()
+            
+            cmd_msg.position = ans['position']
+            cmd_msg.look     = ans['look']
+            cmd_msg.time     = ans['time']
+            cmd_msg.wrist    = ans['wrist']
+            
+            self.cmd_pub.publish(cmd_msg)
+            
+            self.get_logger().info(f"[ZEUS] Move to position")
+        
+        if ans.get('gripper'):
+            grip_msg = String()
+            
+            grip_msg.data = ans['gripper']
+            self.grip_pub.publish(grip_msg)
+            
+            self.get_logger().info(f"[ZEUS] gripper")
+            
+        if ans.get('clear'):
+            self.reset_tool_param()
+            self.get_logger().info(f"[ZEUS] clear")
+            
+        if ans.get('camera_trigger'):
+            cam_msg = String()
+            
+            with self.lock:
+                tool = self.tool
+                
+            cam_msg.data = tool
+            self.cam_pub.publish(cam_msg)
+            self.get_logger().info(f"[ZEUS] camera_trigger")
+            
+        if ans.get('camera_move'):
+            with self.data_lock:
+                if self.cam_mat is None:
+                    self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
+                    return
+                
+                P = self.tool_p
+                yaw = self.tool_yaw
+                
+            cmd_msg = DongSooCommand()
+            
+            cmd_msg.position = [float(P[0] + 0.03), float(P[1]), float(P[2] - 0.03)]
+            cmd_msg.look     = ans['look']
+            cmd_msg.time     = ans['time']
+            cmd_msg.wrist    = yaw
+            
+            self.cmd_pub.publish(cmd_msg)
+        
+        # if ans.get('target_trigger'):
+        #     target_msg = String()
+            
+        #     with self.lock:
+        #         target = self.target
+                
+        #     target_msg.data = target
+        #     self.cam_pub.publish(target_msg)
+        #     self.get_logger().info(f"[ZEUS] target_trigger")
+    
+        # if ans.get('target_move'):
+        #     with self.lock:
+        #         if self.base_to_camera_matrix is None:
+        #             self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
+        #             return
+                
+        #         x,y,z = self.tool_p
+        #         yaw = self.tool_yaw
+            
+        #     cmd_msg = ZeusMainCommand()
+        #     cmd_msg.frame = 'l7'
+        #     cmd_msg.position = [float(x), float(y), 60.0, -90.0, 0.0, 179.0]
+            
+        #     cmd_msg.speed    = ans['speed']
+        #     self.cmd_pub.publish(cmd_msg)
+            
+        # if ans.get('boxbox'):
+        #     with self.lock:
+        #         direction = self.direction
+            
+        #     cmd_msg = ZeusMainCommand()
+        #     cmd_msg.frame = 't'
+        #     cmd_msg.speed    = ans['speed']
+            
+        #     if direction == 'right':
+        #         cmd_msg.position = [-110.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+        #     elif direction == 'left':
+        #         cmd_msg.position = [110.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+        #     elif direction == 'front':
+        #         cmd_msg.position = [0.0, 110.0, 0.0, 0.0, 0.0, 0.0]
+                
+        #     elif direction == 'back':
+        #         cmd_msg.position = [0.0, -110.0, 0.0, 0.0, 0.0, 0.0]
+                
+        #     self.cmd_pub.publish(cmd_msg)
+            
 def main(args=None):
     rclpy.init(args=args)
-    node = CommandCentorNode()
-    executor = MultiThreadedExecutor(num_threads=2)  # 필요시 4 등으로
-    executor.add_node(node)
+    node = MainControlNode()
     try:
-        executor.spin()
+        rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info('Keyboard Interrupt로 종료')
+        print("\n\nShutting down ZEUS Service Client...")
     finally:
-        executor.shutdown()
         node.destroy_node()
         rclpy.shutdown()
 

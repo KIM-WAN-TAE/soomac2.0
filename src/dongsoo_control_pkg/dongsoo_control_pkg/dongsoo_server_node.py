@@ -74,7 +74,10 @@ def plan_joint_trajectory(q_start, q_end, steps=80, traj_type='smooth'):
         raise ValueError("traj_type은 'linear' 또는 'smooth'")
     return q_traj
 
-def calculate_joint_velocities(q_start_deg, q_end_deg, work_time):
+def calculate_joint_velocities(q_start_deg, q_end_deg, work_time, motor4_multiplier=1.3):
+    """
+    motor4_multiplier: 4번 모터 속도 배율 (기본 2.0배)
+    """
     q_start = np.asarray(q_start_deg, dtype=float)
     q_end = np.asarray(q_end_deg, dtype=float)
 
@@ -92,6 +95,11 @@ def calculate_joint_velocities(q_start_deg, q_end_deg, work_time):
     max_goal_velocity = max_rpm / 0.229
 
     joint_velocities = velocity_ratios * max_goal_velocity
+
+    # # 4번 모터(index 3)에만 배율 적용
+    joint_velocities[2] *= 1.0
+    # joint_velocities[3] *= motor4_multiplier
+
     joint_velocities = np.clip(joint_velocities, 5.0, 1023.0)
 
     return joint_velocities.astype(int)
@@ -100,32 +108,41 @@ class DongsooServer(Node):
     def __init__(self):
         super().__init__('dongsoo_server')
         self.get_logger().info('[AIOT] DongSoo Service Server On! ')
-        
+
         self.lock = threading.Lock()
         self.srv_cb_gp = ReentrantCallbackGroup()
         self.sub_cb_gp = ReentrantCallbackGroup()
-        
+
+        # 4번 모터 속도 배율
+        self.motor4_speed_multiplier = 2.0
+
         # 팔 Pose 수신
         self.create_subscription(
             Float32MultiArray,
             '/aiot/matrix/gripper',
             self.gripper_mat_callback,
             10, callback_group=self.sub_cb_gp)
-        
+
         # Present Joint Position 수신
         self.create_subscription(
             Int32MultiArray,
             '/aiot/array/present_motor_pulse',
             self.joint_pulse_callback, 10,
             callback_group=self.sub_cb_gp)
-        
+
+        # 4번 모터 속도 배율 조정 토픽
+        self.create_subscription(
+            Float32,
+            '/aiot/float/motor4_multiplier',
+            self.motor4_multiplier_callback, 10,
+            callback_group=self.sub_cb_gp)
+
         self.motor_command_pub = self.create_publisher(Float32MultiArray, '/aiot/array/target_motor_deg', 10)
         self.wrist_pub = self.create_publisher(Float32, '/aiot/float/target_wrist_deg', 10)
-        self.ik_done_pub = self.create_publisher(String, '/info/string/movement_done', 10)
         self.motor_veloticy = self.create_publisher(Float32MultiArray, '/aiot/array/motor_speed', 10)
-        
+
         self.create_service(DongSooExecutor, 'dongsoo_executor', self.service_callback, callback_group=self.srv_cb_gp)
-        
+
         self.present_j = np.array([0.0, 0.0, 0.0, 0.0])
         self.present_wrist = 0.0
         
@@ -160,6 +177,10 @@ class DongsooServer(Node):
             present_deg = [pulse_to_deg(float(q)) for q in data]
             self.present_j = present_deg[:4]
             self.present_wrist = present_deg[4]
+
+    def motor4_multiplier_callback(self, msg : Float32):
+        self.motor4_speed_multiplier = msg.data
+        self.get_logger().info(f'[AIOT] Motor 4 속도 배율 변경: {msg.data:.2f}x')
             
     def service_callback(self, req, response):
         try:
@@ -190,7 +211,8 @@ class DongsooServer(Node):
             for i, deg in enumerate(q_end_deg):
                 self.get_logger().info(f'[AIOT] [Q_list_{i+1}] : {deg:7.2f}°')
 
-            joint_velocities = calculate_joint_velocities(joint_start_deg, q_end_deg, work_time)
+            joint_velocities = calculate_joint_velocities(joint_start_deg, q_end_deg, work_time,
+                                                          motor4_multiplier=self.motor4_speed_multiplier)
             self.get_logger().info(f'[AIOT] Joint Velocities: {joint_velocities}')
 
             if abs(wrist - wrist_start) > 1.0:
@@ -217,11 +239,6 @@ class DongsooServer(Node):
             time.sleep(work_time + 0.5)
 
             response.success = True
-
-            ik_msg = String()
-            ik_msg.data = 'done'
-            self.get_logger().info(f'[AIOT] {ik_msg.data}')
-            self.ik_done_pub.publish(ik_msg)
             
         except Exception as e:
             self.get_logger().error(f'[AIOT] Planning or Ik Fail : {e}')
