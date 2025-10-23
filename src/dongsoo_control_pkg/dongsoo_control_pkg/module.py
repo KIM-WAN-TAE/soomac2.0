@@ -1,12 +1,12 @@
 
 class Test:
-    def step(self, step):        
+    def step(self, step):    
         if step == 'step_1':
             ans = {
-                'position' : [0.3, 0.3, 0.2],
-                'look'     : 'straight',
+                'position' : [0.0, -0.3, 0.2],
+                'look'     : 'down',
                 'time'     : 3.0,
-                'wrist'    : 30.0,
+                'wrist'    : 0.0,
                 'requires_ack' : True,
                 'next_step' : 'step_2'
             }
@@ -57,7 +57,47 @@ class Test:
                 'time'     : 3.0,
                 'wrist'    : 0.0,
                 'requires_ack' : True,
-                'next_step' : 'None'
+                'next_step' : 'step_7'
             }
             return ans
         
+        elif step == 'step_7':
+            ans = {
+                'position' : [0.0, -0.3, 0.2],
+                'look'     : 'down',
+                'time'     : 3.0,
+                'wrist'    : 0.0,
+                'requires_ack' : True,
+                'next_step' : 'step_8'
+            }
+            return ans
+        
+        elif step == 'step_8':
+            ans = {
+                'position' : [0.0, -0.3, 0.04],
+                'look'     : 'down',
+                'time'     : 2.0,
+                'wrist'    : 0.0,
+                'requires_ack' : True,
+                'next_step' : 'step_9'
+            }
+            return ans
+        
+        elif step == 'step_9':
+            ans = {
+                'gripper' : 'open',
+                'requires_ack' : True,
+                'next_step': 'step_10'
+            }
+            return ans
+        
+        if step == 'step_10':
+            ans = {
+                'position' : [0.0, -0.3, 0.2],
+                'look'     : 'down',
+                'time'     : 1.0,
+                'wrist'    : 0.0,
+                'requires_ack' : True,
+                'next_step' : 'none'
+            }
+            return ans

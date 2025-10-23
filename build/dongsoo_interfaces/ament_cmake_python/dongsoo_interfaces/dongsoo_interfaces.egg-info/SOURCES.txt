@@ -4,3 +4,7 @@ dongsoo_interfaces.egg-info/PKG-INFO
 dongsoo_interfaces.egg-info/SOURCES.txt
 dongsoo_interfaces.egg-info/dependency_links.txt
 dongsoo_interfaces.egg-info/top_level.txt
+dongsoo_interfaces/msg/__init__.py
+dongsoo_interfaces/msg/_dong_soo_command.py
+dongsoo_interfaces/srv/__init__.py
+dongsoo_interfaces/srv/_dong_soo_executor.py

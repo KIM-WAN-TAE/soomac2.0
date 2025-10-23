@@ -23,6 +23,7 @@ from ultralytics import YOLO
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String, Float32MultiArray
+from dongsoo_vision_pkg.utils import ARUCO_DICT, aruco_display
 
 WEIGHTS = "/home/pc/soomac_ws/src/dongsoo_vision_pkg/dongsoo_vision_pkg/tool_final.pt"  # seg/det 둘 다 허용
 DEVICE = "0"
@@ -372,8 +373,8 @@ class VisionNode(Node):
     def __init__(self):
         super().__init__('vision_node')
 
-        self.detection_pub = self.create_publisher(Float32MultiArray, '/info/array/target_obj_array', 10)
-        self.target_tool_sub = self.create_subscription(String, '/info/string/obj_name', self.target_tool_callback, 10)
+        self.detection_pub = self.create_publisher(Float32MultiArray, '/aiot/array/tool_pose', 10)
+        self.target_tool_sub = self.create_subscription(String, '/aiot/string/tool_info', self.target_tool_callback, 10)
 
         self.target_tool = None        
         self.detection_active = False  
@@ -382,10 +383,18 @@ class VisionNode(Node):
         self.timer    = self.create_timer(0.1, self.vision_callback)  
         self.setup_vision_system()
         self.get_logger().info('Vision Node 시작됨. 제어단에서 도구 요청을 대기 중...')
-
         self.smoothed_angle = None
 
+        self.aruco_type    = "DICT_6X6_100"
+        self.marker_length = 0.029  
+
+        aruco_dict   = cv2.aruco.getPredefinedDictionary(ARUCO_DICT[self.aruco_type])
+        aruco_params = cv2.aruco.DetectorParameters()
+        self.detector = cv2.aruco.ArucoDetector(aruco_dict, aruco_params)
+
+
     def setup_vision_system(self):
+        
         # YOLO
         self.model = YOLO(WEIGHTS)
         self.names = self.model.names
@@ -415,7 +424,11 @@ class VisionNode(Node):
         # Intrinsics
         color_stream = profile.get_stream(rs.stream.color)
         self.intrinsics = color_stream.as_video_stream_profile().get_intrinsics()
-
+        self.K = np.array([[self.intrinsics.fx, 0, self.intrinsics.ppx],
+                           [0, self.intrinsics.fy, self.intrinsics.ppy],
+                           [0,      0,      1]], dtype=np.float32)
+        self.D = np.array(self.intrinsics.coeffs[:5], dtype=np.float32)
+        self.size_tolerance = 0.2
         self.get_logger().info("RealSense 카메라 초기화 완료")
 
     # 카메라 좌표계로 좌표 변환 
@@ -448,165 +461,218 @@ class VisionNode(Node):
             color = np.asanyarray(color_frame.get_data())
             overlay = color.copy()
             inp = cv2.cvtColor(color, cv2.COLOR_BGR2RGB) if USE_RGB_INPUT else color
+            undistort_img   = cv2.undistort(color, self.K, self.D)
+            if self.target_tool == "M3" and self.detection_active:
+                corners, ids, rejected = self.detector.detectMarkers(undistort_img)
+                if ids is not None:
+                    rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
+                        corners, self.marker_length, self.K, self.D
+                    )
+                    for i, mid in enumerate(ids.flatten()):
+                        if mid != int(1):
+                            print("Detected ARUCO ID not 1, continue")
+                            continue
+                        print("Detected ARUCO ID 1")
+                        # 크기 일관성 필터
+                        pts     = corners[i].reshape(4,2)
+                        edge1   = np.linalg.norm(pts[0]-pts[1])
+                        edge2   = np.linalg.norm(pts[1]-pts[2])
+                        avg_pix = (edge1+edge2)/2.0
+                        Z       = float(tvecs[i][0][2])
+                        if Z <= 0: 
+                            continue
+                        fx      = float(self.K[0,0])
+                        expected_pix = fx * self.marker_length / Z
+                        if abs(avg_pix-expected_pix)/max(expected_pix,1e-6) > self.size_tolerance:
+                            continue
+                        # 회전·위치
+                        R,_      = cv2.Rodrigues(rvecs[i][0])      # marker→camera
+                        x, y, z  = map(float, tvecs[i][0])
 
-            results = self.model(
-                inp,
-                conf=CONF_TH,
-                iou=IOU_TH,
-                device=DEVICE,
-                classes=self.allowed_ids if self.allowed_ids else None,
-                imgsz=IMG_SIZE,
-                verbose=False,
-            ) if self.detection_active else []
+                        yaw_rad  = math.atan2(R[1,0], R[0,0])
+                        yaw_deg  = math.degrees(yaw_rad)
+                        if 0<= yaw_deg < 180:
+                            yaw_deg -= 90
+                        elif -180 < yaw_deg < 0:
+                            yaw_deg += 90
 
-            found_payload = None
+                        # 좌표축 표시(3cm)
+                        cv2.drawFrameAxes(undistort_img, self.K, self.D, rvecs[i][0], tvecs[i][0], 0.03)
 
-            if results and len(results) > 0:
-                r = results[0]
-
-                # boxes
-                if getattr(r, "boxes", None) is not None and r.boxes is not None:
-                    boxes = r.boxes.xyxy.cpu().numpy()
-                    clses = r.boxes.cls.cpu().numpy().astype(int)
-                    confs = r.boxes.conf.cpu().numpy()
-                else:
-                    boxes, clses, confs = np.zeros((0,4)), np.zeros((0,), dtype=int), np.zeros((0,))
-
-                # masks
-                if getattr(r, "masks", None) is not None and r.masks is not None:
-                    masks_np = r.masks.data.cpu().numpy()
-                else:
-                    masks_np = None
-
-                # 각 후보 순회 → target_tool 일치 항목 우선
-                N = len(boxes)
-                for i in range(N):
-                    c = int(clses[i])
-                    x1, y1, x2, y2 = boxes[i]
-                    x1i, y1i, x2i, y2i = map(int, [x1, y1, x2, y2])
-
-                    if isinstance(self.names, dict):
-                        cls_name = self.names.get(c, str(c))
-                    else:
-                        try: cls_name = self.names[c]
-                        except Exception: cls_name = str(c)
-
-                    if self.target_tool and norm_label(cls_name) != norm_label(self.target_tool):
-                        continue
-                    conf = float(confs[i])
-                    depth_m = None
-                    roll_deg = 0.0
-                    decide_conf = 0.0
-                    handle_ctr = None
-                    tip_ctr = None
-
-                    if masks_np is not None and i < masks_np.shape[0]:
-                        mask = masks_np[i]
-                        # 원 마스크
-                        overlay = apply_mask_overlay(overlay, mask, alpha=DRAW_MASK_ALPHA, color=(0,255,255))
-                        
-                        depth_m = median_depth_meters_from_mask(depth_frame, mask, self.depth_scale) if depth_frame is not None else None
-
-                        # ★ 버니어 캘리퍼스면 폭만으로 결정
-                        is_vc = norm_label(cls_name) == norm_label("vernier_calipers")
-
-                        (corners, (w_len, h_len), angle_deg, center_px,
-                         handle_ctr, tip_ctr, end_points_tuple, decide_conf, debug) = obb_handle_tip_from_mask(
-                            mask, (overlay.shape[0], overlay.shape[1]),
-                            force_width_only=is_vc
+                        # 퍼블리시
+                        out = Float32MultiArray()
+                        out.data = [x, y, z, float(yaw_deg)]
+                        self.detection_pub.publish(out)
+                        self.detection_active = False
+                        self.get_logger().info(
+                            f"ID={mid} → x={x:.3f} y={y:.3f} z={z:.3f} yaw(z)={yaw_deg:.1f}°"
                         )
+                        current_corners = [corners[i]]
+                        current_ids = ids[i:i+1]
+                        disp = aruco_display(current_corners, current_ids, rejected, undistort_img)
+                        overlay = cv2.addWeighted(overlay, 0.5, disp, 0.5, 0.0)
+                        break
+                
 
-                        # ★ 후보군 프리뷰
-                        if SHOW_BAND_PREVIEW and debug is not None:
-                            head_img = debug["band_head_img"]
-                            tail_img = debug["band_tail_img"]
-                            overlay = apply_mask_overlay(overlay, head_img, alpha=0.35, color=(255, 0, 255))   # 보라(HEAD 후보)
-                            overlay = apply_mask_overlay(overlay, tail_img, alpha=0.35, color=(0, 128, 255))  # 주황/청파(TAIL 후보)
+            else:
+                results = self.model(
+                    inp,
+                    conf=CONF_TH,
+                    iou=IOU_TH,
+                    device=DEVICE,
+                    classes=self.allowed_ids if self.allowed_ids else None,
+                    imgsz=IMG_SIZE,
+                    verbose=False,
+                ) if self.detection_active else []
+                #if self.detection_active else []
+                found_payload = None
 
-                            # 라벨 텍스트
-                            if debug.get("head_ctr") is not None:
-                                hx, hy = int(debug["head_ctr"][0]), int(debug["head_ctr"][1])
-                                cv2.putText(overlay, "HEAD_CAND", (hx-20, max(hy-8, 15)), FONT, 0.5, (255,0,255), 2, cv2.LINE_AA)
-                            if debug.get("tail_ctr") is not None:
-                                tx, ty = int(debug["tail_ctr"][0]), int(debug["tail_ctr"][1])
-                                cv2.putText(overlay, "TAIL_CAND", (tx-20, max(ty-8, 15)), FONT, 0.5, (0,128,255), 2, cv2.LINE_AA)
+                if results and len(results) > 0:
+                    r = results[0]
 
-                            # 주축 시각화
-                            u_major = debug["u_major"]; mean = debug["mean"]
-                            tmin = debug["t_min"]; tmax = debug["t_max"]
-                            axis_len = 0.5 * (tmax - tmin + 1e-6)
-                            p1 = (mean + u_major * (-axis_len)).astype(np.int32)
-                            p2 = (mean + u_major * (+axis_len)).astype(np.int32)
-                            cv2.line(overlay, (int(p1[0]), int(p1[1])), (int(p2[0]), int(p2[1])), (255,255,0), 2)
-                            cv2.circle(overlay, (int(mean[0]), int(mean[1])), 3, (255,255,0), -1)
+                    # boxes
+                    if getattr(r, "boxes", None) is not None and r.boxes is not None:
+                        boxes = r.boxes.xyxy.cpu().numpy()
+                        clses = r.boxes.cls.cpu().numpy().astype(int)
+                        confs = r.boxes.conf.cpu().numpy()
+                    else:
+                        boxes, clses, confs = np.zeros((0,4)), np.zeros((0,), dtype=int), np.zeros((0,))
 
-                        if corners is not None:
-                            # 각도 평활화
-                            if self.smoothed_angle is None:
-                                self.smoothed_angle = angle_deg
-                            else:
-                                diff = angle_deg - self.smoothed_angle
-                                if diff > 180: diff -= 360
-                                elif diff < -180: diff += 360
-                                self.smoothed_angle += SMOOTHING_ALPHA * diff
-                                if self.smoothed_angle > 180: self.smoothed_angle -= 360
-                                elif self.smoothed_angle < -180: self.smoothed_angle += 360
-                            roll_deg = float(self.smoothed_angle)
+                    # masks
+                    if getattr(r, "masks", None) is not None and r.masks is not None:
+                        masks_np = r.masks.data.cpu().numpy()
+                    else:
+                        masks_np = None
 
-                            # 최종 OBB/핸들-팁 시각화
-                            draw_obb(overlay, corners, color=(0,180,255), thickness=2)
-                            if DRAW_HANDLE_TIP:
-                                overlay = draw_handle_tip_viz(overlay, handle_ctr, tip_ctr, end_points_tuple, draw_endpoints=DRAW_ENDPOINTS)
+                    # 각 후보 순회 → target_tool 일치 항목 우선
+                    N = len(boxes)
+                    for i in range(N):
+                        c = int(clses[i])
+                        x1, y1, x2, y2 = boxes[i]
+                        x1i, y1i, x2i, y2i = map(int, [x1, y1, x2, y2])
+
+                        if isinstance(self.names, dict):
+                            cls_name = self.names.get(c, str(c))
                         else:
-                            # 마스크 실패 → bbox 폴백
+                            try: cls_name = self.names[c]
+                            except Exception: cls_name = str(c)
+
+                        if self.target_tool and norm_label(cls_name) != norm_label(self.target_tool):
+                            continue
+                        conf = float(confs[i])
+                        depth_m = None
+                        roll_deg = 0.0
+                        decide_conf = 0.0
+                        handle_ctr = None
+                        tip_ctr = None
+
+                        if masks_np is not None and i < masks_np.shape[0]:
+                            mask = masks_np[i]
+                            # 원 마스크
+                            overlay = apply_mask_overlay(overlay, mask, alpha=DRAW_MASK_ALPHA, color=(0,255,255))
+                            
+                            depth_m = median_depth_meters_from_mask(depth_frame, mask, self.depth_scale) if depth_frame is not None else None
+
+                            # ★ 버니어 캘리퍼스면 폭만으로 결정
+                            is_vc = norm_label(cls_name) == norm_label("vernier_calipers")
+
+                            (corners, (w_len, h_len), angle_deg, center_px,
+                            handle_ctr, tip_ctr, end_points_tuple, decide_conf, debug) = obb_handle_tip_from_mask(
+                                mask, (overlay.shape[0], overlay.shape[1]),
+                                force_width_only=is_vc
+                            )
+
+                            # ★ 후보군 프리뷰
+                            if SHOW_BAND_PREVIEW and debug is not None:
+                                head_img = debug["band_head_img"]
+                                tail_img = debug["band_tail_img"]
+                                overlay = apply_mask_overlay(overlay, head_img, alpha=0.35, color=(255, 0, 255))   # 보라(HEAD 후보)
+                                overlay = apply_mask_overlay(overlay, tail_img, alpha=0.35, color=(0, 128, 255))  # 주황/청파(TAIL 후보)
+
+                                # 라벨 텍스트
+                                if debug.get("head_ctr") is not None:
+                                    hx, hy = int(debug["head_ctr"][0]), int(debug["head_ctr"][1])
+                                    cv2.putText(overlay, "HEAD_CAND", (hx-20, max(hy-8, 15)), FONT, 0.5, (255,0,255), 2, cv2.LINE_AA)
+                                if debug.get("tail_ctr") is not None:
+                                    tx, ty = int(debug["tail_ctr"][0]), int(debug["tail_ctr"][1])
+                                    cv2.putText(overlay, "TAIL_CAND", (tx-20, max(ty-8, 15)), FONT, 0.5, (0,128,255), 2, cv2.LINE_AA)
+
+                                # 주축 시각화
+                                u_major = debug["u_major"]; mean = debug["mean"]
+                                tmin = debug["t_min"]; tmax = debug["t_max"]
+                                axis_len = 0.5 * (tmax - tmin + 1e-6)
+                                p1 = (mean + u_major * (-axis_len)).astype(np.int32)
+                                p2 = (mean + u_major * (+axis_len)).astype(np.int32)
+                                cv2.line(overlay, (int(p1[0]), int(p1[1])), (int(p2[0]), int(p2[1])), (255,255,0), 2)
+                                cv2.circle(overlay, (int(mean[0]), int(mean[1])), 3, (255,255,0), -1)
+
+                            if corners is not None:
+                                # 각도 평활화
+                                if self.smoothed_angle is None:
+                                    self.smoothed_angle = angle_deg
+                                else:
+                                    diff = angle_deg - self.smoothed_angle
+                                    if diff > 180: diff -= 360
+                                    elif diff < -180: diff += 360
+                                    self.smoothed_angle += SMOOTHING_ALPHA * diff
+                                    if self.smoothed_angle > 180: self.smoothed_angle -= 360
+                                    elif self.smoothed_angle < -180: self.smoothed_angle += 360
+                                roll_deg = float(self.smoothed_angle)
+
+                                # 최종 OBB/핸들-팁 시각화
+                                draw_obb(overlay, corners, color=(0,180,255), thickness=2)
+                                if DRAW_HANDLE_TIP:
+                                    overlay = draw_handle_tip_viz(overlay, handle_ctr, tip_ctr, end_points_tuple, draw_endpoints=DRAW_ENDPOINTS)
+                            else:
+                                # 마스크 실패 → bbox 폴백
+                                cv2.rectangle(overlay, (x1i, y1i), (x2i, y2i), (0,255,0), 2)
+                                cx, cy = int((x1i+x2i)/2), int((y1i+y2i)/2)
+                                depth_m = median_depth_meters_from_center(depth_frame, cx, cy, k=DEPTH_KERNEL, depth_scale=self.depth_scale) if depth_frame is not None else None
+
+                        else:
+                            # det-only → bbox 폴백
                             cv2.rectangle(overlay, (x1i, y1i), (x2i, y2i), (0,255,0), 2)
                             cx, cy = int((x1i+x2i)/2), int((y1i+y2i)/2)
                             depth_m = median_depth_meters_from_center(depth_frame, cx, cy, k=DEPTH_KERNEL, depth_scale=self.depth_scale) if depth_frame is not None else None
 
-                    else:
-                        # det-only → bbox 폴백
-                        cv2.rectangle(overlay, (x1i, y1i), (x2i, y2i), (0,255,0), 2)
-                        cx, cy = int((x1i+x2i)/2), int((y1i+y2i)/2)
-                        depth_m = median_depth_meters_from_center(depth_frame, cx, cy, k=DEPTH_KERNEL, depth_scale=self.depth_scale) if depth_frame is not None else None
+                        # 3D 중심
+                        if masks_np is not None and i < (masks_np.shape[0] if masks_np is not None else 0) and handle_ctr is not None and tip_ctr is not None:
+                            center_px = ( (handle_ctr[0] + tip_ctr[0]) * 0.5, (handle_ctr[1] + tip_ctr[1]) * 0.5 )
+                        else:
+                            center_px = ((x1 + x2) * 0.5, (y1 + y2) * 0.5)
 
-                    # 3D 중심
-                    if masks_np is not None and i < (masks_np.shape[0] if masks_np is not None else 0) and handle_ctr is not None and tip_ctr is not None:
-                        center_px = ( (handle_ctr[0] + tip_ctr[0]) * 0.5, (handle_ctr[1] + tip_ctr[1]) * 0.5 )
-                    else:
-                        center_px = ((x1 + x2) * 0.5, (y1 + y2) * 0.5)
+                        center_3d = None
+                        if depth_m is not None:
+                            center_3d = self.pixel_to_3d_point(center_px[0], center_px[1], depth_m)
 
-                    center_3d = None
-                    if depth_m is not None:
-                        center_3d = self.pixel_to_3d_point(center_px[0], center_px[1], depth_m)
+                        # HUD
+                        label = f"{cls_name} {conf:.2f}"
+                        if depth_m is not None:
+                            label += f" | Depth: {depth_m:.2f}m"
+                        if self.smoothed_angle is not None:
+                            label += f" | Roll: {self.smoothed_angle:.1f}°"
+                        if decide_conf:
+                            label += f" | H/T: {decide_conf:.2f}"
+                        (tw, th), baseline = cv2.getTextSize(label, FONT, 0.6, 2)
+                        px = int(center_px[0]); py = max(int(center_px[1]), th+6)
+                        cv2.rectangle(overlay, (px, py - th - 6), (px + tw + 6, py), (0,180,255), -1)
+                        cv2.putText(overlay, label, (px + 3, py - 4), FONT, 0.6, (0,0,0), 2, cv2.LINE_AA)
 
-                    # HUD
-                    label = f"{cls_name} {conf:.2f}"
-                    if depth_m is not None:
-                        label += f" | Depth: {depth_m:.2f}m"
-                    if self.smoothed_angle is not None:
-                        label += f" | Roll: {self.smoothed_angle:.1f}°"
-                    if decide_conf:
-                        label += f" | H/T: {decide_conf:.2f}"
-                    (tw, th), baseline = cv2.getTextSize(label, FONT, 0.6, 2)
-                    px = int(center_px[0]); py = max(int(center_px[1]), th+6)
-                    cv2.rectangle(overlay, (px, py - th - 6), (px + tw + 6, py), (0,180,255), -1)
-                    cv2.putText(overlay, label, (px + 3, py - 4), FONT, 0.6, (0,0,0), 2, cv2.LINE_AA)
+                        # 발행 페이로드 (첫 번째 일치만)
+                        if center_3d is not None:
+                            payload = {
+                                "class_name": cls_name,
+                                "confidence": conf,
+                                "position": center_3d,                 
+                                "roll_deg": float(roll_deg)
+                            }
+                            found_payload = payload
+                            break  # 첫 대상만 사용
 
-                    # 발행 페이로드 (첫 번째 일치만)
-                    if center_3d is not None:
-                        payload = {
-                            "class_name": cls_name,
-                            "confidence": conf,
-                            "position": center_3d,                 
-                            "roll_deg": float(roll_deg)
-                        }
-                        found_payload = payload
-                        break  # 첫 대상만 사용
-
-            if found_payload is not None:
-                self.publish_detections(found_payload)
-                self.detection_active = False
-                self.target_tool = None
+                if found_payload is not None:
+                    self.publish_detections(found_payload)
+                    self.detection_active = False
+                    self.target_tool = None
 
             if SHOW_WINDOW:
                 status_text = f"Detection: {'ACTIVE' if self.detection_active else 'INACTIVE'}"
@@ -627,7 +693,7 @@ class VisionNode(Node):
         msg = Float32MultiArray()
         x, y, z = det["position"]
         roll = float(det.get("roll_deg", 0.0))
-        msg.data = [float(x), float(y), float(z), roll]
+        msg.data = [float(x), float(y), float(z), -roll]
         self.detection_pub.publish(msg)
         self.get_logger().info(
             f"탐지 전송: {det['class_name']} | pos=({x:.3f},{y:.3f},{z:.3f}) m | roll={roll:.1f}° | conf={det['confidence']:.2f}"
@@ -639,6 +705,7 @@ class VisionNode(Node):
         if tool_name and tool_name.lower() not in {"stop", "none"}:
             self.target_tool = tool_name
             self.detection_active = True
+            print('1111111111111111111111')
             self.get_logger().info(f"도구 탐지 요청 수신: {tool_name}")
             # 각도 평활화 초기화(새 타깃)
             self.smoothed_angle = None

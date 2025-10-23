@@ -36,11 +36,6 @@ class DongsooClient(Node):
         TIME  = msg.time
         WRIST = msg.wrist
 
-        # 상대 위치인 경우 마지막 위치에 더하기
-        if msg.is_relative:
-            P = self.last_position + P
-            self.get_logger().info(f'[AIOT] Relative move: {msg.position} -> Absolute: {P}')
-
         self.target_position = P
         self.target_look     = LOOK
         self.target_time     = TIME
