@@ -17,18 +17,7 @@ import json
 
 RATE = 20
 TIMER_PERIOD = 1/RATE
-
-def return_goal_memory(pick_pose):
-    p_y = pick_pose[1]
-    
-    candidates = [
-        (471.43, 'right'),
-        (588.44, 'middle'),
-        (705.46, 'left'),
-    ]
-    
-    _, closest_name = min(candidates, key=lambda x: abs(p_y - x[0]))
-    return closest_name
+NUM_OF_TOOLS = 4
 
 class MainControlNode(Node):
     def __init__(self):
@@ -39,6 +28,7 @@ class MainControlNode(Node):
         self.grip_cmd_pub = self.create_publisher(String, '/zeus/string/gripper_command', 10)
         self.cam_pub = self.create_publisher(String, '/zeus/string/tool_info', 10)
         self.llm_pub = self.create_publisher(String, '/tool_chat/out', 10)
+        self.work_done_pub = self.create_publisher(String, '/task/done', 10)
         
         self.srv_done = self.create_subscription(String, '/zeus/string/service_done', self.client_state_callback, 10)
         self.gripper_done = self.create_subscription(String, '/zeus/string/gripper_done', self.gripper_state_callback, 10)
@@ -56,6 +46,7 @@ class MainControlNode(Node):
         self.reset_param()
         self.reset_tool_pose()
         self.reset_tool_param()
+        self.reset_tool_dict()
    
     def reset_param(self):
         with self.lock:
@@ -72,6 +63,14 @@ class MainControlNode(Node):
             '''
             self.length = None
             
+    def reset_tool_dict(self):
+        with self.lock:
+            # Return 디버깅용 초기화 값들
+            # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left', 'M3':'middle'}
+            # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left'}
+            # self.tool_dict = {'wire_stripper': 'middle', 'M3':'middle'}
+            self.tool_dict = {}
+            
     def reset_tool_pose(self):
         with self.lock:
             self.last_tool_pose = None
@@ -87,6 +86,47 @@ class MainControlNode(Node):
     
         T_BC = fk(all_dh_params)
         return T_BC
+    
+    def return_goal_memory(self, pick_pose, tool):
+        p_y = pick_pose[1]
+        
+        candidates = [
+            (471.43, 'right'),
+            (588.44, 'middle'),
+            (705.46, 'left'),
+        ]
+        
+        _, closest_name = min(candidates, key=lambda x: abs(p_y - x[0]))
+        
+        # 현재 사용중인 도구 갯수가 4개
+        if len(self.tool_dict) >= NUM_OF_TOOLS:
+            return
+        
+        if tool not in self.tool_dict:
+            self.tool_dict[tool] = closest_name
+        else:
+            pass
+        
+        # 사용 예시
+        # tool_dict = {'wire_stripper': 'middle', 'nipper': 'right'}
+        
+    def box_return_goal_memory(self, pick_pose):
+        p_y = pick_pose[1]
+        
+        candidates = [
+            (339.21, 'left'),
+            (419.21, 'middle'),
+            (496.21, 'right'),
+        ]
+        
+        _, closest_name = min(candidates, key=lambda x: abs(p_y - x[0]))
+        
+       
+        if 'M3' not in self.tool_dict:
+            self.tool_dict['M3'] = closest_name
+        # M3 가 이미 존재한다면 pass
+        else:
+            pass
     
     # ==============================================================
     # ======================== Callback 모음 ========================
@@ -194,7 +234,7 @@ class MainControlNode(Node):
                 return Deliver_Normal()
             
         elif mode == 'RETURN':
-            return Return_Normal()
+            return Return_All()
         
         elif mode == 'DOWN':
             return Down()
@@ -212,6 +252,33 @@ class MainControlNode(Node):
             self.get_logger().info('[ZEUS] All Step Finished')
             self.reset_param()
             self.reset_tool_param()
+            
+            msg = String()
+            msg.data = '작업 완료'
+            self.work_done_pub.publish(msg)
+        
+        elif next_step == 'check':
+            with self.lock:
+                # 모든 공구 이동이 끝났다면 final 초기화 단계로 이동할 수 있게 변경
+                if len(self.tool_dict) <= 0:
+                    self.current_step = 'final'
+                    self.current_flag = 'order'
+                    self.next_step = None
+                
+                # 아직 남아있는 공구 딕셔너리가 있다면 디텍하러 위치로 이동
+                # check -> step_1 으로 이동
+                else:
+                    # 딕셔너리에 M3 만 남아있는 경우
+                    if len(self.tool_dict) == 1 and 'M3' in self.tool_dict:
+                        self.current_step = 'M3_step_1'
+                        self.current_flag = 'order'
+                        self.next_step = None
+                    
+                    # 딕셔너리에 M3 가 없거나 2개 이상 남아있는 경우  
+                    else:
+                        self.current_step = 'step_1'
+                        self.current_flag = 'order'
+                        self.next_step = None
             
         else:
             with self.lock:
@@ -243,7 +310,7 @@ class MainControlNode(Node):
 
         # 모니터링: 현재 상태 출력
         self.get_logger().info(f'[MONITOR] Flag: {current_flag}, Step: {current_step}, Next: {next_step}')
-
+        self.get_logger().info(f'TOOL LIST = {self.tool_dict}')
         if handler is None or current_step is None:
             return
         
@@ -348,6 +415,7 @@ class MainControlNode(Node):
             
         if ans.get('camera_move'):
             with self.lock:
+                tool = self.tool
                 if self.base_to_camera_matrix is None:
                     self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
                     return
@@ -355,7 +423,7 @@ class MainControlNode(Node):
                 x,y,z = self.tool_p
                 current_p = self.xy_coor
                 yaw = self.tool_yaw
-                self.last_tool_pose = return_goal_memory([x, y, z])
+                self.return_goal_memory([x, y, z], tool)
 
             cmd_msg = ZeusMainCommand()
             
@@ -407,6 +475,7 @@ class MainControlNode(Node):
                 x,y,z = self.tool_p
                 current_p = self.xy_coor
                 yaw = self.tool_yaw
+                self.box_return_goal_memory([x, y, z])
 
             cmd_msg = ZeusMainCommand()
 
@@ -523,7 +592,7 @@ class MainControlNode(Node):
             
             cmd_msg = ZeusMainCommand()
             cmd_msg.frame = 't'
-            cmd_msg.position = [0.0, 0.0, 65.5, 0.0, 0.0, 0.0]
+            cmd_msg.position = [0.0, 0.0, 67.5, 0.0, 0.0, 0.0]
             
             cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
@@ -609,7 +678,171 @@ class MainControlNode(Node):
         # return 동작에 사용하는 기능 =======================================
         # return 동작에 사용하는 기능 =======================================   
         # return 동작에 사용하는 기능 ======================================= 
+        
+        
+        # 통합 Return 에 사용할 기능
+        if ans.get('all_return_pop_dict'):
+            with self.lock:
+                idx_0 = list(self.tool_dict.keys())[0]
+                del self.tool_dict[idx_0]
+        
+        if ans.get('all_return_camera_trigger'):
+            cam_msg = String()
             
+            with self.lock:
+                tool = list(self.tool_dict.keys())[0]
+                
+            cam_msg.data = tool
+            self.cam_pub.publish(cam_msg)
+            self.get_logger().info(f"[ZEUS] return_camera_trigger")
+            
+        if ans.get('all_return_camera_move'):
+            with self.lock:
+                if self.base_to_camera_matrix is None:
+                    self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
+                    return
+                
+                x,y,z = self.tool_p
+                yaw = self.tool_yaw
+            
+            cmd_msg = ZeusMainCommand()
+            cmd_msg.frame = 't'
+            cmd_msg.position = [0.0, 0.0, 67.5, 0.0, 0.0, 0.0]
+            
+            cmd_msg.speed    = ans['speed']
+            self.cmd_pub.publish(cmd_msg)
+            
+        if ans.get('all_return_camera_center'):
+            with self.lock:
+                if self.base_to_camera_matrix is None:
+                    self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
+                    return
+                
+                x,y,z = self.tool_p
+                yaw = self.tool_yaw
+                xy_coor = self.xy_coor
+                
+            # xy 값만 도구 중심으로 이동할 수 있게 삽입
+            P = xy_coor
+            P[0] = float(x)
+            P[1] = float(y)
+            P[2] = -41.8
+            P[3] = P[3] + yaw
+            cmd_msg = ZeusMainCommand()
+            cmd_msg.frame = 'l7'
+            cmd_msg.position = P
+            
+            cmd_msg.speed    = ans['speed']
+            self.cmd_pub.publish(cmd_msg)
+        
+        # dict 구조로 항상 0번째 살리기   
+        if ans.get('all_return_tool_offset'):
+            with self.lock:
+                tool = list(self.tool_dict.keys())[0]
+                return_direction = list(self.tool_dict.values())[0]
+                
+            print('')
+            print(tool)
+            print(f' Return Direction : {return_direction}')
+            print('')
+            cmd_msg = ZeusMainCommand()
+            cmd_msg.frame = 'j'
+            
+            if tool == 'wire_stripper':
+                if return_direction == 'right':
+                    cmd_msg.position = [-147.02,   45.30,  118.83,  121.14,   81.51,  -76.08]
+                    
+                elif return_direction == 'middle':
+                    cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
+                    
+                elif return_direction == 'left':
+                    cmd_msg.position = [-158.52,   62.48,   76.42,  105.79,   76.49,  -50.39]
+                    
+                else:
+                    cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
+                    
+            elif tool == 'wire_cutter':
+                if return_direction == 'right':
+                    cmd_msg.position = [-147.02,   45.30,  118.83,  121.14,   81.51,  -76.08]
+                    
+                elif return_direction == 'middle':
+                    cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
+                    
+                elif return_direction == 'left':
+                    cmd_msg.position = [-158.52,   62.48,   76.42,  105.79,   76.49,  -50.39]
+                    
+                else:
+                    cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
+                    
+            elif tool == 'nipper':
+                if return_direction == 'right':
+                    cmd_msg.position = [-148.20,   41.87,  119.46,  119.60,   80.40,  -73.46]
+                    
+                elif return_direction == 'middle':
+                    cmd_msg.position = [-154.99,   49.91,  100.15,  111.22,   78.09,  -61.89]
+                    
+                elif return_direction == 'left':
+                    cmd_msg.position = [-159.51,   60.40,   76.02,  104.44,   76.49,  -47.73]
+                    
+                else:
+                    cmd_msg.position = [-154.99,   49.91,  100.15,  111.22,   78.09,  -61.89]        
+            
+            cmd_msg.speed = ans['speed']
+            self.cmd_pub.publish(cmd_msg)
+            
+            self.reset_tool_pose()
+            
+        if ans.get('all_return_m3_camera_trigger'):
+            cam_msg = String()
+            cam_msg.data = 'M3'
+            self.cam_pub.publish(cam_msg)
+            self.get_logger().info(f"[ZEUS] camera_trigger")
+            
+        if ans.get('all_return_m3_box_camera_move'):
+            with self.lock:
+                if self.base_to_camera_matrix is None:
+                    self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
+                    return
+                
+                x,y,z = self.tool_p
+                current_p = self.xy_coor
+                yaw = self.tool_yaw
+
+            cmd_msg = ZeusMainCommand()
+
+            cmd_msg.frame    = 'l7' # 커터는 대회장에서 해야할 듯
+            cmd_msg.position = [float(x), float(y), 0.0, -90.0 - float(yaw), 0.0, 179.0]
+            cmd_msg.speed    = ans['speed']
+            self.cmd_pub.publish(cmd_msg)
+            
+        if ans.get('all_return_m3_offset'):
+            with self.lock:
+                tool = list(self.tool_dict.keys())[0]
+                return_direction = list(self.tool_dict.values())[0]
+                
+            print('')
+            print(tool)
+            print(f' Return Direction : {return_direction}')
+            print('')
+            cmd_msg = ZeusMainCommand()
+            cmd_msg.frame = 'j'
+        
+            if return_direction == 'left':
+                cmd_msg.position = [-143.10,   33.37,  109.11,    0.78,   36.64,   36.28]
+                
+            elif return_direction == 'middle':
+                cmd_msg.position = [-148.04,   37.80,   99.28,    0.81,   42.09,   31.37]
+                
+            elif return_direction == 'right':
+                cmd_msg.position = [-151.83,   42.82,   88.15,    0.80,   48.23,   27.65]  
+            
+            else:
+                cmd_msg.position = [-148.04,   37.80,   99.28,    0.81,   42.09,   31.37]
+                
+            cmd_msg.speed = ans['speed']
+            self.cmd_pub.publish(cmd_msg)
+            
+            self.reset_tool_pose()
         
 def main(args=None):
     

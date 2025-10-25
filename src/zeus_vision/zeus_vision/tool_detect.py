@@ -327,6 +327,28 @@ class VisionNode(Node):
         profile = self.pipeline.start(config)
 
         depth_sensor = profile.get_device().first_depth_sensor()
+        color_sensor = profile.get_device().first_color_sensor()
+
+        if color_sensor.supports(rs.option.enable_auto_exposure):
+            color_sensor.set_option(rs.option.enable_auto_exposure, 0)
+            color_sensor.set_option(rs.option.exposure, 150)
+        if color_sensor.supports(rs.option.enable_auto_white_balance):
+            color_sensor.set_option(rs.option.enable_auto_white_balance, 0)
+            color_sensor.set_option(rs.option.white_balance, 4600)
+
+        if depth_sensor.supports(rs.option.enable_auto_exposure):
+            depth_sensor.set_option(rs.option.enable_auto_exposure, 0)
+            depth_sensor.set_option(rs.option.exposure, 8500)
+
+        if depth_sensor.supports(rs.option.visual_preset):
+            depth_sensor.set_option(rs.option.visual_preset, 1)
+            self.get_logger().info("Set depth sensor preset to High Accuracy")
+
+        if depth_sensor.supports(rs.option.laser_power):
+            depth_sensor.set_option(rs.option.laser_power, 250)
+            self.get_logger().info("Set laser power to 250")
+
+        depth_sensor = profile.get_device().first_depth_sensor()
         self.depth_scale = depth_sensor.get_depth_scale()
         self.align = rs.align(rs.stream.color)
         self.spat_filter = rs.spatial_filter()
@@ -514,7 +536,7 @@ class VisionNode(Node):
                             if norm_label(cls_name) == norm_label("wire_cutter"):
                                 center_px = (handle_ctr[0]*0.4 + tip_ctr[0]*0.6, handle_ctr[1]*0.4 + tip_ctr[1]*0.6)
                             elif norm_label(cls_name) == norm_label("nipper"):
-                                center_px = (handle_ctr[0]*0.4 + tip_ctr[0]*0.6, handle_ctr[1]*0.4 + tip_ctr[1]*0.6)
+                                center_px = (handle_ctr[0]*0.35 + tip_ctr[0]*0.65, handle_ctr[1]*0.35 + tip_ctr[1]*0.65)
                             else:
                                 center_px = ((handle_ctr[0]+tip_ctr[0])*0.5, (handle_ctr[1]+tip_ctr[1])*0.5)
                         else:

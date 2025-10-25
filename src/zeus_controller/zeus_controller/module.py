@@ -218,110 +218,6 @@ class Deliver_Normal:
                 'next_step': 'None'
             }
             return ans
- 
-class Return_Normal:
-    def step(self, step):
-        # Return 디텍 위치로 이동
-        if step == 'step_1':
-            ans = {
-                'frame'    : 'j',
-                'position' : [-184.02,   24.04,   93.32,   -0.17,   63.00,   -4.75],
-                'speed'    : 15.0,
-                'requires_ack' : True,
-                'next_step': 'step_2'
-            }
-            return ans
-            
-        elif step == 'step_2':
-            ans = {
-                'return_camera_trigger' : True,
-                'requires_ack' : True,
-                'next_step': 'step_3'
-            }
-            return ans
-        
-        elif step == 'step_3':
-            ans = {
-                'return_camera_center' : True,
-                'requires_ack' : True,
-                'speed'       : 100.0,
-                'next_step': 'step_4'
-            }
-            return ans
-        
-        elif step == 'step_4':
-            ans = {
-                'return_camera_move' : True,
-                'requires_ack' : True,
-                'speed'       : 40.0,
-                'next_step': 'step_5'
-            }
-            return ans
-        
-        elif step == 'step_5':
-            ans = {
-                'gripper' : 'close',
-                'requires_ack' : True,
-                'next_step': 'step_6'
-            }
-            return ans
-        
-        elif step == 'step_6':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, -80.0, 0.0, 0.0, 0.0],
-                'speed'    : 80.0,
-                'requires_ack' : True,
-                'next_step': 'step_7'
-            }
-            return ans
-        
-        elif step == 'step_7':
-            ans = {
-                'return_tool_offset' : True,
-                'speed'    : 20.0,
-                'requires_ack' : True,
-                'next_step': 'step_8'
-            }
-            return ans
-        
-        elif step == 'step_8':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, 105.0, 0.0, 0.0, 0.0],
-                'speed'    : 80.0,
-                'requires_ack' : True,
-                'next_step': 'step_9'
-            }
-            return ans
-        
-        elif step == 'step_9':
-            ans = {
-                'gripper' : 'open',
-                'requires_ack' : True,
-                'next_step': 'step_10'
-            }
-            return ans
-        
-        elif step == 'step_10':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
-                'speed'    : 80.0,
-                'requires_ack' : True,
-                'next_step': 'step_11'
-            }
-            return ans
-        
-        elif step == 'step_11':
-            ans = {
-                'frame'    : 'j',
-                'position' : INIT_POSE,
-                'speed'    : 10.0,
-                'requires_ack' : True,
-                'next_step': 'None'
-            }
-            return ans
 
 SWITCH_ON_INIT_POSE = [-129.18,   27.07,  120.32,  135.08,   65.49,  -67.26]     
 class Start:
@@ -358,7 +254,7 @@ class Start:
         elif step == 'step_4':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 0.0, 30.0, 0.0, 0.0, 0.0],
+                'position' : [0.0, 0.0, 25.0, 0.0, 0.0, 0.0],
                 'speed'    : 30.0,
                 'requires_ack' : True,
                 'next_step': 'step_5'
@@ -428,7 +324,7 @@ class Finish:
         elif step == 'step_4':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 0.0, 30.0, 0.0, 0.0, 0.0],
+                'position' : [0.0, 0.0, 25.0, 0.0, 0.0, 0.0],
                 'speed'    : 30.0,
                 'requires_ack' : True,
                 'next_step': 'step_5'
@@ -565,8 +461,8 @@ class Deliver_Box:
         elif step == 'step_12':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 0.0, 81.0, 0.0, 0.0, 0.0],
-                'speed'    : 10.0,
+                'position' : [0.0, 0.0, 85.0, 0.0, 0.0, 0.0],
+                'speed'    : 50.0,
                 'requires_ack' : True,
                 'next_step': 'step_13'
             }
@@ -583,8 +479,8 @@ class Deliver_Box:
         elif step == 'step_14':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
-                'speed'    : 50.0,
+                'position' : [0.0, 0.0, -105.0, 0.0, 0.0, 0.0],
+                'speed'    : 100.0,
                 'requires_ack' : True,
                 'next_step': 'step_15'
             }
@@ -648,7 +544,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, 145.0, 0.0, 0.0, 0.0],
-                'speed'    : 50.0,
+                'speed'    : 65.0,
                 'requires_ack' : True,
                 'next_step': 'step_22'
             }
@@ -741,7 +637,6 @@ class Deliver_Box:
             }
             return ans
         
-
 GRIP_INIT_POSE = [-162.44,    2.35,  104.30, -225.75,   22.97,  313.07]
 class Down:
     def step(self, step):
@@ -808,18 +703,28 @@ class Down:
             }
             return ans
         
-        # 퇴장
         elif step == 'step_7':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 0.0, -200.0, 0.0, 0.0, 0.0],
-                'speed'    : 150.0,
+                'position' : [0.0, 50.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 80.0,
                 'requires_ack' : True,
                 'next_step': 'step_8'
             }
             return ans
         
+        # 퇴장
         elif step == 'step_8':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -200.0, 0.0, 0.0, 0.0],
+                'speed'    : 150.0,
+                'requires_ack' : True,
+                'next_step': 'step_9'
+            }
+            return ans
+        
+        elif step == 'step_9':
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
@@ -829,10 +734,11 @@ class Down:
             }
             return ans
 
+LOOK_MY_BOARD = [-166.14,   49.02,   72.38,   -0.00,   58.60,   17.62]
 MEASURE_INIT = [-150.44,   51.97,  101.52, -180.93,   63.37,  270.33]
 MEASURE_GRIP = [-150.14,   65.44,   80.89, -180.64,   56.20,  270.28]
 MEASURE_TIP_TOP = [-150.31,   58.36,   82.44, -180.90,   50.67,  270.49]
-SOUND = [-143.11,   58.46,   90.05, -172.33,   58.58,  265.78]
+SOUND = [-143.16,   58.75,   89.09, -172.34,   57.92,  265.71]
 NONE_SOUND = [-142.93,   57.10,   94.04, -172.48,   61.00,  266.14]
 class Measure:
     def step(self, step):
@@ -840,12 +746,21 @@ class Measure:
         if step == 'step_1':
             ans = {
                 'frame'    : 'j',
-                'position' : INIT_POSE,
+                'position' : LOOK_MY_BOARD,
                 'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'step_2'
             }
             return ans
+        
+        # 잡기 init 좌표로 이동
+        elif step == 'waiting':
+            ans = {
+                'wait_a_sec'    : 3,
+                'requires_ack' : True,
+                'next_step': 'step_2'
+            }
+            return ans 
         
         # 잡기 init 좌표로 이동
         elif step == 'step_2':
@@ -1017,6 +932,354 @@ class Measure:
             return ans
         
         elif step == 'step_18':
+            ans = {
+                'frame'    : 'j',
+                'position' : INIT_POSE,
+                'speed'    : 20.0,
+                'requires_ack' : True,
+                'next_step': 'None'
+            }
+            return ans
+    
+TOOL_AND_BOX_DETECT = [-184.02,   24.04,   93.32,   -0.17,   63.00,   -4.75]
+class Return_All:
+    def step(self, step):
+        # 일반 도구가 있는 경우라고 무조건 가정
+        if step == 'step_1':
+            ans = {
+                'frame'    : 'j',
+                'position' : TOOL_AND_BOX_DETECT,
+                'speed'    : 15.0,
+                'requires_ack' : True,
+                'next_step': 'step_2'
+            }
+            return ans
+        
+        # 필요한 값을 카메라 노드에 정확히 요청
+        elif step == 'step_2':
+            ans = {
+                'all_return_camera_trigger' : True,
+                'requires_ack' : True,
+                'next_step': 'step_3'
+            }
+            return ans
+        
+        # 도구 중앙으로 이동
+        elif step == 'step_3':
+            ans = {
+                'all_return_camera_center' : True,
+                'requires_ack' : True,
+                'speed'       : 100.0,
+                'next_step': 'step_4'
+            }
+            return ans
+        
+        # 집이러 내려가기
+        elif step == 'step_4':
+            ans = {
+                'all_return_camera_move' : True,
+                'requires_ack' : True,
+                'speed'       : 40.0,
+                'next_step': 'step_5'
+            }
+            return ans
+        
+        # 잡기
+        elif step == 'step_5':
+            ans = {
+                'gripper' : 'close',
+                'requires_ack' : True,
+                'next_step': 'step_6'
+            }
+            return ans
+        
+        # 상승
+        elif step == 'step_6':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -80.0, 0.0, 0.0, 0.0],
+                'speed'    : 80.0,
+                'requires_ack' : True,
+                'next_step': 'step_7'
+            }
+            return ans
+        
+        # 도구 두러 가는 위치
+        elif step == 'step_7':
+            ans = {
+                'all_return_tool_offset' : True,
+                'speed'    : 20.0,
+                'requires_ack' : True,
+                'next_step': 'step_8'
+            }
+            return ans
+        
+        elif step == 'step_8':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 105.0, 0.0, 0.0, 0.0],
+                'speed'    : 80.0,
+                'requires_ack' : True,
+                'next_step': 'step_9'
+            }
+            return ans
+        
+        # 여기서 dict 에 존재하는 첫번째 도구 정보 삭제
+        elif step == 'step_9':
+            ans = {
+                'gripper' : 'open',
+                'all_return_pop_dict' : True,
+                'requires_ack' : True,
+                'next_step': 'step_10'
+            }
+            return ans
+        
+        elif step == 'step_10':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
+                'speed'    : 80.0,
+                'requires_ack' : True,
+                'next_step': 'check'
+            }
+            return ans
+
+        ### =============== 여기까지가 박스 반환 ==========================
+        
+        # 일단 디텍 위치로 이동
+        elif step == 'M3_step_1':
+            ans = {
+                'frame'    : 'j',
+                'position' : TOOL_AND_BOX_DETECT,
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_2'
+            }
+            return ans
+        
+        # 열기 위치로 이동    
+        elif step == 'M3_step_2':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-144.80,   42.52,   93.16,    0.09,   44.89,   33.89],
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_3'
+            }
+            return ans
+        
+        # 손잡이 위치로 이동
+        elif step == 'M3_step_3':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 100.0, 0.0, 0.0, 0.0],
+                'speed'    : 30.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_4'
+            }
+            return ans
+        # 손잡이 잡기
+        elif step == 'M3_step_4':
+            ans = {
+                'gripper' : 'close',
+                'requires_ack' : True,
+                'next_step': 'M3_step_5'
+            }
+            return ans
+        # 서랍 열기
+        elif step == 'M3_step_5':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, -120.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 50.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_6'
+            }
+            return ans
+        # 손잡이 놓기
+        elif step == 'M3_step_6':
+            ans = {
+                'gripper' : 'open',
+                'requires_ack' : True,
+                'next_step': 'M3_step_7'
+            }
+            return ans
+        # 약간의 상승
+        elif step == 'M3_step_7':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -50.0, 0.0, 0.0, 0.0],
+                'speed'    : 100.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_8'
+            }
+            return ans
+        
+        # 여기서 이제 박스를 디텍하러 가야함
+        # 종합 디텍 위치로 이동
+        elif step == 'M3_step_8':
+            ans = {
+                'frame'    : 'j',
+                'position' : TOOL_AND_BOX_DETECT,
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_9'
+            }
+            return ans
+        
+        # 박스 좌표 요청
+        elif step == 'M3_step_9':
+            ans = {
+                'all_return_m3_camera_trigger' : True,
+                'requires_ack' : True,
+                'next_step': 'M3_step_10'
+            }
+            return ans
+        
+        # 박스 좌표로 이동
+        elif step == 'M3_step_10':
+            ans = {
+                'all_return_m3_box_camera_move' : True,
+                'requires_ack' : True,
+                'speed'       : 80.0,
+                'next_step': 'M3_step_11'
+            }
+            return ans
+    
+        # 박스 잡기를 위한 이동
+        elif step == 'M3_step_11':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 95.0, 0.0, 0.0, 0.0],
+                'speed'    : 60.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_12'
+            }
+            return ans
+
+        elif step == 'M3_step_12':
+            ans = {
+                'gripper' : 'close',
+                'requires_ack' : False,
+                'next_step': 'M3_step_13'
+            }
+            return ans
+        # 박스를 집고 상승
+        elif step == 'M3_step_13':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
+                'speed'    : 100.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_14'
+            }
+            return ans
+        
+        # 상자 드랍 상부 위치로 이동
+        elif step == 'M3_step_14':
+            ans = {
+                'all_return_m3_offset' : True,
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_15'
+            }
+            return ans 
+        
+        # 상자 두러 하강
+        elif step == 'M3_step_15':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 100.0, 0.0, 0.0, 0.0],
+                'speed'    : 60.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_16'
+            }
+            return ans 
+        
+        # 상자 두기
+        elif step == 'M3_step_16':
+            ans = {
+                'gripper' : 'open',
+                'requires_ack' : True,
+                'next_step': 'M3_step_17'
+            }
+            return ans
+        
+        # 상자 두고 상승
+        elif step == 'M3_step_17':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
+                'speed'    : 150.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_18'
+            }
+            return ans 
+        
+        # 서랍 손잡이 진입 전
+        elif step == 'M3_step_18':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-155.77,   36.56,  106.69,   -0.08,   37.32,   23.05],
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_19'
+            }
+            return ans 
+        
+        # 열린 서랍 손잡이 위치로 이동
+        elif step == 'M3_step_19':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-155.78,   47.05,  108.43,   -0.11,   25.09,   23.07],
+                'speed'    : 5.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_20'
+            }
+            return ans 
+        # 손잡이 잡기
+        elif step == 'M3_step_20':
+            ans = {
+                'gripper' : 'close',
+                'requires_ack' : True,
+                'next_step': 'M3_step_21'
+            }
+            return ans
+        # 닫기
+        elif step == 'M3_step_21':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 120.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 50.0,
+                'requires_ack' : True,
+                'next_step': 'M3_step_22'
+            }
+            return ans
+        
+        # 손잡이 놓기
+        elif step == 'M3_step_22':
+            ans = {
+                'gripper' : 'open',
+                'requires_ack' : True,
+                'next_step': 'M3_step_23'
+            }
+            return ans
+        # 약간의 상승
+        elif step == 'M3_step_23':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
+                'speed'    : 80.0,
+                'all_return_pop_dict' : True,
+                'requires_ack' : True,
+                'next_step': 'final'
+            }
+            return ans
+        
+        ### =============== 여기까지가 박스 반환 ==========================
+
+        # 최종 종료
+        elif step == 'final':
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
