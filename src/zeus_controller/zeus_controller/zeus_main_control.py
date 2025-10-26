@@ -64,6 +64,7 @@ class MainControlNode(Node):
         self.next_step = 'step_2'
         
         self.current_flag = 'order' # waiting , done
+        self.last_flag = None
 
     def reset_block_pose(self):
         with self.lock:
@@ -360,10 +361,15 @@ class MainControlNode(Node):
             current_step = self.current_step
             current_flag = self.current_flag
             next_step = self.next_step
+            last_flag = self.last_flag
 
         # 모니터링: 현재 상태 출력
-        # self.get_logger().info(f'[MONITOR] Flag: {current_flag}, Step: {current_step}, Next: {next_step}')
-
+        if last_flag != current_flag:
+            self.get_logger().info(f'[MONITOR] Flag: {current_flag}, Step: {current_step}, Next: {next_step}')
+            
+            with self.lock:
+                self.last_flag = current_flag
+            
         if handler is None or current_step is None:
             return
         
