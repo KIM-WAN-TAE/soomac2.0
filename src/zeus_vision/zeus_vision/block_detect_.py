@@ -26,7 +26,6 @@ except ImportError:
 
 import rclpy
 from rclpy.node import Node
-    # rclpy related
 from std_msgs.msg import Float32MultiArray, MultiArrayDimension, String
 
 # ---------- 원본 K, D (네가 구한 값) ----------
@@ -41,7 +40,7 @@ DIST_COEFFS = np.array([
 ], dtype=np.float32)
 
 # ---------- 설정 ----------
-WEIGHTS     = "/home/pc/Downloads/best_no_bri_roboflow.pt"
+WEIGHTS     = "/home/pc/Downloads/best_50cm_test_val.pt"
 DEVICE      = "0"
 
 CONF_DET    = 0.28
@@ -69,6 +68,7 @@ STAB_CENTER_JUMP_PX = 60
 PUBLISH_COOLDOWN_FRAMES = 10
 
 # --- 이너 코어 설정 추가 ---
+# 마스크의 가장자리에서 최대 거리의 몇 % 안쪽까지를 코어로 사용할지 결정 (10%)
 INNER_CORE_RATIO = 0.0
 
 # 블록 크기 [m]
@@ -77,7 +77,7 @@ BLOCK_WID_M = 0.025
 
 AREA_THRESHOLD_MM2 = 1650.0  # mm^2
 EE_OFFSET_MM = np.array([29.0, 67.0, 0.0], dtype=np.float32)
-EE_OFFSET_M  = EE_OFFSET_MM / 1000.0  # m
+EE_OFFSET_M  = EE_OFFSET_MM / 1000.0  # m 단위 변환
 
 CAP_DIR = os.path.expanduser("/home/pc/soomac_ws/src/zeus_vision/zeus_vision/capture_images")
 os.makedirs(CAP_DIR, exist_ok=True)
@@ -130,15 +130,30 @@ def keep_largest_component(mask_bin):
 
 # 💡 --- 이너 코어 마스크 생성 함수 추가 ---
 def create_inner_core_mask(mask_bin, ratio=INNER_CORE_RATIO):
+    """
+    거리 변환(Distance Transform)을 사용하여 마스크의 안정적인 내부 코어를 추출합니다.
+    :param mask_bin: 입력 이진 마스크 (uint8)
+    :param ratio: 가장자리로부터의 최대 거리 대비 몇 %까지를 코어로 인정할지
+    :return: 내부 코어만 남은 이진 마스크 (uint8)
+    """
     if mask_bin is None or not mask_bin.any():
         return np.zeros_like(mask_bin, dtype=np.uint8)
+
+    # 0이 아닌 픽셀에서 가장 가까운 0인 픽셀까지의 거리를 계산
     dist_map = cv2.distanceTransform(mask_bin, cv2.DIST_L2, 5)
+
+    # 최대 거리 값 찾기 (마스크의 가장 두꺼운 부분)
     _, max_val, _, _ = cv2.minMaxLoc(dist_map)
+
     if max_val <= 0:
-        return mask_bin
+        return mask_bin # 매우 얇은 마스크의 경우 원본 반환
+
+    # 최대 거리의 일정 비율을 임계값으로 설정
     threshold = max_val * ratio
     _, core_mask = cv2.threshold(dist_map, threshold, 255, cv2.THRESH_BINARY)
+    
     return core_mask.astype(np.uint8)
+# ----------------------------------------
 
 # ---------- 핀홀(보정 좌표계, D=0) 기반 변환 ----------
 def deproject_points_from_mask_pinhole(mask_bin, depth_undist, intr, depth_scale, stride=PCL_STRIDE):
@@ -175,11 +190,21 @@ def draw_cross(img, pt, color=(0,0,255), size=6, thickness=2):
     cv2.line(img, (u, v-size), (u, v+size), color, thickness, cv2.LINE_AA)
 
 def euclid_dist_ee(c):
+    """EE 기준 3D 유클리디언 거리 계산"""
     o = c.get('origin', None)
     if o is None or not np.all(np.isfinite(o)):
         return float('inf')
-    p_ee = o - EE_OFFSET_M
+    p_ee = o - EE_OFFSET_M  # EE 중심으로 원점 이동
     return float(np.linalg.norm(p_ee))
+
+def xy_dist_cam_ee(c):
+    """Z 무시. 카메라좌표계에서 EE 오프셋과 후보의 XY 거리만 비교"""
+    o = c.get('origin', None)
+    if o is None or not np.all(np.isfinite(o)):
+        return float('inf')
+    dx = float(o[0] - EE_OFFSET_M[0])
+    dy = float(o[1] - EE_OFFSET_M[1])
+    return float(math.hypot(dx, dy))
 
 # ---------- 평면/좌표계 ----------
 def segment_plane_and_axes(pts):
@@ -187,13 +212,11 @@ def segment_plane_and_axes(pts):
     pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(pts))
     pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=STAT_NB_NEIGHBORS, std_ratio=STAT_STD_RATIO)
     pcd, _ = pcd.remove_radius_outlier(nb_points=RAD_MIN_POINTS, radius=RAD_RADIUS)
-    if len(pcd.points) < 50:
-        return [None]*6
+    if len(pcd.points) < 50: return [None]*6
     plane_model, inliers_idx = pcd.segment_plane(distance_threshold=PLANE_DIST_BASE,
                                                  ransac_n=PLANE_RANSAC_N,
                                                  num_iterations=PLANE_ITERS)
-    if len(inliers_idx) < 50:
-        return [None]*6
+    if len(inliers_idx) < 50: return [None]*6
     inlier_cloud = pcd.select_by_index(inliers_idx)
 
     a,b,c,d = plane_model
@@ -283,60 +306,35 @@ def get_3d_center_from_2d_pixel_pinhole(rect_center_px, depth_undist, intr, dept
         return np.array([X, Y, Z], dtype=np.float32), "B-depth-median"
     return None, None
 
-def get_pose_from_mask_stable(mask_bin, depth_undist, intr, depth_scale, plane_model):
-    if mask_bin is None or not mask_bin.any() or plane_model is None:
-        return [None] * 8
+def refine_center_minarearect(mask_bin, depth_undist, intr, depth_scale, plane_model):
+    if mask_bin is None or not mask_bin.any():
+        return None, None, None, None, None, None, None, None
 
-    cnt = _largest_contour(mask_bin)
-    if cnt is None or cv2.contourArea(cnt) < MIN_AREA_PX:
-        return [None] * 8
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+    processed_mask = cv2.morphologyEx(mask_bin.astype(np.uint8), cv2.MORPH_CLOSE, kernel, iterations=2)
     
-    rect = cv2.minAreaRect(cnt)
-    rect_center_px, (w_px, h_px), angle_deg = rect
-    rect_box_pts = cv2.boxPoints(rect)
+    cnts, _ = cv2.findContours(processed_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    origin, origin_src = get_3d_center_from_2d_pixel_pinhole(
-        rect_center_px, depth_undist, intr, depth_scale, plane_model
+    if not cnts:
+        return None, None, None, None, None, None, None, None
+
+    cnt = max(cnts, key=cv2.contourArea)
+    if cv2.contourArea(cnt) < MIN_AREA_PX:
+        return None, None, None, None, None, None, None, None
+
+    hull = cv2.convexHull(cnt)
+    rect = cv2.minAreaRect(hull) 
+    (cx, cy), _, _ = rect
+    rect_orig_box_pts = cv2.boxPoints(rect).astype(np.int32)
+
+    refined_origin, origin_src = get_3d_center_from_2d_pixel_pinhole(
+        (cx, cy), depth_undist, intr, depth_scale, plane_model
     )
-    if origin is None:
-        return [None] * 8
-        
-    p0 = rect_box_pts[0]
-    p1 = rect_box_pts[1]
-    p2 = rect_box_pts[2]
-    
-    edge1_len_sq = np.sum((p1 - p0)**2)
-    edge2_len_sq = np.sum((p2 - p1)**2)
-
-    pt_start_2d = p1
-    pt_end_2d   = p0 if edge1_len_sq > edge2_len_sq else p2
-    
-    p_start_3d = ray_plane_intersect_pinhole(pt_start_2d[0], pt_start_2d[1], intr, plane_model)
-    p_end_3d   = ray_plane_intersect_pinhole(pt_end_2d[0],   pt_end_2d[1],   intr, plane_model)
-    
-    if p_start_3d is None or p_end_3d is None:
-        return [None] * 8
-        
-    z_axis = np.array(plane_model[:3], dtype=np.float32)
-    if z_axis[2] < 0: z_axis *= -1.0
-    z_axis /= (np.linalg.norm(z_axis) + 1e-9)
-
-    x_axis = p_end_3d - p_start_3d
-    x_axis = x_axis - z_axis * np.dot(x_axis, z_axis)
-    x_axis /= (np.linalg.norm(x_axis) + 1e-9)
-
-    if x_axis[0] < 0:
-        x_axis *= -1.0
-        
-    y_axis = np.cross(z_axis, x_axis)
-    y_axis /= (np.linalg.norm(y_axis) + 1e-9)
-    
-    ys, xs = np.where(mask_bin > 0)
+    ys, xs = np.where(processed_mask > 0)
     z_vals = depth_undist[ys, xs].astype(np.float32) * depth_scale
     z_vals = z_vals[z_vals > 1e-6]
     z_med = float(np.median(z_vals)) if z_vals.size else None
-
-    return origin, rect_center_px, z_med, x_axis, y_axis, rect_box_pts.astype(np.int32), origin_src, z_axis
+    return refined_origin, (cx, cy), z_med, None, None, rect_orig_box_pts, origin_src, None
 
 # ---------- HSV 라벨 보정 ----------
 COLOR_NORMALIZE_SET = {"red", "pink", "purple", "green"}
@@ -370,17 +368,40 @@ def area_mm2_from_rect_on_plane(rect_box_pts, intr, plane_model):
 def size_mm_from_rect_on_plane(rect_box_pts, intr, plane_model):
     if rect_box_pts is None or plane_model is None: return 0.0, 0.0
     corners_3d = []
+    # print("Rect Box Points (px):", rect_box_pts)
     for (u, v) in rect_box_pts.astype(np.float32):
         p = ray_plane_intersect_pinhole(float(u), float(v), intr, plane_model)
         if p is None or not np.all(np.isfinite(p)): return 0.0, 0.0
         corners_3d.append(p.astype(np.float32))
     if len(corners_3d) != 4: return 0.0, 0.0
     p0, p1, p2, p3 = corners_3d
+    #print(f"3D Box Corners (m): {p0}, {p1}, {p2}, {p3}")
     e01 = float(np.linalg.norm(p1 - p0)) * 1000.0
     e12 = float(np.linalg.norm(p2 - p1)) * 1000.0
     w_mm = min(e01, e12)
     h_mm = max(e01, e12)
     return w_mm, h_mm
+
+def draw_axes(img, origin_px, length=60, thickness=2):
+    """이미지 상의 origin_px (u,v)에 2D X/Y 축을 그린다."""
+    if origin_px is None: 
+        return
+    u, v = int(origin_px[0]), int(origin_px[1])
+    h, w = img.shape[:2]
+    # X축: 좌/우
+    pt_x1 = (max(0, u - length), v)
+    pt_x2 = (min(w-1, u + length), v)
+    cv2.arrowedLine(img, (u, v), pt_x2, (0,255,0), thickness, tipLength=0.15)     # +X (초록)
+    cv2.arrowedLine(img, (u, v), pt_x1, (0,155,0), thickness, tipLength=0.15)     # -X
+    # Y축: 상/하 (이미지 좌표계 기준)
+    pt_y1 = (u, max(0, v - length))
+    pt_y2 = (u, min(h-1, v + length))
+    cv2.arrowedLine(img, (u, v), pt_y1, (255,0,255), thickness, tipLength=0.15)   # +Y (보라, 위쪽)
+    cv2.arrowedLine(img, (u, v), pt_y2, (155,0,155), thickness, tipLength=0.15)   # -Y
+    cv2.circle(img, (u, v), 4, (0,0,0), -1, cv2.LINE_AA)
+    cv2.circle(img, (u, v), 2, (255,255,255), -1, cv2.LINE_AA)
+
+# =================================================================
 
 # ---------- ROS2 ----------
 class BlockPosePublisher(Node):
@@ -394,33 +415,44 @@ class BlockPosePublisher(Node):
 
         self.model = YOLO(WEIGHTS)
         self.get_logger().info(f"YOLO Model Loaded. Classes: {self.model.names}")
-        # RealSense 파이프라인
+
         self.pipeline = rs.pipeline()
         config = rs.config()
         config.enable_stream(rs.stream.color, COLOR_W, COLOR_H, rs.format.bgr8, COLOR_FPS)
         config.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, DEPTH_FPS)
         profile = self.pipeline.start(config)
-        
-        depth_sensor = profile.get_device().first_depth_sensor()
-        color_sensor = profile.get_device().first_color_sensor()
-
-        if depth_sensor.supports(rs.option.visual_preset):
-            depth_sensor.set_option(rs.option.visual_preset, 1) 
-            self.get_logger().info("Set depth sensor preset to High Accuracy")
-
-        if depth_sensor.supports(rs.option.laser_power):
-            depth_sensor.set_option(rs.option.laser_power, 250)
-            self.get_logger().info("Set laser power to 250")
-
         self.align = rs.align(rs.stream.color)
         self.depth_scale = profile.get_device().first_depth_sensor().get_depth_scale()
         
-        self.dec_filter  = rs.decimation_filter()
+        self.dec_filter  = rs.decimation_filter()     # 선택
         self.spa_filter  = rs.spatial_filter()
         self.tmp_filter  = rs.temporal_filter()
-        self.hole_fill   = rs.hole_filling_filter(2)
-        
+        self.hole_fill   = rs.hole_filling_filter(2)  # 0~2
         K = CAMERA_MATRIX; D = DIST_COEFFS
+
+        self.blue_num = 0
+        self.green_num = 0
+        self.pink_num = 0
+        self.purple_num = 0
+        self.red_num = 0
+        self.yellow_num = 0
+
+        self.class_order = ['blue', 'green', 'pink', 'purple', 'red', 'yellow']
+        # color_vsp  = profile.get_stream(rs.stream.color).as_video_stream_profile()
+        # color_intr = color_vsp.get_intrinsics()  # width, height, ppx, ppy, fx, fy, model, coeffs
+
+        # # K, D 생성
+        # K = np.array([[color_intr.fx, 0.0,            color_intr.ppx],
+        #             [0.0,            color_intr.fy, color_intr.ppy],
+        #             [0.0,            0.0,           1.0         ]], dtype=np.float32)
+
+        # # 왜곡모델: 대부분 BrownConrady(= rs.distortion.brown_conrady)
+        # # coeffs 길이는 5 또는 그 이상일 수 있음. undistort는 k1..k3, p1, p2만 사용.
+        # if color_intr.model == rs.distortion.none:
+        #     D = np.zeros((1,5), dtype=np.float32)
+        # else:
+        #     D = np.array([list(color_intr.coeffs[:5])], dtype=np.float32)
+
         self.K_rect, _ = cv2.getOptimalNewCameraMatrix(K, D, (COLOR_W, COLOR_H), 0, (COLOR_W, COLOR_H))
         self.map1, self.map2 = cv2.initUndistortRectifyMap(
             K, D, None, self.K_rect, (COLOR_W, COLOR_H), cv2.CV_32FC1
@@ -429,14 +461,24 @@ class BlockPosePublisher(Node):
         self.rect_intr = (fx, fy, cx, cy)
         self.get_logger().info(f"[Rectified K] fx={fx:.2f}, fy={fy:.2f}, cx={cx:.2f}, cy={cy:.2f}")
 
-        self.blue_num, self.green_num, self.pink_num = 0, 0, 0
-        self.purple_num, self.red_num, self.yellow_num = 0, 0, 0
-        self.class_order = ['blue', 'green', 'pink', 'purple', 'red', 'yellow']
-        
+        # --- EE 전용 UI 창 준비 ---
+        try:
+            cv2.namedWindow("EE Distance View", cv2.WINDOW_NORMAL)
+            cv2.resizeWindow("EE Distance View", 480, 360)
+        except Exception:
+            pass  # GUI 미지원 환경 대비
+        self.ee_idle_canvas = np.full((240, 360, 3), 30, dtype=np.uint8)
+        self.last_plane_depth_m = 0.5  # 평면 Z 기본값(미탐지 시 0.5m 가정)
+
+        # ------------------------
+
         self.last_quat = None
         self.last_center = None
         self.stable_count = 0
         self.cooldown = 0
+
+        self.last_block1_color = None
+
 
     def listener_callback(self, msg):
         self.detect_signal = msg.data
@@ -445,6 +487,7 @@ class BlockPosePublisher(Node):
         msg = String(); msg.data = label
         self.block_pubisher.publish(msg)
 
+# ---------- 메인 ----------
 def main(args=None):
     if not (O3D_OK and SCIPY_OK):
         print("[ERROR] Open3D와 SciPy가 모두 필요합니다.")
@@ -472,23 +515,24 @@ def main(args=None):
 
             color = cv2.remap(color_dist, node.map1, node.map2, interpolation=cv2.INTER_LINEAR)
             depth = cv2.remap(depth_dist, node.map1, node.map2, interpolation=cv2.INTER_NEAREST)
-            depth_frame = node.dec_filter.process(depth_frame)
-            depth_frame = node.spa_filter.process(depth_frame)
-            depth_frame = node.tmp_filter.process(depth_frame)
-            depth_frame = node.hole_fill.process(depth_frame)
+            #depth_frame = node.dec_filter.process(depth_frame)
+            # depth_frame = node.spa_filter.process(depth_frame)
+            # depth_frame = node.tmp_filter.process(depth_frame)
+            # depth_frame = node.hole_fill.process(depth_frame)
             depth_dist  = np.asanyarray(depth_frame.get_data())
-
+            
+            
             hsv_image = cv2.cvtColor(color, cv2.COLOR_BGR2HSV)
             overlay = color.copy()
             plane_vis = (color * 0.3).astype(np.uint8)
             plane_accum_mask = np.zeros((COLOR_H, COLOR_W), dtype=np.uint8)
             inner_core_accum_mask = np.zeros((COLOR_H, COLOR_W), dtype=np.uint8)
-            
+
             res = None
             if node.detect_signal == 'block1' or node.detect_signal == 'block2':
                 print(f"[INFO] Detect Order: {node.class_order}")
                 res = node.model(color, conf=CONF_DET, iou=IOU_TH, device=DEVICE, imgsz=IMG_SIZE, verbose=False)
-
+            # ==========================
             candidates = []
             chosen = None
 
@@ -500,43 +544,60 @@ def main(args=None):
                 clss  = r.boxes.cls.detach().cpu().numpy().astype(int) if r.boxes.cls is not None else np.zeros_like(confs, dtype=int)
                 names = getattr(r, "names", None)
                 
+                # 1) confidence 1차 컷
                 valid_idx = np.where(confs >= CONF_PUB)[0]
 
+                # 이름→id 매핑(안전)
                 name2id = {}
                 if names is not None:
                     for i, nm in enumerate(names):
                         name2id[str(nm).lower()] = i
 
+                # 2) 클래스 우선순위부터 적용 → 해당 클래스에 속하는 디텍션만 전처리 실행
                 mode = (node.detect_signal or "").strip().lower()
                 CLASS_ORDER = node.class_order.copy()
 
-                def area_mm2_of(c): 
-                    return float(c.get('area_mm2', 0.0))
+                if mode == 'block2' and node.last_block1_color:
+                    try:
+                        # 리스트에 있다면 제거 후 맨 앞에 삽입(중복 방지)
+                        CLASS_ORDER.remove(node.last_block1_color)
+                        CLASS_ORDER.insert(0, node.last_block1_color)
+                    except ValueError:
+                        # last_block1_color가 현재 class_order에 없으면(이미 quota로 제거된 경우 등) 무시
+                        pass
 
                 for cls_name in CLASS_ORDER:
                     cls_id = None
                     if names is not None and cls_name in name2id:
                         cls_id = name2id[cls_name]
+                    else:
+                        # names가 없거나 매핑 실패 시, 문자열 비교로 보정
+                        # (YOLO가 라벨명을 안 담고 있을 일은 드묾)
+                        pass
 
+                    # 현재 우선순위 클래스에 해당하는 디텍션 인덱스만 추출
                     idx_cls = []
                     for i in valid_idx:
                         if cls_id is not None:
                             if clss[i] == cls_id:
                                 idx_cls.append(i)
                         else:
+                            # names 매핑 실패 대비: 라벨 문자열 비교 (가급적 도달하지 않음)
                             lab = names[clss[i]] if (names is not None and clss[i] < len(names)) else f"id{clss[i]}"
                             if str(lab).lower() == cls_name:
                                 idx_cls.append(i)
 
                     if not idx_cls:
-                        continue
+                        continue  # 이 클래스에 후보 없음 → 다음 클래스
 
+                    # 이 클래스 후보들만 기존 "블럭 전처리" 그대로 수행
                     candidates_cls = []
                     for i in idx_cls:
                         conf_i = float(confs[i])
                         x1, y1, x2, y2 = xyxy[i].astype(int)
                         label_raw = names[clss[i]] if (names is not None and clss[i] < len(names)) else f"id{clss[i]}"
-
+                        #print(f"[DEBUG] Processing Detection: Label={label_raw}, Conf={conf_i:.3f}, BBox=({x1},{y1},{x2},{y2})")
+                        # (전처리 1) 마스크 확보 (원본 로직 유지)
                         if has_masks:
                             mask = r.masks.data[i].detach().cpu().numpy()
                             mask_bin = (mask > 0.5).astype(np.uint8)
@@ -544,6 +605,7 @@ def main(args=None):
                             mask_bin = np.zeros((COLOR_H, COLOR_W), dtype=np.uint8)
                             mask_bin[max(y1,0):min(y2,COLOR_H), max(x1,0):min(x2,COLOR_W)] = 1
 
+                        # (전처리 2) 연결요소 정리 (원본 유지)
                         ys0, xs0 = np.where(mask_bin > 0)
                         cx0, cy0 = (int(xs0.mean()), int(ys0.mean())) if xs0.size>0 else (int((x1+x2)//2), int((y1+y2)//2))
                         mask_bin = connected_components_keep(mask_bin, min_area_px=MIN_AREA_PX,
@@ -551,25 +613,32 @@ def main(args=None):
                         if not mask_bin.any():
                             continue
 
+                        # (전처리 3) HSV 라벨 보정 (원본 유지)
                         label_norm, Hm, Sm, Vm = refine_label_by_hsv_mean(label_raw, mask_bin, hsv_image)
+
+    
                         label = label_norm if label_norm is not None else label_raw
+                        
                         if label not in node.class_order:
+                            #print(f"[WARNING] Refined label '{label}' not in class order list.")
                             continue
                         
+                        # 시각화(원본 유지)
                         overlay = apply_mask_overlay(overlay, mask_bin, color=(0,255,255), alpha=0.35)
                         cv2.rectangle(overlay, (x1,y1), (x2,y2), (0,0,0), 2)
 
+                        # (전처리 4) 평면 추정 및 인라이어 검사 (원본 유지)
                         pts_mask, _, _ = deproject_points_from_mask_pinhole(mask_bin, depth, node.rect_intr, node.depth_scale, stride=PCL_STRIDE)
-                        _, _, _, _, _, plane_model = segment_plane_and_axes(pts_mask)
-                        if plane_model is None:
+                        x_axis, y_axis, z_axis, origin_m, inliers, plane_model = segment_plane_and_axes(pts_mask)
+                        if origin_m is None:
                             continue
 
-                        ASSUMED_DISTANCE_M = np.mean(pts_mask[:, 2]) if pts_mask is not None and pts_mask.shape[0] > 0 else 0.5
+                        ASSUMED_DISTANCE_M = np.mean(inliers[:, 2]) if inliers is not None and inliers.shape[0] > 0 else 0.5
+                        # node.last_plane_depth_m = float(ASSUMED_DISTANCE_M)  # 최근 평면 깊이(카메라 Z) 업데이트
                         plane_model_flat = (0.0, 0.0, 1.0, -ASSUMED_DISTANCE_M)
 
                         plane_inlier_mask = plane_inlier_mask_from_model_pinhole(mask_bin, depth, node.rect_intr, node.depth_scale, plane_model, stride=1)
                         plane_inlier_mask = keep_largest_component(plane_inlier_mask)
-
                         ratio = float(plane_inlier_mask.sum()) / (float(mask_bin.sum()) + 1e-9)
                         if ratio < INLIER_RATIO_TH:
                             continue
@@ -577,33 +646,33 @@ def main(args=None):
                         if plane_inlier_mask.any():
                             plane_accum_mask = np.clip(plane_accum_mask + plane_inlier_mask, 0, 1)
 
-                        origin_m, rect_center_px, z_med, x_axis, y_axis, rect_orig_box_pts, origin_src, z_axis = \
-                            get_pose_from_mask_stable(
-                                plane_inlier_mask, depth, node.rect_intr, node.depth_scale, plane_model
-                            )
-
-                        if origin_m is None:
-                            continue
-                        
+                        # (전처리 5) inner core (원본 유지)
                         inner_core_mask = create_inner_core_mask(plane_inlier_mask, ratio=INNER_CORE_RATIO)
                         if inner_core_mask.any():
                             inner_core_accum_mask = np.clip(inner_core_accum_mask + inner_core_mask, 0, 1)
                             pts_core, _, _ = deproject_points_from_mask_pinhole(inner_core_mask, depth, node.rect_intr, node.depth_scale, stride=PCL_STRIDE)
-                            _, _, z_axis_stable, _, _, _ = segment_plane_and_axes(pts_core)
-                            if z_axis_stable is not None:
-                                z_axis = z_axis_stable
-                                x_axis = x_axis - z_axis * np.dot(x_axis, z_axis)
-                                x_axis /= (np.linalg.norm(x_axis) + 1e-9)
-                                y_axis = np.cross(z_axis, x_axis)
-                        
+                            x_axis_stable, y_axis_stable, z_axis_stable, _, _, _ = segment_plane_and_axes(pts_core)
+                            if x_axis_stable is not None:
+                                x_axis, y_axis, z_axis = x_axis_stable, y_axis_stable, z_axis_stable
+
+                        # (전처리 6) minAreaRect 및 중심/박스 코너 (원본 유지)
+                        refined_origin, rect_center_px, z_med, _, _, rect_orig_box_pts, origin_src, _ = \
+                            refine_center_minarearect(
+                                inner_core_mask, depth, node.rect_intr, node.depth_scale, plane_model
+                            )
+
                         if rect_orig_box_pts is not None:
                             cv2.polylines(overlay, [rect_orig_box_pts], True, (255,255,255), 1, cv2.LINE_AA)
                         if rect_center_px is not None:
                             cv2.circle(overlay, (int(rect_center_px[0]), int(rect_center_px[1])), 3, (0,255,255), -1, cv2.LINE_AA)
 
+                        if refined_origin is not None:
+                            origin_m = refined_origin
+
                         origin_px = project_point_to_pixel_pinhole(origin_m, node.rect_intr)
                         draw_cross(overlay, origin_px, color=(255,255,0), size=5, thickness=2)
 
+                        # (전처리 7) 면적/사이즈 계산 및 컷(원본 유지)
                         area_mm2 = area_mm2_from_rect_on_plane(rect_orig_box_pts, node.rect_intr, plane_model)
                         area_txt = f"area_mm2:{int(round(area_mm2))}"
                         cv2.putText(overlay, area_txt, (x1, max(0, y1 - 24)), FONT, 0.6, (255,255,255), 3, cv2.LINE_AA)
@@ -614,22 +683,27 @@ def main(args=None):
                         size_txt = f"W:{w_mm:.1f}mm  H:{h_mm:.1f}mm"
                         cv2.putText(overlay, size_txt, (x1, max(0, y1 - 8)), FONT, 0.45, (255,255,255), 2, cv2.LINE_AA)
                         cv2.putText(overlay, size_txt, (x1, max(0, y1 - 8)), FONT, 0.45, (0,0,0), 1, cv2.LINE_AA)
-
-                        if not (40 >= w_flat_mm >= 20.0 and h_mm >= 70.0):
+                        print(f"[DEBUG] Processing Detection: Label={label_raw}, Conf={conf_i:.3f}, BBox=({x1},{y1},{x2},{y2}), w_flat_mm={w_flat_mm:.1f} h_mm={h_flat_mm:.1f}")
+                        if not (w_flat_mm >= 20.0 and h_mm >= 65.0):
+                            # (디버깅 시각화 유지)
                             cv2.rectangle(overlay, (x1, y1), (x2, y2), (0, 0, 255), 2)
                             rejection_text = f"REJECTED: w_flat_mm={w_flat_mm:.1f} h_mm={h_mm:.1f}"
                             cv2.putText(overlay, rejection_text, (x1, y2 + 15), FONT, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
                             continue
-
+                        
+                        # 후보 등록(원본 필드 유지)
                         candidates_cls.append(dict(
                             label=(label if label is not None else label_raw),
                             conf=conf_i, box=(x1,y1,x2,y2),
                             origin=origin_m, axes=(x_axis, y_axis, z_axis),
-                            plane_model=plane_model, cx=cx0, cy=cy0,
+                            inliers=inliers, plane_model=plane_model, cx=cx0, cy=cy0,
                             src=origin_src or "-", hsv=(Hm, Sm, Vm),
-                            area_mm2=float(area_mm2)
+                            area_mm2=float(area_mm2),
+                            rect_center_px=(None if rect_center_px is None else (float(rect_center_px[0]), float(rect_center_px[1])))
                         ))
 
+                    # 이 클래스에서 면적 하한 통과만 추려 최종 선택
+                    #cand_sel = [c for c in candidates_cls if area_mm2_of(c) >= AREA_THRESHOLD_MM2]
                     cand_sel = [c for c in candidates_cls]
                     if cand_sel:
                         if mode == 'block1':
@@ -638,88 +712,104 @@ def main(args=None):
                                 if o is None or not np.all(np.isfinite(o)): return float('inf')
                                 return math.hypot(float(o[0]), float(o[1]))
                             chosen = min(cand_sel, key=xy_dist_cam)
-                        else:
-                            chosen = min(cand_sel, key=euclid_dist_ee)
-                        candidates = cand_sel
+                            # if chosen is not None:
+                            #     break
+                        elif mode == 'block2':
+                            chosen = min(cand_sel, key=xy_dist_cam_ee)
+                        # 클래스 하나에서 선택 끝 → 바깥 루프 종료
+                        candidates = cand_sel  # (옵션) 디버깅용 참조
                         break
 
+            # 누적 시각화(원본 유지)
             if plane_accum_mask.any():
                 plane_vis = apply_mask_overlay(plane_vis, plane_accum_mask, color=(0,255,0), alpha=0.6)
             if inner_core_accum_mask.any():
                 plane_vis = apply_mask_overlay(plane_vis, inner_core_accum_mask, color=(0,0,255), alpha=0.8)
 
+            # 이후 chosen 처리(원본 로직 그대로 유지)
             if chosen is not None:
-                x1, y1, _, _ = chosen['box']
                 x_axis, y_axis, z_axis = chosen['axes']
                 origin_m = chosen['origin']
-                label = chosen.get('label', None)   
-                
+                label = chosen.get('label', None)
+
                 if mode == 'block1':
-                    if label == "blue":   node.blue_num  += 1
-                    elif label == "green":  node.green_num += 1
-                    elif label == "pink":   node.pink_num  += 1
-                    elif label == "purple": node.purple_num+= 1
-                    elif label == "red":    node.red_num   += 1
-                    elif label == "yellow": node.yellow_num+= 1
+                    if label == "blue":   
+                        node.blue_num  += 1
+
+                    elif label == "green":  
+                        node.green_num += 1
+
+                    elif label == "pink":   
+                        node.pink_num  += 1
+
+                    elif label == "purple": 
+                        node.purple_num+= 1
+
+                    elif label == "red":    
+                        node.red_num   += 1
+
+                    elif label == "yellow": 
+                        node.yellow_num+= 1
 
                 elif mode == 'block2':
-                    if node.blue_num   >= 6: node.class_order = [c for c in node.class_order if c != "blue"]
-                    if node.green_num  >= 6: node.class_order = [c for c in node.class_order if c != "green"] 
-                    if node.pink_num   >= 6: node.class_order = [c for c in node.class_order if c != "pink"]
-                    if node.purple_num >= 6: node.class_order = [c for c in node.class_order if c != "purple"]
-                    if node.red_num    >= 2: node.class_order = [c for c in node.class_order if c != "red"]
-                    if node.yellow_num >= 5: node.class_order = [c for c in node.class_order if c != "yellow"] 
-                
+                    if node.blue_num >= 6:
+                        node.class_order = [c for c in node.class_order if c != "blue"]
+ 
+                    if node.green_num >= 6:
+                            node.class_order = [c for c in node.class_order if c != "green"] 
+                    
+                    if node.pink_num >= 6:
+                            node.class_order = [c for c in node.class_order if c != "pink"]
+                    
+                    if node.purple_num >= 6:
+                            node.class_order = [c for c in node.class_order if c != "purple"]
+
+                    if node.red_num >= 2:
+                            node.class_order = [c for c in node.class_order if c != "red"]
+                    
+                    if node.yellow_num >= 5:
+                            node.class_order = [c for c in node.class_order if c != "yellow"] 
+                    
+                    print(f"blue: {node.blue_num}, green: {node.green_num}, pink: {node.pink_num}, purple: {node.purple_num}, red: {node.red_num}, yellow: {node.yellow_num}")
+
                 final_px = project_point_to_pixel_pinhole(origin_m, node.rect_intr)
                 draw_cross(overlay, final_px, color=(0,0,255), size=7, thickness=2)
 
-                # --- RPY 계산은 유지(퍼블리시 용), 화면 출력은 "법선 각도"로 변경 ---
                 if all(v is not None for v in [x_axis, y_axis, z_axis]):
                     raw_rot_matrix = np.stack([x_axis, y_axis, z_axis], axis=1)
                     raw_rotation = SciRot.from_matrix(raw_rot_matrix)
                     yaw, pitch, roll = raw_rotation.as_euler('zyx', degrees=True)
 
-                    is_roll_high  = abs(roll)  >= DEAD_ZONE_DEG
-                    is_pitch_high = abs(pitch) >= DEAD_ZONE_DEG
-                    if is_roll_high and is_pitch_high:
-                        if abs(roll) >= abs(pitch): pitch = 0.0
-                        else: roll = 0.0
-                    else:
-                        if not is_pitch_high: pitch = 0.0
-                        if not is_roll_high:  roll  = 0.0
+                    # is_roll_high  = abs(roll)  >= DEAD_ZONE_DEG
+                    # is_pitch_high = abs(pitch) >= DEAD_ZONE_DEG
+                    # if is_roll_high and is_pitch_high:
+                    #     if abs(roll) >= abs(pitch): pitch = 0.0
+                    #     else: roll = 0.0
+                    # else:
+                    #     if not is_pitch_high: pitch = 0.0
+                    #     if not is_roll_high:  roll  = 0.0
 
                     final_rotation = SciRot.from_euler('zyx', [yaw, pitch, roll], degrees=True)
                     final_rot_matrix = final_rotation.as_matrix()
                     final_quat = final_rotation.as_quat()
-                    final_rpy = (roll, pitch, yaw)
+                    final_rpy = [roll, pitch, yaw]
                 else:
                     final_rot_matrix = np.eye(3, dtype=np.float64)
                     final_quat = SciRot.from_matrix(final_rot_matrix).as_quat()
-                    final_rpy = (0.0, 0.0, 0.0)
+                    final_rpy = [0.0, 0.0, 0.0]
 
-                # --- 화면 표시: plane normal vs camera normal 각도(deg) ---
-                # plane normal = z_axis (단위벡터), camera normal = (0,0,1)
-                if z_axis is not None:
-                    cam_normal = np.array([0.0, 0.0, 1.0], dtype=np.float32)
-                    zn = z_axis / (np.linalg.norm(z_axis) + 1e-9)
-                    dot = float(np.clip(np.dot(zn, cam_normal), -1.0, 1.0))
-                    angle_deg = float(np.degrees(np.arccos(dot)))  # 0°: 정면 평면, 90°: 수직 평면
-                    angle_txt = f"degree: {angle_deg:.1f}"
-                    cv2.putText(overlay, angle_txt, (x1, max(0, y1 - 40)), FONT, 0.6, (255,255,255), 3, cv2.LINE_AA)
-                    cv2.putText(overlay, angle_txt, (x1, max(0, y1 - 40)), FONT, 0.6, (255, 0, 0), 1, cv2.LINE_AA)
-
-                print(f"[Chosen] Label={label}, Origin(m)={origin_m}, RollPitchYaw(deg)=({final_rpy[0]:.1f}, {final_rpy[1]:.1f}, {final_rpy[2]:.1f})")
-                
                 origin_mm = origin_m * 1000.0
                 final_matrix = np.eye(4, dtype=np.float64)
                 final_matrix[:3,:3] = final_rot_matrix
                 final_matrix[:3, 3] = origin_mm
+                #print(f"origin_mm: {origin_mm}")
 
                 def quat_delta_deg(q1, q2):
                     if q1 is None or q2 is None: return np.inf
-                    dotq = np.clip(np.abs(float(np.dot(q1, q2))), -1.0, 1.0)
-                    return 2.0 * np.degrees(np.arccos(dotq))
+                    dot = np.clip(np.abs(float(np.dot(q1, q2))), -1.0, 1.0)
+                    return 2.0 * np.degrees(np.arccos(dot))
 
+                # 안정화/쿨다운(원본 유지)
                 cx, cy = chosen['cx'], chosen['cy']
                 center_jump = 0.0 if node.last_center is None else math.hypot(cx-node.last_center[0], cy-node.last_center[1])
                 dtheta = quat_delta_deg(node.last_quat, final_quat)
@@ -734,6 +824,18 @@ def main(args=None):
                 node.last_quat = final_quat
                 node.last_center = (cx, cy)
 
+                if z_axis is not None:
+                    cam_normal = np.array([0.0, 0.0, 1.0], dtype=np.float32)
+                    zn = z_axis / (np.linalg.norm(z_axis) + 1e-9)
+                    dot = float(np.clip(np.dot(zn, cam_normal), -1.0, 1.0))
+                    angle_deg = float(np.degrees(np.arccos(dot))) 
+                    final_rpy[1] = abs(angle_deg) # pitch 각도를 절대값으로 설정
+                #     angle_txt = f"degree: {angle_deg:.1f}"
+                #     cv2.putText(overlay, angle_txt, (x1, max(0, y1 - 40)), FONT, 0.6, (255,255,255), 3, cv2.LINE_AA)
+                #     cv2.putText(overlay, angle_txt, (x1, max(0, y1 - 40)), FONT, 0.6, (255, 0, 0), 1, cv2.LINE_AA)
+                # print(f"[Chosen] Label={label}, Origin(m)={origin_m}, RollPitchYaw(deg)=({final_rpy[0]:.1f}, {final_rpy[1]:.1f}, {final_rpy[2]:.1f})")
+
+                # 퍼블리시(원본 유지)
                 if node.detect_signal != "":
                     msg = Float32MultiArray()
                     rows, cols = 4, 4
@@ -741,17 +843,18 @@ def main(args=None):
                     msg.layout.dim.append(MultiArrayDimension(label='cols', size=cols, stride=1))
                     msg.data = final_matrix.flatten().astype(np.float32).tolist()
                     node.publisher_.publish(msg)
-
                     if node.detect_signal == "block1":
                         print(f"block1_color : {label}")
                     if node.detect_signal == "block2":
                         print(f"block2_color : {label}")
                         print("############################")
-
-                    msg2 = Float32MultiArray()
-                    msg2.data = [final_rpy[0], final_rpy[1], final_rpy[2]]
-                    node.pose_pubisher.publish(msg2)
-                    node.publish_block(label if label is not None else "")
+                    
+                    if node.detect_signal == "block1":
+                        msg2 = Float32MultiArray()
+                        msg2.data = [final_rpy[0], final_rpy[1], final_rpy[2]]
+                        node.pose_pubisher.publish(msg2)
+                        node.publish_block(label if label is not None else "")
+                        node.last_block1_color = (label if label is not None else None)
 
                     node.cooldown = PUBLISH_COOLDOWN_FRAMES
                     node.stable_count = 0
@@ -763,8 +866,52 @@ def main(args=None):
                     cv2.putText(overlay, info1, (max(0, final_px[0]-160), min(COLOR_H-8, final_px[1]+18)), FONT, 0.50, (255,255,255), 3, cv2.LINE_AA)
                     cv2.putText(overlay, info1, (max(0, final_px[0]-160), min(COLOR_H-8, final_px[1]+18)), FONT, 0.50, (0,0,255), 1, cv2.LINE_AA)
 
+            # ==========================
+            # EE 전용 UI 렌더링 (항상 표시)
+            # ==========================
+            try:
+                ee_view = color.copy()
+
+                # (a) EE 오프셋 적용 원점 픽셀 위치 계산: [x_off, y_off, 최근 평면 Z]
+                ee_P = np.array([EE_OFFSET_M[0], EE_OFFSET_M[1], node.last_plane_depth_m], dtype=np.float32)
+                ee_px = project_point_to_pixel_pinhole(ee_P, node.rect_intr)
+                if ee_px is not None:
+                    draw_axes(ee_view, ee_px, length=60, thickness=2)
+                    cv2.putText(ee_view, "EE (0,0)", (ee_px[0]+8, ee_px[1]-8), FONT, 0.5, (255,255,255), 2, cv2.LINE_AA)
+                    cv2.putText(ee_view, "EE (0,0)", (ee_px[0]+8, ee_px[1]-8), FONT, 0.5, (0,0,0), 1, cv2.LINE_AA)
+
+                # (b) 후보들: 파란 점(크게)
+                if candidates:
+                    for c in candidates:
+                        pt = c.get('rect_center_px', None)
+                        if pt is None:
+                            pt = project_point_to_pixel_pinhole(c.get('origin', None), node.rect_intr)
+                        if pt is None:
+                            continue
+                        u, v = int(round(pt[0])), int(round(pt[1]))
+                        cv2.circle(ee_view, (u, v), 9, (255, 0, 0), -1, cv2.LINE_AA)
+
+                # (c) 최종 선택: 빨간 점(더 크게)
+                if chosen is not None:
+                    pt_sel = chosen.get('rect_center_px', None)
+                    if pt_sel is None:
+                        pt_sel = project_point_to_pixel_pinhole(chosen.get('origin', None), node.rect_intr)
+                    if pt_sel is not None:
+                        u, v = int(round(pt_sel[0])), int(round(pt_sel[1]))
+                        cv2.circle(ee_view, (u, v), 11, (0, 0, 255), -1, cv2.LINE_AA)
+
+                cv2.imshow("EE Distance View", ee_view)
+
+            except Exception:
+                pass
+
+            # ==========================
+            # 교체 끝
+            # ==========================
+
             cv2.imshow("Detections (mask+box + centers)", overlay)
             cv2.imshow("Plane (Green) & InnerCore (Red)", plane_vis)
+            # cv2.waitKey(1)
             key = cv2.waitKey(1) & 0xFF
             if key == ord('s'):
                 ts = time.strftime("%Y%m%d_%H%M%S")
@@ -772,6 +919,7 @@ def main(args=None):
                 cv2.imwrite(path, color)
                 print(f"[CAPTURE] {path}")
                 
+
     except KeyboardInterrupt:
         pass
     finally:
@@ -779,6 +927,3 @@ def main(args=None):
         cv2.destroyAllWindows()
         node.destroy_node()
         rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
