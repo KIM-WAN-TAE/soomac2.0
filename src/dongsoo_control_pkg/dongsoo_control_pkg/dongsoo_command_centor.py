@@ -84,23 +84,24 @@ class MainControlNode(Node):
             self.cam_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
     
     # 혹시 몰라 만들어 둔 Gripper Pose 값 읽어오는 callback
-    # # self.grip_mat    
-    # def grip_coor_callback(self, msg : Float32MultiArray):
-    #     with self.data_lock:
-    #         dims = msg.layout.dim
+    # self.grip_mat    
+    def grip_coor_callback(self, msg : Float32MultiArray):
+        with self.data_lock:
+            dims = msg.layout.dim
             
-    #         if len(dims) < 2:
-    #             self.get_logger().warn(' 잘못된 행렬 수신 ')
-    #             return
+            if len(dims) < 2:
+                self.get_logger().warn(' 잘못된 행렬 수신 ')
+                return
 
-    #         rows = dims[0].size
-    #         cols = dims[1].size
+            rows = dims[0].size
+            cols = dims[1].size
             
-    #         if len(msg.data) != rows * cols:
-    #             self.get_logger().warn(f' msg count error : msg_count : {rows*cols}')
-    #             return
+            if len(msg.data) != rows * cols:
+                self.get_logger().warn(f' msg count error : msg_count : {rows*cols}')
+                return
             
-    #         self.grip_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
+            self.grip_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
+            self.grip_coor = self.grip_mat[:3, 3]
     
     def client_done_callback(self, msg : String):
         data = msg.data.strip().lower()
@@ -245,6 +246,9 @@ class MainControlNode(Node):
             self.reset_param()
             
     def module_translator(self, ans):
+        with self.lock:
+            xy_coor = self.grip_coor
+            
         if ans.get('position'):
             cmd_msg = DongSooCommand()
             
@@ -297,53 +301,20 @@ class MainControlNode(Node):
             
             self.cmd_pub.publish(cmd_msg)
         
-        # if ans.get('target_trigger'):
-        #     target_msg = String()
+        if ans.get('move_only_one_axis'):
+            pose = np.array(xy_coor) + np.array(ans['move_only_one_axis'])
+            pose = pose.tolist()
             
-        #     with self.lock:
-        #         target = self.target
-                
-        #     target_msg.data = target
-        #     self.cam_pub.publish(target_msg)
-        #     self.get_logger().info(f"[ZEUS] target_trigger")
-    
-        # if ans.get('target_move'):
-        #     with self.lock:
-        #         if self.base_to_camera_matrix is None:
-        #             self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
-        #             return
-                
-        #         x,y,z = self.tool_p
-        #         yaw = self.tool_yaw
+            cmd_msg = DongSooCommand()
             
-        #     cmd_msg = ZeusMainCommand()
-        #     cmd_msg.frame = 'l7'
-        #     cmd_msg.position = [float(x), float(y), 60.0, -90.0, 0.0, 179.0]
+            cmd_msg.position = pose
+            cmd_msg.look     = ans['look']
+            cmd_msg.time     = ans['time']
+            cmd_msg.wrist    = ans['wrist']
             
-        #     cmd_msg.speed    = ans['speed']
-        #     self.cmd_pub.publish(cmd_msg)
+            self.cmd_pub.publish(cmd_msg)
             
-        # if ans.get('boxbox'):
-        #     with self.lock:
-        #         direction = self.direction
-            
-        #     cmd_msg = ZeusMainCommand()
-        #     cmd_msg.frame = 't'
-        #     cmd_msg.speed    = ans['speed']
-            
-        #     if direction == 'right':
-        #         cmd_msg.position = [-110.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-                
-        #     elif direction == 'left':
-        #         cmd_msg.position = [110.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
-        #     elif direction == 'front':
-        #         cmd_msg.position = [0.0, 110.0, 0.0, 0.0, 0.0, 0.0]
-                
-        #     elif direction == 'back':
-        #         cmd_msg.position = [0.0, -110.0, 0.0, 0.0, 0.0, 0.0]
-                
-        #     self.cmd_pub.publish(cmd_msg)
+            self.get_logger().info(f"[ZEUS] Move to Relative position")
             
 def main(args=None):
     rclpy.init(args=args)
