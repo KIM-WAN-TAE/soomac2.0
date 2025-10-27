@@ -54,6 +54,9 @@ class MainControlNode(Node):
         self.reset_last_pose()
         self.reset_last_pitch()
         
+        self.iam_stupid = 0
+        self.iam_stupid_for_pitch = 0
+        
         start_time = time.time()
         while True:
             if time.time() - start_time > 3.5:
@@ -274,10 +277,12 @@ class MainControlNode(Node):
                 self.get_logger().info(f'PITCH :{last_pitch}')
                 
                 # pitch로 생성되는 각도가 6.0 을 넘어간다면
-                if abs(last_pitch) >= 7.0:
+                if abs(last_pitch) >= 10.0:
                     # 기존보다 2mm 더 하강
                     PITCH_OFFSET = 3.0
                     self.get_logger().info(f'Activate PITCH OFFSET')
+                    self.iam_stupid_for_pitch += 1
+                    print(f" 피치 발생 : {self.iam_stupid_for_pitch}")
                 # pitch로 생성되는 각도가 6.0 을 넘어가지 않는다면
                 else:
                     # 하강 OFFSET 없음
@@ -290,6 +295,8 @@ class MainControlNode(Node):
                     LAST_P = last_pose[0]  # last_pose[0] = P (위치 벡터)
                     pose = [LAST_P[0], LAST_P[1], LAST_P[2] + PICK_Z_OFFSET - (13.0 + PITCH_OFFSET), 0.0, 0.0, 0.0]
                     pose[3:] = current_coor[3:]
+                    self.iam_stupid += 1
+                    print(f" 잘못 본 횟수 : {self.iam_stupid}")
                 
                 # 두 블록을 일치하게 봤다면
                 elif error < 10.0: # 기존 로직 그대로

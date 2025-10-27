@@ -115,7 +115,8 @@ class ZeusServerNode(Node):
                 with self.lock:
                     if frame.lower() == 'l':
                         current = np.array(self.xy_coor)
-                        error = np.linalg.norm(goal_coor - current)
+                        error_vec = angle_diff(goal_coor, current)
+                        error = np.linalg.norm(error_vec)
                         self.get_logger().info(f'Linear error : {error}')
 
                         if int(error) <= self.tol_pos:

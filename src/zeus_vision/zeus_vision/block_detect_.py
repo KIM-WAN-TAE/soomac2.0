@@ -79,6 +79,10 @@ AREA_THRESHOLD_MM2 = 1650.0  # mm^2
 EE_OFFSET_MM = np.array([29.0, 67.0, 0.0], dtype=np.float32)
 EE_OFFSET_M  = EE_OFFSET_MM / 1000.0  # m 단위 변환
 
+# <<< ADD: 좌표 일치 판정 임계값 (카메라 좌표계, m) >>>
+NEAR_SAME_THRESH_XY_M = 0.03   # XY 평면 거리 3 cm
+NEAR_SAME_THRESH_Z_M  = 0.01   # Z 축 높이 차 1 cm
+
 CAP_DIR = os.path.expanduser("/home/pc/soomac_ws/src/zeus_vision/zeus_vision/capture_images")
 os.makedirs(CAP_DIR, exist_ok=True)
 
@@ -205,6 +209,41 @@ def xy_dist_cam_ee(c):
     dx = float(o[0] - EE_OFFSET_M[0])
     dy = float(o[1] - EE_OFFSET_M[1])
     return float(math.hypot(dx, dy))
+
+# <<< ADD: XY+Z 동시 판정 유틸 >>>
+def is_near_xy_and_z(p: np.ndarray, q: np.ndarray,
+                     th_xy: float = NEAR_SAME_THRESH_XY_M,
+                     th_z: float  = NEAR_SAME_THRESH_Z_M) -> bool:
+    """
+    같은 큐브 판정: XY 평면 거리 <= th_xy AND |ΔZ| <= th_z
+    p, q: 카메라 좌표계 3D (m)
+    """
+    if p is None or q is None:
+        return False
+    if not (np.all(np.isfinite(p)) and np.all(np.isfinite(q))):
+        return False
+    dx, dy, dz = float(p[0] - q[0]), float(p[1] - q[1]), float(p[2] - q[2])
+    xy_ok = math.hypot(dx, dy) <= float(th_xy)
+    z_ok  = abs(dz)            <= float(th_z)
+    return xy_ok and z_ok
+
+def is_near_any_xy_and_z(p: np.ndarray, lst: list, label: str = None,
+                         th_xy: float = NEAR_SAME_THRESH_XY_M,
+                         th_z: float  = NEAR_SAME_THRESH_Z_M) -> bool:
+    """
+    p가 lst 내 어떤 점과도 (XY<=th_xy) AND (|ΔZ|<=th_z)를 만족하면 True.
+    label 지정 시 같은 라벨(색상)만 비교.
+    lst 원소 예: {'pos': np.ndarray(shape=(3,)), 'label': str}
+    """
+    if p is None or not lst:
+        return False
+    for item in lst:
+        pos = item.get('pos', None)
+        lab = item.get('label', None)
+        if (label is None) or (lab == label):
+            if is_near_xy_and_z(p, pos, th_xy=th_xy, th_z=th_z):
+                return True
+    return False
 
 # ---------- 평면/좌표계 ----------
 def segment_plane_and_axes(pts):
@@ -479,6 +518,10 @@ class BlockPosePublisher(Node):
 
         self.last_block1_color = None
 
+        # <<< ADD: 좌표 기반 배제 로직 상태 >>>
+        self.last_block1_coord_m = None   # np.ndarray shape=(3,)
+        self.last_block1_label   = None   # str
+        self.avoid_points        = []     # [{'pos': np.ndarray(3,), 'label': str}, ...]
 
     def listener_callback(self, msg):
         self.detect_signal = msg.data
@@ -516,9 +559,9 @@ def main(args=None):
             color = cv2.remap(color_dist, node.map1, node.map2, interpolation=cv2.INTER_LINEAR)
             depth = cv2.remap(depth_dist, node.map1, node.map2, interpolation=cv2.INTER_NEAREST)
             #depth_frame = node.dec_filter.process(depth_frame)
-            # depth_frame = node.spa_filter.process(depth_frame)
-            # depth_frame = node.tmp_filter.process(depth_frame)
-            # depth_frame = node.hole_fill.process(depth_frame)
+            depth_frame = node.spa_filter.process(depth_frame)
+            #depth_frame = node.tmp_filter.process(depth_frame)
+            #depth_frame = node.hole_fill.process(depth_frame)
             depth_dist  = np.asanyarray(depth_frame.get_data())
             
             
@@ -680,11 +723,10 @@ def main(args=None):
 
                         w_mm, h_mm = size_mm_from_rect_on_plane(rect_orig_box_pts, node.rect_intr, plane_model)
                         w_flat_mm, h_flat_mm = size_mm_from_rect_on_plane(rect_orig_box_pts, node.rect_intr, plane_model_flat)
-                        size_txt = f"W:{w_mm:.1f}mm  H:{h_mm:.1f}mm"
-                        cv2.putText(overlay, size_txt, (x1, max(0, y1 - 8)), FONT, 0.45, (255,255,255), 2, cv2.LINE_AA)
-                        cv2.putText(overlay, size_txt, (x1, max(0, y1 - 8)), FONT, 0.45, (0,0,0), 1, cv2.LINE_AA)
-                        print(f"[DEBUG] Processing Detection: Label={label_raw}, Conf={conf_i:.3f}, BBox=({x1},{y1},{x2},{y2}), w_flat_mm={w_flat_mm:.1f} h_mm={h_flat_mm:.1f}")
-                        if not (w_flat_mm >= 20.0 and h_mm >= 65.0):
+
+                
+                        print(f"w_flat_mm={w_flat_mm:.1f} h_mm={h_flat_mm:.1f}")
+                        if not (w_flat_mm >= 20.0 and h_mm >= 70.0):
                             # (디버깅 시각화 유지)
                             cv2.rectangle(overlay, (x1, y1), (x2, y2), (0, 0, 255), 2)
                             rejection_text = f"REJECTED: w_flat_mm={w_flat_mm:.1f} h_mm={h_mm:.1f}"
@@ -704,18 +746,71 @@ def main(args=None):
 
                     # 이 클래스에서 면적 하한 통과만 추려 최종 선택
                     #cand_sel = [c for c in candidates_cls if area_mm2_of(c) >= AREA_THRESHOLD_MM2]
+                    # <<< REPLACE: 후보 선택 로직 (배제 리스트 + XY&Z 동시 판정 + 2·3순위 선택) >>>
+                    # 1) 1차 후보 집합
                     cand_sel = [c for c in candidates_cls]
+
+                    # 2) 영구 배제 리스트(avoid_points) 기반 제거 (같은 라벨 & XY<=3cm & |ΔZ|<=1cm 인 것 제외)
+                    cand_sel = [
+                        c for c in cand_sel
+                        if not is_near_any_xy_and_z(
+                            np.asarray(c.get('origin', None), dtype=np.float32),
+                            node.avoid_points,
+                            label=(c.get('label', None)),
+                            th_xy=NEAR_SAME_THRESH_XY_M,
+                            th_z=NEAR_SAME_THRESH_Z_M
+                        )
+                    ]
+
                     if cand_sel:
                         if mode == 'block1':
+                            # 3) 직전 block1 대상과 "같은 큐브"(XY<=3cm & |ΔZ|<=1cm & 같은 라벨) 후보만 제외 → 2·3순위 허용
+                            def is_same_as_last(c):
+                                if (node.last_block1_coord_m is None) or (node.last_block1_label is None):
+                                    return False
+                                cur_o   = c.get('origin', None)
+                                cur_lab = c.get('label', None)
+                                if (cur_o is None) or (cur_lab is None):
+                                    return False
+                                if cur_lab != node.last_block1_label:
+                                    return False
+                                return is_near_xy_and_z(
+                                    np.asarray(cur_o, dtype=np.float32),
+                                    node.last_block1_coord_m,
+                                    th_xy=NEAR_SAME_THRESH_XY_M,
+                                    th_z=NEAR_SAME_THRESH_Z_M
+                                )
+
+                            cand_sel2 = [c for c in cand_sel if not is_same_as_last(c)]
+
+                            # 4) 모두 제외되면(= 이 클래스에서 선택 불가) → best를 영구 배제 리스트에 등록하고 다음 클래스로 이동
+                            if not cand_sel2:
+                                def xy_dist_cam_tmp(c):
+                                    o = c.get('origin', None)
+                                    if o is None or not np.all(np.isfinite(o)): return float('inf')
+                                    return math.hypot(float(o[0]), float(o[1]))
+                                best_tmp = min(cand_sel, key=xy_dist_cam_tmp)
+                                cur_o    = np.asarray(best_tmp.get('origin', None), dtype=np.float32)
+                                cur_lab  = best_tmp.get('label', None)
+                                if (cur_o is not None) and (cur_lab is not None):
+                                    if not is_near_any_xy_and_z(cur_o, node.avoid_points,
+                                                                label=cur_lab,
+                                                                th_xy=NEAR_SAME_THRESH_XY_M,
+                                                                th_z=NEAR_SAME_THRESH_Z_M):
+                                        node.avoid_points.append({'pos': cur_o.copy(), 'label': cur_lab})
+                                continue  # 이 클래스 스킵 → 다음 우선순위 클래스
+
+                            # 5) 후보가 남으면(= 2번째, 3번째 …) 기존 기준으로 최단 XY 거리 선택
                             def xy_dist_cam(c):
                                 o = c.get('origin', None)
                                 if o is None or not np.all(np.isfinite(o)): return float('inf')
                                 return math.hypot(float(o[0]), float(o[1]))
-                            chosen = min(cand_sel, key=xy_dist_cam)
-                            # if chosen is not None:
-                            #     break
+                            chosen = min(cand_sel2, key=xy_dist_cam)
+
                         elif mode == 'block2':
+                            # block2는 EE 기준 최소 거리 유지
                             chosen = min(cand_sel, key=xy_dist_cam_ee)
+
                         # 클래스 하나에서 선택 끝 → 바깥 루프 종료
                         candidates = cand_sel  # (옵션) 디버깅용 참조
                         break
@@ -855,6 +950,9 @@ def main(args=None):
                         node.pose_pubisher.publish(msg2)
                         node.publish_block(label if label is not None else "")
                         node.last_block1_color = (label if label is not None else None)
+                        # <<< ADD: block1 발행 후 마지막 좌표/라벨 갱신 >>>
+                        node.last_block1_coord_m = (origin_m.copy() if (origin_m is not None) else None)
+                        node.last_block1_label   = (label if label is not None else None)
 
                     node.cooldown = PUBLISH_COOLDOWN_FRAMES
                     node.stable_count = 0
