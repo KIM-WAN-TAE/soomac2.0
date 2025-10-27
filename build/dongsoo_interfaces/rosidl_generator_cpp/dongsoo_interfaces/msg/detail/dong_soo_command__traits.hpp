@@ -25,6 +25,13 @@ inline void to_flow_style_yaml(
   std::ostream & out)
 {
   out << "{";
+  // member: frame
+  {
+    out << "frame: ";
+    rosidl_generator_traits::value_to_yaml(msg.frame, out);
+    out << ", ";
+  }
+
   // member: position
   {
     if (msg.position.size() == 0) {
@@ -69,6 +76,16 @@ inline void to_block_style_yaml(
   const DongSooCommand & msg,
   std::ostream & out, size_t indentation = 0)
 {
+  // member: frame
+  {
+    if (indentation > 0) {
+      out << std::string(indentation, ' ');
+    }
+    out << "frame: ";
+    rosidl_generator_traits::value_to_yaml(msg.frame, out);
+    out << "\n";
+  }
+
   // member: position
   {
     if (indentation > 0) {

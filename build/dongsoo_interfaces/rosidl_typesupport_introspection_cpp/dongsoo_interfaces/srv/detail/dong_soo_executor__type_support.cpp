@@ -40,20 +40,20 @@ void DongSooExecutor_Request_fini_function(void * message_memory)
 size_t size_function__DongSooExecutor_Request__position(const void * untyped_member)
 {
   (void)untyped_member;
-  return 3;
+  return 4;
 }
 
 const void * get_const_function__DongSooExecutor_Request__position(const void * untyped_member, size_t index)
 {
   const auto & member =
-    *reinterpret_cast<const std::array<float, 3> *>(untyped_member);
+    *reinterpret_cast<const std::array<float, 4> *>(untyped_member);
   return &member[index];
 }
 
 void * get_function__DongSooExecutor_Request__position(void * untyped_member, size_t index)
 {
   auto & member =
-    *reinterpret_cast<std::array<float, 3> *>(untyped_member);
+    *reinterpret_cast<std::array<float, 4> *>(untyped_member);
   return &member[index];
 }
 
@@ -75,14 +75,31 @@ void assign_function__DongSooExecutor_Request__position(
   item = value;
 }
 
-static const ::rosidl_typesupport_introspection_cpp::MessageMember DongSooExecutor_Request_message_member_array[4] = {
+static const ::rosidl_typesupport_introspection_cpp::MessageMember DongSooExecutor_Request_message_member_array[5] = {
+  {
+    "frame",  // name
+    ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING,  // type
+    0,  // upper bound of string
+    nullptr,  // members of sub message
+    false,  // is array
+    0,  // array size
+    false,  // is upper bound
+    offsetof(dongsoo_interfaces::srv::DongSooExecutor_Request, frame),  // bytes offset in struct
+    nullptr,  // default value
+    nullptr,  // size() function pointer
+    nullptr,  // get_const(index) function pointer
+    nullptr,  // get(index) function pointer
+    nullptr,  // fetch(index, &value) function pointer
+    nullptr,  // assign(index, value) function pointer
+    nullptr  // resize(index) function pointer
+  },
   {
     "position",  // name
     ::rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT,  // type
     0,  // upper bound of string
     nullptr,  // members of sub message
     true,  // is array
-    3,  // array size
+    4,  // array size
     false,  // is upper bound
     offsetof(dongsoo_interfaces::srv::DongSooExecutor_Request, position),  // bytes offset in struct
     nullptr,  // default value
@@ -149,7 +166,7 @@ static const ::rosidl_typesupport_introspection_cpp::MessageMember DongSooExecut
 static const ::rosidl_typesupport_introspection_cpp::MessageMembers DongSooExecutor_Request_message_members = {
   "dongsoo_interfaces::srv",  // message namespace
   "DongSooExecutor_Request",  // message name
-  4,  // number of fields
+  5,  // number of fields
   sizeof(dongsoo_interfaces::srv::DongSooExecutor_Request),
   DongSooExecutor_Request_message_member_array,  // message members
   DongSooExecutor_Request_init_function,  // function to initialize message memory (memory has to be allocated)

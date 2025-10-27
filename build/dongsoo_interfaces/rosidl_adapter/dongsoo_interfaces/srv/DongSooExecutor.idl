@@ -5,11 +5,13 @@
 
 module dongsoo_interfaces {
   module srv {
-    typedef float float__3[3];
+    typedef float float__4[4];
     @verbatim (language="comment", text=
       "dongsoo_interfaces/srv/DongSooExecutor.srv")
     struct DongSooExecutor_Request {
-      float__3 position;
+      string frame;
+
+      float__4 position;
 
       string look;
 

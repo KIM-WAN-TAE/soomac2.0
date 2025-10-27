@@ -1,5 +1,6 @@
 # dongsoo_interfaces/srv/DongSooExecutor.srv
-float32[3] position
+string frame
+float32[4] position
 string look
 float32 time
 float32 wrist

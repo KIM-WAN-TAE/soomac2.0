@@ -32,6 +32,8 @@ cdr_serialize(
   const dongsoo_interfaces::msg::DongSooCommand & ros_message,
   eprosima::fastcdr::Cdr & cdr)
 {
+  // Member: frame
+  cdr << ros_message.frame;
   // Member: position
   {
     cdr << ros_message.position;
@@ -51,6 +53,9 @@ cdr_deserialize(
   eprosima::fastcdr::Cdr & cdr,
   dongsoo_interfaces::msg::DongSooCommand & ros_message)
 {
+  // Member: frame
+  cdr >> ros_message.frame;
+
   // Member: position
   {
     cdr >> ros_message.position;
@@ -66,7 +71,7 @@ cdr_deserialize(
   cdr >> ros_message.wrist;
 
   return true;
-}
+}  // NOLINT(readability/fn_size)
 
 size_t
 ROSIDL_TYPESUPPORT_FASTRTPS_CPP_PUBLIC_dongsoo_interfaces
@@ -81,9 +86,13 @@ get_serialized_size(
   (void)padding;
   (void)wchar_size;
 
+  // Member: frame
+  current_alignment += padding +
+    eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+    (ros_message.frame.size() + 1);
   // Member: position
   {
-    size_t array_size = 3;
+    size_t array_size = 4;
     size_t item_size = sizeof(ros_message.position[0]);
     current_alignment += array_size * item_size +
       eprosima::fastcdr::Cdr::alignment(current_alignment, item_size);
@@ -128,9 +137,22 @@ max_serialized_size_DongSooCommand(
   is_plain = true;
 
 
+  // Member: frame
+  {
+    size_t array_size = 1;
+
+    full_bounded = false;
+    is_plain = false;
+    for (size_t index = 0; index < array_size; ++index) {
+      current_alignment += padding +
+        eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+        1;
+    }
+  }
+
   // Member: position
   {
-    size_t array_size = 3;
+    size_t array_size = 4;
 
     last_member_size = array_size * sizeof(uint32_t);
     current_alignment += array_size * sizeof(uint32_t) +

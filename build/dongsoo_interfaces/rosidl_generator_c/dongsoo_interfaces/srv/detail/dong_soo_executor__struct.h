@@ -18,13 +18,15 @@ extern "C"
 // Constants defined in the message
 
 // Include directives for member types
+// Member 'frame'
 // Member 'look'
 #include "rosidl_runtime_c/string.h"
 
 /// Struct defined in srv/DongSooExecutor in the package dongsoo_interfaces.
 typedef struct dongsoo_interfaces__srv__DongSooExecutor_Request
 {
-  float position[3];
+  rosidl_runtime_c__String frame;
+  float position[4];
   rosidl_runtime_c__String look;
   float time;
   float wrist;

@@ -18,6 +18,7 @@ extern "C"
 // Constants defined in the message
 
 // Include directives for member types
+// Member 'frame'
 // Member 'look'
 #include "rosidl_runtime_c/string.h"
 
@@ -27,7 +28,8 @@ extern "C"
  */
 typedef struct dongsoo_interfaces__msg__DongSooCommand
 {
-  float position[3];
+  rosidl_runtime_c__String frame;
+  float position[4];
   rosidl_runtime_c__String look;
   float time;
   float wrist;

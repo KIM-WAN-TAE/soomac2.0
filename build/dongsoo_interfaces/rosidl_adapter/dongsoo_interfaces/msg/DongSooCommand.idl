@@ -5,11 +5,13 @@
 
 module dongsoo_interfaces {
   module msg {
-    typedef float float__3[3];
+    typedef float float__4[4];
     @verbatim (language="comment", text=
       "dongsoo_interfaces/msg/DongSooCommand.msg")
     struct DongSooCommand {
-      float__3 position;
+      string frame;
+
+      float__4 position;
 
       string look;
 

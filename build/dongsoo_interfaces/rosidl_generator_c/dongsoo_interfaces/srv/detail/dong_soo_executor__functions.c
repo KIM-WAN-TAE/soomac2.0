@@ -11,6 +11,7 @@
 #include "rcutils/allocator.h"
 
 // Include directives for member types
+// Member `frame`
 // Member `look`
 #include "rosidl_runtime_c/string_functions.h"
 
@@ -18,6 +19,11 @@ bool
 dongsoo_interfaces__srv__DongSooExecutor_Request__init(dongsoo_interfaces__srv__DongSooExecutor_Request * msg)
 {
   if (!msg) {
+    return false;
+  }
+  // frame
+  if (!rosidl_runtime_c__String__init(&msg->frame)) {
+    dongsoo_interfaces__srv__DongSooExecutor_Request__fini(msg);
     return false;
   }
   // position
@@ -37,6 +43,8 @@ dongsoo_interfaces__srv__DongSooExecutor_Request__fini(dongsoo_interfaces__srv__
   if (!msg) {
     return;
   }
+  // frame
+  rosidl_runtime_c__String__fini(&msg->frame);
   // position
   // look
   rosidl_runtime_c__String__fini(&msg->look);
@@ -50,8 +58,14 @@ dongsoo_interfaces__srv__DongSooExecutor_Request__are_equal(const dongsoo_interf
   if (!lhs || !rhs) {
     return false;
   }
+  // frame
+  if (!rosidl_runtime_c__String__are_equal(
+      &(lhs->frame), &(rhs->frame)))
+  {
+    return false;
+  }
   // position
-  for (size_t i = 0; i < 3; ++i) {
+  for (size_t i = 0; i < 4; ++i) {
     if (lhs->position[i] != rhs->position[i]) {
       return false;
     }
@@ -81,8 +95,14 @@ dongsoo_interfaces__srv__DongSooExecutor_Request__copy(
   if (!input || !output) {
     return false;
   }
+  // frame
+  if (!rosidl_runtime_c__String__copy(
+      &(input->frame), &(output->frame)))
+  {
+    return false;
+  }
   // position
-  for (size_t i = 0; i < 3; ++i) {
+  for (size_t i = 0; i < 4; ++i) {
     output->position[i] = input->position[i];
   }
   // look

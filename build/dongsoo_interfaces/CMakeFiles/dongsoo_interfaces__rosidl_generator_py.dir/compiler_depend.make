@@ -253,8 +253,8 @@ CMakeFiles/dongsoo_interfaces__rosidl_generator_py.dir/rosidl_generator_py/dongs
   /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/primitives_sequence.h \
   rosidl_generator_c/dongsoo_interfaces/msg/detail/dong_soo_command__functions.h \
   rosidl_generator_c/dongsoo_interfaces/msg/rosidl_generator_c__visibility_control.h \
-  /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/primitives_sequence_functions.h \
-  /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/string_functions.h
+  /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/string_functions.h \
+  /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/primitives_sequence_functions.h
 
 CMakeFiles/dongsoo_interfaces__rosidl_generator_py.dir/rosidl_generator_py/dongsoo_interfaces/srv/_dong_soo_executor_s.c.o: rosidl_generator_py/dongsoo_interfaces/srv/_dong_soo_executor_s.c \
   /usr/include/stdc-predef.h \
@@ -508,8 +508,8 @@ CMakeFiles/dongsoo_interfaces__rosidl_generator_py.dir/rosidl_generator_py/dongs
   /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/primitives_sequence.h \
   rosidl_generator_c/dongsoo_interfaces/srv/detail/dong_soo_executor__functions.h \
   rosidl_generator_c/dongsoo_interfaces/msg/rosidl_generator_c__visibility_control.h \
-  /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/primitives_sequence_functions.h \
-  /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/string_functions.h
+  /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/string_functions.h \
+  /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/primitives_sequence_functions.h
 
 
 rosidl_generator_c/dongsoo_interfaces/srv/detail/dong_soo_executor__functions.h:

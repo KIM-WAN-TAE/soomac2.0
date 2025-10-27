@@ -16,11 +16,11 @@
 #include "dongsoo_interfaces/msg/detail/dong_soo_command__struct.h"
 #include "dongsoo_interfaces/msg/detail/dong_soo_command__functions.h"
 
-#include "rosidl_runtime_c/primitives_sequence.h"
-#include "rosidl_runtime_c/primitives_sequence_functions.h"
-
 #include "rosidl_runtime_c/string.h"
 #include "rosidl_runtime_c/string_functions.h"
+
+#include "rosidl_runtime_c/primitives_sequence.h"
+#include "rosidl_runtime_c/primitives_sequence_functions.h"
 
 
 ROSIDL_GENERATOR_C_EXPORT
@@ -56,6 +56,21 @@ bool dongsoo_interfaces__msg__dong_soo_command__convert_from_py(PyObject * _pyms
     assert(strncmp("dongsoo_interfaces.msg._dong_soo_command.DongSooCommand", full_classname_dest, 55) == 0);
   }
   dongsoo_interfaces__msg__DongSooCommand * ros_message = _ros_message;
+  {  // frame
+    PyObject * field = PyObject_GetAttrString(_pymsg, "frame");
+    if (!field) {
+      return false;
+    }
+    assert(PyUnicode_Check(field));
+    PyObject * encoded_field = PyUnicode_AsUTF8String(field);
+    if (!encoded_field) {
+      Py_DECREF(field);
+      return false;
+    }
+    rosidl_runtime_c__String__assign(&ros_message->frame, PyBytes_AS_STRING(encoded_field));
+    Py_DECREF(encoded_field);
+    Py_DECREF(field);
+  }
   {  // position
     PyObject * field = PyObject_GetAttrString(_pymsg, "position");
     if (!field) {
@@ -70,7 +85,7 @@ bool dongsoo_interfaces__msg__dong_soo_command__convert_from_py(PyObject * _pyms
       Py_INCREF(seq_field);
       assert(PyArray_NDIM(seq_field) == 1);
       assert(PyArray_TYPE(seq_field) == NPY_FLOAT32);
-      Py_ssize_t size = 3;
+      Py_ssize_t size = 4;
       float * dest = ros_message->position;
       for (Py_ssize_t i = 0; i < size; ++i) {
         float tmp = *(npy_float32 *)PyArray_GETPTR1(seq_field, i);
@@ -135,6 +150,23 @@ PyObject * dongsoo_interfaces__msg__dong_soo_command__convert_to_py(void * raw_r
     }
   }
   dongsoo_interfaces__msg__DongSooCommand * ros_message = (dongsoo_interfaces__msg__DongSooCommand *)raw_ros_message;
+  {  // frame
+    PyObject * field = NULL;
+    field = PyUnicode_DecodeUTF8(
+      ros_message->frame.data,
+      strlen(ros_message->frame.data),
+      "replace");
+    if (!field) {
+      return NULL;
+    }
+    {
+      int rc = PyObject_SetAttrString(_pymessage, "frame", field);
+      Py_DECREF(field);
+      if (rc) {
+        return NULL;
+      }
+    }
+  }
   {  // position
     PyObject * field = NULL;
     field = PyObject_GetAttrString(_pymessage, "position");
@@ -150,7 +182,7 @@ PyObject * dongsoo_interfaces__msg__dong_soo_command__convert_to_py(void * raw_r
     assert(sizeof(npy_float32) == sizeof(float));
     npy_float32 * dst = (npy_float32 *)PyArray_GETPTR1(seq_field, 0);
     float * src = &(ros_message->position[0]);
-    memcpy(dst, src, 3 * sizeof(float));
+    memcpy(dst, src, 4 * sizeof(float));
     Py_DECREF(field);
   }
   {  // look

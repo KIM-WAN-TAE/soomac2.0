@@ -72,13 +72,29 @@ private:
 class Init_DongSooCommand_position
 {
 public:
-  Init_DongSooCommand_position()
-  : msg_(::rosidl_runtime_cpp::MessageInitialization::SKIP)
+  explicit Init_DongSooCommand_position(::dongsoo_interfaces::msg::DongSooCommand & msg)
+  : msg_(msg)
   {}
   Init_DongSooCommand_look position(::dongsoo_interfaces::msg::DongSooCommand::_position_type arg)
   {
     msg_.position = std::move(arg);
     return Init_DongSooCommand_look(msg_);
+  }
+
+private:
+  ::dongsoo_interfaces::msg::DongSooCommand msg_;
+};
+
+class Init_DongSooCommand_frame
+{
+public:
+  Init_DongSooCommand_frame()
+  : msg_(::rosidl_runtime_cpp::MessageInitialization::SKIP)
+  {}
+  Init_DongSooCommand_position frame(::dongsoo_interfaces::msg::DongSooCommand::_frame_type arg)
+  {
+    msg_.frame = std::move(arg);
+    return Init_DongSooCommand_position(msg_);
   }
 
 private:
@@ -96,7 +112,7 @@ template<>
 inline
 auto build<::dongsoo_interfaces::msg::DongSooCommand>()
 {
-  return dongsoo_interfaces::msg::builder::Init_DongSooCommand_position();
+  return dongsoo_interfaces::msg::builder::Init_DongSooCommand_frame();
 }
 
 }  // namespace dongsoo_interfaces

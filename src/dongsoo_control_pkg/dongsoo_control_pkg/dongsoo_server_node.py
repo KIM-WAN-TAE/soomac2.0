@@ -189,57 +189,118 @@ class DongsooServer(Node):
                 joint_start = self.present_j
                 start_point = self.present_position
             
+            frame     = req.frame.lower()
             end_point = req.position
             print(f'end : {end_point}')
             end_look  = req.look
             work_time = req.time
             wrist     = req.wrist
+
+            # Cartesian Coordinate
+            if frame == 'l':
+                # Cartesian mode는 position의 앞 3개(xyz)만 사용
+                xyz_point = end_point[:3]
+
+                if end_look == 'down':
+                    q_result = get_ik_result(start_point, xyz_point, mode='down', w_ori=0.2)
+                elif end_look == 'straight':
+                    q_result = get_ik_result(start_point, xyz_point, mode='straight', w_ori=0.2)
+                else:
+                    self.get_logger().warn('[AIOT] 잘못된 방향 입력 ')
+                    response.success = False
+                    return
+                
+                q_end_deg = [np.degrees(q) for q in q_result['q_end']]
+                joint_start_deg = joint_start
+
+                print(' ')
+                for i, deg in enumerate(q_end_deg):
+                    self.get_logger().info(f'[AIOT] [Q_list_{i+1}] : {deg:7.2f}°')
+
+                joint_velocities = calculate_joint_velocities(joint_start_deg, q_end_deg, work_time,
+                                                            motor4_multiplier=self.motor4_speed_multiplier)
+                self.get_logger().info(f'[AIOT] Joint Velocities: {joint_velocities}')
+
+                if abs(wrist - wrist_start) > 1.0:
+                    wrist_target = wrist
+                    self.get_logger().info(f'[AIOT] Wrist : {wrist_start:7.2f}° -> {wrist_target:7.2f}° (절대 각도 목표)')
+                else:
+                    wrist_target = wrist_start
+                    self.get_logger().info(f'[AIOT] Wrist : {wrist_start:7.2f}° (현재 위치 유지)')
+
+                vel_msg = Float32MultiArray()
+                vel_msg.data = [float(v) for v in joint_velocities]
+                self.motor_veloticy.publish(vel_msg)
+
+                time.sleep(0.1)
+
+                q_msg = Float32MultiArray()
+                q_msg.data = q_end_deg
+                self.motor_command_pub.publish(q_msg)
+
+                w_msg = Float32()
+                w_msg.data = float(wrist_target)
+                self.wrist_pub.publish(w_msg)
+
+                time.sleep(work_time + 0.5)
+
+                response.success = True
             
-            if end_look == 'down':
-                q_result = get_ik_result(start_point, end_point, mode='down', w_ori=0.2)
-            elif end_look == 'straight':
-                q_result = get_ik_result(start_point, end_point, mode='straight', w_ori=0.2)
+            # Joint Coordinate
+            elif frame == 'j':
+                # position: [j1_deg, j2_deg, j3_deg, j4_deg] 형태로 입력 받음
+                if len(end_point) < 4:
+                    self.get_logger().error('[AIOT] Joint 좌표계는 4개의 각도 필요 (j1, j2, j3, j4)')
+                    response.success = False
+                    return response
+
+                # 명시적으로 float로 변환 (ROS2 메시지 타입 → Python float)
+                q_end_deg = [float(q) for q in end_point[:4]]
+                joint_start_deg = joint_start    # 현재 각도
+
+                print(' ')
+                self.get_logger().info('[AIOT] === Joint Coordinate Mode ===')
+                for i, (start, end) in enumerate(zip(joint_start_deg, q_end_deg)):
+                    self.get_logger().info(f'[AIOT] [Motor_{i+1}] : {start:7.2f}° -> {end:7.2f}°')
+
+                # 각 모터의 속도 계산 (Cartesian과 동일한 방식)
+                joint_velocities = calculate_joint_velocities(joint_start_deg, q_end_deg, work_time,
+                                                            motor4_multiplier=self.motor4_speed_multiplier)
+                self.get_logger().info(f'[AIOT] Joint Velocities: {joint_velocities}')
+
+                # Wrist 처리 (Cartesian과 동일)
+                if abs(wrist - wrist_start) > 1.0:
+                    wrist_target = wrist
+                    self.get_logger().info(f'[AIOT] Wrist : {wrist_start:7.2f}° -> {wrist_target:7.2f}° (절대 각도 목표)')
+                else:
+                    wrist_target = wrist_start
+                    self.get_logger().info(f'[AIOT] Wrist : {wrist_start:7.2f}° (현재 위치 유지)')
+
+                # 속도 publish
+                vel_msg = Float32MultiArray()
+                vel_msg.data = [float(v) for v in joint_velocities]
+                self.motor_veloticy.publish(vel_msg)
+
+                time.sleep(0.1)
+
+                # 목표 각도 publish
+                q_msg = Float32MultiArray()
+                q_msg.data = q_end_deg
+                self.motor_command_pub.publish(q_msg)
+
+                # Wrist publish
+                w_msg = Float32()
+                w_msg.data = float(wrist_target)
+                self.wrist_pub.publish(w_msg)
+
+                time.sleep(work_time + 0.5)
+
+                response.success = True
+
             else:
-                self.get_logger().warn('[AIOT] 잘못된 방향 입력 ')
+                self.get_logger().error(f'[AIOT] 잘못된 frame 입력: {frame} (l: Cartesian, j: Joint)')
                 response.success = False
-                return
-            
-            q_end_deg = [np.degrees(q) for q in q_result['q_end']]
-            joint_start_deg = joint_start
 
-            print(' ')
-            for i, deg in enumerate(q_end_deg):
-                self.get_logger().info(f'[AIOT] [Q_list_{i+1}] : {deg:7.2f}°')
-
-            joint_velocities = calculate_joint_velocities(joint_start_deg, q_end_deg, work_time,
-                                                          motor4_multiplier=self.motor4_speed_multiplier)
-            self.get_logger().info(f'[AIOT] Joint Velocities: {joint_velocities}')
-
-            if abs(wrist - wrist_start) > 1.0:
-                wrist_target = wrist
-                self.get_logger().info(f'[AIOT] Wrist : {wrist_start:7.2f}° -> {wrist_target:7.2f}° (절대 각도 목표)')
-            else:
-                wrist_target = wrist_start
-                self.get_logger().info(f'[AIOT] Wrist : {wrist_start:7.2f}° (현재 위치 유지)')
-
-            vel_msg = Float32MultiArray()
-            vel_msg.data = [float(v) for v in joint_velocities]
-            self.motor_veloticy.publish(vel_msg)
-
-            time.sleep(0.1)
-
-            q_msg = Float32MultiArray()
-            q_msg.data = q_end_deg
-            self.motor_command_pub.publish(q_msg)
-
-            w_msg = Float32()
-            w_msg.data = float(wrist_target)
-            self.wrist_pub.publish(w_msg)
-
-            time.sleep(work_time + 0.5)
-
-            response.success = True
-            
         except Exception as e:
             self.get_logger().error(f'[AIOT] Planning or Ik Fail : {e}')
             response.success = False

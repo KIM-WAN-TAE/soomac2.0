@@ -38,7 +38,8 @@ struct DongSooCommand_
     if (rosidl_runtime_cpp::MessageInitialization::ALL == _init ||
       rosidl_runtime_cpp::MessageInitialization::ZERO == _init)
     {
-      std::fill<typename std::array<float, 3>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
+      this->frame = "";
+      std::fill<typename std::array<float, 4>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
       this->look = "";
       this->time = 0.0f;
       this->wrist = 0.0f;
@@ -46,13 +47,15 @@ struct DongSooCommand_
   }
 
   explicit DongSooCommand_(const ContainerAllocator & _alloc, rosidl_runtime_cpp::MessageInitialization _init = rosidl_runtime_cpp::MessageInitialization::ALL)
-  : position(_alloc),
+  : frame(_alloc),
+    position(_alloc),
     look(_alloc)
   {
     if (rosidl_runtime_cpp::MessageInitialization::ALL == _init ||
       rosidl_runtime_cpp::MessageInitialization::ZERO == _init)
     {
-      std::fill<typename std::array<float, 3>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
+      this->frame = "";
+      std::fill<typename std::array<float, 4>::iterator, float>(this->position.begin(), this->position.end(), 0.0f);
       this->look = "";
       this->time = 0.0f;
       this->wrist = 0.0f;
@@ -60,8 +63,11 @@ struct DongSooCommand_
   }
 
   // field types and members
+  using _frame_type =
+    std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>>;
+  _frame_type frame;
   using _position_type =
-    std::array<float, 3>;
+    std::array<float, 4>;
   _position_type position;
   using _look_type =
     std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>>;
@@ -74,8 +80,14 @@ struct DongSooCommand_
   _wrist_type wrist;
 
   // setters for named parameter idiom
+  Type & set__frame(
+    const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>> & _arg)
+  {
+    this->frame = _arg;
+    return *this;
+  }
   Type & set__position(
-    const std::array<float, 3> & _arg)
+    const std::array<float, 4> & _arg)
   {
     this->position = _arg;
     return *this;
@@ -141,6 +153,9 @@ struct DongSooCommand_
   // comparison operators
   bool operator==(const DongSooCommand_ & other) const
   {
+    if (this->frame != other.frame) {
+      return false;
+    }
     if (this->position != other.position) {
       return false;
     }

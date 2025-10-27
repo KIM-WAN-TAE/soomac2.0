@@ -72,13 +72,29 @@ private:
 class Init_DongSooExecutor_Request_position
 {
 public:
-  Init_DongSooExecutor_Request_position()
-  : msg_(::rosidl_runtime_cpp::MessageInitialization::SKIP)
+  explicit Init_DongSooExecutor_Request_position(::dongsoo_interfaces::srv::DongSooExecutor_Request & msg)
+  : msg_(msg)
   {}
   Init_DongSooExecutor_Request_look position(::dongsoo_interfaces::srv::DongSooExecutor_Request::_position_type arg)
   {
     msg_.position = std::move(arg);
     return Init_DongSooExecutor_Request_look(msg_);
+  }
+
+private:
+  ::dongsoo_interfaces::srv::DongSooExecutor_Request msg_;
+};
+
+class Init_DongSooExecutor_Request_frame
+{
+public:
+  Init_DongSooExecutor_Request_frame()
+  : msg_(::rosidl_runtime_cpp::MessageInitialization::SKIP)
+  {}
+  Init_DongSooExecutor_Request_position frame(::dongsoo_interfaces::srv::DongSooExecutor_Request::_frame_type arg)
+  {
+    msg_.frame = std::move(arg);
+    return Init_DongSooExecutor_Request_position(msg_);
   }
 
 private:
@@ -96,7 +112,7 @@ template<>
 inline
 auto build<::dongsoo_interfaces::srv::DongSooExecutor_Request>()
 {
-  return dongsoo_interfaces::srv::builder::Init_DongSooExecutor_Request_position();
+  return dongsoo_interfaces::srv::builder::Init_DongSooExecutor_Request_frame();
 }
 
 }  // namespace dongsoo_interfaces

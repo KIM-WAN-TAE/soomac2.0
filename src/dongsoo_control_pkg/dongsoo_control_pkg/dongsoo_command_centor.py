@@ -84,24 +84,23 @@ class MainControlNode(Node):
             self.cam_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
     
     # 혹시 몰라 만들어 둔 Gripper Pose 값 읽어오는 callback
-    # self.grip_mat    
-    def grip_coor_callback(self, msg : Float32MultiArray):
-        with self.data_lock:
-            dims = msg.layout.dim
+    # # self.grip_mat    
+    # def grip_coor_callback(self, msg : Float32MultiArray):
+    #     with self.data_lock:
+    #         dims = msg.layout.dim
             
-            if len(dims) < 2:
-                self.get_logger().warn(' 잘못된 행렬 수신 ')
-                return
+    #         if len(dims) < 2:
+    #             self.get_logger().warn(' 잘못된 행렬 수신 ')
+    #             return
 
-            rows = dims[0].size
-            cols = dims[1].size
+    #         rows = dims[0].size
+    #         cols = dims[1].size
             
-            if len(msg.data) != rows * cols:
-                self.get_logger().warn(f' msg count error : msg_count : {rows*cols}')
-                return
+    #         if len(msg.data) != rows * cols:
+    #             self.get_logger().warn(f' msg count error : msg_count : {rows*cols}')
+    #             return
             
-            self.grip_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
-            self.grip_coor = self.grip_mat[:3, 3]
+    #         self.grip_mat = np.asarray(msg.data, dtype=np.float32).reshape(rows, cols)
     
     def client_done_callback(self, msg : String):
         data = msg.data.strip().lower()
@@ -184,8 +183,17 @@ class MainControlNode(Node):
                 self.next_step = None
                     
     def create_handler(self, mode, tool):
-        if mode == 'TEST':
-            return Test()
+        if mode == 'DELIVER':
+            return Deliver()
+        
+        elif mode == 'BOX':
+            return Box()
+        
+        elif mode == 'START':
+            return Start()
+        
+        elif mode == 'FINISH':
+            return Finish()
         
         return None
     
@@ -246,13 +254,19 @@ class MainControlNode(Node):
             self.reset_param()
             
     def module_translator(self, ans):
-        with self.lock:
-            xy_coor = self.grip_coor
-            
         if ans.get('position'):
             cmd_msg = DongSooCommand()
             
-            cmd_msg.position = ans['position']
+            cmd_msg.frame    = ans['frame']
+            
+            if cmd_msg.frame == 'l':
+                # 원본 리스트를 수정하지 않도록 복사본 생성
+                lst = list(ans['position'])
+                lst.append(0.0)
+                cmd_msg.position = lst
+            else:
+                cmd_msg.position = ans['position']
+                
             cmd_msg.look     = ans['look']
             cmd_msg.time     = ans['time']
             cmd_msg.wrist    = ans['wrist']
@@ -293,28 +307,13 @@ class MainControlNode(Node):
                 yaw = self.tool_yaw
                 
             cmd_msg = DongSooCommand()
-            
-            cmd_msg.position = [float(P[0] + 0.03), float(P[1]), float(P[2] - 0.03)]
+            cmd_msg.frame = 'l'
+            cmd_msg.position = [float(P[0] + 0.03), float(P[1]), float(P[2] - 0.03), 0.0]
             cmd_msg.look     = ans['look']
             cmd_msg.time     = ans['time']
             cmd_msg.wrist    = yaw
             
             self.cmd_pub.publish(cmd_msg)
-        
-        if ans.get('move_only_one_axis'):
-            pose = np.array(xy_coor) + np.array(ans['move_only_one_axis'])
-            pose = pose.tolist()
-            
-            cmd_msg = DongSooCommand()
-            
-            cmd_msg.position = pose
-            cmd_msg.look     = ans['look']
-            cmd_msg.time     = ans['time']
-            cmd_msg.wrist    = ans['wrist']
-            
-            self.cmd_pub.publish(cmd_msg)
-            
-            self.get_logger().info(f"[ZEUS] Move to Relative position")
             
 def main(args=None):
     rclpy.init(args=args)

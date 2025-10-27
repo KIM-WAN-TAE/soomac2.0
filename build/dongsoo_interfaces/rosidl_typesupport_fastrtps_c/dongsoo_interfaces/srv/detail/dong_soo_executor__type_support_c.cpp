@@ -34,8 +34,8 @@ extern "C"
 {
 #endif
 
-#include "rosidl_runtime_c/string.h"  // look
-#include "rosidl_runtime_c/string_functions.h"  // look
+#include "rosidl_runtime_c/string.h"  // frame, look
+#include "rosidl_runtime_c/string_functions.h"  // frame, look
 
 // forward declare type support functions
 
@@ -51,9 +51,23 @@ static bool _DongSooExecutor_Request__cdr_serialize(
     return false;
   }
   const _DongSooExecutor_Request__ros_msg_type * ros_message = static_cast<const _DongSooExecutor_Request__ros_msg_type *>(untyped_ros_message);
+  // Field name: frame
+  {
+    const rosidl_runtime_c__String * str = &ros_message->frame;
+    if (str->capacity == 0 || str->capacity <= str->size) {
+      fprintf(stderr, "string capacity not greater than size\n");
+      return false;
+    }
+    if (str->data[str->size] != '\0') {
+      fprintf(stderr, "string not null-terminated\n");
+      return false;
+    }
+    cdr << str->data;
+  }
+
   // Field name: position
   {
-    size_t size = 3;
+    size_t size = 4;
     auto array_ptr = ros_message->position;
     cdr.serializeArray(array_ptr, size);
   }
@@ -94,9 +108,25 @@ static bool _DongSooExecutor_Request__cdr_deserialize(
     return false;
   }
   _DongSooExecutor_Request__ros_msg_type * ros_message = static_cast<_DongSooExecutor_Request__ros_msg_type *>(untyped_ros_message);
+  // Field name: frame
+  {
+    std::string tmp;
+    cdr >> tmp;
+    if (!ros_message->frame.data) {
+      rosidl_runtime_c__String__init(&ros_message->frame);
+    }
+    bool succeeded = rosidl_runtime_c__String__assign(
+      &ros_message->frame,
+      tmp.c_str());
+    if (!succeeded) {
+      fprintf(stderr, "failed to assign string into field 'frame'\n");
+      return false;
+    }
+  }
+
   // Field name: position
   {
-    size_t size = 3;
+    size_t size = 4;
     auto array_ptr = ros_message->position;
     cdr.deserializeArray(array_ptr, size);
   }
@@ -144,9 +174,13 @@ size_t get_serialized_size_dongsoo_interfaces__srv__DongSooExecutor_Request(
   (void)padding;
   (void)wchar_size;
 
+  // field.name frame
+  current_alignment += padding +
+    eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+    (ros_message->frame.size + 1);
   // field.name position
   {
-    size_t array_size = 3;
+    size_t array_size = 4;
     auto array_ptr = ros_message->position;
     (void)array_ptr;
     size_t item_size = sizeof(array_ptr[0]);
@@ -198,9 +232,21 @@ size_t max_serialized_size_dongsoo_interfaces__srv__DongSooExecutor_Request(
   full_bounded = true;
   is_plain = true;
 
+  // member: frame
+  {
+    size_t array_size = 1;
+
+    full_bounded = false;
+    is_plain = false;
+    for (size_t index = 0; index < array_size; ++index) {
+      current_alignment += padding +
+        eprosima::fastcdr::Cdr::alignment(current_alignment, padding) +
+        1;
+    }
+  }
   // member: position
   {
-    size_t array_size = 3;
+    size_t array_size = 4;
 
     last_member_size = array_size * sizeof(uint32_t);
     current_alignment += array_size * sizeof(uint32_t) +
