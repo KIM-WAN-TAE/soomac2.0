@@ -46,8 +46,6 @@ WIDTH_MARGIN_RATIO = 0.15
 
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
-
-
 # ---------- 유틸 ----------
 def norm_label(s: str) -> str:
     return re.sub(r"[\s\-_]+", "", s.lower())
@@ -200,9 +198,19 @@ def obb_handle_tip_from_mask(mask, out_size_hw, end_band_ratio=0.18, min_pts=30,
     band = (end_band_ratio if ar >= 1.25 else max(end_band_ratio, 0.25)) * L
     mask_head = proj_u <= (u_min + band)
     mask_tail = proj_u >= (u_max - band)
+
+    # [CHANGED-1] 픽셀 y-평균 규칙으로 head/tail 1차 교정
+    if np.any(mask_head) and np.any(mask_tail):
+        head_y_mean = float(pts[mask_head][:, 1].mean())
+        tail_y_mean = float(pts[mask_tail][:, 1].mean())
+        if head_y_mean < tail_y_mean:
+            mask_head, mask_tail = mask_tail, mask_head
+    # [CHANGED-1 END]
+
     band_handle_mask, band_tip_mask, decide_conf = choose_handle_tip(
         mask_bin, mask_head, mask_tail, centered, pts, u_major, v_minor, force_width_only=force_width_only
     )
+
     def _endpoints_and_center(band_mask):
         if not np.any(band_mask): return None, None, None
         pts_b = pts[band_mask]
@@ -212,8 +220,19 @@ def obb_handle_tip_from_mask(mask, out_size_hw, end_band_ratio=0.18, min_pts=30,
         p_max = pts_b[int(np.argmax(v_b))]
         center_mid = (p_min + p_max) * 0.5
         return p_min, p_max, center_mid
+
     h_end_a, h_end_b, handle_ctr = _endpoints_and_center(band_handle_mask)
-    t_end_a, t_end_b, tip_ctr = _endpoints_and_center(band_tip_mask)
+    t_end_a, t_end_b, tip_ctr    = _endpoints_and_center(band_tip_mask)
+
+    # [CHANGED-2] 최종 handle/tip 픽셀 규칙 강제: handle가 tip보다 '아래'(y가 큼)여야 함
+    if handle_ctr is not None and tip_ctr is not None:
+        # 수평에 가까워 Δy가 작으면 규칙을 약하게 하고 싶다면 임계값(예: 3~5px) 추가 가능
+        if handle_ctr[1] < tip_ctr[1]:
+            band_handle_mask, band_tip_mask = band_tip_mask, band_handle_mask
+            handle_ctr, tip_ctr = tip_ctr, handle_ctr
+            h_end_a, h_end_b, t_end_a, t_end_b = t_end_a, t_end_b, h_end_a, h_end_b
+    # [CHANGED-2 END]
+
     def _create_band_img(band_mask):
         img = np.zeros((H, W), dtype=np.uint8)
         if np.any(band_mask):
@@ -222,6 +241,7 @@ def obb_handle_tip_from_mask(mask, out_size_hw, end_band_ratio=0.18, min_pts=30,
             pts_b[:,1] = np.clip(pts_b[:,1], 0, H-1)
             img[pts_b[:,1], pts_b[:,0]] = 1
         return img
+
     debug = dict(
         band_head_img=_create_band_img(mask_head),
         band_tail_img=_create_band_img(mask_tail),
@@ -235,6 +255,7 @@ def obb_handle_tip_from_mask(mask, out_size_hw, end_band_ratio=0.18, min_pts=30,
     )
     if handle_ctr is None or tip_ctr is None:
         return None, None, None, None, None, None, (None, None, None, None), decide_conf, debug
+
     xdir = (tip_ctr - handle_ctr).astype(np.float32)
     n = np.linalg.norm(xdir)
     xdir = (xdir / n) if n >= 1e-6 else u_major.copy()
@@ -556,7 +577,6 @@ class VisionNode(Node):
                         if decide_conf: label += f" | H/T: {decide_conf:.2f}"
                         if area_m2 is not None: label += f" | Area: {area_m2:.4f} m^2"
 
-                        # 화면 밖 방지 라벨 박스 (마커 오른쪽-위)
                         draw_label_box(overlay, cx_i + 16, cy_i - 16, label)
 
                         if center_3d is not None:
@@ -569,7 +589,6 @@ class VisionNode(Node):
                     self.detection_active = False
                     self.target_tool = None
 
-            # 상단 고정 면적 표기
             if self.last_area_m2 is not None:
                 draw_label_box(overlay, 10, 30, f"Area: {self.last_area_m2:.4f} m^2")
 

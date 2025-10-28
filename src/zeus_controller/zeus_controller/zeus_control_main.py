@@ -68,8 +68,8 @@ class MainControlNode(Node):
             # Return 디버깅용 초기화 값들
             # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left', 'M3':'middle'}
             # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left'}
-            self.tool_dict = {'wire_stripper': 'middle', 'M3':'middle'}
-            # self.tool_dict = {}
+            # self.tool_dict = {'wire_stripper': 'middle', 'M3':'middle'}
+            self.tool_dict = {}
             
     def reset_tool_pose(self):
         with self.lock:
