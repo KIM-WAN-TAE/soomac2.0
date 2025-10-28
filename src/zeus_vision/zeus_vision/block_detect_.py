@@ -726,7 +726,7 @@ def main(args=None):
 
                 
                         print(f"w_flat_mm={w_flat_mm:.1f} h_mm={h_flat_mm:.1f}")
-                        if not (w_flat_mm >= 20.0 and h_mm >= 70.0):
+                        if not (40 >= w_flat_mm >= 20.0 and h_mm >= 70.0):
                             # (디버깅 시각화 유지)
                             cv2.rectangle(overlay, (x1, y1), (x2, y2), (0, 0, 255), 2)
                             rejection_text = f"REJECTED: w_flat_mm={w_flat_mm:.1f} h_mm={h_mm:.1f}"
@@ -783,21 +783,29 @@ def main(args=None):
 
                             cand_sel2 = [c for c in cand_sel if not is_same_as_last(c)]
 
+                            # [NEW] (A) 직전 block1과 '같은 큐브'로 판정되어 cand_sel2에서 제외된 후보도 기록
+                            def xy_dist_cam(c):
+                                o = c.get('origin', None)
+                                if o is None or not np.all(np.isfinite(o)): 
+                                    return float('inf')
+                                return math.hypot(float(o[0]), float(o[1]))
+
+                            excluded_same = [c for c in cand_sel if is_same_as_last(c)]
+                            if excluded_same:
+                                # 그중에서도 "가장 가까운(우선순위 1위였던)" 후보를 기록
+                                best_excluded = min(excluded_same, key=xy_dist_cam)
+                                ex_o  = np.asarray(best_excluded.get('origin', None), dtype=np.float32)
+                                ex_lb = best_excluded.get('label', None)
+                                if (ex_o is not None) and (ex_lb is not None):
+                                    # 중복 방지: 이미 같은 라벨·좌표 근접 항목이 있으면 추가하지 않음
+                                    if not is_near_any_xy_and_z(
+                                        ex_o, node.avoid_points, label=ex_lb,
+                                        th_xy=NEAR_SAME_THRESH_XY_M, th_z=NEAR_SAME_THRESH_Z_M
+                                    ):
+                                        node.avoid_points.append({'pos': ex_o.copy(), 'label': ex_lb})
+
                             # 4) 모두 제외되면(= 이 클래스에서 선택 불가) → best를 영구 배제 리스트에 등록하고 다음 클래스로 이동
                             if not cand_sel2:
-                                def xy_dist_cam_tmp(c):
-                                    o = c.get('origin', None)
-                                    if o is None or not np.all(np.isfinite(o)): return float('inf')
-                                    return math.hypot(float(o[0]), float(o[1]))
-                                best_tmp = min(cand_sel, key=xy_dist_cam_tmp)
-                                cur_o    = np.asarray(best_tmp.get('origin', None), dtype=np.float32)
-                                cur_lab  = best_tmp.get('label', None)
-                                if (cur_o is not None) and (cur_lab is not None):
-                                    if not is_near_any_xy_and_z(cur_o, node.avoid_points,
-                                                                label=cur_lab,
-                                                                th_xy=NEAR_SAME_THRESH_XY_M,
-                                                                th_z=NEAR_SAME_THRESH_Z_M):
-                                        node.avoid_points.append({'pos': cur_o.copy(), 'label': cur_lab})
                                 continue  # 이 클래스 스킵 → 다음 우선순위 클래스
 
                             # 5) 후보가 남으면(= 2번째, 3번째 …) 기존 기준으로 최단 XY 거리 선택

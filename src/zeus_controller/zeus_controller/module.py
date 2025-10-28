@@ -21,7 +21,7 @@ class Block:
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
-                'speed'    : 90.0,
+                'speed'    : 98.0,
                 'requires_ack' : True,
                 'next_step': 'step_2'
             }
@@ -42,7 +42,7 @@ class Block:
             ans = {
                 'block_pick_move'    : True,
                 'pick_str' : 'first',
-                'speed' : 600.0,
+                'speed' : 800.0,
                 'requires_ack' : True,
                 'next_step': 'step_4'
             }
@@ -89,7 +89,7 @@ class Block:
                 'drop_coor_order' : True,
                 'block_pick_move'    : True,
                 'pick_str' : 'third',
-                'speed' : 300.0,
+                'speed' : 500.0,
                 'requires_ack' : True,
                 'next_step': 'step_8'
             }
@@ -121,7 +121,7 @@ class Block:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -150.0, 0.0, 0.0, 0.0],
-                'speed'    : 800.0,
+                'speed'    : 900.0,
                 'requires_ack' : True,
                 'next_step': 'step_12'
             }
@@ -142,7 +142,7 @@ class Block:
         elif step == 'step_12':
             ans = {
                 'block_drop_move' : True,
-                'speed'    : 90.0,
+                'speed'    : 98.0,
                 # 'gripper'    : True,
                 # 'gripper_str' : 'e',
                 'requires_ack' : True,
@@ -154,8 +154,8 @@ class Block:
         elif step == 'step_13':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 0.0, 95.0, 0.0, 0.0, 0.0],
-                'speed'    : 200.0,
+                'position' : [0.0, 0.0, 150.0, 0.0, 0.0, 0.0],
+                'speed'    : 600.0,
                 # 'gripper'    : True,
                 # 'gripper_str' : 'e',
                 'requires_ack' : True,
@@ -179,7 +179,7 @@ class Block:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -80.0, 0.0, 0.0, 0.0],
-                'speed'    : 800.0,
+                'speed'    : 900.0,
                 'gripper'    : True,
                 'gripper_str' : 'e',
                 'requires_ack' : True,
