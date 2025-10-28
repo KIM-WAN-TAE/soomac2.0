@@ -1,7 +1,7 @@
 # Zeus Free Mission Module
 
 # Init Pose Joint Coordinate
-INIT_POSE = [-170.55,   17.08,  124.58,   -0.10,   38.73,   98.72]
+INIT_POSE = [-170.55,  -19.30,  147.09,   -0.30,   54.12,   98.71]
         
 class Test:
     def step(self, step):
@@ -101,7 +101,7 @@ class Deliver_Normal:
             ans = {
                 'frame'    : 'j',
                 'position' : [-176.12,   52.47,  112.57,   97.36,   88.01,  -75.26],
-                'speed'    : 20.0,
+                'speed'    : 30.0,
                 'requires_ack' : True,
                 'next_step': 'step_3'
             }
@@ -119,7 +119,7 @@ class Deliver_Normal:
             ans = {
                 'camera_move' : True,
                 'requires_ack' : True,
-                'speed'       : 100.0,
+                'speed'       : 200.0,
                 'next_step': 'step_5'
             }
             return ans
@@ -165,7 +165,7 @@ class Deliver_Normal:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -170.0, 0.0, 0.0, 0.0],
-                'speed'    : 80.0,
+                'speed'    : 300.0,
                 'requires_ack' : True,
                 'next_step': 'step_10'
             }
@@ -175,7 +175,7 @@ class Deliver_Normal:
             ans = {
                 'frame'    : 'j',
                 'position' : [-173.58,   38.03,   96.39,   -0.12,   45.97,    5.69],
-                'speed'    : 15.0,
+                'speed'    : 17.5,
                 'requires_ack' : True,
                 'next_step': 'step_11'
             }
@@ -185,7 +185,7 @@ class Deliver_Normal:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, 150.0, 0.0, 0.0, 0.0],
-                'speed'    : 50.0,
+                'speed'    : 75.0,
                 'requires_ack' : True,
                 'next_step': 'step_12'
             }
@@ -203,7 +203,7 @@ class Deliver_Normal:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -50.0, 0.0, 0.0, 0.0],
-                'speed'    : 50.0,
+                'speed'    : 300.0,
                 'requires_ack' : True,
                 'next_step': 'step_14'
             }
@@ -213,7 +213,7 @@ class Deliver_Normal:
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
-                'speed'    : 15.0,
+                'speed'    : 40.0,
                 'requires_ack' : True,
                 'next_step': 'None'
             }
@@ -245,7 +245,7 @@ class Start:
             ans = {
                 'frame'    : 'j',
                 'position' : SWITCH_ON_INIT_POSE,
-                'speed'    : 15.0,
+                'speed'    : 40.0,
                 'requires_ack' : True,
                 'next_step': 'step_4'
             }
@@ -255,27 +255,27 @@ class Start:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, 25.0, 0.0, 0.0, 0.0],
-                'speed'    : 30.0,
+                'speed'    : 45.0,
                 'requires_ack' : True,
                 'next_step': 'step_5'
             }
             return ans
         
-        elif step == 'step_4':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
-                'speed'    : 50.0,
-                'requires_ack' : True,
-                'next_step': 'step_5'
-            }
-            return ans
+        # elif step == 'step_4':
+        #     ans = {
+        #         'frame'    : 't',
+        #         'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
+        #         'speed'    : 50.0,
+        #         'requires_ack' : True,
+        #         'next_step': 'step_5'
+        #     }
+        #     return ans
         
         elif step == 'step_5':
             ans = {
                 'frame'    : 'j',
-                'position' : [-170.55,   17.08,  124.58,   -0.10,   38.73,   98.72],
-                'speed'    : 15.0,
+                'position' : INIT_POSE,
+                'speed'    : 30.0,
                 'requires_ack' : True,
                 'next_step': 'step_6'
             }
@@ -315,7 +315,7 @@ class Finish:
             ans = {
                 'frame'    : 'j',
                 'position' : SWITCH_OFF_INIT_POSE,
-                'speed'    : 15.0,
+                'speed'    : 40.0,
                 'requires_ack' : True,
                 'next_step': 'step_4'
             }
@@ -325,27 +325,27 @@ class Finish:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, 25.0, 0.0, 0.0, 0.0],
-                'speed'    : 30.0,
+                'speed'    : 45.0,
                 'requires_ack' : True,
                 'next_step': 'step_5'
             }
             return ans
         
-        elif step == 'step_4':
-            ans = {
-                'frame'    : 't',
-                'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
-                'speed'    : 50.0,
-                'requires_ack' : True,
-                'next_step': 'step_5'
-            }
-            return ans
+        # elif step == 'step_4':
+        #     ans = {
+        #         'frame'    : 't',
+        #         'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
+        #         'speed'    : 50.0,
+        #         'requires_ack' : True,
+        #         'next_step': 'step_5'
+        #     }
+        #     return ans
         
         elif step == 'step_5':
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
-                'speed'    : 15.0,
+                'speed'    : 30.0,
                 'requires_ack' : True,
                 'next_step': 'step_6'
             }
@@ -376,7 +376,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 'j',
                 'position' : [-144.80,   42.52,   93.16,    0.09,   44.89,   33.89],
-                'speed'    : 10.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'step_3'
             }
@@ -386,7 +386,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, 100.0, 0.0, 0.0, 0.0],
-                'speed'    : 30.0,
+                'speed'    : 70.0,
                 'requires_ack' : True,
                 'next_step': 'step_4'
             }
@@ -422,7 +422,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -50.0, 0.0, 0.0, 0.0],
-                'speed'    : 80.0,
+                'speed'    : 120.0,
                 'requires_ack' : True,
                 'next_step': 'step_8'
             }
@@ -432,7 +432,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 'j',
                 'position' : BOX_DETECT_POSE,
-                'speed'    : 10.0,
+                'speed'    : 15.0,
                 'requires_ack' : True,
                 'next_step': 'step_10'
             }
@@ -452,7 +452,7 @@ class Deliver_Box:
             ans = {
                 'box_camera_move' : True,
                 'requires_ack' : True,
-                'speed'       : 40.0,
+                'speed'       : 70.0,
                 'next_step': 'step_12'
             }
             return ans
@@ -499,7 +499,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 'j',
                 'position' : [-181.37,   36.53,   95.64,    0.56,   47.73,   -0.78],
-                'speed'    : 10.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'step_17'
             }
@@ -518,7 +518,7 @@ class Deliver_Box:
             ans = {
                 'target_move' : True,
                 'requires_ack' : True,
-                'speed'       : 100.0,
+                'speed'       : 150.0,
                 'next_step': 'step_19'
             }
             return ans
@@ -535,7 +535,7 @@ class Deliver_Box:
             ans = {
                 'boxbox' : True,
                 'requires_ack' : True,
-                'speed'       : 100.0,
+                'speed'       : 200.0,
                 'next_step': 'step_21'
             }
             return ans
@@ -562,7 +562,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -110.0, 0.0, 0.0, 0.0],
-                'speed'    : 80.0,
+                'speed'    : 150.0,
                 'requires_ack' : True,
                 'next_step': 'step_24'
             }
@@ -573,7 +573,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 'j',
                 'position' : [-155.77,   36.56,  106.69,   -0.08,   37.32,   23.05],
-                'speed'    : 10.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'step_25'
             }
@@ -584,7 +584,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 'j',
                 'position' : [-155.78,   47.05,  108.43,   -0.11,   25.09,   23.07],
-                'speed'    : 5.0,
+                'speed'    : 7.0,
                 'requires_ack' : True,
                 'next_step': 'step_26'
             }
@@ -602,7 +602,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 120.0, 0.0, 0.0, 0.0, 0.0],
-                'speed'    : 20.0,
+                'speed'    : 50.0,
                 'requires_ack' : True,
                 'next_step': 'step_28'
             }
@@ -621,7 +621,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -60.0, 0.0, 0.0, 0.0],
-                'speed'    : 80.0,
+                'speed'    : 120.0,
                 'requires_ack' : True,
                 'next_step': 'step_30'
             }
@@ -631,7 +631,7 @@ class Deliver_Box:
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
-                'speed'    : 10.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'None'
             }
@@ -737,9 +737,9 @@ class Down:
 LOOK_MY_BOARD = [-166.14,   49.02,   72.38,   -0.00,   58.60,   17.62]
 MEASURE_INIT = [-150.44,   51.97,  101.52, -180.93,   63.37,  270.33]
 MEASURE_GRIP = [-150.14,   65.44,   80.89, -180.64,   56.20,  270.28]
-MEASURE_TIP_TOP = [-150.31,   58.36,   82.44, -180.90,   50.67,  270.49]
+MEASURE_TIP_TOP = [-150.09,   58.01,   83.34, -180.61,   51.22,  270.30]
 SOUND = [-143.16,   58.75,   89.09, -172.34,   57.92,  265.71]
-NONE_SOUND = [-142.93,   57.10,   94.04, -172.48,   61.00,  266.14]
+NONE_SOUND = [-143.0,   57.10,   94.04, -172.48,   61.00,  266.14]
 class Measure:
     def step(self, step):
         # 초기화
@@ -778,7 +778,7 @@ class Measure:
             ans = {
                 'frame'    : 'j',
                 'position' : MEASURE_GRIP,
-                'speed'    : 5.0,
+                'speed'    : 15.0,
                 'requires_ack' : True,
                 'next_step': 'step_4'
             }
@@ -935,7 +935,7 @@ class Measure:
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
-                'speed'    : 20.0,
+                'speed'    : 30.0,
                 'requires_ack' : True,
                 'next_step': 'None'
             }
@@ -949,7 +949,7 @@ class Return_All:
             ans = {
                 'frame'    : 'j',
                 'position' : TOOL_AND_BOX_DETECT,
-                'speed'    : 15.0,
+                'speed'    : 35.0,
                 'requires_ack' : True,
                 'next_step': 'step_2'
             }
@@ -969,7 +969,7 @@ class Return_All:
             ans = {
                 'all_return_camera_center' : True,
                 'requires_ack' : True,
-                'speed'       : 100.0,
+                'speed'       : 200.0,
                 'next_step': 'step_4'
             }
             return ans
@@ -1038,7 +1038,7 @@ class Return_All:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
-                'speed'    : 80.0,
+                'speed'    : 150.0,
                 'requires_ack' : True,
                 'next_step': 'check'
             }
@@ -1051,7 +1051,7 @@ class Return_All:
             ans = {
                 'frame'    : 'j',
                 'position' : TOOL_AND_BOX_DETECT,
-                'speed'    : 10.0,
+                'speed'    : 35.0,
                 'requires_ack' : True,
                 'next_step': 'M3_step_2'
             }
@@ -1062,7 +1062,7 @@ class Return_All:
             ans = {
                 'frame'    : 'j',
                 'position' : [-144.80,   42.52,   93.16,    0.09,   44.89,   33.89],
-                'speed'    : 10.0,
+                'speed'    : 25.0,
                 'requires_ack' : True,
                 'next_step': 'M3_step_3'
             }
@@ -1073,7 +1073,7 @@ class Return_All:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, 100.0, 0.0, 0.0, 0.0],
-                'speed'    : 30.0,
+                'speed'    : 80.0,
                 'requires_ack' : True,
                 'next_step': 'M3_step_4'
             }
@@ -1109,7 +1109,7 @@ class Return_All:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -50.0, 0.0, 0.0, 0.0],
-                'speed'    : 100.0,
+                'speed'    : 150.0,
                 'requires_ack' : True,
                 'next_step': 'M3_step_8'
             }
@@ -1121,7 +1121,7 @@ class Return_All:
             ans = {
                 'frame'    : 'j',
                 'position' : TOOL_AND_BOX_DETECT,
-                'speed'    : 10.0,
+                'speed'    : 20.0,
                 'requires_ack' : True,
                 'next_step': 'M3_step_9'
             }
@@ -1141,7 +1141,7 @@ class Return_All:
             ans = {
                 'all_return_m3_box_camera_move' : True,
                 'requires_ack' : True,
-                'speed'       : 80.0,
+                'speed'       : 150.0,
                 'next_step': 'M3_step_11'
             }
             return ans
@@ -1169,7 +1169,7 @@ class Return_All:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
-                'speed'    : 100.0,
+                'speed'    : 120.0,
                 'requires_ack' : True,
                 'next_step': 'M3_step_14'
             }
@@ -1179,7 +1179,7 @@ class Return_All:
         elif step == 'M3_step_14':
             ans = {
                 'all_return_m3_offset' : True,
-                'speed'    : 10.0,
+                'speed'    : 12.0,
                 'requires_ack' : True,
                 'next_step': 'M3_step_15'
             }
@@ -1221,7 +1221,7 @@ class Return_All:
             ans = {
                 'frame'    : 'j',
                 'position' : [-155.77,   36.56,  106.69,   -0.08,   37.32,   23.05],
-                'speed'    : 10.0,
+                'speed'    : 15.0,
                 'requires_ack' : True,
                 'next_step': 'M3_step_19'
             }
@@ -1269,7 +1269,7 @@ class Return_All:
             ans = {
                 'frame'    : 't',
                 'position' : [0.0, 0.0, -100.0, 0.0, 0.0, 0.0],
-                'speed'    : 80.0,
+                'speed'    : 120.0,
                 'all_return_pop_dict' : True,
                 'requires_ack' : True,
                 'next_step': 'final'
@@ -1283,7 +1283,7 @@ class Return_All:
             ans = {
                 'frame'    : 'j',
                 'position' : INIT_POSE,
-                'speed'    : 20.0,
+                'speed'    : 30.0,
                 'requires_ack' : True,
                 'next_step': 'None'
             }

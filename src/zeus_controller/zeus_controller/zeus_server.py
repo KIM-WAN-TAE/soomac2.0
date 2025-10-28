@@ -221,7 +221,7 @@ class ZeusServerNode(Node):
             # 안정화 모니터링 변수들
             stable_start_time = None
             last_error = None
-            stable_threshold = 0.8  # 1.5초 동안 error 변화 없으면 완료
+            stable_threshold = 0.5  # 1.5초 동안 error 변화 없으면 완료
             error_tolerance = 0.01  # error 변화량 허용 범위
 
             while True:

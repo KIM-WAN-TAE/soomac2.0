@@ -68,8 +68,8 @@ class MainControlNode(Node):
             # Return 디버깅용 초기화 값들
             # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left', 'M3':'middle'}
             # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left'}
-            # self.tool_dict = {'wire_stripper': 'middle', 'M3':'middle'}
-            self.tool_dict = {}
+            self.tool_dict = {'wire_stripper': 'middle', 'M3':'middle'}
+            # self.tool_dict = {}
             
     def reset_tool_pose(self):
         with self.lock:
@@ -707,7 +707,7 @@ class MainControlNode(Node):
             
             cmd_msg = ZeusMainCommand()
             cmd_msg.frame = 't'
-            cmd_msg.position = [0.0, 0.0, 67.5, 0.0, 0.0, 0.0]
+            cmd_msg.position = [0.0, 0.0, 66.2, 0.0, 0.0, 0.0]
             
             cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
