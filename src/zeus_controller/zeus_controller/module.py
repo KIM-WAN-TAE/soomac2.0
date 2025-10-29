@@ -196,3 +196,76 @@ class Block:
         #         'next_step': 'step_1'
         #     }
         #     return ans
+        
+        elif step == 'emer_1':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-131.07,  -23.71, -118.91,    0.13,  -37.60, -130.91],
+                'speed'    : 60.0,
+                'requires_ack' : True,
+                'next_step': 'emer_2'
+            }
+            return ans
+        
+        elif step == 'emer_2':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 50.0, 0.0, 0.0, 0.0],
+                'speed'    : 300.0,
+                'gripper'    : True,
+                'gripper_str' : 's',
+                'requires_ack' : True,
+                'next_step': 'emer_3'
+            }
+            return ans
+        
+        elif step == 'emer_3':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-131.06,  -27.25, -120.54,    0.15,  -32.44, -130.93],
+                'speed'    : 50.0,
+                'requires_ack' : True,
+                'next_step': 'emer_4'
+            }
+            return ans
+        
+        elif step == 'emer_4':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 0.0, 0.0, -30.0, 0.0, 0.0],
+                'speed'    : 10.0,
+                'requires_ack' : True,
+                'next_step': 'emer_5'
+            }
+            return ans
+        
+        elif step == 'emer_5':
+            ans = {
+                'frame'    : 't',
+                'position' : [0.0, 400.0, 0.0, 0.0, 0.0, 0.0],
+                'speed'    : 800.0,
+                'requires_ack' : True,
+                'next_step': 'emer_6'
+            }
+            return ans
+        
+        elif step == 'emer_6':
+            ans = {
+                'frame'    : 'j',
+                'position' : [-131.06,  -27.25, -120.54,    0.15,  -32.44, -130.93],
+                'speed'    : 80.0,
+                'requires_ack' : True,
+                'next_step': 'emer_7'
+            }
+            return ans
+        
+        elif step == 'emer_7':
+            ans = {
+                'gripper'    : True,
+                'gripper_str' : 'e',
+                'requires_ack' : False,
+                'next_step': 'step_1'
+            }
+            return ans
+        
+        

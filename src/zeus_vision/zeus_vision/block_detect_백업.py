@@ -460,8 +460,6 @@ class BlockPosePublisher(Node):
         self.no_cand_active = False
         self.no_cand_start_ns = None      # ROS Clock nanoseconds
         self.prev_mode = ""               # 이전 요청 상태(block1/block2/기타) 추적
-        self.no_cand_latched = False
-        self.detect_paused = False   # True이면 block1/2 새 명령이 올 때까지 디텍 완전 정지
         # ===========================================================================================
 
         self.model = YOLO(WEIGHTS)
@@ -535,19 +533,8 @@ class BlockPosePublisher(Node):
         self.last_block1_label   = None   # str
         self.avoid_points        = []     # [{'pos': np.ndarray(3,), 'label': str}, ...]
 
-    # def listener_callback(self, msg):
-    #     self.detect_signal = msg.data
     def listener_callback(self, msg):
-        incoming = (msg.data or "").strip().lower()
-        self.detect_signal = incoming
-        # 일시정지 중에 block1/2 새 요청이 들어오면 재개
-        if self.detect_paused and incoming in ("block1", "block2"):
-            self.no_cand_active   = False
-            self.no_cand_start_ns = None
-            self.no_cand_latched  = False
-            self.prev_mode        = ""
-            self.detect_paused    = False
-            self.get_logger().info("[NO-CAND] Resume detection on new request")
+        self.detect_signal = msg.data
 
     def publish_block(self, label):
         msg = String(); msg.data = label
@@ -565,11 +552,6 @@ def main(args=None):
         while rclpy.ok():
             rclpy.spin_once(node, timeout_sec=0.0)
             mode = (node.detect_signal or "").strip().lower()
-            # === PAUSE 게이트: True 발행 후에는 block1/2 새 명령이 오기 전까지 완전 정지 ===
-            if node.detect_paused and mode not in ("block1", "block2"):
-                # 카메라 캡처/YOLO/후속 처리 전부 건너뛰기
-                time.sleep(0.01)
-                continue
 
             try:
                 frameset = node.pipeline.wait_for_frames(timeout_ms=1000)
@@ -754,7 +736,7 @@ def main(args=None):
 
                 
                         print(f"w_flat_mm={w_flat_mm:.1f} h_mm={h_flat_mm:.1f}")
-                        if not (35 >= w_flat_mm >= 20.0 and h_mm >= 70.0):
+                        if not (40 >= w_flat_mm >= 20.0 and h_mm >= 70.0):
                             # (디버깅 시각화 유지)
                             cv2.rectangle(overlay, (x1, y1), (x2, y2), (0, 0, 255), 2)
                             rejection_text = f"REJECTED: w_flat_mm={w_flat_mm:.1f} h_mm={h_mm:.1f}"
@@ -867,50 +849,33 @@ def main(args=None):
             # ==========================
             cur_mode = (node.detect_signal or "").strip().lower()
 
-            # <<< ADD: block1 또는 block2가 "새로" 시작되면(모드 변화) 세션 리셋 >>>
-            if cur_mode in ("block1", "block2") and cur_mode != node.prev_mode:
-                node.no_cand_active   = False
+            # 4-1) 요청 전환/종료 감지 시 즉시 리셋
+            if cur_mode not in ("block1", "block2") or (cur_mode != node.prev_mode):
+                node.no_cand_active = False
                 node.no_cand_start_ns = None
-                node.no_cand_latched  = False
-                print(f"[NO-CAND] Session start: {cur_mode} → reset latch/timer")
 
-            # 4-1) block1/block2가 아닌 경우(=대기/빈 문자열 등) → 타이머만 리셋(래치는 유지)
-            if cur_mode not in ("block1", "block2"):
-                node.no_cand_active   = False
-                node.no_cand_start_ns = None
-            else:
-                # 4-2) block1 또는 block2 세션 진행 중이고, 이번 프레임에 YOLO를 실제로 돌린 경우만 타이머 갱신
-                if res is not None:
-                    if chosen is None:
-                        # 이미 이 세션에서 True를 한 번 보냈다면(래치) 더 이상 카운트/발행 금지
-                        if not node.no_cand_latched:
-                            if not node.no_cand_active:
-                                # 타이머 시작
-                                node.no_cand_start_ns = node.get_clock().now().nanoseconds
-                                node.no_cand_active = True
-                            else:
-                                # 경과시간 체크
-                                t_now = node.get_clock().now().nanoseconds
-                                elapsed_s = (t_now - (node.no_cand_start_ns or t_now)) / 1e9
-                                if elapsed_s >= NO_CAND_THRESHOLD_S:
-                                    # 단 1회만 발행
-                                    node.no_cand_pub.publish(Bool(data=True))
-                                    node.no_cand_latched  = True    # 세션 래치 ON
-                                    node.no_cand_active   = False   # 타이머 정지
-                                    node.no_cand_start_ns = None
-
-                                    # ▼▼ 추가: 이 세션 즉시 종료 + 다음 요청 전까지 완전 정지 ▼▼
-                                    node.detect_paused = True       # 디텍 완전 정지
-                                    node.detect_signal = ""         # 세션 종료(현재 block1/2 비우기)
-
-                                    print(f"[NO-CAND] Sent True once for session: {cur_mode} → PAUSED until next request")
-
+            # 4-2) 현재 프레임에서 YOLO를 '실제로' 돌렸는지 확인(res is not None)
+            if cur_mode in ("block1", "block2") and (res is not None):
+                if chosen is None:
+                    # 타이머 시작/유지
+                    if not node.no_cand_active:
+                        t0 = node.get_clock().now().nanoseconds
+                        node.no_cand_start_ns = t0
+                        node.no_cand_active = True
                     else:
-                        # 후보가 생겼으면 타이머만 리셋 (래치는 유지)
-                        node.no_cand_active   = False
-                        node.no_cand_start_ns = None
+                        t_now = node.get_clock().now().nanoseconds
+                        elapsed_s = (t_now - (node.no_cand_start_ns or t_now)) / 1e9
+                        if elapsed_s >= NO_CAND_THRESHOLD_S:
+                            # 3초 도달 → 1회 통지 후 즉시 리셋
+                            node.no_cand_pub.publish(Bool(data=True))
+                            node.no_cand_active = False
+                            node.no_cand_start_ns = None
+                else:
+                    # chosen이 생긴 프레임 → 즉시 리셋
+                    node.no_cand_active = False
+                    node.no_cand_start_ns = None
 
-            # 프레임 마지막에 prev_mode 갱신 (기존 코드 유지)
+            # 프레임 마지막에 prev_mode 갱신
             node.prev_mode = cur_mode
             #  ====================================================================================
 
