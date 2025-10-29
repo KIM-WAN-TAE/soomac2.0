@@ -120,6 +120,14 @@ class Deliver_Normal:
                 'camera_move' : True,
                 'requires_ack' : True,
                 'speed'       : 200.0,
+                'next_step': 'step_offset'
+            }
+            return ans
+            
+        elif step == 'step_offset':
+            ans = {
+                'front_offset_move' : True,
+                'requires_ack' : True,
                 'next_step': 'step_5'
             }
             return ans
@@ -738,7 +746,7 @@ LOOK_MY_BOARD = [-166.14,   49.02,   72.38,   -0.00,   58.60,   17.62]
 MEASURE_INIT = [-150.44,   51.97,  101.52, -180.93,   63.37,  270.33]
 MEASURE_GRIP = [-150.14,   65.44,   80.89, -180.64,   56.20,  270.28]
 MEASURE_TIP_TOP = [-150.09,   58.01,   83.34, -180.61,   51.22,  270.30]
-SOUND = [-143.16,   58.75,   89.09, -172.34,   57.92,  265.71]
+SOUND = [-143.11,   58.45,   90.05, -172.33,   58.58,  265.78]
 NONE_SOUND = [-143.0,   57.10,   94.04, -172.48,   61.00,  266.14]
 class Measure:
     def step(self, step):
@@ -970,6 +978,14 @@ class Return_All:
                 'all_return_camera_center' : True,
                 'requires_ack' : True,
                 'speed'       : 200.0,
+                'next_step': 'all_return_offset_step'
+            }
+            return ans
+        
+        elif step == 'all_return_offset_step':
+            ans = {
+                'all_return_offset_move' : True,
+                'requires_ack' : True,
                 'next_step': 'step_4'
             }
             return ans

@@ -346,28 +346,7 @@ class VisionNode(Node):
         config.enable_stream(rs.stream.color, COLOR_W, COLOR_H, rs.format.bgr8, COLOR_FPS)
         config.enable_stream(rs.stream.depth, DEPTH_W, DEPTH_H, rs.format.z16, DEPTH_FPS)
         profile = self.pipeline.start(config)
-
-        depth_sensor = profile.get_device().first_depth_sensor()
         color_sensor = profile.get_device().first_color_sensor()
-
-        if color_sensor.supports(rs.option.enable_auto_exposure):
-            color_sensor.set_option(rs.option.enable_auto_exposure, 0)
-            color_sensor.set_option(rs.option.exposure, 150)
-        if color_sensor.supports(rs.option.enable_auto_white_balance):
-            color_sensor.set_option(rs.option.enable_auto_white_balance, 0)
-            color_sensor.set_option(rs.option.white_balance, 4600)
-
-        if depth_sensor.supports(rs.option.enable_auto_exposure):
-            depth_sensor.set_option(rs.option.enable_auto_exposure, 0)
-            depth_sensor.set_option(rs.option.exposure, 8500)
-
-        if depth_sensor.supports(rs.option.visual_preset):
-            depth_sensor.set_option(rs.option.visual_preset, 1)
-            self.get_logger().info("Set depth sensor preset to High Accuracy")
-
-        if depth_sensor.supports(rs.option.laser_power):
-            depth_sensor.set_option(rs.option.laser_power, 250)
-            self.get_logger().info("Set laser power to 250")
 
         depth_sensor = profile.get_device().first_depth_sensor()
         self.depth_scale = depth_sensor.get_depth_scale()
@@ -378,16 +357,14 @@ class VisionNode(Node):
 
         color_stream = profile.get_stream(rs.stream.color)
         self.intrinsics = color_stream.as_video_stream_profile().get_intrinsics()
-        # self.K = np.array([[self.intrinsics.fx, 0, self.intrinsics.ppx],
-        #                    [0, self.intrinsics.fy, self.intrinsics.ppy],
-        #                    [0, 0, 1]], dtype=np.float32)
+
+        # 캘리브레이션한 K, D 값을 사용
         self.K = np.array([
             [609.59370966, 0.0,          327.77961006],
             [ 0.0,       610.16182704, 244.8987311],
             [0.0, 0.0, 1.0]
         ], dtype=np.float32)
         
-        #self.D = np.array(self.intrinsics.coeffs[:5], dtype=np.float32)
         self.D = np.array([
             [ 2.98079773e-02,  7.71843130e-01,  1.12771351e-03,  1.91769037e-03, -2.86200282e+00]
         ], dtype=np.float32)
@@ -398,8 +375,14 @@ class VisionNode(Node):
     def pixel_to_3d_point(self, pixel_x, pixel_y, depth_m):
         if depth_m is None or depth_m <= 0:
             return None
-        x = (pixel_x - self.intrinsics.ppx) * depth_m / self.intrinsics.fx
-        y = (pixel_y - self.intrinsics.ppy) * depth_m / self.intrinsics.fy
+        # 캘리브레이션된 K 행렬의 값을 직접 사용
+        fx = self.K[0, 0]
+        fy = self.K[1, 1]
+        ppx = self.K[0, 2]
+        ppy = self.K[1, 2]
+        
+        x = (pixel_x - ppx) * depth_m / fx
+        y = (pixel_y - ppy) * depth_m / fy
         z = depth_m
         return [float(x), float(y), float(z)]
 
@@ -411,17 +394,20 @@ class VisionNode(Node):
             color_frame = aligned.get_color_frame()
             if not color_frame:
                 return
-            if depth_frame:
-                depth_frame = self.spat_filter.process(depth_frame)
-                depth_frame = self.temp_filter.process(depth_frame)
-                depth_frame = self.hole_filling.process(depth_frame)
-            else:
-                depth_frame = None
-
+            
             color = np.asanyarray(color_frame.get_data())
-            overlay = color.copy()
-            inp = cv2.cvtColor(color, cv2.COLOR_BGR2RGB) if USE_RGB_INPUT else color
+            
+            # [수정 1] 왜곡 보정을 먼저 수행
             undistort_img = cv2.undistort(color, self.K, self.D)
+            
+            # [수정 2] 오버레이(시각화) 기반 이미지를 왜곡 보정된 이미지로 변경
+            overlay = undistort_img.copy() 
+
+            # [수정 3] YOLO 입력 이미지를 왜곡 보정된 이미지로 변경
+            if USE_RGB_INPUT:
+                inp_model = cv2.cvtColor(undistort_img, cv2.COLOR_BGR2RGB)
+            else:
+                inp_model = undistort_img.copy() # 원본 수정을 피하기 위해 .copy()
 
             if self.target_tool == "M3" and self.detection_active:
                 corners, ids, rejected = self.detector.detectMarkers(undistort_img)
@@ -462,8 +448,9 @@ class VisionNode(Node):
                         break
 
             else:
+                # [수정 4] YOLO 모델 입력을 inp_model로 변경
                 results = self.model(
-                    inp, conf=CONF_TH, iou=IOU_TH, device=DEVICE,
+                    inp_model, conf=CONF_TH, iou=IOU_TH, device=DEVICE,
                     classes=self.allowed_ids if self.allowed_ids else None,
                     imgsz=IMG_SIZE, verbose=False,
                 ) if self.detection_active else []
@@ -489,7 +476,7 @@ class VisionNode(Node):
                         if self.target_tool and norm_label(cls_name) != norm_label(self.target_tool):
                             continue
                         conf = float(confs[i])
-                        depth_m = None
+                        depth_m = None # [Z값 로직 복원] depth_m 변수 초기화
                         roll_deg = 0.0
                         decide_conf = 0.0
                         handle_ctr = None
@@ -500,17 +487,20 @@ class VisionNode(Node):
                             overlay = apply_mask_overlay(overlay, mask, alpha=DRAW_MASK_ALPHA, color=(0,255,255))
 
                             if depth_frame is not None:
-                                area_m2 = mask_area_m2_from_depth(depth_frame, mask, self.depth_scale, self.intrinsics.fx, self.intrinsics.fy)
+                                area_m2 = mask_area_m2_from_depth(depth_frame, mask, self.depth_scale, self.K[0,0], self.K[1,1])
                                 self.last_area_m2 = area_m2
 
+                            # [Z값 로직 복원] 마스크 전체의 중앙 깊이를 계산
                             depth_m = median_depth_meters_from_mask(depth_frame, mask, self.depth_scale) if depth_frame is not None else None
+                            
                             is_vc = norm_label(cls_name) == norm_label("vernier_calipers")
-                            (corners, (w_len, h_len), angle_deg, center_px,
+                            (corners, (w_len, h_len), angle_deg, center_px_obb,
                              handle_ctr, tip_ctr, end_points_tuple, decide_conf, debug) = obb_handle_tip_from_mask(
                                 mask, (overlay.shape[0], overlay.shape[1]), force_width_only=is_vc
                             )
 
                             if SHOW_BAND_PREVIEW and debug is not None:
+                                # ... (디버그 시각화) ...
                                 head_img = debug["band_head_img"]; tail_img = debug["band_tail_img"]
                                 overlay = apply_mask_overlay(overlay, head_img, alpha=0.35, color=(255,0,255))
                                 overlay = apply_mask_overlay(overlay, tail_img, alpha=0.35, color=(0,128,255))
@@ -544,20 +534,22 @@ class VisionNode(Node):
                                     overlay = draw_handle_tip_viz(overlay, handle_ctr, tip_ctr, end_points_tuple, draw_endpoints=DRAW_ENDPOINTS)
                             else:
                                 cv2.rectangle(overlay, (x1i, y1i), (x2i, y2i), (0,255,0), 2)
+                                # [Z값 로직 복원] OBB 실패 시 BBox 중심 깊이 계산
                                 cx, cy = int((x1i+x2i)/2), int((y1i+y2i)/2)
                                 depth_m = median_depth_meters_from_center(depth_frame, cx, cy, k=DEPTH_KERNEL, depth_scale=self.depth_scale) if depth_frame is not None else None
 
                         else:
                             cv2.rectangle(overlay, (x1i, y1i), (x2i, y2i), (0,255,0), 2)
+                            # [Z값 로직 복원] 마스크 없을 시 BBox 중심 깊이 계산
                             cx, cy = int((x1i+x2i)/2), int((y1i+y2i)/2)
                             depth_m = median_depth_meters_from_center(depth_frame, cx, cy, k=DEPTH_KERNEL, depth_scale=self.depth_scale) if depth_frame is not None else None
 
-                        # 퍼블리시 픽셀
+                        # 퍼블리시 픽셀 (X, Y) 확정
                         if masks_np is not None and i < (masks_np.shape[0] if masks_np is not None else 0) and handle_ctr is not None and tip_ctr is not None:
                             if norm_label(cls_name) == norm_label("wire_cutter"):
                                 center_px = (handle_ctr[0]*0.4 + tip_ctr[0]*0.6, handle_ctr[1]*0.4 + tip_ctr[1]*0.6)
                             elif norm_label(cls_name) == norm_label("nipper"):
-                                center_px = (handle_ctr[0]*0.35 + tip_ctr[0]*0.65, handle_ctr[1]*0.35 + tip_ctr[1]*0.65)
+                                center_px = (handle_ctr[0]*0.3 + tip_ctr[0]*0.7, handle_ctr[1]*0.3 + tip_ctr[1]*0.7)
                             else:
                                 center_px = ((handle_ctr[0]+tip_ctr[0])*0.5, (handle_ctr[1]+tip_ctr[1])*0.5)
                         else:
@@ -567,9 +559,12 @@ class VisionNode(Node):
                         cv2.drawMarker(overlay, (cx_i, cy_i), (0, 255, 0), markerType=cv2.MARKER_CROSS, markerSize=14, thickness=2)
                         cv2.putText(overlay, "PUB", (cx_i + 10, max(15, cy_i - 10)), FONT, 0.5, (0,255,0), 2, cv2.LINE_AA)
 
+                        # [Z값 로직 복원] 3D 변환:
+                        # (X, Y)는 center_px를 사용하지만,
+                        # (Z)는 위에서 계산한 depth_m (마스크 전체 또는 BBox 중심)을 사용
                         center_3d = None
                         if depth_m is not None:
-                            center_3d = self.pixel_to_3d_point(center_px[0], center_px[1], depth_m)
+                            center_3d = self.pixel_to_3d_point(center_px[0], center_px[1], 0.39)
 
                         label = f"{cls_name} {conf:.2f}"
                         if depth_m is not None: label += f" | Depth: {depth_m:.2f}m"
@@ -598,6 +593,7 @@ class VisionNode(Node):
                 draw_label_box(overlay, 10, 60, status_text, bg=(40, 40, 40), fg=(255,255,255))
                 draw_label_box(overlay, 10, 90, target_text, bg=(40, 40, 40), fg=(255,255,255))
                 try:
+                    # [수정] 최종 시각화는 왜곡 보정된 overlay 이미지를 사용
                     cv2.imshow("Tool Detection (seg+obb)", overlay)
                     cv2.waitKey(1)
                 except Exception as e:

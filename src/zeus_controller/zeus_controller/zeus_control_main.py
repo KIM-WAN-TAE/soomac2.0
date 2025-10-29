@@ -2,8 +2,6 @@
 
 import rclpy
 from rclpy.node import Node
-from rclpy.callback_groups import ReentrantCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
 from std_msgs.msg import String, Float32MultiArray, Float32
 from zeus_interfaces.msg import ZeusMainCommand
 
@@ -13,7 +11,7 @@ from zeus_controller.read_json import CameraDHParameters
 
 import numpy as np
 import threading
-import json
+import json, time
 
 RATE = 20
 TIMER_PERIOD = 1/RATE
@@ -68,8 +66,10 @@ class MainControlNode(Node):
             # Return 디버깅용 초기화 값들
             # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left', 'M3':'middle'}
             # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left'}
-            # self.tool_dict = {'wire_stripper': 'middle', 'M3':'middle'}
+            # self.tool_dict = {'wire_cutter': 'left'}
+            # self.tool_dict = {'wire_stripper': 'middle'}
             self.tool_dict = {}
+            # self.tool_dict = {'nipper': 'middle', 'M3':'middle'}
             
     def reset_tool_pose(self):
         with self.lock:
@@ -256,6 +256,27 @@ class MainControlNode(Node):
             msg = String()
             msg.data = '작업 완료'
             self.work_done_pub.publish(msg)
+            
+        # elif next_step == 'check_offset':
+        #     with self.lock:
+        #         # 와이어 커터는 항상 개떡같이 잡음
+        #         if self.tool == 'wire_cutter':
+        #             self.current_step = 'step_offset'
+        #             self.current_flag = 'order'
+        #             self.next_step = None
+                    
+        #         # 얘는 Yaw에 따라 다름
+        #         elif self.tool == 'wire_stripper':
+        #                 self.current_step = 'step_offset'
+        #                 self.current_flag = 'order'
+        #                 self.next_step = None
+                    
+        #         # 니퍼는 개떡같이 잡아도 문제가 없음
+        #         elif self.tool == 'nipper':
+        #             self.current_step = 'step_5'
+        #             self.current_flag = 'order'
+        #             self.next_step = None
+            
         
         elif next_step == 'check':
             with self.lock:
@@ -403,6 +424,52 @@ class MainControlNode(Node):
         # 범용 동작에 사용하는 기능 =======================================
         
         # Deliver Normal 에 사용하는 기능 =======================================
+        if ans.get('front_offset_move'):
+            with self.lock:
+                tool = self.tool
+                yaw  = self.tool_yaw
+                tool_dict = self.tool_dict
+                
+            cmd_msg = ZeusMainCommand()
+            
+            STRIP_X_OFFSET = 12.0
+            CUTTER_X_OFFSET = 16.0
+            NIPPER_X_OFFSET = 8.0
+            
+            if tool == 'wire_stripper':
+                if yaw < -10.0:
+                    pose = [3.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                elif yaw > 10.0:
+                    pose = [-STRIP_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                else:
+                    pose = [-(STRIP_X_OFFSET - 5), 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+            elif tool == 'wire_cutter':
+                # if tool_dict[tool] == 'middle':
+                #     pose = [-4.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                # else:
+                #     pose = [-CUTTER_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                pose = [-CUTTER_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+            elif tool == 'nipper':
+                if yaw < -10.0:
+                    pose = [3.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                elif yaw > 10.0:
+                    pose = [-NIPPER_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                else:
+                    pose = [-(NIPPER_X_OFFSET - 5), 0.0, 0.0, 0.0, 0.0, 0.0]
+            
+            cmd_msg.position = pose
+            cmd_msg.frame = 't'
+            cmd_msg.speed = 30.0
+            self.cmd_pub.publish(cmd_msg)
+                
+                
         if ans.get('camera_trigger'):
             cam_msg = String()
             
@@ -712,6 +779,52 @@ class MainControlNode(Node):
             cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
             
+        if ans.get('all_return_offset_move'):
+            with self.lock:
+                tool = self.tool
+                yaw  = self.tool_yaw
+                tool_dict = self.tool_dict
+                
+            cmd_msg = ZeusMainCommand()
+            
+            STRIP_X_OFFSET = 8.0
+            CUTTER_X_OFFSET = 16.0
+            NIPPER_X_OFFSET = 6.0
+            
+            if tool == 'wire_stripper':
+                if yaw < -10.0:
+                    pose = [STRIP_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                elif yaw > 10.0:
+                    pose = [-STRIP_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                else:
+                    pose = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+            elif tool == 'wire_cutter':
+                # if tool_dict[tool] == 'middle':
+                #     pose = [-4.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                # else:
+                #     pose = [-CUTTER_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                pose = [-CUTTER_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+            elif tool == 'nipper':
+                if yaw < -10.0:
+                    pose = [3.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                elif yaw > 10.0:
+                    pose = [-NIPPER_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                else:
+                    pose = [-(NIPPER_X_OFFSET - 5), 0.0, 0.0, 0.0, 0.0, 0.0]
+            
+            cmd_msg.position = pose
+            cmd_msg.frame = 't'
+            cmd_msg.speed = 30.0
+            self.cmd_pub.publish(cmd_msg)
+            
+            
         if ans.get('all_return_camera_center'):
             with self.lock:
                 if self.base_to_camera_matrix is None:
@@ -721,7 +834,7 @@ class MainControlNode(Node):
                 x,y,z = self.tool_p
                 yaw = self.tool_yaw
                 xy_coor = self.xy_coor
-                
+            
             # xy 값만 도구 중심으로 이동할 수 있게 삽입
             P = xy_coor
             P[0] = float(x)
