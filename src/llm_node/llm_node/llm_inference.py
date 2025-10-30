@@ -1,93 +1,82 @@
 # -*- coding: utf-8 -*-
 """
-tool_chat_engine.py
-- 기존 CLI 로직을 클래스화하여, ROS2 노드에서 import 사용 가능하도록 구성
-- 의도/모드/툴 추론 알고리즘과 부정/대조 처리, RAG/LLM 보강 로직은 그대로 유지
+tool_chat_engine.py (RAG-Mode + LLM-Tool, JSONL-backed v5.5)
+- 체인 없이 RAG: Retriever → Llama 직접 프롬πτ
+- 모드: START | UP | DOWN | DELIVER | RETURN | DISASSEMBLE | FINISH
+- DELIVER: tool + target 동시 추출, 누락 시 공간표현 보정
+- RETURN: last_tool 폴백
+- explicit_tool 있어도 DELIVER 타깃 보강 수행
+- plan_action 포함, TTS 특수토큰 제거
 """
-import os, re, json, time, unicodedata
+
+import os, re, json, unicodedata, warnings
 from textwrap import dedent
-from typing import Optional, Dict, Any, Tuple, List
+from typing import Optional, Dict, Any, List, Tuple
+
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 import numpy as np
 from pydantic import Field, model_validator
-
-# LLM/RAG 관련
 from llama_cpp import Llama
 from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS
-from langchain.chains import RetrievalQA
-from langchain_community.llms import LlamaCpp
-from langchain.prompts import PromptTemplate
 from langchain_core.retrievers import BaseRetriever
+from langchain_core.embeddings import Embeddings
+import torch
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 
 class ToolChatEngine:
-    """
-    - 모든 추론 로직을 보존한 클래스 버전
-    - ROS2 노드에서 이 클래스를 초기화해 사용 (model/RAG 한 번만 로드)
-    """
-    # ── 상수/화이트리스트 ───────────────────────────────────
-    CANDIDATES = {"START", "DELIVER", "RETURN", "CLEAN", "ASSEMBLE", "FINISH"}
-    _MODE_RE = re.compile(r"\b(START|DELIVER|RETURN|CLEAN|ASSEMBLE|FINISH)\b", re.IGNORECASE)
-
-    QUESTION_CUES = {
-        "뭐지", "뭐였지", "어떤 도구", "무슨 도구",
-        "알려줘", "추천", "어떻게 하지", "뭘 써",
-        "뭘로", "뭐로", "무엇으로"
-    }
-    COMMAND_CUES  = {"줘", "줄래", "주세요", "가져다", "가져와", "건네", "필요해"}
-
-    MODE_ALIASES = {
-        "START":   ["시작", "안녕", "hello", "하이", "준비"],
-        "DELIVER": ["가져다줘", "가져다 줘", "가져와줘", "가져와", "전달", "넘겨줘", "핸드오프", "줄래", "주세요"],
-        "RETURN":  ["원위치", "제자리", "반납", "되돌려놔", "돌려놔", "돌려줘"],
-        "CLEAN":   ["청소 시작", "청소", "치워", "정돈", "닦"],
-        "ASSEMBLE":["결합", "체결 시작", "체결", "조립", "조여", "풀어", "고정", "분해"],
-        "FINISH":  ["마무리", "종료", "수고했어", "그만", "끝내"]
-    }
+    CANDIDATES = {"START", "UP", "DOWN", "DELIVER", "RETURN", "DISASSEMBLE", "MEASURE", "FINISH"}
+    _MODE_RE = re.compile(r"\b(START|UP|DOWN|DELIVER|RETURN|DISASSEMBLE|MEASURE|FINISH)\b", re.IGNORECASE)
 
     ALLOWED_TOOLS = {
-        "육각 렌치": ["육각렌치", "육각 렌치", "헥사 렌치", "헥스키", "육각키", "hex key", "hex", "알렌키"],
-        "디지털 버니어 캘리퍼스": ["디지털 버니어 캘리퍼스", "버니어", "버니어 캘리퍼스", "버니어캘리퍼스", "캘리퍼스", "디지털 캘리퍼스"],
-        "롱노우즈 플라이어": ["롱노우즈 플라이어", "롱노즈 플라이어", "롱노우즈", "롱노즈", "롱 플라이어", "롱플라이어"],
-        "정밀 니퍼": ["정밀 니퍼", "니퍼", "precision nipper"],
-    }
-    MODE_TOOL_REQUIRED = {"DELIVER", "RETURN"}
-
-    OPERATION_ALIASES = {
-        "measure":  ["재", "측정", "길이", "크기", "직경", "내경", "외경", "깊이", "단차"],
-        "grip":     ["잡", "집", "고정"],
-        "retrieve": ["꺼내", "꺼내줘", "뽑", "집어내"],
-        "cut":      ["자르", "잘라", "자를", "잘라줘", "컷", "끊", "끊어", "커팅", "절단"],
-        "fasten":   ["조이", "잠그", "체결", "고정"],
-        "unfasten": ["풀어", "해체", "분리"],
+        "스탠드": ["스탠드","조명","작업등","스탠드 조명","스탠드불","스탠드 불","lamp"],
+        "M3 나사": ["M3 나사","M3 볼트","작은 나사","볼트","나사","m3", "엠쓰리", "엠쓰리 나사"],
+        "니퍼": [
+            "니퍼","니뻐","니빠","nipper",
+            "롱노즈","롱노즈 플라이어","롱노우즈 플라이어","롱 플라이어","롱플라이어",
+            "needle nose","needle-nose","long nose","long-nose"
+        ],
+        "커터": ["커터","wire cutter","와이어 커터","와이어커터"],
+        "와이어 스트리퍼": ["와이어 스트리퍼","스트리퍼","와이어스트리퍼","피복 스트리퍼","피복제거기","wire stripper"],
     }
 
-    OBJECT_ALIASES = {
-        "볼트": ["볼트", "나사", "육각볼트", "알렌볼트"],
-        "너트": ["너트"],
-        "전선": ["전선", "케이블", "리드선", "케이블 타이", "타이"],
-        "PCB": ["pcb", "회로기판", "보드"],
-        "구멍(내경)": ["구멍", "내경", "홀"],
-        "큐브": ["큐브", "정육면체", "미니 큐브"],
+    DIRECTION_KEYWORDS = {
+        "front": ["앞", "앞쪽", "전방", "앞에", "front", "forward"],
+        "back":  ["뒤", "뒤쪽", "후방", "뒤에", "rear", "back"],
+        "left":  ["왼쪽", "좌", "좌측", "왼편", "left"],
+        "right": ["오른쪽", "우", "우측", "오른편", "right"],
     }
 
-    _NEG_TOKENS_RE = r"(하지\s*말|하지마|말고|말라|금지|빼고|제외|안\s*해|하지\s*않|못\s*해)"
-    MODE_KEYWORDS = {
-        "DELIVER":  ["가져와", "가져다", "가져와줘", "가져다줘", "줘", "주라", "주세요", "건네", "전달", "넘겨"],
-        "RETURN":   MODE_ALIASES["RETURN"],
-        "CLEAN":    ["청소", "치우", "정돈", "닦"],
-        "ASSEMBLE": ["체결", "조립", "조여", "풀", "고정", "분해"],
-        "START":    ["시작", "준비"],
-        "FINISH":   ["마무리", "종료", "끝내", "그만"],
-    }
+    DEFAULT_SCENARIO = dedent("""
+    [시나리오 지침: 모드 정의와 예시]
+    - START: 작업 시작. "시작하자", "준비해", "작업등 켜"
+    - UP: 스탠드 상승/밝게. "스탠드 올려", "조명 높여"
+    - DOWN: 스탠드 하강/어둡게. "스탠드 내려", "조명 낮춰"
+    - DELIVER: 공구/부품 전달. "니퍼 가져와", "M3 나사 좀"
+    - RETURN: 공구 반납. "니퍼 원위치", "도구 정리해"
+    - MEASURE: 배선/전류/측정. "배선 점검해줘", "전류 흐르는지 검사해줘", "검류기로 측정"
+    - DISASSEMBLE: 분해/볼트 풀기. "나사 풀어", "분해해"
+    - FINISH: 종료/소등. "끝내자", "작업 종료", "불 꺼"
+    - 규칙: 여러 지시가 있으면 '마지막 명령'을 우선.
+    """)
 
-    # ── 간이 색상 (옵션) ────────────────────────────────────
+    _KO_BOUND    = r'(?<![가-힣A-Za-z0-9])'
+    _KO_BOUND_T  = r'(?![가-힣A-Za-z0-9])'
+    _POST_SIMPLE = r'(?:를|을|은|는|이|가|과|와)?'  # 간단 조사 허용
+
+    _RIPPER_ONLY = re.compile(
+        rf'(?<!스트){_KO_BOUND}리퍼{_POST_SIMPLE}{_KO_BOUND_T}'
+    )
     class C:
         GREEN, YELLOW, RED, CYAN, END = '\033[92m', '\033[93m', '\033[91m', '\033[96m', '\033[0m'
 
-    # ── 간이 TF-IDF Retriever ───────────────────────────────
     class SimpleTfidfRetriever(BaseRetriever):
-        docs: list[Document]
+        docs: List[Document]
         k: int = 3
         tfidf_mat: np.ndarray = Field(default=None, repr=False)
         idf: np.ndarray = Field(default=None, repr=False)
@@ -98,50 +87,55 @@ class ToolChatEngine:
 
         @model_validator(mode='after')
         def build_tfidf(self) -> 'ToolChatEngine.SimpleTfidfRetriever':
-            if self.tfidf_mat is not None: return self
+            if self.tfidf_mat is not None:
+                return self
             tokens_per_doc = [ToolChatEngine._tokenize(d.page_content) for d in self.docs]
             vocab = {}
             for toks in tokens_per_doc:
                 for t in toks:
-                    if t not in vocab: vocab[t] = len(vocab)
+                    if t not in vocab:
+                        vocab[t] = len(vocab)
             self.vocab = vocab
             V, N = len(vocab), len(self.docs)
             df = np.zeros(V, dtype=np.float32)
             for toks in tokens_per_doc:
                 for t in set(toks):
-                    if t in vocab: df[vocab[t]] += 1.0
+                    if t in vocab:
+                        df[vocab[t]] += 1.0
             self.idf = np.log((N + 1) / (df + 1)) + 1.0
             self.tfidf_mat = np.zeros((N, V), dtype=np.float32)
             for i, toks in enumerate(tokens_per_doc):
-                if not toks: continue
+                if not toks:
+                    continue
                 tf = {t: toks.count(t) for t in set(toks)}
                 vec = np.zeros(V, dtype=np.float32)
                 for t, c in tf.items():
-                    if t in self.vocab:
-                        j = self.vocab[t]
-                        vec[j] = (c / len(toks)) * self.idf[j]
+                    j = self.vocab[t]
+                    vec[j] = (c / len(toks)) * self.idf[j]
                 norm = np.linalg.norm(vec)
                 self.tfidf_mat[i, :] = vec / (norm + 1e-9)
             return self
 
-        def _get_relevant_documents(self, query: str) -> list[Document]:
+        def _get_relevant_documents(self, query: str) -> List[Document]:
             q_toks = ToolChatEngine._tokenize(query)
-            if not q_toks or not self.vocab: return self.docs[:self.k]
+            if not q_toks or not self.vocab:
+                return self.docs[:self.k]
             V = len(self.vocab)
             q_vec = np.zeros(V, dtype=np.float32)
             tf = {t: q_toks.count(t) for t in set(q_toks) if t in self.vocab}
-            if not tf: return self.docs[:self.k]
+            if not tf:
+                return self.docs[:self.k]
             for t, c in tf.items():
                 j = self.vocab[t]
                 q_vec[j] = (c / len(q_toks)) * self.idf[j]
             q_norm = np.linalg.norm(q_vec)
-            if q_norm < 1e-9: return self.docs[:self.k]
+            if q_norm < 1e-9:
+                return self.docs[:self.k]
             q_vec = q_vec / q_norm
             sims = self.tfidf_mat @ q_vec
             top_idx = np.argsort(-sims)[:self.k]
             return [self.docs[i] for i in top_idx]
 
-    # ── 유틸 ────────────────────────────────────────────────
     @staticmethod
     def _normalize_kr(s: str) -> str:
         s = unicodedata.normalize('NFKC', s or "")
@@ -154,454 +148,247 @@ class ToolChatEngine:
     def _tokenize(text: str):
         return ToolChatEngine._WORD_RE.findall((text or "").lower())
 
-    @staticmethod
-    def _contains_kw(t: str, kws: list[str]) -> bool:
-        t = ToolChatEngine._normalize_kr(t); return any(k in t for k in kws)
-
-    @staticmethod
-    def _is_negated_action(t: str, kws: list[str]) -> bool:
-        t = ToolChatEngine._normalize_kr(t)
-        neg = ToolChatEngine._NEG_TOKENS_RE
-        for kw in kws:
-            if re.search(rf"{re.escape(kw)}\s*(은|는|이|가|을|를)?\s*{neg}", t):
-                return True
-            if re.search(rf"(안|못)\s*{re.escape(kw)}", t):
-                return True
-            if re.search(rf"{re.escape(kw)}\s*(안|못)\s*(해|하|하기|하세요|해줘)", t):
-                return True
-        return False
-
-    @staticmethod
-    def _is_imperative(t: str, kws: list[str]) -> bool:
-        t = ToolChatEngine._normalize_kr(t)
-        imp = r"(해|해줘|해라|해줄래|하시|하세요|하자|시작|진행|줘|주세요|가져와|가져다줘|반납|원위치)"
-        for kw in kws:
-            if re.search(rf"{re.escape(kw)}.{{0,8}}{imp}", t):
-                return True
-        return False
-
-    @staticmethod
-    def _contrast_preferred_mode(t: str) -> Optional[str]:
-        t = ToolChatEngine._normalize_kr(t)
-        def _alt(kws: list[str]) -> str:
-            return "|".join(map(re.escape, kws))
-        for A, akw in ToolChatEngine.MODE_KEYWORDS.items():
-            for B, bkw in ToolChatEngine.MODE_KEYWORDS.items():
-                if A == B:
-                    continue
-                pat = rf"(({_alt(akw)})).{{0,16}}{ToolChatEngine._NEG_TOKENS_RE}.{{0,32}}(({_alt(bkw)}))"
-                if re.search(pat, t):
-                    return B
-        return None
-
-    # ── 초기화 ───────────────────────────────────────────────
+    # ───────── init ─────────
     def __init__(self,
-                 model_path: str = "/home/temp_id/LLM/gemma3-q4_k_m_budda.gguf",
-                 rag_data_path: str = "/home/temp_id/SooMac/main_tool.json",
-                 use_gpu_llama: bool = False,
+                 model_path: str = "/home/liw/sllm/models/gemma3-q4_k_m_budda.gguf",
+                 mode_rag_jsonl_path: Optional[str] = None,
+                 rag_mode_text: Optional[str] = None,
+                 faiss_index_path: str = "./faiss_index_mode",
+                 use_gpu_llama: bool = True,
                  verbose: bool = True):
         self.verbose = verbose
         self.model_path = model_path
-        self.rag_data_path = rag_data_path
-        self.n_gpu_layers = -1 if use_gpu_llama else 0
+        self.use_gpu_llama = use_gpu_llama
 
-        # 세션 상태
-        self.session_state: Dict[str, Any] = {
-            "last_tool": None,
-            "last_mode": None,
-            "last_object": None,
-        }
+        if torch.cuda.is_available() and self.use_gpu_llama:
+            if self.verbose:
+                gpu_count = torch.cuda.device_count()
+                gpu_name = torch.cuda.get_device_name(0) if gpu_count > 0 else "Unknown"
+                print(f"{self.C.CYAN}[*] GPU 감지({gpu_count}), 주 GPU: {gpu_name}{self.C.END}")
+                print(f"{self.C.GREEN}[*] GPU 오프로드 활성화{self.C.END}")
+            self.n_gpu_layers = -1
+        else:
+            if self.verbose:
+                print(f"{self.C.YELLOW}[*] GPU 미사용 → CPU 모드{self.C.END}")
+            self.n_gpu_layers = 0
+
+        self.mode_rag_jsonl_path = mode_rag_jsonl_path
+        self.faiss_index_path = faiss_index_path
+        self.session_state: Dict[str, Any] = {"last_tool": None, "last_mode": None, "last_object": None}
 
         if self.verbose:
             print(f"[*] GGUF 모델 로드: {self.model_path}", flush=True)
-        self.llm_model = Llama(model_path=self.model_path, n_ctx=4096, n_batch=512,
-                               n_gpu_layers=self.n_gpu_layers, seed=0, verbose=False)
-        self.llm_chain = LlamaCpp(model_path=self.model_path, n_ctx=4096,
-                                  n_gpu_layers=self.n_gpu_layers, temperature=0.1, verbose=False)
 
-        self.rag_chain = self._setup_rag_pipeline()
+        if self.n_gpu_layers > 0:
+            n_ctx, n_batch, n_threads = 4096, 2048, 4
+        else:
+            n_ctx, n_batch, n_threads = 2048, 1024, min(os.cpu_count() or 4, 8)
 
-    # ── RAG 파이프라인 ──────────────────────────────────────
-    def _setup_rag_pipeline(self):
-        if self.verbose:
-            print("[*] RAG 데이터베이스 설정...", flush=True)
-        if not os.path.isfile(self.rag_data_path):
-            print(f"{self.C.RED}[X] RAG 데이터 파일이 없음: {self.rag_data_path}{self.C.END}")
-            return None
-
-        docs: List[Document] = []
-        try:
-            with open(self.rag_data_path, 'r', encoding='utf-8') as f:
-                full_data = json.load(f)
-        except Exception as e:
-            print(f"{self.C.RED}[X] JSON 로드 실패: {e}{self.C.END}")
-            return None
-
-        for tool in full_data.get('tools', []):
-            tool_name = tool.get('tool_name', 'Unknown')
-            metadata = {"tool": tool_name}
-            if tool.get('function_mapping'):
-                docs.append(Document(page_content=tool['function_mapping'], metadata=metadata))
-            if tool.get('overview', {}).get('definition'):
-                docs.append(Document(page_content=tool['overview']['definition'], metadata=metadata))
-            for qa in tool.get('q_and_a', []):
-                docs.append(Document(page_content=f"질문: {qa.get('question','')}\n답변: {qa.get('answer','')}", metadata=metadata))
-
-        if not docs:
-            print(f"{self.C.RED}JSON에서 문서를 만들지 못함. 스키마 확인.{self.C.END}")
-            return None
-
-        try:
-            from langchain_huggingface import HuggingFaceEmbeddings
-            embeddings = HuggingFaceEmbeddings(
-                model_name='jhgan/ko-sbert-nli',
-                model_kwargs={'device': 'cpu'},
-                encode_kwargs={'normalize_embeddings': True}
-            )
-            vectorstore = FAISS.from_documents(docs, embeddings)
-            retriever = vectorstore.as_retriever(search_kwargs={'k': 3})
-            if self.verbose:
-                print(f"{self.C.CYAN}[*] Retriever: HF Embeddings + FAISS (성공){self.C.END}")
-        except Exception as e:
-            if self.verbose:
-                print(f"{self.C.YELLOW}[!] 임베딩 로드 실패 → TF-IDF 폴백: {e}{self.C.END}")
-            retriever = self.SimpleTfidfRetriever(docs=docs, k=3)
-
-        prompt_template = (
-            "당신은 사용자의 질문에 가장 적합한 공구를 찾아주는 전문가입니다.\n"
-            "주어진 정보(Context)를 바탕으로 질문에서 묘사하는 기능을 수행하는 공구의 이름을 명확하게 알려주세요.\n"
-            "만약 적절한 공구를 찾았다면, \"그 작업을 위한 공구는 [공구 이름]입니다.\" 형식으로만 답하세요\n\n"
-            "Context: {context}\nQuestion: {question}\nAnswer:"
+        self.llm_model = Llama(
+            model_path=self.model_path,
+            n_ctx=n_ctx,
+            n_batch=n_batch,
+            n_threads=n_threads,
+            n_gpu_layers=self.n_gpu_layers,
+            seed=0,
+            verbose=False,
+            use_mlock=True,
+            use_mmap=True,
         )
-        rag_prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
-        qa_chain = RetrievalQA.from_chain_type(llm=self.llm_chain, chain_type="stuff",
-                                               retriever=retriever,
-                                               chain_type_kwargs={"prompt": rag_prompt})
-        if self.verbose:
-            print("[*] RAG 설정 완료.", flush=True)
-        return qa_chain
 
-    # ── 분류/정규화 ─────────────────────────────────────────
-    def classify_intent(self, user_text: str) -> str:
-        txt = self._normalize_kr(user_text)
-        if any(cue in txt for cue in self.COMMAND_CUES):
-            return "명령"
-        for aliases in self.MODE_ALIASES.values():
-            if any(a in txt for a in aliases):
-                return "명령"
-        if any(q in txt for q in self.QUESTION_CUES):
-            return "질문"
-
-        prompt = (
-            "### System\n역할: 사용자의 발화 의도를 '명령', '질문', '인사말', '마무리', '기타' 중 하나로 분류하세요.\n출력 형식: {Intent: <분류>}\n\n"
-            "### User\n렌치로 너트 좀 올려줘\n### Assistant\n{Intent: 명령}\n\n"
-            "### User\n스트리퍼가 뭐야?\n### Assistant\n{Intent: 질문}\n\n"
-            "### User\n안녕! 시작해볼까\n### Assistant\n{Intent: 인사말}\n\n"
-            "### User\n여기까지 하자\n### Assistant\n{Intent: 마무리}\n\n"
-            "### User\n고마워\n### Assistant\n{Intent: 기타}\n\n"
-            f"### User\n{user_text}\n### Assistant\n"
+        self.embeddings = self._load_embedding_model()
+        self.mode_retriever, self.mode_template = self._setup_mode_rag(
+            scenario_text=(rag_mode_text or self.DEFAULT_SCENARIO),
+            jsonl_path=self.mode_rag_jsonl_path
         )
+
+    def __del__(self):
         try:
-            raw = self.llm_model.create_completion(prompt=prompt, max_tokens=16, temperature=0.0, stop=["}"])['choices'][0]['text']
-            for k in ("명령","질문","인사말","마무리"):
-                if k in raw: return k
+            if hasattr(self, 'llm_model') and self.llm_model is not None:
+                try:
+                    if hasattr(self.llm_model, 'close'):
+                        self.llm_model.close()
+                finally:
+                    self.llm_model = None
         except Exception:
             pass
-        return "기타"
 
-    def canonicalize_mode(self, user_text: str) -> Optional[str]:
-        txt = self._normalize_kr(user_text)
-        for mode, aliases in self.MODE_ALIASES.items():
-            if any(a in txt for a in aliases):
-                return mode
+    # ───── embedding / RAG ─────
+    def _load_embedding_model(self) -> Optional[Embeddings]:
+        try:
+            from langchain_huggingface import HuggingFaceEmbeddings
+            if self.verbose:
+                print(f"{self.C.CYAN}[*] 임베딩 로드(jhgan/ko-sbert-nli){self.C.END}", flush=True)
+            return HuggingFaceEmbeddings(
+                model_name='jhgan/ko-sbert-nli',
+                model_kwargs={'device': device},
+                encode_kwargs={'normalize_embeddings': True}
+            )
+        except Exception as e:
+            if self.verbose:
+                print(f"{self.C.YELLOW}[!] 임베딩 로드 실패: {e}{self.C.END}")
+            return None
+
+    def _load_mode_docs_from_jsonl(self, jsonl_path: str) -> List[Document]:
+        docs: List[Document] = []
+        with open(jsonl_path, "r", encoding="utf-8") as f:
+            for line in f:
+                obj = json.loads(line)
+                docs.append(Document(page_content=obj["page_content"],
+                                     metadata={"mode": obj.get("mode", "UNKNOWN"),
+                                               "type": obj.get("type", "unknown")}))
+        return docs
+
+    def _setup_mode_rag(self, scenario_text: str, jsonl_path: Optional[str]):
+        if self.verbose:
+            print("[*] Mode RAG 준비...", flush=True)
+
+        retriever = None
+        if self.embeddings:
+            if os.path.exists(self.faiss_index_path):
+                try:
+                    if self.verbose:
+                        print(f"{self.C.GREEN}[*] FAISS 인덱스 로드: {self.faiss_index_path}{self.C.END}")
+                    vectorstore = FAISS.load_local(self.faiss_index_path, self.embeddings, allow_dangerous_deserialization=True)
+                    retriever = vectorstore.as_retriever(search_kwargs={'k': 5})
+                except Exception as e:
+                    if self.verbose:
+                        print(f"{self.C.YELLOW}[!] FAISS 로드 실패: {e}{self.C.END}")
+
+            if retriever is None:
+                if self.verbose:
+                    print(f"{self.C.CYAN}[*] 새 FAISS 인덱스 생성{self.C.END}")
+                if jsonl_path and os.path.isfile(jsonl_path):
+                    docs = self._load_mode_docs_from_jsonl(jsonl_path)
+                else:
+                    docs = [Document(page_content=scenario_text, metadata={"section": "scenario"})]
+                vectorstore = FAISS.from_documents(docs, self.embeddings)
+                vectorstore.save_local(self.faiss_index_path)
+                retriever = vectorstore.as_retriever(search_kwargs={'k': 5})
+
+        if retriever is None:
+            if self.verbose:
+                print(f"{self.C.YELLOW}[!] 임베딩 실패 → TF-IDF 폴백{self.C.END}")
+            docs = self._load_mode_docs_from_jsonl(jsonl_path) if jsonl_path and os.path.isfile(jsonl_path) else [Document(page_content=scenario_text)]
+            retriever = self.SimpleTfidfRetriever(docs=docs, k=5)
+
+        mode_template = (
+            "당신은 사용자 발화로부터 '모드'만 결정하는 시스템입니다.\n"
+            "가능한 모드: START | UP | DOWN | DELIVER | RETURN | DISASSEMBLE | MEASURE | FINISH\n"
+            "규칙: 문장에 여러 동작이 있으면 마지막 명령을 우선합니다.\n"
+            "아래 Context와 질문을 보고 가장 적합한 모드 하나만 골라 출력하세요.\n"
+            "출력은 정확히 'Mode: <모드명>' 한 줄.\n\n"
+            "Context:\n{context}\n\nQuestion: {question}\nAnswer:"
+        )
+        return retriever, mode_template
+
+    def rag_infer_mode(self, user_text: str) -> Optional[str]:
+        if not self.mode_retriever:
+            return None
+        try:
+            try:
+                docs = self.mode_retriever.invoke(user_text)
+            except Exception:
+                docs = self.mode_retriever.invoke(user_text)
+            context = "\n\n".join(d.page_content for d in docs)[:4000]
+            prompt = self.mode_template.format(context=context, question=user_text)
+            raw = self.llm_model.create_completion(
+                prompt=prompt, max_tokens=8, temperature=0.0, stop=["\n"]
+            )['choices'][0]['text']
+            m = self._MODE_RE.search(raw or "")
+            return m.group(1).upper() if m else None
+        except Exception:
+            return None
+
+    # ───── canon/추출 유틸 ─────
+    def _canon_from_value(self, value: Optional[str]) -> Optional[str]:
+        if not value:
+            return None
+        txt = self._normalize_kr(value)
+        for canon, aliases in self.ALLOWED_TOOLS.items():
+            if self._normalize_kr(canon) == txt:
+                return canon
+            for a in aliases:
+                if self._normalize_kr(a) == txt:
+                    return canon
+        return None
+
+    _SPATIAL_TOKENS = r"(옆|옆에|옆에다|근처|앞|뒤|위|아래|우측|좌측|오른쪽|왼쪽)"
+    _POSTPOSITION = r"(에다|에|으로|로|에다가)?"
+    def _clean_target_phrase(self, s: str) -> str:
+        s = (s or "").strip()
+        s = re.sub(rf"\s*{self._SPATIAL_TOKENS}{self._POSTPOSITION}$", "", s)
+        s = re.sub(r"(을|를|은|는|이|가|와|과)$", "", s)
+        return s.strip()
+
+    _SPATIAL = r"(옆|옆에|옆에다|근처|앞|뒤|위|아래|우측|좌측|오른쪽|왼쪽)"
+    def _extract_target_from_spatial(self, text: str, exclude: Optional[str] = None) -> Optional[str]:
+        t = self._normalize_kr(text)
+        # 별칭 길이순 정렬
+        if re.search(rf'{self._RIPPER_ONLY.pattern}\s*{self._SPATIAL}', t) or \
+            re.search(rf'{self._SPATIAL}\s*{self._RIPPER_ONLY.pattern}', t):
+            return "니퍼"
+        
+        alias_pairs = []
+        for canon, aliases in self.ALLOWED_TOOLS.items():
+            if exclude and canon == exclude:
+                continue
+            for name in [canon] + aliases:
+                n = self._normalize_kr(name)
+                alias_pairs.append((canon, n))
+        alias_pairs.sort(key=lambda x: len(x[1]), reverse=True)
+
+        # 패턴: "<이름>\s*(옆|앞|뒤|위|아래|좌|우|왼쪽|오른쪽)\b"
+        spatial = r"(옆|옆에|옆에다|근처|앞|뒤|위|아래|우측|좌측|오른쪽|왼쪽)"
+        for canon, n in alias_pairs:
+            if not n: continue
+            if re.search(rf"{re.escape(n)}\s*{spatial}", t):
+                return canon
+            if re.search(rf"{spatial}\s*{re.escape(n)}", t):  # 반대 순서도 허용
+                return canon
         return None
 
     def canonicalize_tool(self, user_text: str) -> Optional[str]:
         txt = self._normalize_kr(user_text)
+
+        # 모든 매칭 수집
+        hits = []
+        if self._RIPPER_ONLY.search(txt):
+            hits.append("니퍼")
+
+        # (정식명+별칭) 수집 후 길이 내림차순
+        alias_pairs = []
         for canon, alias_list in self.ALLOWED_TOOLS.items():
-            for alias in alias_list:
-                if self._normalize_kr(alias) in txt:
-                    return canon
-        return None
+            for a in [canon] + alias_list:
+                n = self._normalize_kr(a)
+                if n:
+                    alias_pairs.append((canon, n))
+        alias_pairs.sort(key=lambda x: len(x[1]), reverse=True)
 
-    def detect_operation(self, user_text: str) -> Optional[str]:
-        txt = self._normalize_kr(user_text)
-        for op, cues in self.OPERATION_ALIASES.items():
-            if any(c in txt for c in cues):
-                return op
-        return None
+        for canon, n in alias_pairs:
+            if n in txt and canon not in hits:
+                hits.append(canon)
 
-    def detect_object(self, user_text: str) -> Optional[str]:
-        txt = self._normalize_kr(user_text)
-        for obj, cues in self.OBJECT_ALIASES.items():
-            if any(self._normalize_kr(c) in txt for c in cues):
-                return obj
-        return None
+        # 예외 규칙: 2개 이상 매칭되고 M3 나사가 포함되면 M3 나사 우선
+        if len(hits) >= 2 and "M3 나사" in hits:
+            return "M3 나사"
 
-    def is_question_only(self, user_text: str) -> bool:
-        txt = self._normalize_kr(user_text)
-        if any(c in txt for c in self.COMMAND_CUES):
-            return False
-        return any(q in txt for q in self.QUESTION_CUES)
+        # 기본 규칙: 첫 매칭 반환
+        return hits[0] if hits else None
 
-    def decide_mode(self, user_text: str, base_mode: Optional[str]) -> Optional[str]:
-        t = self._normalize_kr(user_text)
-        pref = self._contrast_preferred_mode(t)
-        if pref:
-            return pref
 
-        present = {m: self._contains_kw(t, self.MODE_KEYWORDS[m]) for m in self.MODE_KEYWORDS}
-        neg     = {m: self._is_negated_action(t, self.MODE_KEYWORDS[m]) for m in self.MODE_KEYWORDS}
-        imp     = {m: self._is_imperative(t, self.MODE_KEYWORDS[m]) for m in self.MODE_KEYWORDS}
-
-        candidates = [m for m in self.MODE_KEYWORDS if present[m] and not neg[m]]
-        if base_mode and not neg.get(base_mode, False) and base_mode not in candidates:
-            candidates.append(base_mode)
-
-        imp_candidates = [m for m in candidates if imp[m]]
-        if imp_candidates:
-            candidates = imp_candidates
-
-        PRIORITY = ["RETURN", "CLEAN", "ASSEMBLE", "START", "FINISH", "DELIVER"]
-        for m in PRIORITY:
-            if m in candidates:
-                return m
-
-        if present["DELIVER"] and not neg["DELIVER"]:
-            return "DELIVER"
-        return base_mode
-
-    # ── LLM 보조 ────────────────────────────────────────────
-    def _extract_mode_token(self, text: str) -> Optional[str]:
-        if not text: return None
-        m = self._MODE_RE.search(text.strip())
-        return m.group(1).upper() if m else None
-
-    def _extract_tool_from_lines(self, text: str) -> Optional[str]:
-        if not text: return None
-        t = text.strip()
-        for line in t.splitlines():
-            line = line.strip()
-            cand = line.split(":",1)[1].strip() if ":" in line else line
-            for canon, aliases in self.ALLOWED_TOOLS.items():
-                if canon == cand:
-                    return canon
-                for alias in aliases:
-                    if self._normalize_kr(alias) == self._normalize_kr(cand):
-                        return canon
-        for canon, aliases in self.ALLOWED_TOOLS.items():
-            if canon in t: return canon
-            for alias in aliases:
-                if self._normalize_kr(alias) in self._normalize_kr(t):
-                    return canon
-        return None
-
-    def llm_guess_mode_and_tool(self, user_text: str, operation: Optional[str], obj: Optional[str]) -> Tuple[Optional[str], Optional[str], str]:
-        choices = " | ".join(sorted(self.ALLOWED_TOOLS.keys())) + " | NONE"
-        ex = (
-            "예시1) 문장: 선 정리 좀 하게, 자를 것 좀 가져와\n"
-            "Mode: DELIVER\n"
-            "Tool: 정밀 니퍼\n\n"
-            "예시2) 문장: 그거 청소하지 말고 니퍼만 가져와\n"
-            "Mode: DELIVER\n"
-            "Tool: 정밀 니퍼\n\n"
-            "예시3) 문장: 케이블 타이 잘라\n"
-            "Mode: ASSEMBLE\n"
-            "Tool: 정밀 니퍼\n\n"
-            "예시4) 문장: 니퍼 원위치해\n"
-            "Mode: RETURN\n"
-            "Tool: 정밀 니퍼\n\n"
-        )
-        ctx_bits = []
-        if operation: ctx_bits.append(f"operation={operation}")
-        if obj:       ctx_bits.append(f"object={obj}")
-        ctx = ("문맥: " + ", ".join(ctx_bits) + "\n") if ctx_bits else ""
-        prompt = (
-            "가능한 Mode: START | DELIVER | RETURN | CLEAN | ASSEMBLE | FINISH\n"
-            f"가능한 Tool: {choices}\n"
-            "규칙: 아래 형식으로만 두 줄 출력. 설명/따옴표/추가 텍스트 금지.\n"
-            "Mode: <위 여섯 중 하나>\n"
-            "Tool: <정식명 또는 NONE>\n\n"
-            + ex + ctx +
-            f"문장: {user_text}\n"
-            "Mode: "
-        )
-        raw = self.llm_model.create_completion(
-            prompt=prompt, max_tokens=16, temperature=0.0, stop=["\n\n"]
-        )['choices'][0]['text']
-        text_out = "Mode: " + (raw or "").strip()
-        mode = self._extract_mode_token(text_out)
-        tool = self._extract_tool_from_lines(text_out)
-        if tool and tool not in self.ALLOWED_TOOLS:
-            tool = None
-        return mode, tool, text_out
-
-    # ── 도구 매핑/확인 ──────────────────────────────────────
-    def map_tool(self, operation: Optional[str], obj: Optional[str], user_text: str) -> Optional[str]:
-        txt = self._normalize_kr(user_text)
-        if operation == "measure":
-            return "디지털 버니어 캘리퍼스"
-        if operation in {"grip", "retrieve"}:
-            return "롱노우즈 플라이어"
-        if operation == "cut":
-            return "정밀 니퍼"
-        if operation in {"fasten", "unfasten"}:
-            if any(k in txt for k in ["육각", "알렌", "hex"]):
-                return "육각 렌치"
-            if obj in {"볼트"}:
-                return "육각 렌치"
-        explicit = self.canonicalize_tool(user_text)
-        if explicit:
-            return explicit
-        return None
-
-    def need_confirmation(self, tool: Optional[str], operation: Optional[str], obj: Optional[str], user_text: str) -> bool:
-        txt = self._normalize_kr(user_text)
-        if operation in {"fasten", "unfasten"} and tool == "육각 렌치":
-            if not any(k in txt for k in ["육각", "알렌", "hex"]):
-                return True
-        return False
-
-    # ── 외부 API ────────────────────────────────────────────
-    def parse_and_infer(self, user_text: str) -> Dict[str, Any]:
-        intent    = self.classify_intent(user_text)
-        base_mode = self.canonicalize_mode(user_text)
-        operation = self.detect_operation(user_text)
-        obj       = self.detect_object(user_text)
-        tool      = self.canonicalize_tool(user_text) or self.map_tool(operation, obj, user_text)
-
-        if self.verbose:
-            print(f"{self.C.CYAN}[디버그] intent={intent}, base_mode={base_mode}, operation={operation}, object={obj}, tool_suggested={tool}{self.C.END}", flush=True)
-
-        mode = self.decide_mode(user_text, base_mode=base_mode)
-
-        # 모드 미결이면 LLM 보조
-        if not mode and intent == "명령":
-            try:
-                mode_llm, tool_llm, raw = self.llm_guess_mode_and_tool(user_text, operation, obj)
-                if mode_llm in self.CANDIDATES:
-                    mode = self.decide_mode(user_text, base_mode=mode_llm)
-                if (tool_llm in self.ALLOWED_TOOLS) and (not tool):
-                    tool = tool_llm
-                if self.verbose:
-                    print(f"{self.C.CYAN}[디버그] LLM 유추: {repr(raw)} → mode={mode}, tool={tool}{self.C.END}", flush=True)
-            except Exception as e:
-                if self.verbose:
-                    print(f"{self.C.YELLOW}[경고] LLM 유추 실패: {e}{self.C.END}", flush=True)
-
-        if self.verbose:
-            print(f"{self.C.CYAN}[디버그] 최종 모드 결정: {mode}{self.C.END}", flush=True)
-
-        question_only = self.is_question_only(user_text)
-        ask_back = self.need_confirmation(tool, operation, obj, user_text)
-
-        should_call = False
-        function_name = ""
-        function_args: Dict[str, Any] = {}
-
-        if intent == "명령" and not question_only and mode:
-            if mode in {"START", "FINISH", "CLEAN", "ASSEMBLE"}:
-                should_call = True
-                function_name = mode.lower()
-                function_args = {}
-            elif mode == "DELIVER":
-                if not tool:
-                    ask_back = True
-                else:
-                    should_call = not ask_back
-                    function_name = "deliver_tool"
-                    function_args = {"tool": tool, "target": "user", "note": operation or ""}
-            elif mode == "RETURN":
-                if not tool:
-                    ask_back = True
-                else:
-                    should_call = True
-                    function_name = "return_tool"
-                    function_args = {"tool": tool}
-
-        if question_only:
-            should_call = False
-            function_name = ""
-            function_args = {}
-
-        if should_call and function_name == "deliver_tool" and tool:
-            self.session_state["last_tool"]  = tool
-            self.session_state["last_mode"]  = "DELIVER"
-            self.session_state["last_object"]= obj
-
-        return {
-            "intent": intent,
-            "mode": mode or "NONE",
-            "operation": operation or "NONE",
-            "object": obj or "NONE",
-            "tool_final": tool or "NONE",
-            "ask_back": bool(ask_back),
-            "question_only": question_only,
-            "should_call_function": should_call,
-            "function_name": function_name,
-            "function_args": function_args,
-        }
-
-    def smalltalk_reply(self, user_text: str) -> str:
-        txt = self._normalize_kr(user_text)
-        if any(k in txt for k in ["고마워", "감사", "thanks", "thx"]):
-            return "도움이 되어 기뻐요. 다른 것도 도와드릴게요."
-        if any(k in txt for k in ["안녕", "hello", "하이"]):
-            return "안녕하세요! 준비됐어요. 무엇을 도와드릴까요?"
-        prompt = (
-            "### 시스템\n"
-            "너는 짧고 공손한 한국어 일상 대화 봇이야. 한두 문장, 80자 이내로 답해.\n"
-            "지시/명령/코드/링크/이모지/과장 금지.\n"
-            f"사용자: {user_text}\n어시스턴트:"
-        )
-        try:
-            out = self.llm_model.create_completion(prompt=prompt, max_tokens=60, temperature=0.6, stop=["\n"])['choices'][0]['text'].strip()
-            if len(out) > 80:
-                out = out[:80]
-            return out or "그렇군요. 더 도와드릴 게 있을까요?"
-        except Exception:
-            return "그렇군요. 더 도와드릴 게 있을까요?"
-
-    # RAG/LLM로 툴 보강
-    def _extract_tool_from_text(self, text: str) -> Optional[str]:
-        tnorm = self._normalize_kr(text)
-        for canon, aliases in self.ALLOWED_TOOLS.items():
-            for alias in aliases:
-                if self._normalize_kr(alias) in tnorm:
-                    return canon
-        return None
-
-    def rag_pick_tool(self, user_text: str, operation: Optional[str], obj: Optional[str]):
-        if self.rag_chain is None:
-            return None, ""
-        q = user_text or ""
-        hints = []
-        if obj and obj != "NONE": hints.append(obj)
-        if operation and operation != "NONE": hints.append(operation)
-        if hints: q = f"{' '.join(hints)} 작업에 적합한 공구는?"
-        try:
-            res = self.rag_chain.invoke(q)
-            ans = (res.get('result', '') or '').strip()
-            tool = self._extract_tool_from_text(ans)
-            return tool, ans
-        except Exception:
-            return None, ""
-
-    def llm_pick_tool(self, operation: Optional[str], obj: Optional[str], user_text: str) -> Optional[str]:
+    # ───── LLM 도구/타깃 추출 ─────
+    def llm_pick_tool(self, user_text: str) -> Optional[str]:
         try:
             choices = " | ".join(sorted(self.ALLOWED_TOOLS.keys()))
-            desc = []
-            if obj and obj != "NONE":       desc.append(f"대상={obj}")
-            if operation and operation != "NONE": desc.append(f"작업={operation}")
-            if user_text:                   desc.append(f"문장={user_text}")
-            ctx = " | ".join(desc) or user_text
             prompt = (
-                "역할: 아래 작업에 가장 적합한 공구를 선택지에서 하나만 골라 정식명으로 답하라. "
-                f"선택지: {choices} "
-                "출력 형식: {tool: <정식명 또는 NONE>} "
-                f"작업 설명: {ctx}응답: "
+                "역할: 아래 발화에 가장 적합한 공구를 선택지에서 하나만 골라 정식명으로 답하라.\n"
+                f"선택지: {choices}\n"
+                "출력 형식: {tool: <정식명 또는 NONE>}\n"
+                f"문장: {user_text}\n응답: "
             )
             raw = self.llm_model.create_completion(prompt=prompt, max_tokens=16, temperature=0.0, stop=["}"])['choices'][0]['text']
+            print(f"raw: {raw}")
             for canon in self.ALLOWED_TOOLS.keys():
                 if canon in raw:
                     return canon
@@ -611,101 +398,308 @@ class ToolChatEngine:
             pass
         return None
 
-    # ── 실행 계획(이전 simulate_vla_action)을 "계획 반환"으로 변경 ──
-    def plan_action(self, parsed: Dict[str, Any], raw_text: str = "") -> Dict[str, Any]:
-        """
-        simulate_vla_action과 동일 로직으로 '무엇을 실행할지'를 결정해 딕셔너리로 반환.
-        실제 실행/출력은 하지 않음(ROS 노드가 퍼블리시/실행 담당).
-        """
-        mode = parsed.get("mode")
-        tool = parsed.get("tool_final")
-        fn   = parsed.get("function_name")
-        args = parsed.get("function_args")
-        ask  = parsed.get("ask_back")
-        operation = parsed.get("operation")
-        obj = parsed.get("object")
+    def llm_extract_tool_and_target(self, user_text: str) -> Tuple[Optional[str], Optional[str]]:
+        
+        def _extract_json_obj(raw: str) -> dict:
+            _JSON_OBJ_RE = re.compile(r"\{[^{}]*\}", re.DOTALL)
+            m = _JSON_OBJ_RE.search(raw or "")
+            if not m:
+                raise ValueError("no json object")
+            frag = m.group(0)
+            # 약한 보정
+            frag = frag.replace("'", '"')
+            frag = re.sub(r",\s*([}\]])", r"\1", frag)
+            return json.loads(frag)
 
-        # 모드/툴 보강 (LLM)
-        if (not mode) or (mode == "NONE"):
+        try:
+            tool_list = " | ".join(sorted(self.ALLOWED_TOOLS.keys()))
+            prompt = (
+                "역할: 문장에서 '전달할 도구'와 '목표 대상'을 추출한다.\n"
+                "규칙: <도구>는 반드시 [도구 목록]의 정식 명칭만 사용. 없으면 NONE.\n"
+                "규칙: <대상>은 반드시 [대상 목록]의 정식 명칭만 사용. 없으면 NONE.\n"
+                "규칙: '<X>를 <Y> <방향>에' 패턴이면 X=<도구>, Y=<대상>. \n"
+                "규칙: '<X>를 …' 패턴이면 X=도구, target=NONE.\n"
+                '출력: {"tool":"<도구|NONE>","target":"<대상|NONE>"}\n'
+                f"[도구 목록]: {tool_list}\n"
+                f"[대상 목록]: {tool_list}\n"
+                f"문장: {user_text}\n"
+                "응답: "
+            )
+            # prompt = (
+            #     "역할: 문장에서 '전달할 도구'와 '목표 대상'을 추출한다.\n"
+            #     "규칙: 도구는 반드시 도구 목록의 정식 명칭만 사용. 없으면 NONE.\n"
+            #     "규칙: 대상은 반드시 대상 목록의 정식 명칭만 사용. 없으면 NONE.\n"
+            #     "규칙: '<X>를 <Y> <방향>에' 패턴이면 X=도구, Y=대상. \n"
+            #     "규칙: '<X>를 …' 패턴이면 X=도구, target=NONE.\n"
+            #     "예시:\n"
+            #     ' - "니퍼를 와이어 스트리퍼 왼쪽에 놔줄래?" -> {"tool":"니퍼","target":"와이어 스트리퍼"}\n'
+            #     ' - "M3 나사를 니퍼 오른쪽에 놓아줘" -> {"tool":"M3 나사","target":"니퍼"}\n'
+            #     ' - "니퍼를 가져다 줘" -> {"tool":"니퍼","target":"NONE"}\n'
+                
+            #     '출력: {"tool":"<도구|NONE>","target":"<대상|NONE>"}\n\n'
+            #     f"[도구 목록]: {tool_list}\n"
+            #     f"[대상 목록]: {tool_list}\n"
+            #     f"문장: {user_text}\n"
+            #     "응답: "
+            # )
+            raw_json = self.llm_model.create_completion(
+                prompt=prompt, max_tokens=64, temperature=0.0, stop=["}"]
+            )['choices'][0]['text'] + "}"
+            # print(f"tool: {tool_list}")
+            print('111111111111111111',raw_json)
+            # result = json.loads(raw_json)
+            result = _extract_json_obj(raw_json)
+            print(f"result : {result}")
+            tool_raw   = (result.get("tool")   or "").strip()
+            target_raw = (result.get("target") or "").strip()
+            target_raw = self._clean_target_phrase(target_raw)
+
+            final_tool   = self._canon_from_value(tool_raw)
+            final_target = self._canon_from_value(target_raw)
+
+            # print(f"tool : {tool_raw}, target : {target_raw}")
+            # print(f"final_tool : {final_tool}. final_target : {final_target}")
+            if final_target is None:
+                final_target = self._extract_target_from_spatial(user_text, exclude=final_tool)
+
+            return final_tool, final_target
+        except Exception:
+            return self.canonicalize_tool(user_text), self._extract_target_from_spatial(user_text)
+
+    # ───── 방향 추출 ─────
+    def extract_direction(self, user_text: str) -> Optional[str]:
+        txt = self._normalize_kr(user_text)
+        for direction, keywords in self.DIRECTION_KEYWORDS.items():
+            for kw in keywords:
+                if kw in txt:
+                    return direction
+        return None
+
+    # ───── 모드/명령 파이프라인 ─────
+    def parse_and_infer(self, user_text: str) -> Dict[str, Any]:
+        mode: Optional[str] = None
+        tool: Optional[str] = None
+        target_object: Optional[str] = None
+        direction: Optional[str] = None
+        control_string: Optional[str] = None
+
+        mode = self.rag_infer_mode(user_text)
+        if not mode:
+            system_instructions = (
+                "사용자 한국어 명령을 8모드(START, UP, DOWN, DELIVER, RETURN, DISASSEMBLE, MEASURE, FINISH) 중 하나로 분류하라.\n"
+                "여러 지시가 섞이면 마지막 명령을 우선한다.\n"
+                "출력은 영어 대문자 모드명 한 단어."
+            )
+            prompt_to_send = (
+                f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n"
+                f"{system_instructions}<|eot_id|><|start_header_id|>user<|end_header_id|>\n"
+                f"{user_text}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n"
+            )
             try:
-                mode2, tool2, raw = self.llm_guess_mode_and_tool(raw_text,
-                                                                 operation if operation != "NONE" else None,
-                                                                 obj if obj != "NONE" else None)
-                if mode2 in self.CANDIDATES:
-                    mode = mode2; parsed["mode"] = mode2
-                if (not tool or tool == "NONE") and (tool2 in self.ALLOWED_TOOLS):
-                    tool = tool2; parsed["tool_final"] = tool2
-                if self.verbose:
-                    print(f"{self.C.CYAN}[디버그] (보강) LLM 유추: {repr(raw)} → mode={mode}, tool={tool}{self.C.END}", flush=True)
-            except Exception as e:
-                if self.verbose:
-                    print(f"{self.C.YELLOW}[경고] 실행 직전 LLM 보강 실패: {e}{self.C.END}", flush=True)
+                raw = self.llm_model.create_completion(
+                    prompt=prompt_to_send, max_tokens=8, temperature=0.0, stop=["\n"]
+                )['choices'][0]['text']
+                m = self._MODE_RE.search(raw or "")
+                mode = m.group(1).upper() if m else None
+            except Exception:
+                mode = None
 
-        # DELIVER/RETURN에서 툴 미지정 → RAG→LLM 순 보강
-        if (mode in {"DELIVER", "RETURN"}) and (not tool or tool == "NONE"):
-            picked, _ = self.rag_pick_tool(raw_text,
-                                           operation if operation != "NONE" else None,
-                                           obj if obj != "NONE" else None)
-            if picked:
-                if self.verbose: print(f"{self.C.CYAN}[추천] RAG 후보: {picked}{self.C.END}")
-                tool = picked
+        explicit_tool = self.canonicalize_tool(user_text)
+        _, lt = self.llm_extract_tool_and_target(user_text)
+        if mode == "DELIVER":
+            if explicit_tool:
+                tool = explicit_tool
+                # 1) 공간표현에서 타깃 우선 추출
+                target_object = self._extract_target_from_spatial(user_text, exclude=tool)
+               
+                # 2) 실패 시 LLM으로 타깃만 보강
+                if target_object is None:   
+                    _, lt = self.llm_extract_tool_and_target(user_text)
+                    if lt:
+                        target_object = lt
             else:
-                picked = self.llm_pick_tool(operation if operation != "NONE" else None,
-                                            obj if obj != "NONE" else None, raw_text)
-                if picked:
-                    if self.verbose: print(f"{self.C.CYAN}[추천] LLM 후보: {picked}{self.C.END}")
-                    tool = picked
+                tool, target_object = self.llm_extract_tool_and_target(user_text)
+                if target_object is None:
+                    target_object = self._extract_target_from_spatial(user_text, exclude=tool)
 
-            if tool and tool != "NONE":
-                ask = self.need_confirmation(tool,
-                                             operation if operation != "NONE" else None,
-                                             obj if obj != "NONE" else None,
-                                             raw_text)
-                if mode == "DELIVER":
-                    fn = "deliver_tool"; args = {"tool": tool, "target": "user", "note": (operation if operation != "NONE" else "")}
-                elif mode == "RETURN":
-                    fn = "return_tool";  args = {"tool": tool}
+        elif mode == "RETURN":
+            last = self.session_state.get("last_tool")
+            tool = self.llm_pick_tool(user_text) or (last if last in self.ALLOWED_TOOLS else None)
 
-        # 최종 확인 필요 여부
-        if (mode in {"DELIVER", "RETURN"}) and tool and tool != "NONE":
-            ask = self.need_confirmation(tool,
-                                         operation if operation != "NONE" else None,
-                                         obj if obj != "NONE" else None,
-                                         raw_text)
+        else:
+            if explicit_tool:
+                tool = explicit_tool
 
-        # should_call 갱신
-        should_call = parsed.get("should_call_function")
-        if not should_call and mode:
-            if mode in {"START", "FINISH", "CLEAN", "ASSEMBLE"}:
-                should_call = True; fn = mode.lower(); args = {}
-            elif mode == "DELIVER" and tool and tool != "NONE" and not ask:
-                should_call = True; fn = "deliver_tool"; args = {"tool": tool, "target": "user", "note": (operation if operation != "NONE" else '')}
-            elif mode == "RETURN" and tool and tool != "NONE" and not ask:
-                should_call = True; fn = "return_tool"; args = {"tool": tool}
+        if mode == "DELIVER":
+            direction = self.extract_direction(user_text)
 
-        # 세션 상태 업데이트
-        if should_call and fn == "deliver_tool" and tool:
+        if self.verbose:
+            print(f"{self.C.CYAN}[결과] mode={mode}, tool={tool}, target_object={target_object}, direction={direction}{self.C.END}")
+
+        ask_back = bool(mode in {"DELIVER", "RETURN"} and tool is None)
+
+        should_call = False
+        function_name = ""
+        function_args: Dict[str, Any] = {}
+
+        if not ask_back and mode:
+            if mode == "START":
+                should_call, function_name, control_string = True, "start", "START"
+            elif mode == "FINISH":
+                should_call, function_name, control_string = True, "finish", "FINISH"
+            elif mode == "DISASSEMBLE":
+                should_call, function_name, control_string = True, "disassemble", "DISASSEMBLE"
+            elif mode == "UP":
+                should_call, function_name, control_string = True, "stand_up", "UP"
+            elif mode == "MEASURE":
+                should_call, function_name, control_string = True, "measure", "MEASURE"
+            elif mode == "DOWN":
+                should_call, function_name, control_string = True, "stand_down", "DOWN"
+            elif mode == "DELIVER" and tool:
+                should_call, function_name = True, "deliver_tool"
+                function_args = {"tool": tool, "target": (target_object or "user"), "note": ""}
+                parts = [tool, "DELIVER"]
+                
+                if target_object:
+                    parts.append(target_object)
+                
+                if direction:
+                    parts.append(direction)
+            
+            elif mode == "RETURN":
+                should_call, function_name = True, "return_tool"
+                function_args = {"tool": tool}
+                tool = "NONE"
+                control_string = f"RETURN"
+
+        if should_call and function_name == "deliver_tool" and tool:
             self.session_state["last_tool"] = tool
             self.session_state["last_mode"] = "DELIVER"
-            self.session_state["last_object"] = obj if obj != "NONE" else None
 
-        # 사용자 확인이 필요한 경우 메시지 제안
+        return {
+            "intent": "명령",
+            "mode": mode or "NONE",
+            "tool_final": tool or "NONE",
+            "target_object": target_object or "NONE",
+            "direction": direction or "NONE",
+            "control_string": control_string or "",
+            "ask_back": bool(ask_back),
+            "question_only": False,
+            "should_call_function": bool(should_call),
+            "function_name": function_name,
+            "function_args": function_args,
+        }
+
+    # ───── plan_action ─────
+    def plan_action(self, parsed: Dict[str, Any], raw_text: str = "") -> Dict[str, Any]:
+        mode = parsed.get("mode") or "NONE"
+        tool = parsed.get("tool_final") or "NONE"
+        target_object = parsed.get("target_object") or "NONE"
+        direction = parsed.get("direction") or "NONE"
+        ask = bool(parsed.get("ask_back"))
+        should_call = bool(parsed.get("should_call_function"))
+        fn = parsed.get("function_name") or ""
+        args = parsed.get("function_args") or {}
+        control_string = parsed.get("control_string") or ""
+
+        if mode == "DELIVER" and direction == "NONE" and raw_text:
+            direction = self.extract_direction(raw_text) or "NONE"
+
         confirm_text = ""
         if ask:
-            if mode == "DELIVER" and (not tool or tool == "NONE"):
-                confirm_text = "어떤 공구가 필요하신가요? (예: 육각 렌치/버니어/롱노우즈/니퍼)"
-            elif mode == "RETURN" and (not tool or tool == "NONE"):
-                lt = self.session_state.get('last_tool')
-                confirm_text = f"반납할 공구가 무엇인가요? 최근 전달 공구: {lt}"
-            elif mode in {"ASSEMBLE", "CLEAN"}:
-                confirm_text = ""  # 로깅만
+            if mode == "DELIVER":
+                confirm_text = "어떤 공구/부품이 필요하신가요? (예: 스탠드/M3 나사/니퍼/커터/와이어 스트리퍼)"
+            elif mode == "RETURN":
+                last_tool = self.session_state.get('last_tool', '알 수 없음')
+                confirm_text = f"반납할 공구가 무엇인가요? (최근 전달: {last_tool})"
+
+        if not control_string and not ask:
+            if mode == "DELIVER" and tool != "NONE":
+                base = f"{tool}+DELIVER"
+                if target_object and target_object != "NONE":
+                    control_string = f"{base}+{target_object}"
+                elif direction and direction != "NONE":
+                    control_string = f"{base}+{direction}"
+                else:
+                    control_string = base
+            elif mode == "RETURN":
+                control_string = f"RETURN"
+            elif mode in {"START", "UP", "DOWN", "DISASSEMBLE", "MEASURE", "FINISH"}:
+                control_string = mode
 
         return {
             "mode": mode,
             "tool_final": tool,
-            "should_call_function": bool(should_call),
-            "function_name": fn or "",
-            "function_args": args or {},
-            "ask_back": bool(ask),
+            "target_object": target_object,
+            "direction": direction,
+            "control_string": control_string,
+            "should_call_function": should_call,
+            "function_name": fn,
+            "function_args": args,
+            "ask_back": ask,
             "confirm_text": confirm_text,
         }
+
+    # ───── NLG ─────
+    @staticmethod
+    def _strip_special(s: str) -> str:
+        if not s:
+            return s
+        s = re.sub(r"<\|[^>]+?\|>", "", s)
+        return s.strip()
+
+    def generate_speech(self, task_description: str, style: str = "친절하고 상냥하게") -> str:        
+        # 1. [개선] 역할, 규칙, 예시가 포함된 상세한 시스템 프롬프트
+        system_prompt = f"""
+        당신은 사용자를 돕는 로봇의 친절하고 상냥한 목소리입니다. 사용자의 명령을 확인하고 로봇이 무엇을 할 것인지 자연스럽게 대답해주세요.
+
+        [지침]
+        - 문체: {style}
+        - 절대로 "알겠습니다" 또는 "네" 라고만 단답형으로 대답하지 마세요.
+        - 항상 완전한 문장으로 사용자의 명령을 자연스럽게 복창하며 확인해주세요.
+
+        [좋은 답변의 예시]
+        - (작업: START) -> "네, 작업을 시작합니다."
+        - (작업: DELIVER, 도구: 커터) -> "네, 커터를 바로 가져다 드릴게요!"
+        - (작업: DISASSEMBLE) -> "네, 분해 작업을 시작하겠습니다."
+        - (작업: UP) -> "스탠드를 위로 올릴게요. 잠시만요."
+        - (작업: RETURN) -> "작업대를 정리하겠습니다."
+        - (작업: FINISH) -> "네, 작업을 종료합니다. 수고하셨습니다!"
+        - (작업: DELIVER, 도구: M3 나사, 타깃: 니퍼, 방향: left) -> "네, 엠쓰리 나사를 니퍼 왼쪽에 가져다 드릴게요!"
+        - (작업: MEASURE) -> "배선 상태를 검류기로 측정하겠습니다."
+        이제 아래의 [현재 수행할 작업]에 대해 가장 적절하고 자연스러운 대답을 한 문장으로 생성해주세요.
+        """
+        
+        # 사용자 메시지 (LLM에게 전달할 실제 작업 내용)
+        user_prompt = f"[현재 수행할 작업]: {task_description}"
+
+        # Gemma-3 채팅 템플릿에 맞춰 최종 프롬프트 구성
+        prompt_to_send = (
+            f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n"
+            f"{system_prompt}<|eot_id|><|start_header_id|>user<|end_header_id|>\n"
+            f"{user_prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n"
+        )
+
+        try:
+            # 2. [개선] LLM 생성 파라미터 미세 조정
+            response = self.llm_model.create_completion(
+                prompt=prompt_to_send,
+                max_tokens=50,          # 토큰 수 증가로 더 자연스러운 문장 길이 허용
+                temperature=0.0,        # 온도를 약간 높여 다양성 확보
+                stop=["\n", "<|eot_id|>", ".", "!", "?", "요.", "다."], # 중단 토큰 추가
+                top_p=0.9,              # Top-p를 약간 높여 다양한 단어 선택 유도
+                repeat_penalty=1.15,    # 반복 패널티 소폭 증가
+            )
+            
+            speech = response['choices'][0]['text'].strip()
+            
+            # 가끔 모델이 예시의 입력 부분까지 생성하는 경우가 있어 후처리
+            if speech.startswith(("-", "(")):
+                speech = "네, 알겠습니다. 바로 시작하겠습니다."
+                
+            return speech if speech else "알겠습니다. 작업을 시작하겠습니다."
+        
+        except Exception as e:
+            if self.verbose:
+                print(f"{self.C.RED}[!] generate_speech 실패: {e}{self.C.END}")
+            return "알겠습니다. 지시에 따르겠습니다."
