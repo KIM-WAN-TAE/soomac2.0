@@ -951,7 +951,7 @@ def main(args=None):
                     if node.purple_num >= 6:
                             node.class_order = [c for c in node.class_order if c != "purple"]
 
-                    if node.red_num >= 2:
+                    if node.red_num >= 3:
                             node.class_order = [c for c in node.class_order if c != "red"]
                     
                     if node.yellow_num >= 5:

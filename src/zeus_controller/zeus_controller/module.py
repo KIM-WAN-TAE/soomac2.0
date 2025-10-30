@@ -210,7 +210,7 @@ class Block:
         elif step == 'emer_2':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 0.0, 50.0, 0.0, 0.0, 0.0],
+                'position' : [0.0, 0.0, 42.0, 0.0, 0.0, 0.0],
                 'speed'    : 300.0,
                 'gripper'    : True,
                 'gripper_str' : 's',
