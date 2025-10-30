@@ -68,8 +68,8 @@ class MainControlNode(Node):
             # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left'}
             # self.tool_dict = {'wire_cutter': 'left'}
             # self.tool_dict = {'wire_stripper': 'middle'}
-            self.tool_dict = {}
-            # self.tool_dict = {'nipper': 'middle', 'M3':'middle'}
+            # self.tool_dict = {}
+            self.tool_dict = {'wire_stripper': 'middle', 'M3':'middle'}
             
     def reset_tool_pose(self):
         with self.lock:
@@ -774,7 +774,7 @@ class MainControlNode(Node):
             
             cmd_msg = ZeusMainCommand()
             cmd_msg.frame = 't'
-            cmd_msg.position = [0.0, 0.0, 66.2, 0.0, 0.0, 0.0]
+            cmd_msg.position = [0.0, 0.0, 69.0, 0.0, 0.0, 0.0]
             
             cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
