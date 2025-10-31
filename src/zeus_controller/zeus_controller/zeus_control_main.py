@@ -66,7 +66,8 @@ class MainControlNode(Node):
             # Return 디버깅용 초기화 값들
             # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left', 'M3':'middle'}
             # self.tool_dict = {'wire_stripper': 'middle', 'nipper': 'left'}
-            # self.tool_dict = {'wire_cutter': 'left'}
+            # self.tool_dict = {'nipper': 'right'}
+            # self.tool_dict = {'wire_stripper': 'right'}
             # self.tool_dict = {'wire_stripper': 'middle'}
             # self.tool_dict = {}
             self.tool_dict = {'wire_stripper': 'middle', 'M3':'middle'}
@@ -638,110 +639,110 @@ class MainControlNode(Node):
         # return 동작에 사용하는 기능 =======================================
         # return 동작에 사용하는 기능 =======================================   
         # return 동작에 사용하는 기능 =======================================   
-        if ans.get('return_camera_trigger'):
-            cam_msg = String()
+        # if ans.get('return_camera_trigger'):
+        #     cam_msg = String()
             
-            with self.lock:
-                tool = self.tool
+        #     with self.lock:
+        #         tool = self.tool
                 
-            cam_msg.data = tool
-            self.cam_pub.publish(cam_msg)
-            self.get_logger().info(f"[ZEUS] return_camera_trigger")
+        #     cam_msg.data = tool
+        #     self.cam_pub.publish(cam_msg)
+        #     self.get_logger().info(f"[ZEUS] return_camera_trigger")
             
-        if ans.get('return_camera_move'):
-            with self.lock:
-                if self.base_to_camera_matrix is None:
-                    self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
-                    return
+        # if ans.get('return_camera_move'):
+        #     with self.lock:
+        #         if self.base_to_camera_matrix is None:
+        #             self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
+        #             return
                 
-                x,y,z = self.tool_p
-                yaw = self.tool_yaw
+        #         x,y,z = self.tool_p
+        #         yaw = self.tool_yaw
             
-            cmd_msg = ZeusMainCommand()
-            cmd_msg.frame = 't'
-            cmd_msg.position = [0.0, 0.0, 67.5, 0.0, 0.0, 0.0]
+        #     cmd_msg = ZeusMainCommand()
+        #     cmd_msg.frame = 't'
+        #     cmd_msg.position = [0.0, 0.0, 40.0, 0.0, 0.0, 0.0]
             
-            cmd_msg.speed    = ans['speed']
-            self.cmd_pub.publish(cmd_msg)
+        #     cmd_msg.speed    = ans['speed']
+        #     self.cmd_pub.publish(cmd_msg)
             
-        if ans.get('return_camera_center'):
-            with self.lock:
-                if self.base_to_camera_matrix is None:
-                    self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
-                    return
+        # if ans.get('return_camera_center'):
+        #     with self.lock:
+        #         if self.base_to_camera_matrix is None:
+        #             self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
+        #             return
                 
-                x,y,z = self.tool_p
-                yaw = self.tool_yaw
-                xy_coor = self.xy_coor
+        #         x,y,z = self.tool_p
+        #         yaw = self.tool_yaw
+        #         xy_coor = self.xy_coor
                 
-            # xy 값만 도구 중심으로 이동할 수 있게 삽입
-            P = xy_coor
-            P[0] = float(x)
-            P[1] = float(y)
-            P[2] = -41.8
-            P[3] = P[3] + yaw
-            cmd_msg = ZeusMainCommand()
-            cmd_msg.frame = 'l7'
-            cmd_msg.position = P
+        #     # xy 값만 도구 중심으로 이동할 수 있게 삽입
+        #     P = xy_coor
+        #     P[0] = float(x)
+        #     P[1] = float(y)
+        #     P[2] = -41.8
+        #     P[3] = P[3] + yaw
+        #     cmd_msg = ZeusMainCommand()
+        #     cmd_msg.frame = 'l7'
+        #     cmd_msg.position = P
             
-            cmd_msg.speed    = ans['speed']
-            self.cmd_pub.publish(cmd_msg)
+        #     cmd_msg.speed    = ans['speed']
+        #     self.cmd_pub.publish(cmd_msg)
         
-        # 여기서 자리 기억 및 tool 정보에 따른 반환 자리 다 작성해야 함    
-        if ans.get('return_tool_offset'):
-            with self.lock:
-                tool = self.tool
-                return_direction = self.last_tool_pose
-            print('')
-            print(tool)
-            print(f' Return Direction : {return_direction}')
-            print('')
-            cmd_msg = ZeusMainCommand()
-            cmd_msg.frame = 'j'
+        # # 여기서 자리 기억 및 tool 정보에 따른 반환 자리 다 작성해야 함    
+        # if ans.get('return_tool_offset'):
+        #     with self.lock:
+        #         tool = self.tool
+        #         return_direction = self.last_tool_pose
+        #     print('')
+        #     print(tool)
+        #     print(f' Return Direction : {return_direction}')
+        #     print('')
+        #     cmd_msg = ZeusMainCommand()
+        #     cmd_msg.frame = 'j'
             
-            if tool == 'wire_stripper':
-                if return_direction == 'right':
-                    cmd_msg.position = [-147.02,   45.30,  118.83,  121.14,   81.51,  -76.08]
+        #     if tool == 'wire_stripper':
+        #         if return_direction == 'right':
+        #             cmd_msg.position = [-147.02,   45.30,  118.83,  121.14,   81.51,  -76.08]
                     
-                elif return_direction == 'middle':
-                    cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
+        #         elif return_direction == 'middle':
+        #             cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
                     
-                elif return_direction == 'left':
-                    cmd_msg.position = [-158.52,   62.48,   76.42,  105.79,   76.49,  -50.39]
+        #         elif return_direction == 'left':
+        #             cmd_msg.position = [-158.52,   62.48,   76.42,  105.79,   76.49,  -50.39]
                     
-                else:
-                    cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
+        #         else:
+        #             cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
                     
-            elif tool == 'wire_cutter':
-                if return_direction == 'right':
-                    cmd_msg.position = [-147.02,   45.30,  118.83,  121.14,   81.51,  -76.08]
+        #     elif tool == 'wire_cutter':
+        #         if return_direction == 'right':
+        #             cmd_msg.position = [-147.02,   45.30,  118.83,  121.14,   81.51,  -76.08]
                     
-                elif return_direction == 'middle':
-                    cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
+        #         elif return_direction == 'middle':
+        #             cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
                     
-                elif return_direction == 'left':
-                    cmd_msg.position = [-158.52,   62.48,   76.42,  105.79,   76.49,  -50.39]
+        #         elif return_direction == 'left':
+        #             cmd_msg.position = [-158.52,   62.48,   76.42,  105.79,   76.49,  -50.39]
                     
-                else:
-                    cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
+        #         else:
+        #             cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
                     
-            elif tool == 'nipper':
-                if return_direction == 'right':
-                    cmd_msg.position = [-148.20,   41.87,  119.46,  119.60,   80.40,  -73.46]
+        #     elif tool == 'nipper':
+        #         if return_direction == 'right':
+        #             cmd_msg.position = [-148.20,   41.87,  119.46,  119.60,   80.40,  -73.46]
                     
-                elif return_direction == 'middle':
-                    cmd_msg.position = [-154.99,   49.91,  100.15,  111.22,   78.09,  -61.89]
+        #         elif return_direction == 'middle':
+        #             cmd_msg.position = [-154.99,   49.91,  100.15,  111.22,   78.09,  -61.89]
                     
-                elif return_direction == 'left':
-                    cmd_msg.position = [-159.51,   60.40,   76.02,  104.44,   76.49,  -47.73]
+        #         elif return_direction == 'left':
+        #             cmd_msg.position = [-159.51,   60.40,   76.02,  104.44,   76.49,  -47.73]
                     
-                else:
-                    cmd_msg.position = [-154.99,   49.91,  100.15,  111.22,   78.09,  -61.89]        
+        #         else:
+        #             cmd_msg.position = [-154.99,   49.91,  100.15,  111.22,   78.09,  -61.89]        
             
-            cmd_msg.speed = ans['speed']
-            self.cmd_pub.publish(cmd_msg)
+        #     cmd_msg.speed = ans['speed']
+        #     self.cmd_pub.publish(cmd_msg)
             
-            self.reset_tool_pose()
+        #     self.reset_tool_pose()
         # return 동작에 사용하는 기능 =======================================
         # return 동작에 사용하는 기능 =======================================   
         # return 동작에 사용하는 기능 ======================================= 
@@ -774,32 +775,32 @@ class MainControlNode(Node):
             
             cmd_msg = ZeusMainCommand()
             cmd_msg.frame = 't'
-            cmd_msg.position = [0.0, 0.0, 69.0, 0.0, 0.0, 0.0]
+            cmd_msg.position = [0.0, 0.0, 61.3, 0.0, 0.0, 0.0]
             
             cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
             
         if ans.get('all_return_offset_move'):
             with self.lock:
-                tool = self.tool
                 yaw  = self.tool_yaw
-                tool_dict = self.tool_dict
+                tool = list(self.tool_dict.keys())[0]
+            print(f'내가 지금 반환할 툴 : {tool}')
                 
             cmd_msg = ZeusMainCommand()
             
             STRIP_X_OFFSET = 8.0
-            CUTTER_X_OFFSET = 16.0
+            CUTTER_X_OFFSET = 10.0
             NIPPER_X_OFFSET = 6.0
             
             if tool == 'wire_stripper':
                 if yaw < -10.0:
-                    pose = [STRIP_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                    pose = [STRIP_X_OFFSET, 7.0, 0.0, 0.0, 0.0, 0.0]
                 
                 elif yaw > 10.0:
-                    pose = [-STRIP_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                    pose = [-STRIP_X_OFFSET, 7.0, 0.0, 0.0, 0.0, 0.0]
                 
                 else:
-                    pose = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                    pose = [0.0, 7.0, 0.0, 0.0, 0.0, 0.0]
                 
             elif tool == 'wire_cutter':
                 # if tool_dict[tool] == 'middle':
@@ -807,7 +808,16 @@ class MainControlNode(Node):
                 # else:
                 #     pose = [-CUTTER_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
                 
-                pose = [-CUTTER_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                if yaw < -10.0:
+                    pose = [6.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                elif yaw > 10.0:
+                    pose = [-CUTTER_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+                else:
+                    pose = [2.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                
+
                 
             elif tool == 'nipper':
                 if yaw < -10.0:
@@ -818,6 +828,9 @@ class MainControlNode(Node):
                 
                 else:
                     pose = [-(NIPPER_X_OFFSET - 5), 0.0, 0.0, 0.0, 0.0, 0.0]
+            
+            else:
+                pose = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
             
             cmd_msg.position = pose
             cmd_msg.frame = 't'
@@ -876,16 +889,16 @@ class MainControlNode(Node):
                     
             elif tool == 'wire_cutter':
                 if return_direction == 'right':
-                    cmd_msg.position = [-147.02,   45.30,  118.83,  121.14,   81.51,  -76.08]
+                    cmd_msg.position = [-147.05,   44.24,  118.78,  120.96,   80.95,  -75.12]
                     
                 elif return_direction == 'middle':
-                    cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
+                    cmd_msg.position = [-153.82,   51.61,  100.25,  112.64,   78.24,  -63.83]
                     
                 elif return_direction == 'left':
-                    cmd_msg.position = [-158.52,   62.48,   76.42,  105.79,   76.49,  -50.39]
+                    cmd_msg.position = [-158.55,   61.75,   76.36,  105.58,   76.29,  -49.60]
                     
                 else:
-                    cmd_msg.position = [-153.79,   52.48,  100.30,  112.84,   78.58,  -64.70]
+                    cmd_msg.position = [-153.82,   51.61,  100.25,  112.64,   78.24,  -63.83]
                     
             elif tool == 'nipper':
                 if return_direction == 'right':
