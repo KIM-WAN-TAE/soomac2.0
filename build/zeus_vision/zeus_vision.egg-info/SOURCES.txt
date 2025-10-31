@@ -11,9 +11,13 @@ setup.py
 resource/zeus_vision
 zeus_vision/__init__.py
 zeus_vision/block_detect_ copy.py
+zeus_vision/block_detect_ ming.py
 zeus_vision/block_detect_.py
+zeus_vision/block_detect_1002.py
+zeus_vision/block_detect_1014.py
 zeus_vision/block_detect_original.py
 zeus_vision/block_detect_second.py
+zeus_vision/block_detect_백업.py
 zeus_vision/block_position.py
 zeus_vision/detect_cube_color.py
 zeus_vision.egg-info/PKG-INFO

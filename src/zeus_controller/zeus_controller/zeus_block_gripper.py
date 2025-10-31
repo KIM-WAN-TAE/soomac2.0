@@ -24,7 +24,7 @@ class GripperControllerNode(Node):
 
         try:
             # 1단계에서 확인한 아두이노 포트 이름을 여기에 적어주세요.
-            self.ser = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
+            self.ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
             time.sleep(2) 
             self.get_logger().info('Serial port /dev/ttyACM0 opened successfully.')
         except serial.SerialException as e:
@@ -44,13 +44,13 @@ class GripperControllerNode(Node):
             return
 
         self.get_logger().info(f'Sent command "{command}" for ROS message "{msg.data}"')
-        print(time.time())
+        #print(time.time())
         if self.ser is None:
             self.get_logger().warn('Serial port not available. Command ignored.')
             return
-        print(time.time())
+        #print(time.time())
         self.ser.write(command.encode('utf-8'))
-        print(time.time())
+        #print(time.time())
         
 def main(args=None):
     rclpy.init(args=args)

@@ -154,7 +154,7 @@ class Block:
         elif step == 'step_13':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 0.0, 98.0, 0.0, 0.0, 0.0],
+                'position' : [0.0, 0.0, 100.0, 0.0, 0.0, 0.0],
                 'speed'    : 750.0,
                 # 'gripper'    : True,
                 # 'gripper_str' : 'e',
@@ -170,7 +170,7 @@ class Block:
                 'wait_a_sec' : True,
                 'time' : 0.1, # sec 단위
                 'requires_ack' : False,
-                'next_step': 'step_1'
+                'next_step': 'step_15'
             }
             return ans
         
@@ -242,7 +242,7 @@ class Block:
         elif step == 'emer_5':
             ans = {
                 'frame'    : 't',
-                'position' : [0.0, 450.0, 0.0, 0.0, 0.0, 0.0],
+                'position' : [0.0, 400.0, 0.0, 0.0, 0.0, 0.0],
                 'speed'    : 800.0,
                 'requires_ack' : True,
                 'next_step': 'emer_6'

@@ -76,12 +76,12 @@ BLOCK_LEN_M = 0.075
 BLOCK_WID_M = 0.025
 
 AREA_THRESHOLD_MM2 = 1650.0  # mm^2
-EE_OFFSET_MM = np.array([29.0, 67.0, 0.0], dtype=np.float32)
+EE_OFFSET_MM = np.array([49.0, 107.0, 0.0], dtype=np.float32)
 EE_OFFSET_M  = EE_OFFSET_MM / 1000.0  # m 단위 변환
 
 # <<< ADD: 좌표 일치 판정 임계값 (카메라 좌표계, m) >>>
 NEAR_SAME_THRESH_XY_M = 0.03   # XY 평면 거리 3 cm
-NEAR_SAME_THRESH_Z_M  = 0.01   # Z 축 높이 차 1 cm
+NEAR_SAME_THRESH_Z_M  = 0.02   # Z 축 높이 차 1 cm
 
 # <<< ADD: '디텍 불가' 판정 임계 시간(초) >>>
 NO_CAND_THRESHOLD_S = 3.0
@@ -379,7 +379,7 @@ def refine_center_minarearect(mask_bin, depth_undist, intr, depth_scale, plane_m
     return refined_origin, (cx, cy), z_med, None, None, rect_orig_box_pts, origin_src, None
 
 # ---------- HSV 라벨 보정 ----------
-COLOR_NORMALIZE_SET = {"red", "pink", "purple", "green"}
+COLOR_NORMALIZE_SET = {"red", "pink", "purple", "green", "yellow"}
 def refine_label_by_hsv_mean(initial_label: str, mask_bin: np.ndarray, hsv_img: np.ndarray):
     if initial_label is None: return None, None, None, None
     lab = str(initial_label).lower()
@@ -388,6 +388,7 @@ def refine_label_by_hsv_mean(initial_label: str, mask_bin: np.ndarray, hsv_img: 
     if ys.size == 0: return initial_label, None, None, None
     hsv_vals = hsv_img[ys, xs].astype(np.float32)
     Hm = float(np.mean(hsv_vals[:,0])); Sm = float(np.mean(hsv_vals[:,1])); Vm = float(np.mean(hsv_vals[:,2]))
+    if lab in ("red"): lab = "yellow" if Hm > 15.0 else "red"
     if lab in ("red","pink"):    lab = "pink" if Sm < 170.0 else "red"
     elif lab in ("purple","green"): lab = "purple" if Hm > 100.0 else "green"
     return lab, Hm, Sm, Vm
@@ -488,7 +489,7 @@ class BlockPosePublisher(Node):
         self.red_num = 0
         self.yellow_num = 0
 
-        self.class_order = ['blue', 'green', 'pink', 'purple', 'red', 'yellow']
+        self.class_order = ['blue', 'green', 'pink', 'purple', 'yellow', 'red']
         # color_vsp  = profile.get_stream(rs.stream.color).as_video_stream_profile()
         # color_intr = color_vsp.get_intrinsics()  # width, height, ppx, ppy, fx, fy, model, coeffs
 
@@ -939,13 +940,13 @@ def main(args=None):
                         node.yellow_num+= 1
 
                 elif mode == 'block2':
-                    if node.blue_num >= 6:
+                    if node.blue_num >= 7:
                         node.class_order = [c for c in node.class_order if c != "blue"]
  
                     if node.green_num >= 6:
                             node.class_order = [c for c in node.class_order if c != "green"] 
                     
-                    if node.pink_num >= 6:
+                    if node.pink_num >= 7:
                             node.class_order = [c for c in node.class_order if c != "pink"]
                     
                     if node.purple_num >= 6:

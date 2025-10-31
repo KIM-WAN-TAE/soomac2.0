@@ -11,6 +11,7 @@ setup.py
 resource/zeus_controller
 zeus_controller/__init__.py
 zeus_controller/dh_module.py
+zeus_controller/main_control_emer_ver_2.py
 zeus_controller/module.py
 zeus_controller/read_json.py
 zeus_controller/zeus_block_gripper.py
