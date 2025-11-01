@@ -1177,7 +1177,7 @@ class Return_All:
         elif step == 'M3_step_12':
             ans = {
                 'gripper' : 'close',
-                'requires_ack' : False,
+                'requires_ack' : True,
                 'next_step': 'M3_step_13'
             }
             return ans

@@ -551,7 +551,7 @@ class VisionNode(Node):
                             elif norm_label(cls_name) == norm_label("nipper"):
                                 center_px = (handle_ctr[0]*0.32 + tip_ctr[0]*0.68, handle_ctr[1]*0.32 + tip_ctr[1]*0.68)
                             else:
-                                center_px = ((handle_ctr[0]*0.525+tip_ctr[0]*0.475), (handle_ctr[1]*0.525+tip_ctr[1]*0.475))
+                                center_px = ((handle_ctr[0]*0.515+tip_ctr[0]*0.485), (handle_ctr[1]*0.515+tip_ctr[1]*0.485))
                         else:
                             center_px = ((x1 + x2) * 0.5, (y1 + y2) * 0.5)
 

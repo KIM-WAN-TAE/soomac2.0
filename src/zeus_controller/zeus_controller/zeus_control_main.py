@@ -69,8 +69,8 @@ class MainControlNode(Node):
             # self.tool_dict = {'nipper': 'right'}
             # self.tool_dict = {'wire_stripper': 'right'}
             # self.tool_dict = {'wire_stripper': 'middle'}
-            # self.tool_dict = {}
-            self.tool_dict = {'wire_stripper': 'middle', 'M3':'middle'}
+            self.tool_dict = {}
+            # self.tool_dict = {'wire_stripper': 'middle', 'wire_cutter' : 'right', 'nipper': 'left'}
             
     def reset_tool_pose(self):
         with self.lock:
@@ -775,7 +775,7 @@ class MainControlNode(Node):
             
             cmd_msg = ZeusMainCommand()
             cmd_msg.frame = 't'
-            cmd_msg.position = [0.0, 0.0, 61.3, 0.0, 0.0, 0.0]
+            cmd_msg.position = [0.0, 0.0, 61.4, 0.0, 0.0, 0.0]
             
             cmd_msg.speed    = ans['speed']
             self.cmd_pub.publish(cmd_msg)
@@ -821,13 +821,13 @@ class MainControlNode(Node):
                 
             elif tool == 'nipper':
                 if yaw < -10.0:
-                    pose = [3.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                    pose = [3.0, 3.0, 0.0, 0.0, 0.0, 0.0]
                 
                 elif yaw > 10.0:
-                    pose = [-NIPPER_X_OFFSET, 0.0, 0.0, 0.0, 0.0, 0.0]
+                    pose = [-NIPPER_X_OFFSET, 3.0, 0.0, 0.0, 0.0, 0.0]
                 
                 else:
-                    pose = [-(NIPPER_X_OFFSET - 5), 0.0, 0.0, 0.0, 0.0, 0.0]
+                    pose = [-(NIPPER_X_OFFSET - 5), 3.0, 0.0, 0.0, 0.0, 0.0]
             
             else:
                 pose = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
