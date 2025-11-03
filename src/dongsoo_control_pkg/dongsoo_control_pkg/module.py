@@ -24,8 +24,8 @@ class Deliver:
         elif step == 'step_2':
             ans = {
                 'frame'    : 'j',
-                'position' : [-90.0, 71.98, -116.10, -42.36],
-                'look'     : 'down',
+                'position' : [-90.0, 71.63, -116.19, -46.76],
+                'look'     : 'straight',
                 'time'     : 3.0,
                 'wrist'    : 0.0,
                 'requires_ack' : True,
@@ -36,18 +36,21 @@ class Deliver:
         # 잡으러 진입
         elif step == 'step_3':
             ans = {
-                'frame'    : 'l',
-                'position' : [0.05, -0.46, 0.37],
-                'look'     : 'straight',
-                'time'     : 2.0,
-                'wrist'    : 0.0,
+                'camera_trigger' : True,
                 'requires_ack' : True,
                 'next_step' : 'step_4'
             }
             return ans
-        
-        # 잡기
+
         elif step == 'step_4':
+            ans = {
+                'camera_tool_move' : True,
+                'requires_ack' : True,
+                'next_step' : 'step_5'
+            }
+            return ans
+        
+        elif step == 'step_5':
             ans = {
                 'gripper' : 'close',
                 'requires_ack' : True,
@@ -55,27 +58,17 @@ class Deliver:
             }
             return ans
         
-        # 뒤로 빼기
         elif step == 'step_6':
             ans = {
-                'frame'    : 'l',
-                'position' : [0.06, -0.35, 0.45],
-                'look'     : 'straight',
-                'time'     : 3.0,
-                'wrist'    : 0.0,
+                'camera_tool_up_move' : True,
                 'requires_ack' : True,
                 'next_step' : 'step_7'
             }
             return ans
         
-        # 떨어뜨리러 가는 초기 위치
         elif step == 'step_7':
             ans = {
-                'frame'    : 'l',
-                'position' : [0.3, 0.0, 0.2],
-                'look'     : 'down',
-                'time'     : 2.0,
-                'wrist'    : 0.0,
+                'camera_tool_back_move' : True,
                 'requires_ack' : True,
                 'next_step' : 'step_8'
             }
@@ -83,11 +76,11 @@ class Deliver:
         
         elif step == 'step_8':
             ans = {
-                'frame'    : 'l',
-                'position' : [0.3, 0.0, 0.03],
-                'look'     : 'down',
-                'time'     : 2.0,
-                'wrist'    : 0.0,
+                'frame'    : INIT_POSE['frame'],
+                'position' : INIT_POSE['pose'],
+                'look'     : INIT_POSE['posture'],
+                'time'     : 3.0,
+                'wrist'    : INIT_POSE['wrist'],
                 'requires_ack' : True,
                 'next_step' : 'step_9'
             }
@@ -97,19 +90,7 @@ class Deliver:
             ans = {
                 'gripper' : 'open',
                 'requires_ack' : True,
-                'next_step': 'step_10'
-            }
-            return ans
-        
-        if step == 'step_10':
-            ans = {
-                'frame'    : INIT_POSE['frame'],
-                'position' : INIT_POSE['pose'],
-                'look'     : INIT_POSE['posture'],
-                'time'     : 3.0,
-                'wrist'    : INIT_POSE['wrist'],
-                'requires_ack' : True,
-                'next_step' : 'None'
+                'next_step': 'None'
             }
             return ans
         

@@ -23,8 +23,8 @@ L4 =  grip_d[4]
 #     length_n = np.sqrt(x**2 + y**2)
 #     length_z = z - L1 + L4
 
-MIN_LIMITS = np.array([np.deg2rad(-100), np.deg2rad(-110), np.deg2rad(-115), np.deg2rad(-100)])
-MAX_LIMITS = np.array([np.deg2rad( 100), np.deg2rad( 110), np.deg2rad( 115), np.deg2rad( 100)])
+MIN_LIMITS = np.array([np.deg2rad(-100), np.deg2rad(-115), np.deg2rad(-115), np.deg2rad(-125)])
+MAX_LIMITS = np.array([np.deg2rad( 100), np.deg2rad( 115), np.deg2rad( 115), np.deg2rad( 125)])
 
 def solve_ik_position_only(target_pos, initial_q_active=None,
                            xtol=1e-7, ftol=1e-7, retries=6, jitter=3e-3,

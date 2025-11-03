@@ -10,7 +10,7 @@
   <buildtool_depend>ament_python</buildtool_depend>
 
   <depend>std_msgs</depend>
-  <depend>rcply</depend>
+  <depend>rclpy</depend>
   <depend>dongsoo_interfaces</depend>
   <depend>dynamixel_sdk</depend>
 

@@ -297,23 +297,67 @@ class MainControlNode(Node):
             self.cam_pub.publish(cam_msg)
             self.get_logger().info(f"[ZEUS] camera_trigger")
             
-        if ans.get('camera_move'):
-            with self.data_lock:
-                if self.cam_mat is None:
-                    self.get_logger().warn(f"[ZEUS] Waiting For Camera Matrix")
-                    return
-                
-                P = self.tool_p
-                yaw = self.tool_yaw
+        if ans.get('camera_tool_move'):
+            with self.lock:
+                tool = self.tool
+                tool_p = self.tool_p
+                tool_yaw = self.tool_yaw
                 
             cmd_msg = DongSooCommand()
             cmd_msg.frame = 'l'
-            cmd_msg.position = [float(P[0] + 0.03), float(P[1]), float(P[2] - 0.03), 0.0]
-            cmd_msg.look     = ans['look']
-            cmd_msg.time     = ans['time']
-            cmd_msg.wrist    = yaw
+            cmd_msg.position = [float(tool_p[0]), float(tool_p[1]), float(tool_p[2]) + 0.13, 0.0]
+            cmd_msg.look     = 'straight'
+            cmd_msg.time     = 10.0
+            cmd_msg.wrist    = tool_yaw
             
             self.cmd_pub.publish(cmd_msg)
+            
+        if ans.get('camera_tool_move'):
+            with self.lock:
+                tool = self.tool
+                tool_p = self.tool_p
+                tool_yaw = self.tool_yaw
+                
+            cmd_msg = DongSooCommand()
+            cmd_msg.frame = 'l'
+            cmd_msg.position = [float(tool_p[0]), float(tool_p[1]) + 0.01, float(tool_p[2]) + 0.13, 0.0]
+            cmd_msg.look     = 'straight'
+            cmd_msg.time     = 7.0
+            cmd_msg.wrist    = tool_yaw
+            
+            self.cmd_pub.publish(cmd_msg)
+            
+        if ans.get('camera_tool_back_move'):
+            with self.lock:
+                tool = self.tool
+                tool_p = self.tool_p
+                tool_yaw = self.tool_yaw
+                
+            cmd_msg = DongSooCommand()
+            cmd_msg.frame = 'l'
+            cmd_msg.position = [float(tool_p[0]), float(tool_p[1]) + 0.2, float(tool_p[2]) + 0.20, 0.0]
+            cmd_msg.look     = 'straight'
+            cmd_msg.time     = 3.0
+            cmd_msg.wrist    = tool_yaw
+            
+            self.cmd_pub.publish(cmd_msg)
+            
+        if ans.get('camera_tool_up_move'):
+            with self.lock:
+                tool = self.tool
+                tool_p = self.tool_p
+                tool_yaw = self.tool_yaw
+                
+            cmd_msg = DongSooCommand()
+            cmd_msg.frame = 'l'
+            cmd_msg.position = [float(tool_p[0]), float(tool_p[1]) + 0.08, float(tool_p[2]) + 0.20, 0.0]
+            cmd_msg.look     = 'straight'
+            cmd_msg.time     = 3.0
+            cmd_msg.wrist    = tool_yaw
+            
+            self.cmd_pub.publish(cmd_msg)
+            
+            
             
 def main(args=None):
     rclpy.init(args=args)
