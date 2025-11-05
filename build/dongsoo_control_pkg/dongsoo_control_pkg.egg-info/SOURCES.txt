@@ -1,6 +1,14 @@
 package.xml
 setup.cfg
 setup.py
+../../build/dongsoo_control_pkg/dongsoo_control_pkg.egg-info/PKG-INFO
+../../build/dongsoo_control_pkg/dongsoo_control_pkg.egg-info/SOURCES.txt
+../../build/dongsoo_control_pkg/dongsoo_control_pkg.egg-info/dependency_links.txt
+../../build/dongsoo_control_pkg/dongsoo_control_pkg.egg-info/entry_points.txt
+../../build/dongsoo_control_pkg/dongsoo_control_pkg.egg-info/requires.txt
+../../build/dongsoo_control_pkg/dongsoo_control_pkg.egg-info/top_level.txt
+../../build/dongsoo_control_pkg/dongsoo_control_pkg.egg-info/zip-safe
+dongsoo_control_pkg/Inverse_Kinematics copy.py
 dongsoo_control_pkg/Inverse_Kinematics.py
 dongsoo_control_pkg/__init__.py
 dongsoo_control_pkg/dh_module.py
@@ -8,6 +16,7 @@ dongsoo_control_pkg/dongsoo_client_node.py
 dongsoo_control_pkg/dongsoo_command_centor.py
 dongsoo_control_pkg/dongsoo_data_hub.py
 dongsoo_control_pkg/dongsoo_gripper_node.py
+dongsoo_control_pkg/dongsoo_led_node.py
 dongsoo_control_pkg/dongsoo_monitoring_node.py
 dongsoo_control_pkg/dongsoo_motor_connect.py
 dongsoo_control_pkg/dongsoo_server_node.py

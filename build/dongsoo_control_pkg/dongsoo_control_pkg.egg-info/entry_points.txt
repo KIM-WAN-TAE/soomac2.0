@@ -3,6 +3,7 @@ client_node = dongsoo_control_pkg.dongsoo_client_node:main
 command_centor_node = dongsoo_control_pkg.dongsoo_command_centor:main
 data_hub = dongsoo_control_pkg.dongsoo_data_hub:main
 gripper_node = dongsoo_control_pkg.dongsoo_gripper_node:main
+led = dongsoo_control_pkg.dongsoo_led_node:main
 monitoring_node = dongsoo_control_pkg.dongsoo_monitoring_node:main
 motor_connect = dongsoo_control_pkg.dongsoo_motor_connect:main
 server_node = dongsoo_control_pkg.dongsoo_server_node:main
