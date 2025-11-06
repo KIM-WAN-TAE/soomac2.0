@@ -13,7 +13,7 @@ class Deliver:
                 'frame'    : INIT_POSE['frame'],
                 'position' : INIT_POSE['pose'],
                 'look'     : INIT_POSE['posture'],
-                'time'     : 3.0,
+                'time'     : 1.0,
                 'wrist'    : INIT_POSE['wrist'],
                 'requires_ack' : True,
                 'next_step' : 'step_2'
@@ -60,23 +60,7 @@ class Deliver:
         
         elif step == 'step_6':
             ans = {
-                'camera_tool_up_1_move' : True,
-                'requires_ack' : True,
-                'next_step' : 'step_7_1'
-            }
-            return ans
-        
-        elif step == 'step_7_1':
-            ans = {
-                'camera_tool_up_2_move' : True,
-                'requires_ack' : True,
-                'next_step' : 'step_7_2'
-            }
-            return ans
-        
-        elif step == 'step_7_2':
-            ans = {
-                'camera_tool_up_3_move' : True,
+                'camera_tool_up_move' : True,
                 'requires_ack' : True,
                 'next_step' : 'step_7'
             }
@@ -159,7 +143,7 @@ class Box:
                 'frame'    : INIT_POSE['frame'],
                 'position' : INIT_POSE['pose'],
                 'look'     : INIT_POSE['posture'],
-                'time'     : 3.0,
+                'time'     : 1.0,
                 'wrist'    : INIT_POSE['wrist'],
                 'requires_ack' : True,
                 'next_step' : 'step_2'
@@ -271,7 +255,7 @@ class Start:
                 'frame'    : INIT_POSE['frame'],
                 'position' : INIT_POSE['pose'],
                 'look'     : INIT_POSE['posture'],
-                'time'     : 3.0,
+                'time'     : 1.0,
                 'wrist'    : INIT_POSE['wrist'],
                 'requires_ack' : True,
                 'next_step' : 'step_2'
@@ -290,11 +274,11 @@ class Start:
         # 조명 키기 초기 위치
         elif step == 'step_3':
             ans = {
-                'frame'    : 'j',
-                'position' : [-93.96, 24.70, -109.07, 0.7],
-                'look'     : 'straight',
+                'frame'    : 'l',
+                'position' : [0.26, -0.33, 0.15],
+                'look'     : 'down',
                 'time'     : 2.0,
-                'wrist'    : 0.0,
+                'wrist'    : 40.0,
                 'requires_ack' : True,
                 'next_step' : 'step_4'
             }
@@ -304,10 +288,10 @@ class Start:
         elif step == 'step_4':
             ans = {
                 'frame'    : 'l',
-                'position' : [-0.04, -0.46, 0.45],
-                'look'     : 'straight',
-                'time'     : 0.8,
-                'wrist'    : 0.0,
+                'position' : [0.26, -0.32, 0.03],
+                'look'     : 'down',
+                'time'     : 1.0,
+                'wrist'    : 40.0,
                 'requires_ack' : True,
                 'next_step' : 'step_5'
             }
@@ -316,11 +300,11 @@ class Start:
         # 수직으로 퇴장
         elif step == 'step_5':
             ans = {
-                'frame'    : 'j',
-                'position' : [-93.96, 24.70, -109.07, 0.7],
-                'look'     : 'straight',
-                'time'     : 2.0,
-                'wrist'    : 0.0,
+                'frame'    : 'l',
+                'position' : [0.26, -0.33, 0.15],
+                'look'     : 'down',
+                'time'     : 1.0,
+                'wrist'    : 40.0,
                 'requires_ack' : True,
                 'next_step' : 'step_6'
             }
@@ -346,7 +330,7 @@ class Start:
                 'next_step': 'None'
             }
             return ans
-         
+
 class Finish:
     def step(self, step):
         if step == 'step_1':
@@ -354,7 +338,7 @@ class Finish:
                 'frame'    : INIT_POSE['frame'],
                 'position' : INIT_POSE['pose'],
                 'look'     : INIT_POSE['posture'],
-                'time'     : 3.0,
+                'time'     : 1.0,
                 'wrist'    : INIT_POSE['wrist'],
                 'requires_ack' : True,
                 'next_step' : 'step_2'
@@ -370,14 +354,14 @@ class Finish:
             }
             return ans
         
-        # 조명 키기 초기 위치
+        # 조명 끄기 초기 위치
         elif step == 'step_3':
             ans = {
-                'frame'    : 'j',
-                'position' : [-93.96, 24.70, -109.07, 0.7],
-                'look'     : 'straight',
+                'frame'    : 'l',
+                'position' : [0.226, -0.32, 0.15],
+                'look'     : 'down',
                 'time'     : 2.0,
-                'wrist'    : 0.0,
+                'wrist'    : 40.0,
                 'requires_ack' : True,
                 'next_step' : 'step_4'
             }
@@ -387,10 +371,10 @@ class Finish:
         elif step == 'step_4':
             ans = {
                 'frame'    : 'l',
-                'position' : [-0.042, -0.46, 0.427],
-                'look'     : 'straight',
-                'time'     : 0.8,
-                'wrist'    : 0.0,
+                'position' : [0.226, -0.32, 0.03,],
+                'look'     : 'down',
+                'time'     : 1.0,
+                'wrist'    : 40.0,
                 'requires_ack' : True,
                 'next_step' : 'step_5'
             }
@@ -399,11 +383,11 @@ class Finish:
         # 수직으로 퇴장
         elif step == 'step_5':
             ans = {
-                'frame'    : 'j',
-                'position' : [-93.96, 24.70, -109.07, 0.7],
-                'look'     : 'straight',
+                'frame'    : 'l',
+                'position' : [0.226, -0.32, 0.15],
+                'look'     : 'down',
                 'time'     : 2.0,
-                'wrist'    : 0.0,
+                'wrist'    : 40.0,
                 'requires_ack' : True,
                 'next_step' : 'step_6'
             }
@@ -429,7 +413,7 @@ class Finish:
                 'next_step': 'None'
             }
             return ans
-        
+    
 class Return:
     def step(self, step):
         # 초기 위치
@@ -439,6 +423,7 @@ class Return:
                 'position' : INIT_POSE['pose'],
                 'look'     : INIT_POSE['posture'],
                 'time'     : 3.0,
+                'led_off'  : True,
                 'wrist'    : INIT_POSE['wrist'],
                 'requires_ack' : True,
                 'next_step' : 'step_2'
@@ -684,7 +669,7 @@ class Fuck:
                 'frame'    : INIT_POSE['frame'],
                 'position' : INIT_POSE['pose'],
                 'look'     : INIT_POSE['posture'],
-                'time'     : 3.0,
+                'time'     : 1.0,
                 'wrist'    : INIT_POSE['wrist'],
                 'requires_ack' : True,
                 'next_step' : 'step_2'

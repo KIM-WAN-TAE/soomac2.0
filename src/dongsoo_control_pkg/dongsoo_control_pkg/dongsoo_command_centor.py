@@ -71,7 +71,9 @@ class MainControlNode(Node):
             self.tool_p = []
             self.tool_yaw = None
             self.tool_lst = []
-            # self.tool_lst = ['wire_cutter', 'nipper']
+            # self.tool_lst = ['wire_cutter']
+            # self.tool_lst = ['nipper']
+            # self.tool_lst = ['nipper', 'wire_cutter']
             
     def box_return_goal_memory(self, pick_pose):
         p_x = pick_pose[0]
@@ -378,41 +380,12 @@ class MainControlNode(Node):
             cmd_msg.position = [float(tool_p[0]), float(tool_p[1]) - 0.028, float(tool_p[2]) + 0.075, 0.0]
             cmd_msg.look     = 'straight'
             cmd_msg.time     = 7.0
+
             cmd_msg.wrist    = tool_yaw
             
             self.cmd_pub.publish(cmd_msg)
             
-        if ans.get('camera_tool_up_1_move'):
-            with self.lock:
-                tool = self.tool
-                tool_p = self.tool_p
-                tool_yaw = self.tool_yaw
-                
-            cmd_msg = DongSooCommand()
-            cmd_msg.frame = 'l'
-            cmd_msg.position = [float(tool_p[0]), float(tool_p[1]) - 0.026, float(tool_p[2]) + 0.10, 0.0]
-            cmd_msg.look     = 'straight'
-            cmd_msg.time     = 0.8
-            cmd_msg.wrist    = tool_yaw
-            
-            self.cmd_pub.publish(cmd_msg)
-            
-        if ans.get('camera_tool_up_2_move'):
-            with self.lock:
-                tool = self.tool
-                tool_p = self.tool_p
-                tool_yaw = self.tool_yaw
-                
-            cmd_msg = DongSooCommand()
-            cmd_msg.frame = 'l'
-            cmd_msg.position = [float(tool_p[0]), float(tool_p[1]) - 0.026, float(tool_p[2]) + 0.115, 0.0]
-            cmd_msg.look     = 'straight'
-            cmd_msg.time     = 0.8
-            cmd_msg.wrist    = tool_yaw
-            
-            self.cmd_pub.publish(cmd_msg)
-            
-        if ans.get('camera_tool_up_3_move'):
+        if ans.get('camera_tool_up_move'):
             with self.lock:
                 tool = self.tool
                 tool_p = self.tool_p
@@ -456,14 +429,25 @@ class MainControlNode(Node):
                 
                 self.get_logger().warn('11111111111111111')
                 self.M3_where = self.box_return_goal_memory(tool_p)
+                M3_where = self.M3_where
                 
             cmd_msg = DongSooCommand()
             cmd_msg.frame = 'l'
-            cmd_msg.position = [float(tool_p[0]), float(tool_p[1])-0.025, 0.035, 0.0]
+            cmd_msg.position = [float(tool_p[0]), float(tool_p[1])-0.025, 0.04, 0.0]
             cmd_msg.look     = 'down'
             cmd_msg.time     = 3.0
-            cmd_msg.wrist    = tool_yaw
             
+            if M3_where == 'left':
+                wrist = 10.0
+                
+            elif M3_where == 'right':
+                wrist = -10.0
+                
+            else:
+                wrist = 0.0
+                            
+            cmd_msg.wrist    = wrist
+
             self.cmd_pub.publish(cmd_msg)
             
         if ans.get('camera_box_up_move'):
@@ -471,13 +455,23 @@ class MainControlNode(Node):
                 tool = self.tool
                 tool_p = self.tool_p
                 tool_yaw = self.tool_yaw
+                M3_where = self.M3_where
                 
             cmd_msg = DongSooCommand()
             cmd_msg.frame = 'l'
-            cmd_msg.position = [float(tool_p[0]), float(tool_p[1])+0.01, float(tool_p[2]) + 0.12, 0.0]
+            cmd_msg.position = [float(tool_p[0]), float(tool_p[1])+0.05, float(tool_p[2]) + 0.13, 0.0]
             cmd_msg.look     = 'down'
             cmd_msg.time     = 3.0
-            cmd_msg.wrist    = tool_yaw
+            if M3_where == 'left':
+                wrist = 10.0
+                
+            elif M3_where == 'right':
+                wrist = -10.0
+                
+            else:
+                wrist = 0.0
+                            
+            cmd_msg.wrist    = wrist
             
             self.cmd_pub.publish(cmd_msg)
         ###  BOX Deliver Module ===================
@@ -493,7 +487,10 @@ class MainControlNode(Node):
                 
             cmd_msg = DongSooCommand()
             cmd_msg.frame = 'l'
-            cmd_msg.position = [float(tool_p[0]), float(tool_p[1]), 0.15, 0.0]
+            if tool == 'wire_cutter':
+                cmd_msg.position = [float(tool_p[0]), float(tool_p[1])-0.02, 0.15, 0.0]
+            else:
+                cmd_msg.position = [float(tool_p[0]), float(tool_p[1]), 0.15, 0.0]
             cmd_msg.look     = 'down'
             cmd_msg.time     = 3.0
             cmd_msg.wrist    = 0.0
@@ -512,7 +509,7 @@ class MainControlNode(Node):
             cmd_msg = DongSooCommand()
             cmd_msg.frame = 'l'
             if tool == 'wire_cutter':
-                cmd_msg.position = [float(tool_p[0]), float(tool_p[1]), float(tool_p[2]), 0.0]
+                cmd_msg.position = [float(tool_p[0]), float(tool_p[1])-0.02, float(tool_p[2]), 0.0]
             elif tool == 'nipper':
                 cmd_msg.position = [float(tool_p[0]), float(tool_p[1]), float(tool_p[2]) + 0.003, 0.0]
             else:
@@ -560,7 +557,8 @@ class MainControlNode(Node):
                 
             cmd_msg = DongSooCommand()
             cmd_msg.frame = 'l'
-            cmd_msg.position = [float(tool_p[0]), float(tool_p[1]), float(tool_p[2]) + 0.13, 0.0]
+            cmd_msg.position = [float(tool_p[0]), float(tool_p[1]), float(tool_p[2]) + 0.14
+                                , 0.0]
             cmd_msg.look     = 'down'
             cmd_msg.time     = 3.0
             cmd_msg.wrist    = tool_yaw
@@ -572,13 +570,16 @@ class MainControlNode(Node):
                 tool = self.tool
                 tool_p = self.tool_p
                 tool_yaw = self.tool_yaw
+                base_deg = self.joint_degrees[0]
+                wrist = tool_yaw + base_deg
+                self.wrist = wrist
                 
             cmd_msg = DongSooCommand()
             cmd_msg.frame = 'l'
             cmd_msg.position = [float(tool_p[0])+ 0.03 * np.cos(np.deg2rad(tool_yaw)), float(tool_p[1]) + 0.03 * np.sin(np.deg2rad(tool_yaw)), float(tool_p[2]) - 0.01, 0.0]
             cmd_msg.look     = 'down'
             cmd_msg.time     = 1.5
-            cmd_msg.wrist    = tool_yaw
+            cmd_msg.wrist    = wrist
             
             self.cmd_pub.publish(cmd_msg)
             
@@ -617,7 +618,7 @@ class MainControlNode(Node):
                 cmd_msg.wrist    = 0.0
             
             cmd_msg.look     = 'down'
-            cmd_msg.time     = 1.0
+            cmd_msg.time     = 3.0
             
             self.cmd_pub.publish(cmd_msg)
             
@@ -629,15 +630,15 @@ class MainControlNode(Node):
             cmd_msg.frame = 'l'
             
             if M3_where == 'left':
-                cmd_msg.position = [0.085, -0.365, 0.058, 0.0]
+                cmd_msg.position = [0.085, -0.37, 0.059, 0.0]
                 cmd_msg.wrist    = 10.0
                 
             elif M3_where == 'right':
-                cmd_msg.position = [-0.085, -0.365, 0.058, 0.0]
+                cmd_msg.position = [-0.085, -0.37, 0.059, 0.0]
                 cmd_msg.wrist    = -10.0
                 
             else:
-                cmd_msg.position = [0.0, -0.37, 0.058, 0.0]
+                cmd_msg.position = [0.0, -0.367, 0.059, 0.0]
                 cmd_msg.wrist    = 0.0
             
             cmd_msg.look     = 'down'

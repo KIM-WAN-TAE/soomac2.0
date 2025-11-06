@@ -547,9 +547,9 @@ class VisionNode(Node):
                         # 퍼블리시 픽셀 (X, Y) 확정
                         if masks_np is not None and i < (masks_np.shape[0] if masks_np is not None else 0) and handle_ctr is not None and tip_ctr is not None:
                             if norm_label(cls_name) == norm_label("wire_cutter"):
-                                center_px = (handle_ctr[0]*0.37 + tip_ctr[0]*0.63, handle_ctr[1]*0.37 + tip_ctr[1]*0.63)
+                                center_px = (handle_ctr[0]*0.3 + tip_ctr[0]*0.7, handle_ctr[1]*0.3 + tip_ctr[1]*0.7)
                             elif norm_label(cls_name) == norm_label("nipper"):
-                                center_px = (handle_ctr[0]*0.42 + tip_ctr[0]*0.58, handle_ctr[1]*0.42 + tip_ctr[1]*0.58)
+                                center_px = (handle_ctr[0]*0.35 + tip_ctr[0]*0.65, handle_ctr[1]*0.35 + tip_ctr[1]*0.65)
                             else:
                                 center_px = ((handle_ctr[0]*0.515+tip_ctr[0]*0.485), (handle_ctr[1]*0.515+tip_ctr[1]*0.485))
                         else:
