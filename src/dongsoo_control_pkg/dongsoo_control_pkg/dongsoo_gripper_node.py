@@ -6,7 +6,7 @@ from std_msgs.msg import String, Float32
 from dynamixel_sdk import PortHandler, PacketHandler
 import time
 
-DEVICENAME            = '/dev/ttyUSB0'
+DEVICENAME            = '/dev/ttyUSB1'
 BAUDRATE              = 3000000
 PROTOCOL_VERSION      = 2.0
 
